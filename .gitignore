@@ -1,0 +1,23 @@
+!.gitkeep
+
+# Exported artifacts: .zip, .pck
+project/export
+
+# Godot-specific ignores
+project/.godot/
+project/logs/
+
+# Mono-specific ignores
+project/.mono/
+project/data_*/
+
+# IntelliJ-specific ignores
+.idea
+.editorconfig
+
+# Gut ignores
+project/.gut*
+
+# Workstation config
+config/build.properties
+secrets
