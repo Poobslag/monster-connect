@@ -1,0 +1,19 @@
+$$$ = MUST be attributed in the game's credits (license requires it)
+ $$ = SHOULD be attributed in the game's credits (substantial use, license doesn't require it)
+  $ = MAY be attributed in the game's credits (minor use, license doesn't require it)
+
+Fonts:
+ $$ Baloo2 by Ek Type (SIL Open Font License, Version 1.1)
+
+Images:
+ $$ Puzzle Pack 2 by Kenney (CC0) - https://kenney.nl/assets/puzzle-pack-2
+ $$ New Platformer Pack by Kenney (CC0) - https://kenney.nl/assets/new-platformer-pack
+
+Fonts
+--------------------------------------------------------------------------------
+project/assets/main/ui/baloo2.ttf Baloo2 by Ek Type
+
+Images
+--------------------------------------------------------------------------------
+project/assets/main/tiles/tile_wall.png tileBlue_01.png by Kenney (Puzzle Pack 2)
+project/assets/main/characters/character_purple_* character_purple_* by Kenney (New Platformer Pack)

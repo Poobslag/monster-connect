@@ -1,4 +1,44 @@
-[gd_scene format=3 uid="uid://c1ikxk7sf1v"]
+[gd_scene load_steps=13 format=4 uid="uid://c1ikxk7sf1v"]
+
+[ext_resource type="Script" path="res://src/main/nurikabe_game_board.gd" id="1_qm6xo"]
+[ext_resource type="Texture2D" uid="uid://c3dfi5nwftbpf" path="res://assets/main/tiles/tile_island.png" id="3_8mqyp"]
+[ext_resource type="Script" path="res://src/main/tile_map_numbers.gd" id="3_e2tfc"]
+[ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/tiles/tile_blank.png" id="3_qm6xo"]
+[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_21uqv"]
+[ext_resource type="Texture2D" uid="uid://ciprhfck7rdkb" path="res://assets/main/tiles/tile_wall.png" id="5_e2tfc"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ccndg"]
+texture = ExtResource("3_qm6xo")
+margins = Vector2i(0, 32)
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1snhl"]
+texture = ExtResource("3_8mqyp")
+margins = Vector2i(0, 32)
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_nmhbr"]
+tile_size = Vector2i(128, 128)
+sources/0 = SubResource("TileSetAtlasSource_ccndg")
+sources/1 = SubResource("TileSetAtlasSource_1snhl")
+
+[sub_resource type="FontVariation" id="FontVariation_kn5p3"]
+base_font = ExtResource("5_21uqv")
+variation_opentype = {
+2003265652: 600
+}
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8mqyp"]
+texture = ExtResource("5_e2tfc")
+texture_region_size = Vector2i(128, 160)
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, 16)
+
+[sub_resource type="TileSet" id="TileSet_ccndg"]
+tile_size = Vector2i(128, 128)
+sources/0 = SubResource("TileSetAtlasSource_8mqyp")
 
 [node name="GameScreen" type="Control"]
 layout_mode = 3
@@ -7,3 +47,53 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="GameBoard" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+script = ExtResource("1_qm6xo")
+grid_string = " 1   4            
+           5      
+   5              
+           2     1
+                  
+ 2         1   1  
+     2            
+         5   2    
+                  
+"
+
+[node name="TileMapGround" type="TileMapLayer" parent="GameBoard"]
+unique_name_in_owner = true
+scale = Vector2(0.5, 0.5)
+tile_map_data = PackedByteArray("AAABAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAEAAAAAAAAAAAACAAEAAAAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAAAAAAAAAAAGAAEAAAAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAACAAIAAAAAAAAAAAADAAIAAAAAAAAAAAAEAAIAAAAAAAAAAAAFAAIAAAAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAAAAAAAAAAACAAQAAAAAAAAAAAADAAQAAAAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAAAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAAAAAAAAAAAIAAQAAAAAAAAAAAABAAUAAAAAAAAAAAACAAUAAAAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAAAAAAAAAAAGAAUAAAAAAAAAAAAIAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAABAAYAAAAAAAAAAAADAAYAAAAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAAAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAAAAAAAAAAAIAAYAAAAAAAAAAAAAAAcAAAAAAAAAAAABAAcAAAAAAAAAAAACAAcAAAAAAAAAAAADAAcAAAAAAAAAAAAFAAcAAAAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAABAAgAAAAAAAAAAAACAAgAAAAAAAAAAAADAAgAAAAAAAAAAAAEAAgAAAAAAAAAAAAFAAgAAAAAAAAAAAAGAAgAAAAAAAAAAAAHAAgAAAAAAAAAAAAIAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAFAAEAAAAAAAAAAAABAAIAAAAAAAAAAAAFAAMAAAAAAAAAAAAIAAMAAAAAAAAAAAAAAAUAAAAAAAAAAAAFAAUAAAAAAAAAAAAHAAUAAAAAAAAAAAACAAYAAAAAAAAAAAAEAAcAAAAAAAAAAAAGAAcAAAAAAAAAAAAIAAAAAAAAAAAAAAA=")
+tile_set = SubResource("TileSet_nmhbr")
+
+[node name="TileMapClues" type="Node2D" parent="GameBoard"]
+unique_name_in_owner = true
+scale = Vector2(0.5, 0.5)
+script = ExtResource("3_e2tfc")
+tile_size = Vector2i(128, 128)
+font = SubResource("FontVariation_kn5p3")
+font_size = 140
+font_padding = 22.5
+color = Color(0.11764706, 0.654902, 0.88235295, 1)
+clues_by_cell = Dictionary[Vector2i, int]({
+Vector2i(0, 0): 1,
+Vector2i(0, 5): 2,
+Vector2i(1, 2): 5,
+Vector2i(2, 0): 4,
+Vector2i(2, 6): 2,
+Vector2i(4, 7): 5,
+Vector2i(5, 1): 5,
+Vector2i(5, 3): 2,
+Vector2i(5, 5): 1,
+Vector2i(6, 7): 2,
+Vector2i(7, 5): 1,
+Vector2i(8, 3): 1
+})
+
+[node name="TileMapObject" type="TileMapLayer" parent="GameBoard"]
+unique_name_in_owner = true
+scale = Vector2(0.5, 0.5)
+tile_set = SubResource("TileSet_ccndg")
