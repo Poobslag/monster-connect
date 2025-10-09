@@ -107,6 +107,7 @@ z_as_relative = false
 position = Vector2(131, -85)
 script = ExtResource("14_y1tn0")
 color = Color(0.78039217, 0.7137255, 1, 1)
+ghost = null
 
 [connection signal="stepped_off" from="SteppableDetector" to="." method="_on_steppable_detector_stepped_off"]
 [connection signal="stepped_on" from="SteppableDetector" to="." method="_on_steppable_detector_stepped_on"]
