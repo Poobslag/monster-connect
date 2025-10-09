@@ -3,6 +3,8 @@ extends CharacterBody2D
 
 const ELEVATION_PER_Z_INDEX: float = 32.0
 
+const JUMP_DURATION: float = 0.2
+const FALL_DURATION: float = 0.2
 const MAX_SPEED: float = 400.0
 const ACCELERATION: float = 3000.0
 

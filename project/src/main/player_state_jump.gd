@@ -2,7 +2,7 @@ extends PlayerBaseState
 
 func enter() -> void:
 	play("jump")
-	player.tween_elevation(Player.ELEVATION_PER_Z_INDEX, 0.2) \
+	player.tween_elevation(Player.ELEVATION_PER_Z_INDEX, Player.JUMP_DURATION) \
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 

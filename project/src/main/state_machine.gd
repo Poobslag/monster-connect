@@ -61,7 +61,6 @@ func change_state(next_state: String) -> void:
 		_refresh_states()
 	current_state_node = states[next_state]
 	current_state_node.enter()
-	print("64: enter state: %s" % [current_state])
 
 
 func has_state(state: String) -> bool:
