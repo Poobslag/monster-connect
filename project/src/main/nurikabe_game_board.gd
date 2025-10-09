@@ -7,6 +7,7 @@ extends Control
 
 func _import_grid() -> void:
 	%TileMapGround.clear()
+	%TileMapClues.clear()
 	%TileMapObject.clear()
 	var grid_string_rows: PackedStringArray = grid_string.split("\n")
 	for y in grid_string_rows.size():
