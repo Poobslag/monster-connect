@@ -1,8 +1,8 @@
 [gd_scene load_steps=13 format=4 uid="uid://c1ikxk7sf1v"]
 
-[ext_resource type="Script" path="res://src/main/nurikabe_game_board.gd" id="1_qm6xo"]
+[ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe_game_board.gd" id="1_qm6xo"]
 [ext_resource type="Texture2D" uid="uid://c3dfi5nwftbpf" path="res://assets/main/tiles/tile_island.png" id="3_8mqyp"]
-[ext_resource type="Script" path="res://src/main/tile_map_numbers.gd" id="3_e2tfc"]
+[ext_resource type="Script" uid="uid://dlnf8p4ba4xe3" path="res://src/main/tile_map_numbers.gd" id="3_e2tfc"]
 [ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/tiles/tile_blank.png" id="3_qm6xo"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_21uqv"]
 [ext_resource type="Texture2D" uid="uid://ciprhfck7rdkb" path="res://assets/main/tiles/tile_wall.png" id="5_e2tfc"]
