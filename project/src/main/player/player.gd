@@ -26,11 +26,6 @@ var _dirty: bool = false
 var _elevation_tween: Tween
 
 var on_steppable: bool = false
-var ghost_cursor: bool:
-	set(value):
-		%Cursor.ghost = value
-	get():
-		return %Cursor.ghost
 
 @onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var fsm: StateMachine = %StateMachine

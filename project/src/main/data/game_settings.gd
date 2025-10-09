@@ -15,9 +15,6 @@ var full_screen: bool = false:
 		full_screen = value
 		_refresh_full_screen()
 
-func _ready() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-
 
 func _input(event: InputEvent) -> void:
 	if Engine.is_editor_hint():
