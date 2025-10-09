@@ -49,7 +49,7 @@ func refresh(force: bool = false) -> void:
 	
 	if direction.x != 0:
 		sprite.flip_h = direction.x < 0
-	z_index = clampi(ceili(elevation / ELEVATION_PER_Z_INDEX), 0, 10)
+	z_index = clampi(2 * ceili(elevation / ELEVATION_PER_Z_INDEX), 0, 10)
 	sprite.position = Vector2(0.0, -elevation)
 
 

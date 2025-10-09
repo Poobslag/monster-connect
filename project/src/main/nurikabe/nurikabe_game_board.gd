@@ -16,6 +16,7 @@ func _import_grid() -> void:
 	%TileMapObject.clear()
 	if not Engine.is_editor_hint():
 		%SteppableTiles.clear()
+	%CursorableArea.clear()
 	var grid_string_rows: PackedStringArray = grid_string.split("\n")
 	for y in grid_string_rows.size():
 		var row_string: String = grid_string_rows[y]
@@ -49,3 +50,5 @@ func _assign_cell_from_string(cell: Vector2i, string: String) -> void:
 	
 	var ground_id: int = 1 if string == "." else 0
 	%TileMapGround.set_cell(cell, ground_id, Vector2.ZERO)
+	
+	%CursorableArea.set_cell(cell)
