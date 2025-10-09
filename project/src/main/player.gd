@@ -13,7 +13,7 @@ var direction: Vector2 = Vector2.ZERO:
 		direction = value
 		_dirty = true
 
-var elevation: float:
+@export var elevation: float:
 	set(value):
 		if elevation == value:
 			return
@@ -21,6 +21,9 @@ var elevation: float:
 		_dirty = true
 
 var _dirty: bool = false
+var _elevation_tween: Tween
+
+var on_steppable: bool = false
 
 @onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var fsm: StateMachine = %StateMachine
@@ -46,3 +49,16 @@ func refresh(force: bool = false) -> void:
 		sprite.flip_h = direction.x < 0
 	z_index = clampi(ceili(elevation / ELEVATION_PER_Z_INDEX), 0, 10)
 	sprite.position = Vector2(0.0, -elevation)
+
+
+func tween_elevation(final_val: float, duration: float) -> PropertyTweener:
+	_elevation_tween = Utils.recreate_tween(self, _elevation_tween)
+	return _elevation_tween.tween_property(self, "elevation", final_val, duration)
+
+
+func _on_steppable_detector_stepped_on() -> void:
+	on_steppable = true
+
+
+func _on_steppable_detector_stepped_off() -> void:
+	on_steppable = false

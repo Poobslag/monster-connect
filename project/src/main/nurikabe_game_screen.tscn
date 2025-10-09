@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=4 uid="uid://c1ikxk7sf1v"]
+[gd_scene load_steps=15 format=4 uid="uid://c1ikxk7sf1v"]
 
 [ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe_game_board.gd" id="1_qm6xo"]
 [ext_resource type="Texture2D" uid="uid://c3dfi5nwftbpf" path="res://assets/main/tiles/tile_island.png" id="3_8mqyp"]
@@ -36,13 +36,13 @@ texture = ExtResource("5_e2tfc")
 texture_region_size = Vector2i(128, 160)
 0:0/0 = 0
 0:0/0/texture_origin = Vector2i(0, 16)
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-64, -64, 64, -64, 64, 64, -64, 64)
 
 [sub_resource type="TileSet" id="TileSet_ccndg"]
 tile_size = Vector2i(128, 128)
-physics_layer_0/collision_layer = 2
-physics_layer_0/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_8mqyp")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_21uqv"]
+size = Vector2(200, 200)
 
 [node name="GameScreen" type="Control"]
 y_sort_enabled = true
@@ -106,3 +106,11 @@ y_sort_origin = 60
 [node name="Player" parent="." instance=ExtResource("7_21uqv")]
 position = Vector2(233, 181)
 collision_mask = 2
+
+[node name="SteppableZone" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SteppableZone"]
+position = Vector2(386, 376)
+shape = SubResource("RectangleShape2D_21uqv")
