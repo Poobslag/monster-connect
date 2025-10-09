@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bbnbcdni8f5kn"
-path="res://.godot/imported/character_purple_idle.png-9c197951fa964acacd5cb065a8cdf2fc.ctex"
+uid="uid://u4433suamlj4"
+path="res://.godot/imported/character_purple_front.png-5f19ab7bd2afa25f44ea88f3fa93b710.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/main/characters/character_purple_idle.png"
-dest_files=["res://.godot/imported/character_purple_idle.png-9c197951fa964acacd5cb065a8cdf2fc.ctex"]
+source_file="res://assets/main/player/character_purple_front.png"
+dest_files=["res://.godot/imported/character_purple_front.png-5f19ab7bd2afa25f44ea88f3fa93b710.ctex"]
 
 [params]
 

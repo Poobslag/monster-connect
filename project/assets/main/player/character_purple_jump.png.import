@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://brxsaiabvf2s7"
-path="res://.godot/imported/character_purple_climb_b.png-4bf2f6d6295df49b89073ec71ce938d5.ctex"
+uid="uid://censlhvjmk5m1"
+path="res://.godot/imported/character_purple_jump.png-2acb386a4a82a90e522a2ede71c9c8a1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/main/characters/character_purple_climb_b.png"
-dest_files=["res://.godot/imported/character_purple_climb_b.png-4bf2f6d6295df49b89073ec71ce938d5.ctex"]
+source_file="res://assets/main/player/character_purple_jump.png"
+dest_files=["res://.godot/imported/character_purple_jump.png-2acb386a4a82a90e522a2ede71c9c8a1.ctex"]
 
 [params]
 

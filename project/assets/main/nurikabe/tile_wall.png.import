@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://btivipq1hwt33"
-path="res://.godot/imported/character_purple_hit.png-eb893428b8b07e63bdb910aedfa5f579.ctex"
+uid="uid://ciprhfck7rdkb"
+path="res://.godot/imported/tile_wall.png-c22e00aa214092e52536e5a41af97147.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/main/characters/character_purple_hit.png"
-dest_files=["res://.godot/imported/character_purple_hit.png-eb893428b8b07e63bdb910aedfa5f579.ctex"]
+source_file="res://assets/main/nurikabe/tile_wall.png"
+dest_files=["res://.godot/imported/tile_wall.png-c22e00aa214092e52536e5a41af97147.ctex"]
 
 [params]
 

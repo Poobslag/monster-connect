@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://u4433suamlj4"
-path="res://.godot/imported/character_purple_front.png-475cfa0564b4a725b17cfca86935b16b.ctex"
+uid="uid://cjkep2j5uaws4"
+path="res://.godot/imported/character_purple_walk_a.png-fe4ba7256be9db6b78a02cd095651949.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/main/characters/character_purple_front.png"
-dest_files=["res://.godot/imported/character_purple_front.png-475cfa0564b4a725b17cfca86935b16b.ctex"]
+source_file="res://assets/main/player/character_purple_walk_a.png"
+dest_files=["res://.godot/imported/character_purple_walk_a.png-fe4ba7256be9db6b78a02cd095651949.ctex"]
 
 [params]
 
