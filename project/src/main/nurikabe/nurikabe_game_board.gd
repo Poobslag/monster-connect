@@ -15,6 +15,89 @@ func _ready() -> void:
 			%SteppableTiles.set_cell(cell)
 
 
+func global_to_map(global_point: Vector2) -> Vector2i:
+	return %TileMapGround.local_to_map(%TileMapGround.to_local(global_point))
+
+
+func set_cell_string(cell: Vector2i, string: String) -> void:
+	if string.is_valid_int():
+		%TileMapClues.set_cell(cell, int(string))
+	else:
+		%TileMapClues.erase_cell(cell)
+	
+	var object_id: int = 0 if string == "##" else -1
+	%TileMapObject.set_cell(cell, object_id, Vector2.ZERO)
+	
+	if not Engine.is_editor_hint():
+		if object_id == 0:
+			%SteppableTiles.set_cell(cell)
+		else:
+			%SteppableTiles.erase_cell(cell)
+	
+	var ground_id: int = 0 if (cell.x + cell.y) % 2 == 0 else 1
+	%TileMapGround.set_cell(cell, ground_id, Vector2.ZERO)
+	
+	var island_id: int = 0 if string == "." else -1
+	%TileMapIsland.set_cell(cell, island_id, Vector2.ZERO)
+	
+	%CursorableArea.set_cell(cell)
+
+
+func get_cell_string(cell: Vector2i) -> String:
+	var result := EMPTY
+	
+	if %TileMapObject.get_cell_source_id(cell) == 0:
+		result = WALL
+	
+	if not result and %TileMapClues.get_cell_clue(cell) != -1:
+		result = str(%TileMapClues.get_cell_clue(cell))
+	
+	if not result and %TileMapIsland.get_cell_source_id(cell) == 0:
+		result = ISLAND
+	
+	return result
+
+
+func get_global_cursorable_rect() -> Rect2:
+	return Rect2(
+		%CursorableArea.get_global_transform() * %CursorableArea.cursorable_rect.position,
+		%CursorableArea.get_global_transform() * %CursorableArea.cursorable_rect.size)
+
+
+func surround_island(cell: Vector2i) -> void:
+	var clue_cells: Dictionary[Vector2i, bool] = {}
+	var island_cells: Dictionary[Vector2i, bool] = {}
+	var ignored_cells: Dictionary[Vector2i, bool] = {}
+	var cells_to_check: Dictionary[Vector2i, bool] = {cell: true}
+	while cells_to_check.size() > 0:
+		var next_cell: Vector2i = cells_to_check.keys()[0]
+		cells_to_check.erase(next_cell)
+		
+		var next_cell_string: String = get_cell_string(next_cell)
+		if next_cell_string == ISLAND:
+			island_cells[next_cell] = true
+		elif next_cell_string.is_valid_int():
+			clue_cells[next_cell] = true
+		else:
+			ignored_cells[next_cell] = true
+			continue
+		
+		for neighbor_dir: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+			var neighbor_cell: Vector2i = next_cell + neighbor_dir
+			if ignored_cells.has(neighbor_cell) \
+					or island_cells.has(neighbor_cell) \
+					or clue_cells.has(neighbor_cell) \
+					or cells_to_check.has(neighbor_cell) \
+					or %TileMapGround.get_cell_source_id(neighbor_cell) == -1:
+				continue
+			cells_to_check[neighbor_cell] = true
+	
+	if clue_cells.size() == 1:
+		for ignored_cell: Vector2i in ignored_cells:
+			if get_cell_string(ignored_cell) == EMPTY:
+				set_cell_string(ignored_cell, WALL)
+
+
 func _import_grid() -> void:
 	%TileMapGround.clear()
 	%TileMapClues.clear()
@@ -37,42 +120,3 @@ func _erase_cell(cell: Vector2i) -> void:
 	%TileMapObject.erase_cell(cell)
 	if not Engine.is_editor_hint():
 		%SteppableTiles.erase_cell(cell)
-
-
-func set_cell_string(cell: Vector2i, string: String) -> void:
-	if string.is_valid_int():
-		%TileMapClues.set_cell(cell, int(string))
-	else:
-		%TileMapClues.erase_cell(cell)
-	
-	var object_id: int = 0 if string == "##" else -1
-	%TileMapObject.set_cell(cell, object_id, Vector2.ZERO)
-	
-	if not Engine.is_editor_hint():
-		if object_id == -1:
-			%SteppableTiles.set_cell(cell)
-		elif object_id == 0:
-			%SteppableTiles.erase(cell)
-	
-	var ground_id: int = 0 if (cell.x + cell.y) % 2 == 0 else 1
-	%TileMapGround.set_cell(cell, ground_id, Vector2.ZERO)
-	
-	var island_id: int = 0 if string == "." else -1
-	%TileMapIsland.set_cell(cell, island_id, Vector2.ZERO)
-	
-	%CursorableArea.set_cell(cell)
-
-
-func get_cell_string(cell: Vector2i) -> String:
-	var result := NurikabeUtils.EMPTY
-	
-	if %TileMapObject.get_cell_source_id(cell) == 0:
-		result = NurikabeUtils.WALL
-	
-	if not result and %TileMapClues.get_cell_clue(cell) != -1:
-		result = str(%TileMapClues.get_cell_clue(cell))
-	
-	if not result and %TileMapIsland.get_cell_source_id(cell) == 0:
-		result = NurikabeUtils.ISLAND
-	
-	return result
