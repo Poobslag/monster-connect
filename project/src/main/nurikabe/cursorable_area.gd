@@ -43,12 +43,20 @@ func add_cursor(area: Area2D) -> void:
 	_cursors_by_area[area] = cursor
 	%Cursors.add_child(cursor)
 	update_cursor(area)
+	
+	var player: Player = _find_player_for_cursor(area)
+	if player:
+		player.current_game_board = _find_game_board()
 
 
 func remove_cursor(area: Area2D) -> void:
 	var cursor: Node2D = _cursors_by_area[area]
 	_cursors_by_area.erase(area)
 	cursor.queue_free()
+	
+	var player: Player = _find_player_for_cursor(area)
+	if player and player.current_game_board == _find_game_board():
+		player.current_game_board = null
 
 
 func update_cursor(area: Area2D) -> void:
@@ -57,10 +65,18 @@ func update_cursor(area: Area2D) -> void:
 	var area_local_position: Vector2 = get_global_transform().affine_inverse() * area.global_position
 	var cursor_cell: Vector2i = (area_local_position / tile_size - Vector2(0.5, 0.5)).snapped(Vector2.ONE).max(Vector2i.ZERO)
 	
-	var player: Player = area.find_parent("Player")
-	var game_board: Node = find_parent("*GameBoard")
+	var player: Player = _find_player_for_cursor(area)
+	var game_board: Node = _find_game_board()
 	
 	cursor.update_cursor(game_board, player, cursor_cell, tile_size)
+
+
+func _find_game_board() -> NurikabeGameBoard:
+	return find_parent("*GameBoard")
+
+
+func _find_player_for_cursor(area: Area2D) -> Player:
+	return area.find_parent("Player")
 
 
 func remove_all_cursors() -> void:

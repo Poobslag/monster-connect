@@ -7,8 +7,7 @@ enum InputMethod {
 	KEYBOARD,
 }
 
-const CURSOR_RADIUS: float = 256
-const CHARACTER_CENTER := Vector2(0, -60)
+const PUZZLE_APPROACH_DISTANCE: float = 180.0
 const MOUSE_STOP_DISTANCE: float = 20.0
 
 var dir := Vector2.ZERO
@@ -46,5 +45,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) \
 			or event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		_last_input_method = InputMethod.MOUSE
-		_mouse_target = player.position + (event.global_position - player.global_position)
+		var target_global_position: Vector2
+		if player.current_game_board == null:
+			target_global_position = event.global_position
+		else:
+			target_global_position = event.global_position \
+					+ (player.global_position - event.global_position).normalized() * PUZZLE_APPROACH_DISTANCE
+		_mouse_target = player.position + (target_global_position - player.global_position)
 		_mouse_dir = (_mouse_target - player.position).normalized()

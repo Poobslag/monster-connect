@@ -27,6 +27,7 @@ var _elevation_tween: Tween
 var _fade_tween: Tween
 
 var on_steppable: bool = false
+var current_game_board: NurikabeGameBoard
 
 @onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var fsm: StateMachine = %StateMachine
