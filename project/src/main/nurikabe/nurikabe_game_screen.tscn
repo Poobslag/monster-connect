@@ -1,14 +1,15 @@
-[gd_scene load_steps=16 format=4 uid="uid://c1ikxk7sf1v"]
+[gd_scene load_steps=17 format=4 uid="uid://c1ikxk7sf1v"]
 
 [ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe/nurikabe_game_board.gd" id="1_qm6xo"]
 [ext_resource type="Texture2D" uid="uid://c3dfi5nwftbpf" path="res://assets/main/nurikabe/tile_island.png" id="3_8mqyp"]
-[ext_resource type="Script" uid="uid://dlnf8p4ba4xe3" path="res://src/main/nurikabe/tile_map_numbers.gd" id="3_e2tfc"]
+[ext_resource type="Script" uid="uid://dlnf8p4ba4xe3" path="res://src/main/nurikabe/tile_map_clues.gd" id="3_e2tfc"]
 [ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/nurikabe/tile_blank.png" id="3_qm6xo"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_21uqv"]
 [ext_resource type="Texture2D" uid="uid://ciprhfck7rdkb" path="res://assets/main/nurikabe/tile_wall.png" id="5_e2tfc"]
 [ext_resource type="PackedScene" uid="uid://dbd72lfv4xjdr" path="res://src/main/player/player.tscn" id="7_21uqv"]
 [ext_resource type="Script" uid="uid://bo2x55tn0h5yl" path="res://src/main/steppable_tiles.gd" id="7_kn5p3"]
 [ext_resource type="PackedScene" uid="uid://dn3d3m8il6qqm" path="res://src/main/nurikabe/cursorable_area.tscn" id="7_n1qax"]
+[ext_resource type="PackedScene" uid="uid://bjksq0yxrx6cq" path="res://src/main/nurikabe/nurikabe_cursor.tscn" id="8_aypp7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ccndg"]
 texture = ExtResource("3_qm6xo")
@@ -104,13 +105,14 @@ Vector2i(8, 3): 1
 unique_name_in_owner = true
 y_sort_enabled = true
 scale = Vector2(0.5, 0.5)
-tile_map_data = PackedByteArray("AAACAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAQAAAAAAAAAAAAFAAUAAAAAAAAAAAAGAAYAAAAAAAAAAAAHAAcAAAAAAAAAAAAIAAgAAAAAAAAAAAA=")
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAACAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAQAAAAAAAAAAAAAAAUAAAAAAAAAAAAFAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAAGAAYAAAAAAAAAAAAAAAcAAAAAAAAAAAAHAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAgAAAAAAAAAAAA=")
 tile_set = SubResource("TileSet_ccndg")
 y_sort_origin = 60
 
 [node name="CursorableArea" parent="GameBoard" instance=ExtResource("7_n1qax")]
 unique_name_in_owner = true
 scale = Vector2(0.5, 0.5)
+cursor_scene = ExtResource("8_aypp7")
 tile_size = Vector2(128, 128)
 cursorable_rect = Rect2(0, 0, 1152, 1152)
 

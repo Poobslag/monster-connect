@@ -1,6 +1,8 @@
 @tool
 extends Area2D
 
+@export var cursor_scene: PackedScene
+
 @export var tile_size: Vector2
 
 @export var cursorable_rect: Rect2:
@@ -8,13 +10,16 @@ extends Area2D
 		cursorable_rect = value
 		_dirty = true
 
+var _cursors_by_area: Dictionary[Area2D, Node2D] = {}
+
 var _dirty: bool = false
 
 func _ready() -> void:
-	area_entered.connect(func(_area: Area2D) -> void:
-		print("15: entered"))
-	area_exited.connect(func(_area: Area2D) -> void:
-		print("15: exited"))
+	remove_all_cursors()
+	area_entered.connect(func(area: Area2D) -> void:
+		add_cursor(area))
+	area_exited.connect(func(area: Area2D) -> void:
+		remove_cursor(area))
 
 
 func _process(_delta: float) -> void:
@@ -25,7 +30,45 @@ func _process(_delta: float) -> void:
 			cursorable_rect.position + Vector2(cursorable_rect.size.x, cursorable_rect.size.y),
 			cursorable_rect.position + Vector2(0, cursorable_rect.size.y),
 		])
+		$CollisionPolygon2D.visible = cursorable_rect.size > Vector2.ZERO
 		_dirty = false
+	
+	for area: Area2D in _cursors_by_area:
+		update_cursor(area)
+
+
+func add_cursor(area: Area2D) -> void:
+	var cursor: Node2D = cursor_scene.instantiate()
+	cursor.z_index = 1
+	_cursors_by_area[area] = cursor
+	%Cursors.add_child(cursor)
+	update_cursor(area)
+
+
+func remove_cursor(area: Area2D) -> void:
+	var cursor: Node2D = _cursors_by_area[area]
+	_cursors_by_area.erase(area)
+	cursor.queue_free()
+
+
+func update_cursor(area: Area2D) -> void:
+	var cursor: Node2D = _cursors_by_area[area]
+	
+	var area_local_position: Vector2 = get_global_transform().affine_inverse() * area.global_position
+	var cursor_cell: Vector2i = (area_local_position / tile_size - Vector2(0.5, 0.5)).snapped(Vector2.ONE).max(Vector2i.ZERO)
+	
+	var player: Player = cursor.find_parent("Player")
+	var game_board: Node = find_parent("*GameBoard")
+	
+	cursor.update_cursor(game_board, player, cursor_cell, tile_size)
+
+
+func remove_all_cursors() -> void:
+	for area: Area2D in _cursors_by_area.duplicate():
+		remove_cursor(area)
+	for cursor in %Cursors.get_children():
+		cursor.queue_free()
+
 
 func clear() -> void:
 	cursorable_rect = Rect2()

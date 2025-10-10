@@ -1,5 +1,10 @@
 @tool
+class_name NurikabeGameBoard
 extends Control
+
+const EMPTY = NurikabeUtils.EMPTY
+const ISLAND = NurikabeUtils.ISLAND
+const WALL = NurikabeUtils.WALL
 
 @export_multiline var grid_string: String
 @export_tool_button("Import Grid String") var import_grid_action: Callable = _import_grid
@@ -22,7 +27,7 @@ func _import_grid() -> void:
 		var row_string: String = grid_string_rows[y]
 		@warning_ignore("integer_division")
 		for x in row_string.length() / 2:
-			_assign_cell_from_string(Vector2i(x, y), row_string.substr(x * 2, 2).strip_edges())
+			set_cell_string(Vector2i(x, y), row_string.substr(x * 2, 2).strip_edges())
 
 
 func _erase_cell(cell: Vector2i) -> void:
@@ -33,7 +38,7 @@ func _erase_cell(cell: Vector2i) -> void:
 		%SteppableTiles.erase_cell(cell)
 
 
-func _assign_cell_from_string(cell: Vector2i, string: String) -> void:
+func set_cell_string(cell: Vector2i, string: String) -> void:
 	if string.is_valid_int():
 		%TileMapClues.set_cell(cell, int(string))
 	else:
@@ -52,3 +57,18 @@ func _assign_cell_from_string(cell: Vector2i, string: String) -> void:
 	%TileMapGround.set_cell(cell, ground_id, Vector2.ZERO)
 	
 	%CursorableArea.set_cell(cell)
+
+
+func get_cell_string(cell: Vector2i) -> String:
+	var result := NurikabeUtils.EMPTY
+	
+	if %TileMapObject.get_cell_source_id(cell) != -1:
+		result = NurikabeUtils.WALL
+	
+	if not result and %TileMapClues.get_cell_clue(cell) != -1:
+		result = str(%TileMapClues.get_cell_clue(cell))
+	
+	if not result and %TileMapGround.get_cell_source_id(cell) == 1:
+		result = NurikabeUtils.ISLAND
+	
+	return result

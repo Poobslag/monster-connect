@@ -53,6 +53,10 @@ func erase_cell(cell: Vector2i) -> void:
 	queue_redraw()
 
 
+func get_cell_clue(cell: Vector2i) -> int:
+	return clues_by_cell.get(cell, -1)
+
+
 func set_cell(cell: Vector2i, value: int) -> void:
 	clues_by_cell[cell] = value
 	notify_property_list_changed()
