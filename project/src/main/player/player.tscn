@@ -1,12 +1,12 @@
-[gd_scene load_steps=18 format=3 uid="uid://dbd72lfv4xjdr"]
+[gd_scene load_steps=19 format=3 uid="uid://dbd72lfv4xjdr"]
 
 [ext_resource type="Script" uid="uid://scd325yh8swm" path="res://src/main/player/player.gd" id="1_8wxd0"]
 [ext_resource type="Texture2D" uid="uid://bbnbcdni8f5kn" path="res://assets/main/player/character_purple_idle.png" id="2_gmrms"]
 [ext_resource type="Texture2D" uid="uid://censlhvjmk5m1" path="res://assets/main/player/character_purple_jump.png" id="3_4yq1m"]
 [ext_resource type="Texture2D" uid="uid://cjkep2j5uaws4" path="res://assets/main/player/character_purple_walk_a.png" id="3_ln3wq"]
 [ext_resource type="Texture2D" uid="uid://dkaqjyv3qmy7t" path="res://assets/main/player/character_purple_walk_b.png" id="4_u203y"]
-[ext_resource type="Script" uid="uid://b5kl8j54ujsyt" path="res://src/main/steppable_detector.gd" id="5_4yq1m"]
 [ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="5_covkf"]
+[ext_resource type="PackedScene" uid="uid://cjhud2828rp0i" path="res://src/main/player/overlap_tracker.tscn" id="6_2jfxr"]
 [ext_resource type="Script" uid="uid://51kbfnwulp1s" path="res://src/main/player/player_input_handler.gd" id="6_4yq1m"]
 [ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="6_gmrms"]
 [ext_resource type="Script" uid="uid://p2r0gntr00jy" path="res://src/main/player/player_state_idle.gd" id="7_ln3wq"]
@@ -53,6 +53,9 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2jfxr"]
+size = Vector2(192, 192)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h8b4f"]
 size = Vector2(64, 64)
 
@@ -60,7 +63,6 @@ size = Vector2(64, 64)
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_8wxd0")
-elevation = null
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -71,16 +73,23 @@ animation = &"fall"
 autoplay = "idle"
 offset = Vector2(0, -120)
 
+[node name="CursorTracker" parent="AnimatedSprite2D" instance=ExtResource("6_2jfxr")]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" parent="AnimatedSprite2D/CursorTracker" index="0"]
+position = Vector2(0, -92)
+shape = SubResource("RectangleShape2D_2jfxr")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -21)
 shape = SubResource("RectangleShape2D_h8b4f")
 
-[node name="SteppableDetector" type="Area2D" parent="."]
+[node name="SteppableTracker" parent="." instance=ExtResource("6_2jfxr")]
 collision_layer = 0
 collision_mask = 4
-script = ExtResource("5_4yq1m")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SteppableDetector"]
+[node name="CollisionShape2D" parent="SteppableTracker" index="0"]
 position = Vector2(0, -21)
 shape = SubResource("RectangleShape2D_h8b4f")
 
@@ -117,5 +126,10 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cursor/Area2D"]
 shape = SubResource("RectangleShape2D_y1tn0")
 
-[connection signal="stepped_off" from="SteppableDetector" to="." method="_on_steppable_detector_stepped_off"]
-[connection signal="stepped_on" from="SteppableDetector" to="." method="_on_steppable_detector_stepped_on"]
+[connection signal="overlap_ended" from="AnimatedSprite2D/CursorTracker" to="." method="_on_cursor_tracker_overlap_ended"]
+[connection signal="overlap_started" from="AnimatedSprite2D/CursorTracker" to="." method="_on_cursor_tracker_overlap_started"]
+[connection signal="overlap_ended" from="SteppableTracker" to="." method="_on_steppable_tracker_overlap_ended"]
+[connection signal="overlap_started" from="SteppableTracker" to="." method="_on_steppable_tracker_overlap_started"]
+
+[editable path="AnimatedSprite2D/CursorTracker"]
+[editable path="SteppableTracker"]

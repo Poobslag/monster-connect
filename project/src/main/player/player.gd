@@ -24,6 +24,7 @@ var direction: Vector2 = Vector2.ZERO:
 
 var _dirty: bool = false
 var _elevation_tween: Tween
+var _fade_tween: Tween
 
 var on_steppable: bool = false
 
@@ -59,9 +60,19 @@ func tween_elevation(final_val: float, duration: float) -> PropertyTweener:
 	return _elevation_tween.tween_property(self, "elevation", final_val, duration)
 
 
-func _on_steppable_detector_stepped_on() -> void:
-	on_steppable = true
+func _on_cursor_tracker_overlap_ended() -> void:
+	_fade_tween = Utils.recreate_tween(self, _fade_tween)
+	_fade_tween.tween_property(%AnimatedSprite2D, "modulate:a", 1.0, 0.25)
 
 
-func _on_steppable_detector_stepped_off() -> void:
+func _on_cursor_tracker_overlap_started() -> void:
+	_fade_tween = Utils.recreate_tween(self, _fade_tween)
+	_fade_tween.tween_property(%AnimatedSprite2D, "modulate:a", 0.33, 0.25)
+
+
+func _on_steppable_tracker_overlap_ended() -> void:
 	on_steppable = false
+
+
+func _on_steppable_tracker_overlap_started() -> void:
+	on_steppable = true
