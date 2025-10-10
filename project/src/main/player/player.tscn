@@ -60,6 +60,7 @@ size = Vector2(64, 64)
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_8wxd0")
+elevation = null
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -103,6 +104,7 @@ unique_name_in_owner = true
 script = ExtResource("6_4yq1m")
 
 [node name="Cursor" type="Node2D" parent="."]
+unique_name_in_owner = true
 z_index = 100
 z_as_relative = false
 script = ExtResource("14_y1tn0")

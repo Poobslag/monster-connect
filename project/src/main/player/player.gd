@@ -30,6 +30,7 @@ var on_steppable: bool = false
 @onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var fsm: StateMachine = %StateMachine
 @onready var input: PlayerInputHandler = %InputHandler
+@onready var cursor: PlayerCursor = %Cursor
 
 func _ready() -> void:
 	fsm.change_state("idle")

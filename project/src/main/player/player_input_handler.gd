@@ -43,7 +43,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			or event.is_action_pressed("move_up") \
 			or event.is_action_pressed("move_down"):
 		_last_input_method = InputMethod.KEYBOARD
-	if event is InputEventMouseButton \
+	if event is InputEventMouseButton and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) \
 			or event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		_last_input_method = InputMethod.MOUSE
 		_mouse_target = player.position + (event.global_position - player.global_position)

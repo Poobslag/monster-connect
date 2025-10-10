@@ -1,4 +1,5 @@
 @tool
+class_name PlayerCursor
 extends Node2D
 
 const OUTLINE_COLOR := Color("353541")

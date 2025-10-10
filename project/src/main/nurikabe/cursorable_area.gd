@@ -57,7 +57,7 @@ func update_cursor(area: Area2D) -> void:
 	var area_local_position: Vector2 = get_global_transform().affine_inverse() * area.global_position
 	var cursor_cell: Vector2i = (area_local_position / tile_size - Vector2(0.5, 0.5)).snapped(Vector2.ONE).max(Vector2i.ZERO)
 	
-	var player: Player = cursor.find_parent("Player")
+	var player: Player = area.find_parent("Player")
 	var game_board: Node = find_parent("*GameBoard")
 	
 	cursor.update_cursor(game_board, player, cursor_cell, tile_size)

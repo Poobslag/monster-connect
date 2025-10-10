@@ -32,6 +32,7 @@ func _import_grid() -> void:
 
 func _erase_cell(cell: Vector2i) -> void:
 	%TileMapGround.erase_cell(cell)
+	%TileMapIsland.erase_cell(cell)
 	%TileMapClues.erase_cell(cell)
 	%TileMapObject.erase_cell(cell)
 	if not Engine.is_editor_hint():
@@ -53,8 +54,11 @@ func set_cell_string(cell: Vector2i, string: String) -> void:
 		elif object_id == 0:
 			%SteppableTiles.erase(cell)
 	
-	var ground_id: int = 1 if string == "." else 0
+	var ground_id: int = 0 if (cell.x + cell.y) % 2 == 0 else 1
 	%TileMapGround.set_cell(cell, ground_id, Vector2.ZERO)
+	
+	var island_id: int = 0 if string == "." else -1
+	%TileMapIsland.set_cell(cell, island_id, Vector2.ZERO)
 	
 	%CursorableArea.set_cell(cell)
 
@@ -62,13 +66,13 @@ func set_cell_string(cell: Vector2i, string: String) -> void:
 func get_cell_string(cell: Vector2i) -> String:
 	var result := NurikabeUtils.EMPTY
 	
-	if %TileMapObject.get_cell_source_id(cell) != -1:
+	if %TileMapObject.get_cell_source_id(cell) == 0:
 		result = NurikabeUtils.WALL
 	
 	if not result and %TileMapClues.get_cell_clue(cell) != -1:
 		result = str(%TileMapClues.get_cell_clue(cell))
 	
-	if not result and %TileMapGround.get_cell_source_id(cell) == 1:
+	if not result and %TileMapIsland.get_cell_source_id(cell) == 0:
 		result = NurikabeUtils.ISLAND
 	
 	return result
