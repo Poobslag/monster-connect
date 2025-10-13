@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://bfe2kvtnucje5"]
+
+[ext_resource type="PackedScene" uid="uid://e0pi2gdc66sm" path="res://src/main/world/steppable_zone.tscn" id="1_cgj43"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cgj43"]
+size = Vector2(128, 128)
+
+[node name="SteppableTile" instance=ExtResource("1_cgj43")]
+
+[node name="CollisionShape2D" parent="." index="0"]
+position = Vector2(0, 0)
+shape = SubResource("RectangleShape2D_cgj43")
+debug_color = Color(0.9490196, 0, 0.9490196, 0.41960785)
