@@ -32,7 +32,7 @@ extends Node2D
 		queue_redraw()
 
 func _draw() -> void:
-	for cell in clues_by_cell:
+	for cell: Vector2i in clues_by_cell:
 		var clue: int = clues_by_cell[cell]
 		var clue_scale := Vector2.ONE if clue <= 9 else Vector2(0.66667, 1)
 		draw_set_transform(Vector2(tile_size) * (Vector2(cell) + Vector2.DOWN) + Vector2.UP * font_padding,
