@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dkaqjyv3qmy7t"
-path="res://.godot/imported/character_purple_walk_b.png-ad0be80fec43ae7fc18fabe786287d8f.ctex"
+uid="uid://btivipq1hwt33"
+path="res://.godot/imported/character_purple_hit.png-56145a8588839fcef801d0fbffd18517.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/main/characters/character_purple_walk_b.png"
-dest_files=["res://.godot/imported/character_purple_walk_b.png-ad0be80fec43ae7fc18fabe786287d8f.ctex"]
+source_file="res://assets/main/player/character_purple_hit.png"
+dest_files=["res://.godot/imported/character_purple_hit.png-56145a8588839fcef801d0fbffd18517.ctex"]
 
 [params]
 

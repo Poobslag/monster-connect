@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bdlidjtfh2g5r"
-path="res://.godot/imported/character_purple_duck.png-d5972c789d98f5804900aae8b2873adf.ctex"
+uid="uid://dkaqjyv3qmy7t"
+path="res://.godot/imported/character_purple_walk_b.png-bfc256f59d96f40f5c977a1f90fa385d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/main/characters/character_purple_duck.png"
-dest_files=["res://.godot/imported/character_purple_duck.png-d5972c789d98f5804900aae8b2873adf.ctex"]
+source_file="res://assets/main/player/character_purple_walk_b.png"
+dest_files=["res://.godot/imported/character_purple_walk_b.png-bfc256f59d96f40f5c977a1f90fa385d.ctex"]
 
 [params]
 
