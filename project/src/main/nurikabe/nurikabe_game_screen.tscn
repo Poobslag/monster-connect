@@ -1,28 +1,36 @@
-[gd_scene load_steps=13 format=4 uid="uid://c1ikxk7sf1v"]
+[gd_scene load_steps=16 format=4 uid="uid://c1ikxk7sf1v"]
 
 [ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe/nurikabe_game_board.gd" id="1_qm6xo"]
 [ext_resource type="Texture2D" uid="uid://c3dfi5nwftbpf" path="res://assets/main/nurikabe/tile_island.png" id="3_8mqyp"]
+[ext_resource type="Texture2D" uid="uid://1d4oxoe1icnt" path="res://assets/main/nurikabe/tile_blank_2.png" id="3_aypp7"]
 [ext_resource type="Script" uid="uid://dlnf8p4ba4xe3" path="res://src/main/nurikabe/tile_map_clues.gd" id="3_e2tfc"]
-[ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/nurikabe/tile_blank.png" id="3_qm6xo"]
+[ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/nurikabe/tile_blank_1.png" id="3_qm6xo"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_21uqv"]
 [ext_resource type="Texture2D" uid="uid://ciprhfck7rdkb" path="res://assets/main/nurikabe/tile_wall.png" id="5_e2tfc"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ccndg"]
 texture = ExtResource("3_qm6xo")
-margins = Vector2i(0, 32)
-texture_region_size = Vector2i(128, 128)
+texture_region_size = Vector2i(256, 256)
 0:0/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1snhl"]
-texture = ExtResource("3_8mqyp")
-margins = Vector2i(0, 32)
-texture_region_size = Vector2i(128, 128)
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_r5o04"]
+texture = ExtResource("3_aypp7")
+texture_region_size = Vector2i(256, 256)
 0:0/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_nmhbr"]
-tile_size = Vector2i(128, 128)
+tile_size = Vector2i(256, 256)
 sources/0 = SubResource("TileSetAtlasSource_ccndg")
-sources/1 = SubResource("TileSetAtlasSource_1snhl")
+sources/1 = SubResource("TileSetAtlasSource_r5o04")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k5lcv"]
+texture = ExtResource("3_8mqyp")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_w1x8j"]
+tile_size = Vector2i(256, 256)
+sources/0 = SubResource("TileSetAtlasSource_k5lcv")
 
 [sub_resource type="FontVariation" id="FontVariation_kn5p3"]
 base_font = ExtResource("5_21uqv")
@@ -32,12 +40,12 @@ variation_opentype = {
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8mqyp"]
 texture = ExtResource("5_e2tfc")
-texture_region_size = Vector2i(128, 160)
+texture_region_size = Vector2i(256, 304)
 0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, 16)
+0:0/0/texture_origin = Vector2i(0, 24)
 
 [sub_resource type="TileSet" id="TileSet_ccndg"]
-tile_size = Vector2i(128, 128)
+tile_size = Vector2i(256, 256)
 sources/0 = SubResource("TileSetAtlasSource_8mqyp")
 
 [node name="GameScreen" type="Control"]
@@ -47,10 +55,16 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="GameBoard" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 0
+offset_left = 772.0
+offset_top = 320.0
+offset_right = 772.0
+offset_bottom = 320.0
+mouse_filter = 2
 script = ExtResource("1_qm6xo")
 grid_string = " 2                 2
              2      
@@ -64,9 +78,14 @@ grid_string = " 2                 2
 
 [node name="TileMapGround" type="TileMapLayer" parent="GameBoard"]
 unique_name_in_owner = true
-scale = Vector2(0.5, 0.5)
-tile_map_data = PackedByteArray("AAABAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAEAAAAAAAAAAAACAAEAAAAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAAAAAAAAAAAGAAEAAAAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAACAAIAAAAAAAAAAAADAAIAAAAAAAAAAAAEAAIAAAAAAAAAAAAFAAIAAAAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAAAAAAAAAAACAAQAAAAAAAAAAAADAAQAAAAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAAAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAAAAAAAAAAAIAAQAAAAAAAAAAAABAAUAAAAAAAAAAAACAAUAAAAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAAAAAAAAAAAGAAUAAAAAAAAAAAAIAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAABAAYAAAAAAAAAAAADAAYAAAAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAAAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAAAAAAAAAAAIAAYAAAAAAAAAAAAAAAcAAAAAAAAAAAABAAcAAAAAAAAAAAACAAcAAAAAAAAAAAADAAcAAAAAAAAAAAAFAAcAAAAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAABAAgAAAAAAAAAAAACAAgAAAAAAAAAAAADAAgAAAAAAAAAAAAEAAgAAAAAAAAAAAAFAAgAAAAAAAAAAAAGAAgAAAAAAAAAAAAHAAgAAAAAAAAAAAAIAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAFAAEAAAAAAAAAAAABAAIAAAAAAAAAAAAFAAMAAAAAAAAAAAAIAAMAAAAAAAAAAAAAAAUAAAAAAAAAAAAFAAUAAAAAAAAAAAAHAAUAAAAAAAAAAAACAAYAAAAAAAAAAAAEAAcAAAAAAAAAAAAGAAcAAAAAAAAAAAAIAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAJAAEAAAAAAAAAAAAJAAIAAAAAAAAAAAAJAAMAAAAAAAAAAAAJAAQAAAAAAAAAAAAJAAUAAAAAAAAAAAAJAAYAAAAAAAAAAAAJAAcAAAAAAAAAAAAJAAgAAAAAAAAAAAA=")
+scale = Vector2(0.25, 0.25)
+tile_map_data = PackedByteArray("AAAAAAEAAQAAAAAAAAABAAEAAAAAAAAAAAACAAEAAQAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAQAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAQAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAQAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAQAAAAAAAAACAAIAAAAAAAAAAAADAAIAAQAAAAAAAAAEAAIAAAAAAAAAAAAFAAIAAQAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAQAAAAAAAAAIAAIAAAAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAAAAAAAAAAACAAMAAQAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAQAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAQAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAQAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAQAAAAAAAAACAAQAAAAAAAAAAAADAAQAAQAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAQAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAQAAAAAAAAAIAAQAAAAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAAAAAAAAAAACAAUAAQAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAQAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAQAAAAAAAAAHAAUAAAAAAAAAAAAIAAUAAQAAAAAAAAAAAAYAAAAAAAAAAAABAAYAAQAAAAAAAAACAAYAAAAAAAAAAAADAAYAAQAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAQAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAQAAAAAAAAAIAAYAAAAAAAAAAAAAAAcAAQAAAAAAAAABAAcAAAAAAAAAAAACAAcAAQAAAAAAAAADAAcAAAAAAAAAAAAEAAcAAQAAAAAAAAAFAAcAAAAAAAAAAAAGAAcAAQAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAQAAAAAAAAAAAAgAAAAAAAAAAAABAAgAAQAAAAAAAAACAAgAAAAAAAAAAAADAAgAAQAAAAAAAAAEAAgAAAAAAAAAAAAFAAgAAQAAAAAAAAAGAAgAAAAAAAAAAAAHAAgAAQAAAAAAAAAIAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAACAAAAAAAAAAAAAAADAAAAAQAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAQAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAQAAAAAAAAAIAAAAAAAAAAAAAAAJAAAAAQAAAAAAAAAJAAEAAAAAAAAAAAAJAAIAAQAAAAAAAAAJAAMAAAAAAAAAAAAJAAQAAQAAAAAAAAAJAAUAAAAAAAAAAAAJAAYAAQAAAAAAAAAJAAcAAAAAAAAAAAAJAAgAAQAAAAAAAAA=")
 tile_set = SubResource("TileSet_nmhbr")
+
+[node name="TileMapIsland" type="TileMapLayer" parent="GameBoard"]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+tile_set = SubResource("TileSet_w1x8j")
 
 [node name="TileMapClues" type="Node2D" parent="GameBoard"]
 unique_name_in_owner = true
@@ -74,8 +93,8 @@ scale = Vector2(0.5, 0.5)
 script = ExtResource("3_e2tfc")
 tile_size = Vector2i(128, 128)
 font = SubResource("FontVariation_kn5p3")
-font_size = 140
-font_padding = 22.5
+font_size = 100
+font_padding = 34.0
 color = Color(0.11764706, 0.654902, 0.88235295, 1)
 clues_by_cell = Dictionary[Vector2i, int]({
 Vector2i(0, 0): 2,
@@ -96,5 +115,7 @@ Vector2i(9, 0): 2
 
 [node name="TileMapObject" type="TileMapLayer" parent="GameBoard"]
 unique_name_in_owner = true
-scale = Vector2(0.5, 0.5)
+y_sort_enabled = true
+scale = Vector2(0.25, 0.25)
 tile_set = SubResource("TileSet_ccndg")
+y_sort_origin = 60
