@@ -41,10 +41,20 @@ func _draw() -> void:
 				tile_size.x / clue_scale.x, font_size, color)
 
 
+func clear() -> void:
+	clues_by_cell.clear()
+	notify_property_list_changed()
+	queue_redraw()
+
+
 func erase_cell(cell: Vector2i) -> void:
 	clues_by_cell.erase(cell)
 	notify_property_list_changed()
 	queue_redraw()
+
+
+func get_cell_clue(cell: Vector2i) -> int:
+	return clues_by_cell.get(cell, -1)
 
 
 func set_cell(cell: Vector2i, value: int) -> void:
