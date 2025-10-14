@@ -13,51 +13,51 @@ const CELL_WALL = NurikabeUtils.CELL_WALL
 
 func _ready() -> void:
 	if not Engine.is_editor_hint():
-		for cell: Vector2i in %TileMapObject.get_used_cells():
-			%SteppableTiles.set_cell(cell)
+		for cell_pos: Vector2i in %TileMapObject.get_used_cells():
+			%SteppableTiles.set_cell(cell_pos)
 
 
 func global_to_map(global_point: Vector2) -> Vector2i:
 	return %TileMapGround.local_to_map(%TileMapGround.to_local(global_point))
 
 
-func set_cell_string(cell: Vector2i, string: String) -> void:
-	if string.is_valid_int():
-		%TileMapClues.set_cell(cell, int(string))
+func set_cell_string(cell_pos: Vector2i, value: String) -> void:
+	if value.is_valid_int():
+		%TileMapClues.set_cell(cell_pos, int(value))
 	else:
-		%TileMapClues.erase_cell(cell)
+		%TileMapClues.erase_cell(cell_pos)
 	
-	var object_id: int = 0 if string == "##" else -1
-	%TileMapObject.set_cell(cell, object_id, Vector2.ZERO)
+	var object_id: int = 0 if value == CELL_WALL else -1
+	%TileMapObject.set_cell(cell_pos, object_id, Vector2.ZERO)
 	
 	if not Engine.is_editor_hint():
 		if object_id == 0:
-			%SteppableTiles.set_cell(cell)
+			%SteppableTiles.set_cell(cell_pos)
 		else:
-			%SteppableTiles.erase_cell(cell)
+			%SteppableTiles.erase_cell(cell_pos)
 	
-	var ground_id: int = 0 if (cell.x + cell.y) % 2 == 0 else 1
-	%TileMapGround.set_cell(cell, ground_id, Vector2.ZERO)
+	var ground_id: int = 0 if (cell_pos.x + cell_pos.y) % 2 == 0 else 1
+	%TileMapGround.set_cell(cell_pos, ground_id, Vector2.ZERO)
 	
-	var island_id: int = 0 if string == "." else -1
-	%TileMapIsland.set_cell(cell, island_id, Vector2.ZERO)
+	var island_id: int = 0 if value == CELL_ISLAND else -1
+	%TileMapIsland.set_cell(cell_pos, island_id, Vector2.ZERO)
 	
-	%CursorableArea.set_cell(cell)
+	%CursorableArea.set_cell(cell_pos)
 
 
-func get_cell_string(cell: Vector2i) -> String:
+func get_cell_string(cell_pos: Vector2i) -> String:
 	var result: String = CELL_INVALID
 	
-	if %TileMapGround.get_cell_source_id(cell) != -1:
+	if %TileMapGround.get_cell_source_id(cell_pos) != -1:
 		result = CELL_EMPTY
 	
-	if %TileMapObject.get_cell_source_id(cell) == 0:
+	if %TileMapObject.get_cell_source_id(cell_pos) == 0:
 		result = CELL_WALL
 	
-	if not result and %TileMapClues.get_cell_clue(cell) != -1:
-		result = str(%TileMapClues.get_cell_clue(cell))
+	if not result and %TileMapClues.get_cell_clue(cell_pos) != -1:
+		result = str(%TileMapClues.get_cell_clue(cell_pos))
 	
-	if not result and %TileMapIsland.get_cell_source_id(cell) == 0:
+	if not result and %TileMapIsland.get_cell_source_id(cell_pos) == 0:
 		result = CELL_ISLAND
 	
 	return result
@@ -67,11 +67,11 @@ func get_global_cursorable_rect() -> Rect2:
 	return %CursorableArea.get_global_transform() * %CursorableArea.cursorable_rect
 
 
-func surround_island(cell: Vector2i) -> void:
+func surround_island(cell_pos: Vector2i) -> void:
 	var clue_cells: Dictionary[Vector2i, bool] = {}
 	var island_cells: Dictionary[Vector2i, bool] = {}
 	var ignored_cells: Dictionary[Vector2i, bool] = {}
-	var cells_to_check: Dictionary[Vector2i, bool] = {cell: true}
+	var cells_to_check: Dictionary[Vector2i, bool] = {cell_pos: true}
 	while cells_to_check.size() > 0:
 		var next_cell: Vector2i = cells_to_check.keys()[0]
 		cells_to_check.erase(next_cell)
@@ -116,10 +116,10 @@ func _import_grid() -> void:
 			set_cell_string(Vector2i(x, y), row_string.substr(x * 2, 2).strip_edges())
 
 
-func _erase_cell(cell: Vector2i) -> void:
-	%TileMapGround.erase_cell(cell)
-	%TileMapIsland.erase_cell(cell)
-	%TileMapClues.erase_cell(cell)
-	%TileMapObject.erase_cell(cell)
+func _erase_cell(cell_pos: Vector2i) -> void:
+	%TileMapGround.erase_cell(cell_pos)
+	%TileMapIsland.erase_cell(cell_pos)
+	%TileMapClues.erase_cell(cell_pos)
+	%TileMapObject.erase_cell(cell_pos)
 	if not Engine.is_editor_hint():
-		%SteppableTiles.erase_cell(cell)
+		%SteppableTiles.erase_cell(cell_pos)
