@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://ciprhfck7rdkb" path="res://assets/main/nurikabe/tile_wall.png" id="5_e2tfc"]
 [ext_resource type="PackedScene" uid="uid://dbd72lfv4xjdr" path="res://src/main/player/player.tscn" id="7_21uqv"]
 [ext_resource type="Script" uid="uid://bo2x55tn0h5yl" path="res://src/main/world/steppable_tiles.gd" id="7_kn5p3"]
-[ext_resource type="PackedScene" path="res://src/main/nurikabe/cursorable_area.tscn" id="7_n1qax"]
+[ext_resource type="PackedScene" uid="uid://dn3d3m8il6qqm" path="res://src/main/nurikabe/cursorable_area.tscn" id="7_n1qax"]
 [ext_resource type="PackedScene" uid="uid://bjksq0yxrx6cq" path="res://src/main/nurikabe/nurikabe_cursor.tscn" id="8_aypp7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ccndg"]
