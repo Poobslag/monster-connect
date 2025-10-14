@@ -58,3 +58,100 @@ func surround_island(cell_pos: Vector2i) -> Array[Dictionary]:
 				changes.append({"pos": ignored_cell, "value": CELL_WALL})
 	
 	return changes
+
+
+func validate() -> ValidationResult:
+	var result: ValidationResult = ValidationResult.new()
+	var island_groups: Array[Array] = find_island_groups()
+	var wall_groups: Array[Array] = find_wall_groups()
+	_check_clues(result, island_groups)
+	_check_pools(result)
+	_check_split_walls(result, wall_groups)
+	return result
+
+
+func find_island_groups() -> Array[Array]:
+	return _find_groups(func(value: String) -> bool:
+		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+
+
+func find_wall_groups() -> Array[Array]:
+	return _find_groups(func(value: String) -> bool:
+		return value in [CELL_WALL])
+
+
+func _check_clues(result: ValidationResult, island_groups: Array[Array]) -> ValidationResult:
+	for group: Array[Vector2i] in island_groups:
+		var clue_cells: Array[Vector2i] = []
+		for cell: Vector2i in group:
+			if get_cell_string(cell).is_valid_int():
+				clue_cells.append(cell)
+		if clue_cells.size() == 0:
+			result.unclued_islands.append(group.front())
+		if clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() != group.size():
+			result.wrong_size.append(clue_cells.front())
+		if clue_cells.size() >= 2:
+			for clue_cell: Vector2i in clue_cells:
+				result.joined_islands.append(clue_cell)
+	return result
+
+
+func _check_pools(result: ValidationResult) -> ValidationResult:
+	for next_cell: Vector2i in cells:
+		if cells.get(next_cell) == CELL_WALL \
+				and cells.get(next_cell + Vector2i.RIGHT) == CELL_WALL \
+				and cells.get(next_cell + Vector2i.DOWN) == CELL_WALL \
+				and cells.get(next_cell + Vector2i(1, 1)) == CELL_WALL:
+			result.pools.append(next_cell)
+	return result
+
+
+func _check_split_walls(result: ValidationResult, wall_groups: Array[Array]) -> ValidationResult:
+	if wall_groups.size() >= 2:
+		for group: Array[Vector2i] in wall_groups:
+			result.split_walls.append(group.front())
+	return result
+
+
+func _find_groups(filter_func: Callable) -> Array[Array]:
+	var remaining_cells: Dictionary[Vector2i, bool] = {}
+	for next_cell: Vector2i in cells:
+		if filter_func.call(cells[next_cell]):
+			remaining_cells[next_cell] = true
+	
+	var groups: Array[Array] = []
+	var queue: Array[Vector2i] = []
+	while not remaining_cells.is_empty() or not queue.is_empty():
+		var next_cell: Vector2i
+		if queue.is_empty():
+			# start a new group
+			next_cell = remaining_cells.keys().front()
+			remaining_cells.erase(next_cell)
+			groups.append([])
+		else:
+			# pop the next cell from the queue
+			next_cell = queue.pop_front()
+		
+		# append the next cell to this group
+		groups.back().append(next_cell)
+		
+		# recurse to neighboring cells
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor_cell: Vector2i = next_cell + neighbor_dir
+			if neighbor_cell in remaining_cells:
+				queue.push_back(neighbor_cell)
+				remaining_cells.erase(neighbor_cell)
+	
+	return groups
+
+
+class ValidationResult:
+	var joined_islands: Array[Vector2i] = []
+	var pools: Array[Vector2i] = []
+	var split_walls: Array[Vector2i] = []
+	var unclued_islands: Array[Vector2i] = []
+	var wrong_size: Array[Vector2i] = []
+	var error_count: int:
+		get:
+			return joined_islands.size() + pools.size() + split_walls.size() \
+					+ unclued_islands.size() + wrong_size.size()
