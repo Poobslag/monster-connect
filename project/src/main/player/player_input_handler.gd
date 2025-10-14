@@ -97,7 +97,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		var cell: Vector2i = player.current_game_board.global_to_map(event.global_position)
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
 		if current_cell_string == CELL_ISLAND or current_cell_string.is_valid_int():
-			player.current_game_board.surround_island(cell)
+			var changes: Array[Dictionary] = player.current_game_board.to_model().surround_island(cell)
+			player.current_game_board.set_cell_strings(changes)
 
 
 func update() -> void:
