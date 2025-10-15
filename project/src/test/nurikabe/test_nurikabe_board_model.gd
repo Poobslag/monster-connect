@@ -121,7 +121,30 @@ func test_joined_islands_two() -> void:
 		"  ##  ",
 		"      ",
 	]
-	assert_rules_invalid({"joined_islands": [Vector2i(0, 0), Vector2i(2, 0)]})
+	assert_rules_invalid({"joined_islands": [
+		Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2),
+		Vector2i(1, 2),
+		Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)]})
+	
+	grid = [
+		" 3## 3",
+		" .## .",
+		" .   .",
+	]
+	assert_rules_invalid({"joined_islands": [
+		Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2),
+		Vector2i(1, 2),
+		Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)]})
+	
+	grid = [
+		" 3## 3",
+		" .## .",
+		" . . .",
+	]
+	assert_rules_invalid({"joined_islands_unfixable": [
+		Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2),
+		Vector2i(1, 2),
+		Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)]})
 
 
 func test_joined_islands_three() -> void:
@@ -130,7 +153,29 @@ func test_joined_islands_three() -> void:
 		"     3    ",
 		"         3",
 	]
-	assert_rules_invalid({"joined_islands": [Vector2i(0, 0), Vector2i(2, 1), Vector2i(4, 2)]})
+	assert_rules_invalid({"joined_islands": [
+		Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2),
+		Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2),
+		Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2),
+		Vector2i(3, 0), Vector2i(3, 1), Vector2i(3, 2),
+		Vector2i(4, 0), Vector2i(4, 1), Vector2i(4, 2)]})
+	
+	grid = [
+		" 3        ",
+		" . . 3    ",
+		"         3",
+	]
+	assert_rules_invalid({
+		"joined_islands": [
+			Vector2i(0, 2),
+			Vector2i(1, 0), Vector2i(1, 2),
+			Vector2i(2, 0), Vector2i(2, 2),
+			Vector2i(3, 0), Vector2i(3, 1), Vector2i(3, 2),
+			Vector2i(4, 0), Vector2i(4, 1), Vector2i(4, 2)],
+		"joined_islands_unfixable": [
+			Vector2i(0, 0), Vector2i(0, 1),
+			Vector2i(1, 1),
+			Vector2i(2, 1)]})
 
 
 func test_pools_ok() -> void:
@@ -148,7 +193,7 @@ func test_pools_one() -> void:
 		"####  ",
 		"####  ",
 	]
-	assert_rules_invalid({"pools": [Vector2i(0, 1)]})
+	assert_rules_invalid({"pools": [Vector2i(0, 1), Vector2i(0, 2), Vector2i(1, 1), Vector2i(1, 2)]})
 
 
 func test_pools_two() -> void:
@@ -157,7 +202,10 @@ func test_pools_two() -> void:
 		"######",
 		"######",
 	]
-	assert_rules_invalid({"pools": [Vector2i(0, 1), Vector2i(1, 1)]})
+	assert_rules_invalid({"pools": [
+		Vector2i(0, 1), Vector2i(0, 2),
+		Vector2i(1, 1), Vector2i(1, 2),
+		Vector2i(2, 1), Vector2i(2, 2)]})
 
 
 func test_split_walls_ok() -> void:
@@ -172,10 +220,24 @@ func test_split_walls_ok() -> void:
 func test_split_walls_two() -> void:
 	grid = [
 		"  ####",
-		" 5    ",
-		"  ####",
+		" 6    ",
+		"    ##",
 	]
-	assert_rules_invalid({"split_walls": [Vector2i(1, 0), Vector2i(1, 2)]})
+	assert_rules_invalid({"split_walls": [Vector2i(2, 2)]})
+	
+	grid = [
+		"  ####",
+		" 6   .",
+		"    ##",
+	]
+	assert_rules_invalid({"split_walls": [Vector2i(2, 2)]})
+	
+	grid = [
+		"  ####",
+		" 6 . .",
+		"    ##",
+	]
+	assert_rules_invalid({"split_walls_unfixable": [Vector2i(2, 2)]})
 
 
 func test_split_walls_three() -> void:
@@ -184,7 +246,23 @@ func test_split_walls_three() -> void:
 		"  ##  ",
 		" 3  ##",
 	]
-	assert_rules_invalid({"split_walls": [Vector2i(0, 0), Vector2i(1, 1), Vector2i(2, 2)]})
+	assert_rules_invalid({"split_walls": [Vector2i(1, 1), Vector2i(2, 2)]})
+	
+	grid = [
+		"## . 3",
+		" .## .",
+		" 3 .##",
+	]
+	assert_rules_invalid({"split_walls_unfixable": [Vector2i(1, 1), Vector2i(2, 2)]})
+	
+	grid = [
+		"##   3",
+		"  ## .",
+		" 3 .##",
+	]
+	assert_rules_invalid({
+		"split_walls": [Vector2i(1, 1)],
+		"split_walls_unfixable": [Vector2i(2, 2)]})
 
 
 func test_unclued_islands_bad() -> void:
@@ -211,7 +289,21 @@ func test_wrong_size_one() -> void:
 		"##    ",
 		"######",
 	]
-	assert_rules_invalid({"wrong_size": [Vector2i(2, 0)]})
+	assert_rules_invalid({"wrong_size": [Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0), Vector2i(2, 1)]})
+	
+	grid = [
+		"##   3",
+		"######",
+	]
+	assert_rules_invalid({"wrong_size_unfixable": [Vector2i(1, 0), Vector2i(2, 0)]})
+	
+	grid = [
+		"## . 3",
+		"## . .",
+		"######",
+	]
+	assert_rules_invalid({"wrong_size_unfixable": [
+		Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0), Vector2i(2, 1)]})
 
 
 func test_wrong_size_many() -> void:
@@ -220,7 +312,7 @@ func test_wrong_size_many() -> void:
 		"######",
 		" 3## 4",
 	]
-	assert_rules_invalid({"wrong_size": [Vector2i(2, 0), Vector2i(0, 2), Vector2i(2, 2)]})
+	assert_rules_invalid({"wrong_size_unfixable": [Vector2i(0, 2), Vector2i(2, 0), Vector2i(2, 2)]})
 
 
 func assert_rules_valid() -> void:
@@ -256,9 +348,12 @@ func init_model() -> NurikabeBoardModel:
 func _assert_rules(expected_result_dict: Dictionary) -> void:
 	var model: NurikabeBoardModel = init_model()
 	var validation_result: NurikabeBoardModel.ValidationResult = model.validate()
-	
-	for key: String in ["joined_islands", "pools", "split_walls", "unclued_islands", "wrong_size"]:
-		assert_eq(expected_result_dict.get(key, []), validation_result.get(key), "Incorrect %s." % [key])
+	for key: String in ["joined_islands", "joined_islands_unfixable",
+			"pools", "split_walls", "split_walls_unfixable",
+			"unclued_islands", "wrong_size", "wrong_size_unfixable"]:
+		var validation_result_value: Array[Vector2i] = validation_result.get(key)
+		validation_result_value.sort()
+		assert_eq(expected_result_dict.get(key, []), validation_result_value, "Incorrect %s." % [key])
 
 
 func _assert_group_sizes(got_groups: Array[Array], expected: Array[int], group_name: String) -> void:
