@@ -64,9 +64,12 @@ func validate() -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
 	var island_groups: Array[Array] = find_island_groups()
 	var wall_groups: Array[Array] = find_wall_groups()
-	_check_clues(result, island_groups)
+	var potential_wall_groups: Array[Array] = find_potential_wall_groups()
+	var potential_island_groups: Array[Array] = find_potential_island_groups()
+	_check_clues(result, island_groups, potential_island_groups)
 	_check_pools(result)
-	_check_split_walls(result, wall_groups)
+	_check_split_walls(result, wall_groups, potential_wall_groups)
+	
 	return result
 
 
@@ -80,36 +83,89 @@ func find_wall_groups() -> Array[Array]:
 		return value in [CELL_WALL])
 
 
-func _check_clues(result: ValidationResult, island_groups: Array[Array]) -> ValidationResult:
+func find_potential_wall_groups() -> Array[Array]:
+	return _find_groups(func(value: String) -> bool:
+		return value in [CELL_EMPTY, CELL_WALL])
+
+
+func find_potential_island_groups() -> Array[Array]:
+	return _find_groups(func(value: String) -> bool:
+		return value.is_valid_int() or value in [CELL_ISLAND])
+
+
+func _check_clues(result: ValidationResult, island_groups: Array[Array],
+		potential_island_groups: Array[Array]) -> ValidationResult:
 	for group: Array[Vector2i] in island_groups:
 		var clue_cells: Array[Vector2i] = []
 		for cell: Vector2i in group:
 			if get_cell_string(cell).is_valid_int():
 				clue_cells.append(cell)
 		if clue_cells.size() == 0:
-			result.unclued_islands.append(group.front())
-		if clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() != group.size():
-			result.wrong_size.append(clue_cells.front())
+			result.unclued_islands.append_array(group)
+		if clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() < group.size():
+			result.wrong_size.append_array(group)
+		elif clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() > group.size():
+			# unfixable wrong size -- the group is too small even if all blank cells are islands
+			result.wrong_size_unfixable.append_array(group)
 		if clue_cells.size() >= 2:
-			for clue_cell: Vector2i in clue_cells:
-				result.joined_islands.append(clue_cell)
+			result.joined_islands.append_array(group)
+	
+	for group: Array[Vector2i] in potential_island_groups:
+		var clue_cells: Array[Vector2i] = []
+		for cell: Vector2i in group:
+			if get_cell_string(cell).is_valid_int():
+				clue_cells.append(cell)
+		if clue_cells.size() >= 2:
+			# unfixable joined islands -- they are joined even if all blank cells are walls
+			result.joined_islands_unfixable.append_array(group)
+			result.joined_islands.assign(Utils.subtract(result.joined_islands, group))
+		if clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() < group.size():
+			# unfixable wrong size -- the group is too big even if all blank cells are walls
+			result.wrong_size_unfixable.append_array(group)
+			result.wrong_size.assign(Utils.subtract(result.wrong_size, group))
+	
 	return result
 
 
 func _check_pools(result: ValidationResult) -> ValidationResult:
+	var pool_cells: Dictionary[Vector2i, bool] = {}
 	for next_cell: Vector2i in cells:
 		if cells.get(next_cell) == CELL_WALL \
 				and cells.get(next_cell + Vector2i.RIGHT) == CELL_WALL \
 				and cells.get(next_cell + Vector2i.DOWN) == CELL_WALL \
 				and cells.get(next_cell + Vector2i(1, 1)) == CELL_WALL:
-			result.pools.append(next_cell)
+			pool_cells[next_cell] = true
+			pool_cells[next_cell + Vector2i.RIGHT] = true
+			pool_cells[next_cell + Vector2i.DOWN] = true
+			pool_cells[next_cell + Vector2i(1, 1)] = true
+	result.pools.append_array(pool_cells.keys())
 	return result
 
 
-func _check_split_walls(result: ValidationResult, wall_groups: Array[Array]) -> ValidationResult:
+func _check_split_walls(result: ValidationResult, wall_groups: Array[Array],
+		potential_wall_groups: Array[Array]) -> ValidationResult:
 	if wall_groups.size() >= 2:
+		var largest_group: Array[Vector2i] = wall_groups[0]
 		for group: Array[Vector2i] in wall_groups:
-			result.split_walls.append(group.front())
+			if group.size() > largest_group.size():
+				largest_group = group
+		for group: Array[Vector2i] in wall_groups:
+			if group == largest_group:
+				continue
+			result.split_walls.append_array(group)
+	
+	if potential_wall_groups.size() >= 2:
+		var largest_group: Array[Vector2i] = potential_wall_groups[0]
+		for group: Array[Vector2i] in potential_wall_groups:
+			if group.size() > largest_group.size():
+				largest_group = group
+		for group: Array[Vector2i] in potential_wall_groups:
+			if group == largest_group:
+				continue
+			var unfixable_wall_cells: Array[Vector2i] = []
+			unfixable_wall_cells.assign(Utils.intersection(group, result.split_walls))
+			result.split_walls_unfixable.append_array(unfixable_wall_cells)
+			result.split_walls.assign(Utils.subtract(result.split_walls, unfixable_wall_cells))
 	return result
 
 
@@ -127,7 +183,7 @@ func _find_groups(filter_func: Callable) -> Array[Array]:
 			# start a new group
 			next_cell = remaining_cells.keys().front()
 			remaining_cells.erase(next_cell)
-			groups.append([])
+			groups.append([] as Array[Vector2i])
 		else:
 			# pop the next cell from the queue
 			next_cell = queue.pop_front()
@@ -147,11 +203,25 @@ func _find_groups(filter_func: Callable) -> Array[Array]:
 
 class ValidationResult:
 	var joined_islands: Array[Vector2i] = []
+	var joined_islands_unfixable: Array[Vector2i] = []
 	var pools: Array[Vector2i] = []
 	var split_walls: Array[Vector2i] = []
+	var split_walls_unfixable: Array[Vector2i] = []
 	var unclued_islands: Array[Vector2i] = []
 	var wrong_size: Array[Vector2i] = []
+	var wrong_size_unfixable: Array[Vector2i] = []
 	var error_count: int:
 		get:
-			return joined_islands.size() + pools.size() + split_walls.size() \
-					+ unclued_islands.size() + wrong_size.size()
+			return joined_islands.size() + joined_islands_unfixable.size() \
+					+ pools.size() + split_walls.size() + split_walls_unfixable.size() \
+					+ unclued_islands.size() + wrong_size.size() + + wrong_size_unfixable.size()
+	
+	func _to_string() -> String:
+		return "[error_count=%s;" \
+				+ " joined_islands=%s; joined_islands_unfixable," \
+				+ " pools=%s; split_walls=%s; split_walls_unfixable=%s;" \
+				+ " unclued_islands=%s; wrong_size=%s; wrong_size_unfixable=%s]" \
+				% [error_count,
+				joined_islands, joined_islands_unfixable,
+				pools, split_walls, split_walls_unfixable,
+				unclued_islands, wrong_size, wrong_size_unfixable]
