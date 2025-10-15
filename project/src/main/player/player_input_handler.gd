@@ -65,7 +65,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	# pressing the left mouse button on a puzzle
 	if event is InputEventMouseButton \
 			and event.button_index == MOUSE_BUTTON_LEFT and event.pressed \
-			and not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) \
 			and player.current_game_board is NurikabeGameBoard:
 		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
@@ -74,11 +73,13 @@ func _unhandled_input(event: InputEvent) -> void:
 				player.current_game_board.set_cell_string(cell, CELL_EMPTY)
 			CELL_EMPTY, CELL_ISLAND:
 				player.current_game_board.set_cell_string(cell, CELL_WALL)
+		if current_cell_string.is_valid_int():
+			var changes: Array[Dictionary] = player.current_game_board.to_model().surround_island(cell)
+			player.current_game_board.set_cell_strings(changes)
 	
 	# pressing the right mouse button on a puzzle
 	if event is InputEventMouseButton \
 			and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed \
-			and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) \
 			and player.current_game_board is NurikabeGameBoard:
 		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
@@ -87,18 +88,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				player.current_game_board.set_cell_string(cell, CELL_EMPTY)
 			CELL_EMPTY, CELL_WALL:
 				player.current_game_board.set_cell_string(cell, CELL_ISLAND)
-	
-	# pressing both mouse buttons
-	if event is InputEventMouseButton \
-			and (event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT] and event.pressed) \
-			and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) \
-			and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) \
-			and player.current_game_board is NurikabeGameBoard:
-		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
-		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
-		if current_cell_string == CELL_ISLAND or current_cell_string.is_valid_int():
-			var changes: Array[Dictionary] = player.current_game_board.to_model().surround_island(cell)
-			player.current_game_board.set_cell_strings(changes)
 
 
 func update() -> void:
