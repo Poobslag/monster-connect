@@ -127,6 +127,7 @@ y_sort_origin = 60
 
 [node name="CursorableArea" parent="GameBoard" instance=ExtResource("7_n1qax")]
 unique_name_in_owner = true
+visible = false
 scale = Vector2(0.25, 0.25)
 cursor_scene = ExtResource("8_aypp7")
 tile_size = Vector2(256, 256)
