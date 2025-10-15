@@ -13,7 +13,7 @@ const CELL_WALL = NurikabeUtils.CELL_WALL
 
 func _ready() -> void:
 	if not Engine.is_editor_hint():
-		for cell_pos: Vector2i in %TileMapObject.get_used_cells():
+		for cell_pos: Vector2i in %TileMapWall.get_used_cells():
 			%SteppableTiles.set_cell(cell_pos)
 
 
@@ -32,12 +32,12 @@ func set_cell_strings(changes: Array[Dictionary]) -> void:
 
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 	if value.is_valid_int():
-		%TileMapClues.set_cell(cell_pos, int(value))
+		%TileMapClue.set_cell(cell_pos, int(value))
 	else:
-		%TileMapClues.erase_cell(cell_pos)
+		%TileMapClue.erase_cell(cell_pos)
 	
 	var object_id: int = 0 if value == CELL_WALL else -1
-	%TileMapObject.set_cell(cell_pos, object_id, Vector2.ZERO)
+	%TileMapWall.set_cell(cell_pos, object_id, Vector2.ZERO)
 	
 	if not Engine.is_editor_hint():
 		if object_id == 0:
@@ -60,11 +60,11 @@ func get_cell_string(cell_pos: Vector2i) -> String:
 	if %TileMapGround.get_cell_source_id(cell_pos) != -1:
 		result = CELL_EMPTY
 	
-	if %TileMapObject.get_cell_source_id(cell_pos) == 0:
+	if %TileMapWall.get_cell_source_id(cell_pos) == 0:
 		result = CELL_WALL
 	
-	if not result and %TileMapClues.get_cell_clue(cell_pos) != -1:
-		result = str(%TileMapClues.get_cell_clue(cell_pos))
+	if not result and %TileMapClue.get_cell_clue(cell_pos) != -1:
+		result = str(%TileMapClue.get_cell_clue(cell_pos))
 	
 	if not result and %TileMapIsland.get_cell_source_id(cell_pos) == 0:
 		result = CELL_ISLAND
@@ -84,8 +84,8 @@ func to_model() -> NurikabeBoardModel:
 
 func _import_grid() -> void:
 	%TileMapGround.clear()
-	%TileMapClues.clear()
-	%TileMapObject.clear()
+	%TileMapClue.clear()
+	%TileMapWall.clear()
 	if not Engine.is_editor_hint():
 		%SteppableTiles.clear()
 	%CursorableArea.clear()
@@ -100,7 +100,7 @@ func _import_grid() -> void:
 func _erase_cell(cell_pos: Vector2i) -> void:
 	%TileMapGround.erase_cell(cell_pos)
 	%TileMapIsland.erase_cell(cell_pos)
-	%TileMapClues.erase_cell(cell_pos)
-	%TileMapObject.erase_cell(cell_pos)
+	%TileMapClue.erase_cell(cell_pos)
+	%TileMapWall.erase_cell(cell_pos)
 	if not Engine.is_editor_hint():
 		%SteppableTiles.erase_cell(cell_pos)
