@@ -30,7 +30,6 @@ func _process(_delta: float) -> void:
 			cursorable_rect.position + Vector2(cursorable_rect.size.x, cursorable_rect.size.y),
 			cursorable_rect.position + Vector2(0, cursorable_rect.size.y),
 		])
-		$CollisionPolygon2D.visible = cursorable_rect.size > Vector2.ZERO
 		_dirty = false
 	
 	for area: Area2D in _cursors_by_area:
