@@ -21,11 +21,6 @@ extends Node2D
 		font_padding = value
 		queue_redraw()
 
-@export var color: Color = Color.BLACK:
-	set(value):
-		color = value
-		queue_redraw()
-
 @export var clues_by_cell: Dictionary[Vector2i, int] = {}:
 	set(value):
 		clues_by_cell = value
@@ -38,7 +33,7 @@ func _draw() -> void:
 		draw_set_transform(Vector2(tile_size) * (Vector2(cell) + Vector2.DOWN) + Vector2.UP * font_padding,
 				0.0, clue_scale)
 		draw_string(font, Vector2.ZERO, str(clue), HORIZONTAL_ALIGNMENT_CENTER,
-				tile_size.x / clue_scale.x, font_size, color)
+				tile_size.x / clue_scale.x, font_size, NurikabeUtils.CLUE_COLOR)
 
 
 func clear() -> void:

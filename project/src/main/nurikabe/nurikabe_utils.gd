@@ -11,3 +11,5 @@ const CELL_EMPTY := ""
 const CELL_INVALID := "!"
 const CELL_ISLAND := "."
 const CELL_WALL := "##"
+
+const CLUE_COLOR: Color = Color("666666")

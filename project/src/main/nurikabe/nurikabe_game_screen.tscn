@@ -101,7 +101,6 @@ tile_size = Vector2i(128, 128)
 font = SubResource("FontVariation_kn5p3")
 font_size = 100
 font_padding = 34.0
-color = Color(0.11764706, 0.654902, 0.88235295, 1)
 clues_by_cell = Dictionary[Vector2i, int]({
 Vector2i(0, 0): 2,
 Vector2i(0, 6): 2,
