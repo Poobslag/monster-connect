@@ -26,14 +26,34 @@ extends Node2D
 		clues_by_cell = value
 		queue_redraw()
 
+@export var error_cells: Dictionary[Vector2i, bool] = {}:
+	set(value):
+		error_cells = value
+		queue_redraw()
+
+@export var lowlight_cells: Dictionary[Vector2i, bool] = {}:
+	set(value):
+		lowlight_cells = value
+		queue_redraw()
+
+
 func _draw() -> void:
 	for cell: Vector2i in clues_by_cell:
 		var clue: int = clues_by_cell[cell]
 		var clue_scale := Vector2.ONE if clue <= 9 else Vector2(0.66667, 1)
 		draw_set_transform(Vector2(tile_size) * (Vector2(cell) + Vector2.DOWN) + Vector2.UP * font_padding,
 				0.0, clue_scale)
-		draw_string(font, Vector2.ZERO, str(clue), HORIZONTAL_ALIGNMENT_CENTER,
-				tile_size.x / clue_scale.x, font_size, NurikabeUtils.CLUE_COLOR)
+		if cell in error_cells:
+			draw_string_outline(font, Vector2.ZERO, str(clue), HORIZONTAL_ALIGNMENT_CENTER,
+					tile_size.x / clue_scale.x, font_size, 36, NurikabeUtils.ERROR_BG_COLOR)
+			draw_string(font, Vector2.ZERO, str(clue), HORIZONTAL_ALIGNMENT_CENTER,
+					tile_size.x / clue_scale.x, font_size, NurikabeUtils.ERROR_FG_COLOR)
+		elif cell in lowlight_cells:
+			draw_string(font, Vector2.ZERO, str(clue), HORIZONTAL_ALIGNMENT_CENTER,
+					tile_size.x / clue_scale.x, font_size, NurikabeUtils.CLUE_LOWLIGHT_COLOR)
+		else:
+			draw_string(font, Vector2.ZERO, str(clue), HORIZONTAL_ALIGNMENT_CENTER,
+					tile_size.x / clue_scale.x, font_size, NurikabeUtils.CLUE_COLOR)
 
 
 func clear() -> void:
