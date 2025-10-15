@@ -215,6 +215,16 @@ func test_split_walls_ok() -> void:
 		"   5  ",
 	]
 	assert_rules_valid()
+	
+	grid = [
+		" 3    ",
+		" .    ",
+		"## 2  ",
+	]
+	assert_rules_invalid({"joined_islands": [
+		Vector2i(0, 0), Vector2i(0, 1),
+		Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2),
+		Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)]})
 
 
 func test_split_walls_two() -> void:

@@ -154,16 +154,22 @@ func _check_split_walls(result: ValidationResult, wall_groups: Array[Array],
 				continue
 			result.split_walls.append_array(group)
 	
-	if potential_wall_groups.size() >= 2:
-		var largest_group: Array[Vector2i] = potential_wall_groups[0]
-		for group: Array[Vector2i] in potential_wall_groups:
+	var potential_wall_groups_with_a_wall: Array[Array] \
+			= potential_wall_groups.filter(func(group: Array[Vector2i]) -> bool:
+				for cell: Vector2i in group:
+					if get_cell_string(cell) == CELL_WALL:
+						return true
+				return false)
+	if potential_wall_groups_with_a_wall.size() >= 2:
+		var largest_group: Array[Vector2i] = potential_wall_groups_with_a_wall[0]
+		for group: Array[Vector2i] in potential_wall_groups_with_a_wall:
 			if group.size() > largest_group.size():
 				largest_group = group
-		for group: Array[Vector2i] in potential_wall_groups:
+		for group: Array[Vector2i] in potential_wall_groups_with_a_wall:
 			if group == largest_group:
 				continue
-			var unfixable_wall_cells: Array[Vector2i] = []
-			unfixable_wall_cells.assign(Utils.intersection(group, result.split_walls))
+			var unfixable_wall_cells: Array[Vector2i] = group.filter(func(cell: Vector2i) -> bool:
+				return get_cell_string(cell) == CELL_WALL)
 			result.split_walls_unfixable.append_array(unfixable_wall_cells)
 			result.split_walls.assign(Utils.subtract(result.split_walls, unfixable_wall_cells))
 	return result
