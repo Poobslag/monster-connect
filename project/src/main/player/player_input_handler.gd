@@ -46,7 +46,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_last_input_method = InputMethod.MOUSE
 		var target_player_position: Vector2
 		if player.current_game_board == null:
-			target_player_position = player.to_local(event.global_position)
+			target_player_position = player.to_local(get_viewport().get_camera_2d().get_global_mouse_position())
 		else:
 			var local_puzzle_rect_with_buffer: Rect2 = \
 					player.get_global_transform().affine_inverse() \
@@ -67,7 +67,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			and event.button_index == MOUSE_BUTTON_LEFT and event.pressed \
 			and not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) \
 			and player.current_game_board is NurikabeGameBoard:
-		var cell: Vector2i = player.current_game_board.global_to_map(event.global_position)
+		var cell: Vector2i = player.current_game_board.global_to_map(get_viewport().get_camera_2d().get_global_mouse_position())
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
 		match current_cell_string:
 			CELL_WALL:
@@ -80,7 +80,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed \
 			and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) \
 			and player.current_game_board is NurikabeGameBoard:
-		var cell: Vector2i = player.current_game_board.global_to_map(event.global_position)
+		var cell: Vector2i = player.current_game_board.global_to_map(get_viewport().get_camera_2d().get_global_mouse_position())
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
 		match current_cell_string:
 			CELL_ISLAND:
@@ -94,7 +94,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) \
 			and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) \
 			and player.current_game_board is NurikabeGameBoard:
-		var cell: Vector2i = player.current_game_board.global_to_map(event.global_position)
+		var cell: Vector2i = player.current_game_board.global_to_map(get_viewport().get_camera_2d().get_global_mouse_position())
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
 		if current_cell_string == CELL_ISLAND or current_cell_string.is_valid_int():
 			var changes: Array[Dictionary] = player.current_game_board.to_model().surround_island(cell)
