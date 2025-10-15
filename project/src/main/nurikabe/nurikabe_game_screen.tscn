@@ -154,8 +154,6 @@ Vector2i(8, 4): 3,
 Vector2i(8, 8): 4,
 Vector2i(9, 0): 2
 })
-error_cells = null
-lowlight_cells = null
 
 [node name="TileMapWall" type="TileMapLayer" parent="GameBoard"]
 unique_name_in_owner = true
