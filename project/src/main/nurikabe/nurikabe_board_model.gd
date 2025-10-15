@@ -217,11 +217,14 @@ class ValidationResult:
 					+ unclued_islands.size() + wrong_size.size() + + wrong_size_unfixable.size()
 	
 	func _to_string() -> String:
-		return "[error_count=%s;" \
-				+ " joined_islands=%s; joined_islands_unfixable," \
-				+ " pools=%s; split_walls=%s; split_walls_unfixable=%s;" \
-				+ " unclued_islands=%s; wrong_size=%s; wrong_size_unfixable=%s]" \
-				% [error_count,
-				joined_islands, joined_islands_unfixable,
-				pools, split_walls, split_walls_unfixable,
-				unclued_islands, wrong_size, wrong_size_unfixable]
+		return str({
+			"error_count": error_count,
+			"joined_islands": joined_islands,
+			"joined_islands_unfixable": joined_islands_unfixable,
+			"pools": pools,
+			"split_walls": split_walls,
+			"split_walls_unfixable": split_walls_unfixable,
+			"unclued_islands": unclued_islands,
+			"wrong_size": wrong_size,
+			"wrong_size_unfixable": wrong_size_unfixable,
+		})
