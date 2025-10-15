@@ -123,13 +123,13 @@ func get_cell_string(cell_pos: Vector2i) -> String:
 	if %TileMapGround.get_cell_source_id(cell_pos) != -1:
 		result = CELL_EMPTY
 	
-	if %TileMapWall.get_cell_source_id(cell_pos) in [0, 1]:
+	if %TileMapWall.get_cell_source_id(cell_pos) != -1:
 		result = CELL_WALL
 	
-	if not result and %TileMapClue.get_cell_clue(cell_pos) != -1:
+	if %TileMapClue.get_cell_clue(cell_pos) != -1:
 		result = str(%TileMapClue.get_cell_clue(cell_pos))
 	
-	if not result and %TileMapIsland.get_cell_source_id(cell_pos) in [0, 1]:
+	if %TileMapIsland.get_cell_source_id(cell_pos) != -1:
 		result = CELL_ISLAND
 	
 	return result
