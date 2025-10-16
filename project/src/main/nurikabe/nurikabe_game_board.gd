@@ -2,10 +2,10 @@
 class_name NurikabeGameBoard
 extends Control
 
-const CELL_EMPTY = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND = NurikabeUtils.CELL_ISLAND
-const CELL_WALL = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
+const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
 @export_multiline var grid_string: String
 

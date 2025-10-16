@@ -14,10 +14,10 @@ const PUZZLE_APPROACH_LEFT := 80.0
 
 const MOUSE_STOP_DISTANCE: float = 20.0
 
-const CELL_EMPTY = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND = NurikabeUtils.CELL_ISLAND
-const CELL_WALL = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
+const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
 var dir := Vector2.ZERO
 
