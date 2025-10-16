@@ -23,8 +23,10 @@ var dir := Vector2.ZERO
 
 var _last_input_game_board: NurikabeGameBoard = null
 var _last_input_method: InputMethod = InputMethod.NONE
+var _last_set_cell_value: String = CELL_INVALID
 var _mouse_target: Vector2
 var _mouse_dir: Vector2
+var _cells_to_erase: Dictionary[Vector2i, bool] = {}
 
 @onready var player: Player = get_parent()
 
@@ -44,7 +46,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			and _last_input_game_board != null:
 		_last_input_game_board.redo(player.id)
 	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+	if event is InputEventMouseButton and event.pressed:
 		_last_input_game_board = player.current_game_board
 	
 	# pressing/dragging the left mouse button, not on a puzzle
@@ -78,12 +80,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
 		match current_cell_string:
 			CELL_WALL:
-				player.current_game_board.set_cell_string(cell, CELL_EMPTY, player.id)
+				_cells_to_erase[cell] = true
+				player.current_game_board.set_half_cell(cell, player.id)
+				_last_set_cell_value = CELL_EMPTY
 			CELL_EMPTY, CELL_ISLAND:
 				player.current_game_board.set_cell_string(cell, CELL_WALL, player.id)
+				player.current_game_board.set_half_cell(cell, player.id)
+				_last_set_cell_value = CELL_WALL
 		if current_cell_string.is_valid_int():
 			var changes: Array[Dictionary] = player.current_game_board.to_model().surround_island(cell)
 			player.current_game_board.set_cell_strings(changes, player.id)
+			var cell_positions: Array[Vector2i] = []
+			for change: Dictionary[String, Variant] in changes:
+				cell_positions.append(change["pos"])
+			player.current_game_board.set_half_cells(cell_positions, player.id)
+			_last_set_cell_value = CELL_INVALID
 	
 	# pressing the right mouse button on a puzzle
 	if event is InputEventMouseButton \
@@ -93,9 +104,46 @@ func _unhandled_input(event: InputEvent) -> void:
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
 		match current_cell_string:
 			CELL_ISLAND:
-				player.current_game_board.set_cell_string(cell, CELL_EMPTY, player.id)
+				_cells_to_erase[cell] = true
+				player.current_game_board.set_half_cell(cell, player.id)
+				_last_set_cell_value = CELL_EMPTY
 			CELL_EMPTY, CELL_WALL:
 				player.current_game_board.set_cell_string(cell, CELL_ISLAND, player.id)
+				player.current_game_board.set_half_cell(cell, player.id)
+				_last_set_cell_value = CELL_ISLAND
+	
+	# dragging the left or mouse button on a puzzle
+	if event is InputEventMouseMotion \
+			and (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+				or Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)) \
+			and player.current_game_board is NurikabeGameBoard:
+		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
+		var old_cell_string: String = player.current_game_board.get_cell_string(cell)
+		if old_cell_string == _last_set_cell_value or old_cell_string not in [CELL_EMPTY, CELL_WALL, CELL_ISLAND]:
+			pass
+		else:
+			match _last_set_cell_value:
+				CELL_WALL, CELL_ISLAND:
+					if player.current_game_board.get_cell_string(cell) != _last_set_cell_value:
+						player.current_game_board.set_cell_string(cell, _last_set_cell_value, player.id)
+						player.current_game_board.set_half_cell(cell, player.id)
+				CELL_EMPTY:
+					if not cell in _cells_to_erase and player.current_game_board.get_cell_string(cell) != CELL_EMPTY:
+						_cells_to_erase[cell] = true
+						player.current_game_board.set_half_cell(cell, player.id)
+	
+	# releasing the mouse button after modifying a puzzle
+	if event is InputEventMouseButton \
+			and _last_input_game_board != null \
+			and not event.pressed:
+		if _cells_to_erase:
+			var changes: Array[Dictionary] = []
+			for cell: Vector2i in _cells_to_erase:
+				changes.append({"pos": cell, "value": CELL_EMPTY} as Dictionary[String, Variant])
+			_cells_to_erase.clear()
+			_last_input_game_board.set_cell_strings(changes, player.id)
+		_last_input_game_board.clear_half_cells(player.id)
+		_last_set_cell_value = CELL_INVALID
 
 
 func update() -> void:
