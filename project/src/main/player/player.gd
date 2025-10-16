@@ -8,12 +8,7 @@ const FALL_DURATION: float = 0.2
 const MAX_SPEED: float = 400.0
 const ACCELERATION: float = 3000.0
 
-var direction: Vector2 = Vector2.ZERO:
-	set(value):
-		if value == direction:
-			return
-		direction = value
-		_dirty = true
+static var _next_id: int = 0
 
 @export var elevation: float:
 	set(value):
@@ -22,9 +17,18 @@ var direction: Vector2 = Vector2.ZERO:
 		elevation = value
 		_dirty = true
 
+var direction: Vector2 = Vector2.ZERO:
+	set(value):
+		if value == direction:
+			return
+		direction = value
+		_dirty = true
+
 var _dirty: bool = false
 var _elevation_tween: Tween
 var _fade_tween: Tween
+
+var id: int
 
 var on_steppable: bool = false
 var current_game_board: NurikabeGameBoard
@@ -37,6 +41,9 @@ var current_game_board: NurikabeGameBoard
 func _ready() -> void:
 	fsm.change_state("idle")
 	refresh()
+	
+	id = _next_id
+	_next_id += 1
 
 
 func _physics_process(delta: float) -> void:
