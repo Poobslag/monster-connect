@@ -37,12 +37,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_last_input_method = InputMethod.KEYBOARD
 	
 	if event.is_action_pressed("undo") \
-			and player.current_game_board is NurikabeGameBoard:
-		player.current_game_board.undo(player.id)
+			and _last_input_game_board != null:
+		_last_input_game_board.undo(player.id)
 	
 	if event.is_action_pressed("redo") \
-			and player.current_game_board is NurikabeGameBoard:
-		player.current_game_board.redo(player.id)
+			and _last_input_game_board != null:
+		_last_input_game_board.redo(player.id)
 	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_last_input_game_board = player.current_game_board

@@ -210,11 +210,15 @@ func _set_cell_string_internal(cell_pos: Vector2i, value: String) -> void:
 	else:
 		%TileMapClue.erase_cell(cell_pos)
 	
-	var wall_id: int = -1 if value != CELL_WALL else 1 if error_cells.has(cell_pos) else 0
+	var wall_id: int
+	if value != CELL_WALL:
+		wall_id = -1
+	else:
+		wall_id = 1 if error_cells.has(cell_pos) else 0
 	%TileMapWall.set_cell(cell_pos, wall_id, Vector2.ZERO)
 	
 	if not Engine.is_editor_hint():
-		if wall_id == 0:
+		if wall_id != 1:
 			%SteppableTiles.set_cell(cell_pos)
 		else:
 			%SteppableTiles.erase_cell(cell_pos)
@@ -225,12 +229,8 @@ func _set_cell_string_internal(cell_pos: Vector2i, value: String) -> void:
 	var island_id: int
 	if value != CELL_ISLAND:
 		island_id = -1
-	elif error_cells.has(cell_pos):
-		island_id = 1
-	elif lowlight_cells.has(cell_pos):
-		island_id = 2
 	else:
-		island_id = 0
+		island_id = 1 if error_cells.has(cell_pos) else 2 if lowlight_cells.has(cell_pos) else 0
 	%TileMapIsland.set_cell(cell_pos, island_id, Vector2.ZERO)
 	
 	%CursorableArea.set_cell(cell_pos)

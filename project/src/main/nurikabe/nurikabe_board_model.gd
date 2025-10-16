@@ -55,7 +55,7 @@ func surround_island(cell_pos: Vector2i) -> Array[Dictionary]:
 	if clue_cells.size() == 1 and island_cells.size() == int(get_cell_string(clue_cells.keys().front())) - 1:
 		for ignored_cell: Vector2i in ignored_cells:
 			if get_cell_string(ignored_cell) == CELL_EMPTY:
-				changes.append({"pos": ignored_cell, "value": CELL_WALL})
+				changes.append({"pos": ignored_cell, "value": CELL_WALL} as Dictionary[String, Variant])
 	
 	return changes
 
