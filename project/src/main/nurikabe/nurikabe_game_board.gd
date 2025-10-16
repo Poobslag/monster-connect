@@ -38,6 +38,10 @@ func _process(_delta: float) -> void:
 	refresh_cells()
 
 
+func reset() -> void:
+	_import_grid()
+
+
 func refresh_cells() -> void:
 	if not _cells_dirty:
 		return
@@ -183,6 +187,11 @@ func _import_grid() -> void:
 		@warning_ignore("integer_division")
 		for x in row_string.length() / 2:
 			set_cell_string(Vector2i(x, y), row_string.substr(x * 2, 2).strip_edges())
+	
+	_undo_stack.clear()
+	_redo_stack.clear()
+	error_cells = {}
+	lowlight_cells = {}
 
 
 func _erase_cell(cell_pos: Vector2i) -> void:
@@ -251,9 +260,16 @@ func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: 
 			_redo_stack.remove_at(i)
 
 
+func _show_win_screen() -> void:
+	%ResultsOverlay.show_results()
+
+
 func _on_validate_timer_timeout() -> void:
 	var model: NurikabeBoardModel = to_model()
 	var result: NurikabeBoardModel.ValidationResult = model.validate()
+	
+	if result.error_count == 0:
+		_show_win_screen()
 	
 	# update lowlight cells if the player isn't finished
 	var new_lowlight_cells: Dictionary[Vector2i, bool] = {}
@@ -294,3 +310,7 @@ class UndoAction:
 			"old_values": old_values,
 			"new_values": new_values,
 		})
+
+
+func _on_results_overlay_next_level_button_pressed() -> void:
+	reset()
