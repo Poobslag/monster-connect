@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=4 uid="uid://c1ikxk7sf1v"]
+[gd_scene load_steps=40 format=4 uid="uid://c1ikxk7sf1v"]
 
 [ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe/nurikabe_game_board.gd" id="1_qm6xo"]
 [ext_resource type="Texture2D" uid="uid://c3dfi5nwftbpf" path="res://assets/main/nurikabe/tile_island.png" id="3_8mqyp"]
@@ -14,8 +14,13 @@
 [ext_resource type="PackedScene" uid="uid://dn3d3m8il6qqm" path="res://src/main/nurikabe/cursorable_area.tscn" id="7_n1qax"]
 [ext_resource type="Texture2D" uid="uid://bdqidd2d2gvmc" path="res://assets/main/nurikabe/tile_island_lowlight.png" id="7_taxvf"]
 [ext_resource type="PackedScene" uid="uid://bjksq0yxrx6cq" path="res://src/main/nurikabe/nurikabe_cursor.tscn" id="8_aypp7"]
+[ext_resource type="Texture2D" uid="uid://dvlo1neqe3ej0" path="res://assets/main/nurikabe/tile_island_half.png" id="8_dsdbk"]
+[ext_resource type="Texture2D" uid="uid://bag65irek14nm" path="res://assets/main/nurikabe/tile_island_half_error.png" id="9_6gjo7"]
 [ext_resource type="Texture2D" uid="uid://ddcvm26x5cw6i" path="res://assets/main/nurikabe/tile_wall_error.png" id="9_w1x8j"]
+[ext_resource type="Texture2D" uid="uid://bd0rx3c53xlst" path="res://assets/main/nurikabe/tile_island_half_lowlight.png" id="10_medt7"]
+[ext_resource type="Texture2D" uid="uid://c1tobp51q6mqv" path="res://assets/main/nurikabe/tile_wall_half.png" id="15_medt7"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="16_2bf7t"]
+[ext_resource type="Texture2D" uid="uid://b83f06lhh2tv" path="res://assets/main/nurikabe/tile_wall_half_error.png" id="16_w77me"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ccndg"]
 texture = ExtResource("3_qm6xo")
@@ -56,11 +61,29 @@ texture = ExtResource("7_taxvf")
 texture_region_size = Vector2i(256, 256)
 0:0/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w77me"]
+texture = ExtResource("8_dsdbk")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bpbxa"]
+texture = ExtResource("9_6gjo7")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sb0eg"]
+texture = ExtResource("10_medt7")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_w1x8j"]
 tile_size = Vector2i(256, 256)
 sources/0 = SubResource("TileSetAtlasSource_k5lcv")
 sources/1 = SubResource("TileSetAtlasSource_taxvf")
 sources/2 = SubResource("TileSetAtlasSource_2bf7t")
+sources/3 = SubResource("TileSetAtlasSource_w77me")
+sources/4 = SubResource("TileSetAtlasSource_bpbxa")
+sources/5 = SubResource("TileSetAtlasSource_sb0eg")
 
 [sub_resource type="FontVariation" id="FontVariation_kn5p3"]
 base_font = ExtResource("5_21uqv")
@@ -80,10 +103,22 @@ texture_region_size = Vector2i(256, 304)
 0:0/0 = 0
 0:0/0/texture_origin = Vector2i(0, 24)
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_m1d6t"]
+texture = ExtResource("15_medt7")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pyfk6"]
+texture = ExtResource("16_w77me")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_ccndg"]
 tile_size = Vector2i(256, 256)
 sources/0 = SubResource("TileSetAtlasSource_8mqyp")
 sources/1 = SubResource("TileSetAtlasSource_vr7lx")
+sources/2 = SubResource("TileSetAtlasSource_m1d6t")
+sources/3 = SubResource("TileSetAtlasSource_pyfk6")
 
 [node name="GameScreen" type="Control"]
 y_sort_enabled = true

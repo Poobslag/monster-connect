@@ -18,6 +18,12 @@ var error_cells: Dictionary[Vector2i, bool] = {}:
 		error_cells = value
 		_cells_dirty = true
 
+## Cells currently being edited. The value is the most recent player id performing the edit.
+var half_cells: Dictionary[Vector2i, int] = {}:
+	set(value):
+		half_cells = value
+		_cells_dirty = true
+
 var lowlight_cells: Dictionary[Vector2i, bool] = {}:
 	set(value):
 		lowlight_cells = value
@@ -42,6 +48,13 @@ func reset() -> void:
 	_import_grid()
 
 
+func clear_half_cells(player_id: int) -> void:
+	for cell: Vector2i in half_cells.duplicate():
+		if half_cells[cell] == player_id:
+			half_cells.erase(cell)
+	_cells_dirty = true
+
+
 func refresh_cells() -> void:
 	if not _cells_dirty:
 		return
@@ -59,20 +72,16 @@ func refresh_cells() -> void:
 				%TileMapError.erase_cell(cell)
 	
 	for cell: Vector2i in %TileMapIsland.get_used_cells():
-		if cell in error_cells:
-			%TileMapIsland.set_cell(cell, 1, Vector2.ZERO)
-		elif cell in lowlight_cells:
-			%TileMapIsland.set_cell(cell, 2, Vector2.ZERO)
-		else:
-			%TileMapIsland.set_cell(cell, 0, Vector2.ZERO)
+		var island_id: int = 1 if cell in error_cells else 2 if cell in lowlight_cells else 0
+		if cell in half_cells:
+			island_id += 3
+		%TileMapIsland.set_cell(cell, island_id, Vector2.ZERO)
 	
 	for cell: Vector2i in %TileMapWall.get_used_cells():
-		if cell in error_cells:
-			if %TileMapWall.get_cell_source_id(cell) == 0:
-				%TileMapWall.set_cell(cell, 1, Vector2.ZERO)
-		else:
-			if %TileMapWall.get_cell_source_id(cell) == 1:
-				%TileMapWall.set_cell(cell, 0, Vector2.ZERO)
+		var wall_id: int = 1 if cell in error_cells else 0
+		if cell in half_cells:
+			wall_id += 2
+		%TileMapWall.set_cell(cell, wall_id, Vector2.ZERO)
 
 
 func get_used_cells() -> Array[Vector2i]:
@@ -118,6 +127,17 @@ func get_cell_string(cell_pos: Vector2i) -> String:
 		result = CELL_ISLAND
 	
 	return result
+
+
+func set_half_cell(cell_pos: Vector2i, player_id: int) -> void:
+	half_cells[cell_pos] = player_id
+	_cells_dirty = true
+
+
+func set_half_cells(cell_positions: Array[Vector2i], player_id: int) -> void:
+	for cell_pos: Vector2i in cell_positions:
+		half_cells[cell_pos] = player_id
+	_cells_dirty = true
 
 
 func get_global_cursorable_rect() -> Rect2:
@@ -190,7 +210,9 @@ func _import_grid() -> void:
 	
 	_undo_stack.clear()
 	_redo_stack.clear()
+	
 	error_cells = {}
+	half_cells = {}
 	lowlight_cells = {}
 
 
@@ -215,6 +237,8 @@ func _set_cell_string_internal(cell_pos: Vector2i, value: String) -> void:
 		wall_id = -1
 	else:
 		wall_id = 1 if error_cells.has(cell_pos) else 0
+		if half_cells.has(cell_pos):
+			wall_id += 2
 	%TileMapWall.set_cell(cell_pos, wall_id, Vector2.ZERO)
 	
 	if not Engine.is_editor_hint():
@@ -231,6 +255,8 @@ func _set_cell_string_internal(cell_pos: Vector2i, value: String) -> void:
 		island_id = -1
 	else:
 		island_id = 1 if error_cells.has(cell_pos) else 2 if lowlight_cells.has(cell_pos) else 0
+		if half_cells.has(cell_pos):
+			island_id += 3
 	%TileMapIsland.set_cell(cell_pos, island_id, Vector2.ZERO)
 	
 	%CursorableArea.set_cell(cell_pos)
