@@ -9,6 +9,11 @@ const STEPPABLE_TILE_SCENE: PackedScene = preload("res://src/main/world/steppabl
 
 var _steppable_tiles_by_cell: Dictionary[Vector2i, Area2D] = {}
 
+func clear() -> void:
+	for cell in _steppable_tiles_by_cell:
+		erase_cell(cell)
+
+
 func set_cell(cell: Vector2i) -> void:
 	if _steppable_tiles_by_cell.has(cell):
 		return
