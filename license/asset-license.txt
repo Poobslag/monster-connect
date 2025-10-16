@@ -7,6 +7,8 @@ Fonts:
 
 Images:
  $$ New Platformer Pack by Kenney (CC0) - https://kenney.nl/assets/new-platformer-pack
+ $$ UI Pack by Kenney (CC0) - https://kenney.nl/assets/ui-pack
+  $ Kenney's UI Theme for Godot 4.x by azagaya (CC0) - https://azagaya.itch.io/kenneys-ui-theme
 
 Fonts
 --------------------------------------------------------------------------------
@@ -15,3 +17,4 @@ project/assets/main/ui/baloo2.ttf Baloo2 by Ek Type
 Images
 --------------------------------------------------------------------------------
 project/assets/main/characters/character_purple_* character_purple_* by Kenney (New Platformer Pack)
+project/assets/main/ui/kenney/* UI Pack by Kenney; Kenney's UI Theme for Godot 4.x by azagaya
