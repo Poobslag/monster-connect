@@ -36,6 +36,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			or event.is_action_pressed("move_down"):
 		_last_input_method = InputMethod.KEYBOARD
 	
+	if event.is_action_pressed("undo") \
+			and player.current_game_board is NurikabeGameBoard:
+		player.current_game_board.undo(player.id)
+	
+	if event.is_action_pressed("redo") \
+			and player.current_game_board is NurikabeGameBoard:
+		player.current_game_board.redo(player.id)
+	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_last_input_game_board = player.current_game_board
 	
@@ -70,12 +78,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
 		match current_cell_string:
 			CELL_WALL:
-				player.current_game_board.set_cell_string(cell, CELL_EMPTY)
+				player.current_game_board.set_cell_string(cell, CELL_EMPTY, player.id)
 			CELL_EMPTY, CELL_ISLAND:
-				player.current_game_board.set_cell_string(cell, CELL_WALL)
+				player.current_game_board.set_cell_string(cell, CELL_WALL, player.id)
 		if current_cell_string.is_valid_int():
 			var changes: Array[Dictionary] = player.current_game_board.to_model().surround_island(cell)
-			player.current_game_board.set_cell_strings(changes)
+			player.current_game_board.set_cell_strings(changes, player.id)
 	
 	# pressing the right mouse button on a puzzle
 	if event is InputEventMouseButton \
@@ -85,9 +93,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
 		match current_cell_string:
 			CELL_ISLAND:
-				player.current_game_board.set_cell_string(cell, CELL_EMPTY)
+				player.current_game_board.set_cell_string(cell, CELL_EMPTY, player.id)
 			CELL_EMPTY, CELL_WALL:
-				player.current_game_board.set_cell_string(cell, CELL_ISLAND)
+				player.current_game_board.set_cell_string(cell, CELL_ISLAND, player.id)
 
 
 func update() -> void:
