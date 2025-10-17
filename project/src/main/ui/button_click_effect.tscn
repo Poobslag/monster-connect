@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://br86bm6bjwv24"]
+
+[ext_resource type="Script" uid="uid://crch3h16lqn2q" path="res://src/main/ui/button_click_effect.gd" id="1_riaa4"]
+
+[node name="ButtonClickEffect" type="Node"]
+script = ExtResource("1_riaa4")

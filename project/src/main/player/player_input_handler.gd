@@ -18,19 +18,31 @@ const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
 const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: String = NurikabeUtils.CELL_WALL
+const CELL_SURROUND_ISLAND: String = "cell_surround"
 
 var dir := Vector2.ZERO
 
 var _last_input_game_board: NurikabeGameBoard = null
 var _last_input_method: InputMethod = InputMethod.NONE
+var _last_erased_cell_value: String = CELL_INVALID
 var _last_set_cell_value: String = CELL_INVALID
 var _mouse_target: Vector2
 var _mouse_dir: Vector2
+var _prev_cell: Vector2i = Vector2i(-577218, -577218)
 var _cells_to_erase: Dictionary[Vector2i, bool] = {}
 
 @onready var player: Player = get_parent()
 
 func _unhandled_input(event: InputEvent) -> void:
+	var input_sfx: String
+	
+	if event is InputEventMouseMotion \
+			and player.current_game_board is NurikabeGameBoard:
+		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
+		if cell != _prev_cell:
+			input_sfx = "cursor_move"
+			_prev_cell = cell
+	
 	# wasd
 	if event.is_action_pressed("move_left") \
 			or event.is_action_pressed("move_right") \
@@ -42,15 +54,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			and _last_input_game_board != null:
 		_last_input_game_board.undo(player.id)
 		_last_input_game_board.validate()
+		SoundManager.play_sfx("undo")
 	
 	if event.is_action_pressed("redo") \
 			and _last_input_game_board != null:
 		_last_input_game_board.redo(player.id)
 		_last_input_game_board.validate()
+		SoundManager.play_sfx("redo")
 	
 	if event.is_action_pressed("reset") \
 			and _last_input_game_board != null:
 		_last_input_game_board.reset()
+		SoundManager.play_sfx("reset")
 	
 	if event is InputEventMouseButton and event.pressed:
 		_last_input_game_board = player.current_game_board
@@ -89,18 +104,24 @@ func _unhandled_input(event: InputEvent) -> void:
 				_cells_to_erase[cell] = true
 				player.current_game_board.set_half_cell(cell, player.id)
 				_last_set_cell_value = CELL_EMPTY
+				input_sfx = "drop_wall_release"
 			CELL_EMPTY, CELL_ISLAND:
 				player.current_game_board.set_cell_string(cell, CELL_WALL, player.id)
 				player.current_game_board.set_half_cell(cell, player.id)
 				_last_set_cell_value = CELL_WALL
+				input_sfx = "drop_wall_press"
 		if current_cell_string.is_valid_int():
 			var changes: Array[Dictionary] = player.current_game_board.to_model().surround_island(cell)
-			player.current_game_board.set_cell_strings(changes, player.id)
-			var cell_positions: Array[Vector2i] = []
-			for change: Dictionary[String, Variant] in changes:
-				cell_positions.append(change["pos"])
-			player.current_game_board.set_half_cells(cell_positions, player.id)
-			_last_set_cell_value = CELL_INVALID
+			if changes:
+				player.current_game_board.set_cell_strings(changes, player.id)
+				var cell_positions: Array[Vector2i] = []
+				for change: Dictionary[String, Variant] in changes:
+					cell_positions.append(change["pos"])
+				player.current_game_board.set_half_cells(cell_positions, player.id)
+				_last_set_cell_value = CELL_SURROUND_ISLAND
+				input_sfx = "surround_island_press"
+			else:
+				input_sfx = "surround_island_fail"
 	
 	# pressing the right mouse button on a puzzle
 	if event is InputEventMouseButton \
@@ -113,10 +134,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				_cells_to_erase[cell] = true
 				player.current_game_board.set_half_cell(cell, player.id)
 				_last_set_cell_value = CELL_EMPTY
+				input_sfx = "drop_island_release"
 			CELL_EMPTY, CELL_WALL:
 				player.current_game_board.set_cell_string(cell, CELL_ISLAND, player.id)
 				player.current_game_board.set_half_cell(cell, player.id)
 				_last_set_cell_value = CELL_ISLAND
+				input_sfx = "drop_island_press"
 	
 	# dragging the left or right mouse button on a puzzle
 	if event is InputEventMouseMotion \
@@ -133,10 +156,19 @@ func _unhandled_input(event: InputEvent) -> void:
 					if player.current_game_board.get_cell_string(cell) != _last_set_cell_value:
 						player.current_game_board.set_cell_string(cell, _last_set_cell_value, player.id)
 						player.current_game_board.set_half_cell(cell, player.id)
+						if _last_set_cell_value == CELL_WALL:
+							input_sfx = "drop_wall_press"
+						elif _last_set_cell_value == CELL_ISLAND:
+							input_sfx = "drop_island_press"
 				CELL_EMPTY:
 					if not cell in _cells_to_erase and player.current_game_board.get_cell_string(cell) != CELL_EMPTY:
 						_cells_to_erase[cell] = true
 						player.current_game_board.set_half_cell(cell, player.id)
+						if player.current_game_board.get_cell_string(cell) == CELL_WALL:
+							input_sfx = "drop_wall_release"
+						elif player.current_game_board.get_cell_string(cell) == CELL_ISLAND:
+							input_sfx = "drop_island_release"
+						_last_erased_cell_value = player.current_game_board.get_cell_string(cell)
 	
 	# releasing the mouse button after modifying a puzzle
 	if event is InputEventMouseButton \
@@ -149,9 +181,24 @@ func _unhandled_input(event: InputEvent) -> void:
 			_cells_to_erase.clear()
 			_last_input_game_board.set_cell_strings(changes, player.id)
 		if _last_input_game_board.has_half_cells(player.id):
+			if _last_set_cell_value == CELL_WALL:
+				input_sfx = "drop_wall_release"
+			elif _last_set_cell_value == CELL_ISLAND:
+				input_sfx = "drop_island_release"
+			elif _last_set_cell_value == CELL_EMPTY:
+				if _last_erased_cell_value == CELL_WALL:
+					SoundManager.play_sfx("drop_wall_press")
+				elif _last_erased_cell_value == CELL_ISLAND:
+					SoundManager.play_sfx("drop_island_press")
+			elif _last_set_cell_value == CELL_SURROUND_ISLAND:
+				input_sfx = "surround_island_release"
 			_last_input_game_board.validate()
 		_last_input_game_board.clear_half_cells(player.id)
 		_last_set_cell_value = CELL_INVALID
+		_last_erased_cell_value = CELL_INVALID
+	
+	if input_sfx:
+		SoundManager.play_sfx(input_sfx)
 
 
 func update() -> void:

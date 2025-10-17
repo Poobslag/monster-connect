@@ -10,6 +10,10 @@ Images:
  $$ UI Pack by Kenney (CC0) - https://kenney.nl/assets/ui-pack
   $ Kenney's UI Theme for Godot 4.x by azagaya (CC0) - https://azagaya.itch.io/kenneys-ui-theme
 
+Sounds:
+ $$ 2000 Game SFX Collection by GameBurp (Soniss license, https://sonniss.com/sound-effects-licensing/) - https://itch.io/s/123157/2000-game-sound-effects
+ $$ Interface Sounds by Kenney (CC0) - https://kenney.nl/assets/interface-sounds
+
 Fonts
 --------------------------------------------------------------------------------
 project/assets/main/ui/baloo2.ttf Baloo2 by Ek Type
@@ -18,3 +22,16 @@ Images
 --------------------------------------------------------------------------------
 project/assets/main/characters/character_purple_* character_purple_* by Kenney (New Platformer Pack)
 project/assets/main/ui/kenney/* UI Pack by Kenney; Kenney's UI Theme for Godot 4.x by azagaya
+
+Sounds
+--------------------------------------------------------------------------------
+project/assets/main/sfx/button_click.wav click_003 by Kenney (Interface Sounds)
+project/assets/main/sfx/cursor_move.wav click_003 by Kenney (Interface Sounds)
+project/assets/main/sfx/drop_island_press.wav glass_002 by Kenney (Interface Sounds)
+project/assets/main/sfx/drop_wall_press.wav drop_002 by Kenney (Interface Sounds)
+project/assets/main/sfx/reset.wav scratch_001 by Kenney (Interface Sounds)
+project/assets/main/sfx/rule_broken.wav pluck_002 by Kenney (Interface Sounds)
+project/assets/main/sfx/surround_island_fail.wav back_003 by Kenney (Interface Sounds)
+project/assets/main/sfx/surround_island_release.wav confirmation_001 by Kenney (Interface Sounds)
+project/assets/main/sfx/undo.wav back_003 by Kenney (Interface Sounds)
+project/assets/main/sfx/win.wav SUCCESS TUNE Win Complete 03 by GameBurp (2000 Game SFX Collection)
