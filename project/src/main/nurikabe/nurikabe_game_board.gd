@@ -306,6 +306,7 @@ func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: 
 
 
 func _show_win_screen() -> void:
+	SoundManager.play_sfx("win")
 	%ResultsOverlay.show_results()
 
 
@@ -328,6 +329,7 @@ func _on_validate_timer_timeout() -> void:
 	lowlight_cells = new_lowlight_cells
 	
 	# update error cells if the player made a mistake
+	var old_error_cells: Dictionary[Vector2i, bool] = error_cells
 	var new_error_cells: Dictionary[Vector2i, bool] = {}
 	for pool_cell: Vector2i in result.pools:
 		new_error_cells[pool_cell] = true
@@ -340,6 +342,9 @@ func _on_validate_timer_timeout() -> void:
 	for split_wall_cell in result.split_walls_unfixable:
 		new_error_cells[split_wall_cell] = true
 	error_cells = new_error_cells
+	
+	if not old_error_cells.has_all(new_error_cells.keys()):
+		SoundManager.play_sfx("rule_broken")
 
 
 class UndoAction:
