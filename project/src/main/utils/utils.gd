@@ -2,6 +2,36 @@
 class_name Utils
 ## Contains global utilities.
 
+## Recursively finds all files with the given extension starting at [param path].
+static func find_files(path: String, file_extension: String) -> Array[String]:
+	var found_files: Array[String] = []
+	var dir_queue: Array[String] = [path]
+	
+	var dir: DirAccess = DirAccess.open("res://")
+	var file: String
+	
+	while true:
+		if file and file.begins_with("."):
+			# ignore .gitkeep and other hidden files
+			pass
+		elif file:
+			var resource_path: String = "%s/%s" % [dir.get_current_dir(), file.get_file()]
+			if dir.current_is_dir():
+				dir_queue.append(resource_path)
+			elif file.ends_with(".%s.import" % [file_extension]):
+				found_files.append(resource_path.trim_suffix(".import"))
+		else:
+			if dir:
+				dir.list_dir_end()
+			if dir_queue.is_empty():
+				break
+			# open the next directory from the queue
+			dir = DirAccess.open(dir_queue.pop_front())
+			dir.list_dir_begin()
+		file = dir.get_next()
+	
+	return found_files
+
 
 ## Invalidates a tween if it is already active.[br]
 ## [br]

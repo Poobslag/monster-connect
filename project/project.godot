@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 Global="*res://src/main/utils/global.gd"
 GameSettings="*res://src/main/data/game_settings.gd"
 SettingsSaver="*res://src/main/data/settings_saver.gd"
+SoundManager="*res://src/main/utils/sound_manager.tscn"
 
 [debug]
 
