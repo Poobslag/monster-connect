@@ -49,10 +49,26 @@ func reset() -> void:
 
 
 func clear_half_cells(player_id: int) -> void:
-	for cell: Vector2i in half_cells.duplicate():
-		if half_cells[cell] == player_id:
-			half_cells.erase(cell)
+	for cell: Vector2i in get_half_cells(player_id):
+		half_cells.erase(cell)
 	_cells_dirty = true
+
+
+func get_half_cells(player_id: int) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	for cell: Vector2i in half_cells:
+		if half_cells[cell] == player_id:
+			result.append(cell)
+	return result
+
+
+func has_half_cells(player_id: int) -> bool:
+	var result: bool = false
+	for cell: Vector2i in half_cells:
+		if half_cells[cell] == player_id:
+			result = true
+			break
+	return result
 
 
 func refresh_cells() -> void:
@@ -265,7 +281,10 @@ func _set_cell_string_internal(cell_pos: Vector2i, value: String) -> void:
 		error_cells.erase(cell_pos)
 		lowlight_cells.erase(cell_pos)
 		_cells_dirty = true
-		%ValidateTimer.start()
+
+
+func validate() -> void:
+	%ValidateTimer.start()
 
 
 func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: Array[String]) -> void:

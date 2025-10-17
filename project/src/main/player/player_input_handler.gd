@@ -41,10 +41,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("undo") \
 			and _last_input_game_board != null:
 		_last_input_game_board.undo(player.id)
+		_last_input_game_board.validate()
 	
 	if event.is_action_pressed("redo") \
 			and _last_input_game_board != null:
 		_last_input_game_board.redo(player.id)
+		_last_input_game_board.validate()
 	
 	if event.is_action_pressed("reset") \
 			and _last_input_game_board != null:
@@ -146,6 +148,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				changes.append({"pos": cell, "value": CELL_EMPTY} as Dictionary[String, Variant])
 			_cells_to_erase.clear()
 			_last_input_game_board.set_cell_strings(changes, player.id)
+		if _last_input_game_board.has_half_cells(player.id):
+			_last_input_game_board.validate()
 		_last_input_game_board.clear_half_cells(player.id)
 		_last_set_cell_value = CELL_INVALID
 
