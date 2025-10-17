@@ -46,6 +46,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			and _last_input_game_board != null:
 		_last_input_game_board.redo(player.id)
 	
+	if event.is_action_pressed("reset") \
+			and _last_input_game_board != null:
+		_last_input_game_board.reset()
+	
 	if event is InputEventMouseButton and event.pressed:
 		_last_input_game_board = player.current_game_board
 	
