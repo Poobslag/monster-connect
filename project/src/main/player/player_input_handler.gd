@@ -116,7 +116,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				player.current_game_board.set_half_cell(cell, player.id)
 				_last_set_cell_value = CELL_ISLAND
 	
-	# dragging the left or mouse button on a puzzle
+	# dragging the left or right mouse button on a puzzle
 	if event is InputEventMouseMotion \
 			and (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
 				or Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)) \
