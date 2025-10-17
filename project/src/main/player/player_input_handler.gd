@@ -1,255 +1,50 @@
 class_name PlayerInputHandler
 extends Node
 
-enum InputMethod {
-	NONE,
-	MOUSE,
-	KEYBOARD,
+var _drag_origin_in_puzzle: Dictionary[int, bool] = {
+	MOUSE_BUTTON_LEFT: false,
+	MOUSE_BUTTON_RIGHT: false
 }
 
-const PUZZLE_APPROACH_TOP := 40.0
-const PUZZLE_APPROACH_RIGHT := 80.0
-const PUZZLE_APPROACH_BOTTOM := 160.0
-const PUZZLE_APPROACH_LEFT := 80.0
-
-const MOUSE_STOP_DISTANCE: float = 20.0
-
-const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
-const CELL_WALL: String = NurikabeUtils.CELL_WALL
-const CELL_SURROUND_ISLAND: String = "cell_surround"
-
-var dir := Vector2.ZERO
-
-var _last_input_game_board: NurikabeGameBoard = null
-var _last_input_method: InputMethod = InputMethod.NONE
-var _last_erased_cell_value: String = CELL_INVALID
-var _last_set_cell_value: String = CELL_INVALID
-var _mouse_target: Vector2
-var _mouse_dir: Vector2
-var _prev_cell: Vector2i = Vector2i(-577218, -577218)
-var _cells_to_erase: Dictionary[Vector2i, bool] = {}
+var dir: Vector2:
+	set(value):
+		%MoveHandler.dir = value
+	get():
+		return %MoveHandler.dir
 
 @onready var player: Player = get_parent()
 
 func _unhandled_input(event: InputEvent) -> void:
-	var input_sfx: String
-	
-	if event is InputEventMouseMotion \
-			and player.current_game_board is NurikabeGameBoard:
-		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
-		if cell != _prev_cell:
-			input_sfx = "cursor_move"
-			_prev_cell = cell
-	
-	# wasd
-	if event.is_action_pressed("move_left") \
-			or event.is_action_pressed("move_right") \
-			or event.is_action_pressed("move_up") \
-			or event.is_action_pressed("move_down"):
-		_last_input_method = InputMethod.KEYBOARD
-	
-	if event.is_action_pressed("undo") \
-			and _last_input_game_board != null:
-		_last_input_game_board.undo(player.id)
-		_last_input_game_board.validate()
-		SoundManager.play_sfx("undo")
-	
-	if event.is_action_pressed("redo") \
-			and _last_input_game_board != null:
-		_last_input_game_board.redo(player.id)
-		_last_input_game_board.validate()
-		SoundManager.play_sfx("redo")
-	
-	if event.is_action_pressed("reset") \
-			and _last_input_game_board != null:
-		_last_input_game_board.reset()
-		SoundManager.play_sfx("reset")
-	
+	# Initialize drag ownership when mouse buttons are pressed
 	if event is InputEventMouseButton and event.pressed:
-		_last_input_game_board = player.current_game_board
+		_drag_origin_in_puzzle[event.button_index] = player.current_game_board != null
+		if is_any_drag_origin_in_puzzle() and player.current_game_board:
+			%PuzzleHandler.game_board = player.current_game_board
 	
-	# pressing/dragging the left mouse button, not on a puzzle
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed \
-			or (event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) \
-			and _last_input_game_board == null):
-		_last_input_method = InputMethod.MOUSE
-		var target_player_position: Vector2
-		if player.current_game_board == null:
-			target_player_position = player.to_local(_global_mouse_position())
-		else:
-			var local_puzzle_rect_with_buffer: Rect2 = \
-					player.get_global_transform().affine_inverse() \
-					* player.current_game_board.get_global_cursorable_rect() \
-					.grow_individual(
-						PUZZLE_APPROACH_LEFT, PUZZLE_APPROACH_TOP, PUZZLE_APPROACH_RIGHT, PUZZLE_APPROACH_BOTTOM)
-		
-			if dist_to_rect(local_puzzle_rect_with_buffer, Vector2.ZERO) <= MOUSE_STOP_DISTANCE:
-				target_player_position = Vector2.ZERO
-			else:
-				target_player_position = nearest_point_on_rect(local_puzzle_rect_with_buffer, Vector2.ZERO)
-		
-		_mouse_target = player.position + target_player_position
-		_mouse_dir = (_mouse_target - player.position).normalized()
+	# Route all input based on the drag owner
+	if is_any_drag_origin_in_puzzle():
+		%PuzzleHandler.handle(event)
+	%MoveHandler.handle(event)
 	
-	# pressing the left mouse button on a puzzle
-	if event is InputEventMouseButton \
-			and event.button_index == MOUSE_BUTTON_LEFT and event.pressed \
-			and player.current_game_board is NurikabeGameBoard:
-		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
-		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
-		match current_cell_string:
-			CELL_WALL:
-				_cells_to_erase[cell] = true
-				player.current_game_board.set_half_cell(cell, player.id)
-				_last_set_cell_value = CELL_EMPTY
-				input_sfx = "drop_wall_release"
-			CELL_EMPTY, CELL_ISLAND:
-				player.current_game_board.set_cell_string(cell, CELL_WALL, player.id)
-				player.current_game_board.set_half_cell(cell, player.id)
-				_last_set_cell_value = CELL_WALL
-				input_sfx = "drop_wall_press"
-		if current_cell_string.is_valid_int():
-			var changes: Array[Dictionary] = player.current_game_board.to_model().surround_island(cell)
-			if changes:
-				player.current_game_board.set_cell_strings(changes, player.id)
-				var cell_positions: Array[Vector2i] = []
-				for change: Dictionary[String, Variant] in changes:
-					cell_positions.append(change["pos"])
-				player.current_game_board.set_half_cells(cell_positions, player.id)
-				_last_set_cell_value = CELL_SURROUND_ISLAND
-				input_sfx = "surround_island_press"
-			else:
-				input_sfx = "surround_island_fail"
-	
-	# pressing the right mouse button on a puzzle
-	if event is InputEventMouseButton \
-			and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed \
-			and player.current_game_board is NurikabeGameBoard:
-		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
-		var current_cell_string: String = player.current_game_board.get_cell_string(cell)
-		match current_cell_string:
-			CELL_ISLAND:
-				_cells_to_erase[cell] = true
-				player.current_game_board.set_half_cell(cell, player.id)
-				_last_set_cell_value = CELL_EMPTY
-				input_sfx = "drop_island_release"
-			CELL_EMPTY, CELL_WALL:
-				player.current_game_board.set_cell_string(cell, CELL_ISLAND, player.id)
-				player.current_game_board.set_half_cell(cell, player.id)
-				_last_set_cell_value = CELL_ISLAND
-				input_sfx = "drop_island_press"
-	
-	# dragging the left or right mouse button on a puzzle
-	if event is InputEventMouseMotion \
-			and (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
-				or Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)) \
-			and player.current_game_board is NurikabeGameBoard:
-		var cell: Vector2i = player.current_game_board.global_to_map(_global_mouse_position())
-		var old_cell_string: String = player.current_game_board.get_cell_string(cell)
-		if old_cell_string == _last_set_cell_value or old_cell_string not in [CELL_EMPTY, CELL_WALL, CELL_ISLAND]:
-			pass
-		else:
-			match _last_set_cell_value:
-				CELL_WALL, CELL_ISLAND:
-					if player.current_game_board.get_cell_string(cell) != _last_set_cell_value:
-						player.current_game_board.set_cell_string(cell, _last_set_cell_value, player.id)
-						player.current_game_board.set_half_cell(cell, player.id)
-						if _last_set_cell_value == CELL_WALL:
-							input_sfx = "drop_wall_press"
-						elif _last_set_cell_value == CELL_ISLAND:
-							input_sfx = "drop_island_press"
-				CELL_EMPTY:
-					if not cell in _cells_to_erase and player.current_game_board.get_cell_string(cell) != CELL_EMPTY:
-						_cells_to_erase[cell] = true
-						player.current_game_board.set_half_cell(cell, player.id)
-						if player.current_game_board.get_cell_string(cell) == CELL_WALL:
-							input_sfx = "drop_wall_release"
-						elif player.current_game_board.get_cell_string(cell) == CELL_ISLAND:
-							input_sfx = "drop_island_release"
-						_last_erased_cell_value = player.current_game_board.get_cell_string(cell)
-	
-	# releasing the mouse button after modifying a puzzle
-	if event is InputEventMouseButton \
-			and _last_input_game_board != null \
-			and not event.pressed:
-		if _cells_to_erase:
-			var changes: Array[Dictionary] = []
-			for cell: Vector2i in _cells_to_erase:
-				changes.append({"pos": cell, "value": CELL_EMPTY} as Dictionary[String, Variant])
-			_cells_to_erase.clear()
-			_last_input_game_board.set_cell_strings(changes, player.id)
-		if _last_input_game_board.has_half_cells(player.id):
-			if _last_set_cell_value == CELL_WALL:
-				input_sfx = "drop_wall_release"
-			elif _last_set_cell_value == CELL_ISLAND:
-				input_sfx = "drop_island_release"
-			elif _last_set_cell_value == CELL_EMPTY:
-				if _last_erased_cell_value == CELL_WALL:
-					SoundManager.play_sfx("drop_wall_press")
-				elif _last_erased_cell_value == CELL_ISLAND:
-					SoundManager.play_sfx("drop_island_press")
-			elif _last_set_cell_value == CELL_SURROUND_ISLAND:
-				input_sfx = "surround_island_release"
-			_last_input_game_board.validate()
-		_last_input_game_board.clear_half_cells(player.id)
-		_last_set_cell_value = CELL_INVALID
-		_last_erased_cell_value = CELL_INVALID
-	
-	if input_sfx:
-		SoundManager.play_sfx(input_sfx)
+	# Release drag ownership when mouse buttons are released
+	if event is InputEventMouseButton and not event.pressed:
+		_drag_origin_in_puzzle[event.button_index] = false
+		if not is_any_drag_origin_in_puzzle():
+			%PuzzleHandler.game_board = null
+
+
+func is_any_drag_origin_in_puzzle() -> bool:
+	return _drag_origin_in_puzzle.get(MOUSE_BUTTON_LEFT, false) \
+			or _drag_origin_in_puzzle.get(MOUSE_BUTTON_RIGHT, false)
 
 
 func update() -> void:
-	if _last_input_method == InputMethod.MOUSE:
-		var new_dir: Vector2 = (_mouse_target - player.position).normalized()
-		if new_dir.dot(_mouse_dir) < 0.9 or _mouse_target.distance_to(player.position) < MOUSE_STOP_DISTANCE:
-			reset()
-		else:
-			dir = new_dir
+	if %PuzzleHandler.game_board == null:
+		%MoveHandler.update()
 	else:
-		dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+		%PuzzleHandler.update()
 
 
 func reset() -> void:
-	dir = Vector2.ZERO
-	_mouse_target = Vector2.ZERO
-	_mouse_dir = Vector2.ZERO
-	_last_input_method = InputMethod.NONE
-
-
-func _global_mouse_position() -> Vector2:
-	return get_viewport().get_camera_2d().get_global_mouse_position()
-
-
-static func dist_to_rect(rect: Rect2, point: Vector2) -> float:
-	var result: float
-	if rect.has_point(point):
-		result = min(
-			abs(point.x - rect.position.x),
-			abs(point.y - rect.position.y),
-			abs(point.x - rect.end.x),
-			abs(point.y - rect.end.y),
-		)
-	else:
-		result = point.clamp(rect.position, rect.end).distance_to(point)
-	return result
-
-
-static func nearest_point_on_rect(rect: Rect2, point: Vector2) -> Vector2:
-	var result: Vector2
-	if rect.has_point(point):
-		var smallest_distance: float = INF
-		for candidate_point: Vector2 in [
-				Vector2(rect.position.x, point.y),
-				Vector2(point.x, rect.position.y),
-				Vector2(rect.end.x, point.y),
-				Vector2(point.x, rect.end.y)]:
-			var distance: float = point.distance_to(candidate_point)
-			if distance < smallest_distance:
-				smallest_distance = distance
-				result = candidate_point
-	else:
-		result = point.clamp(rect.position, rect.end)
-	return result
+	%MoveHandler.reset()
+	%PuzzleHandler.reset()
