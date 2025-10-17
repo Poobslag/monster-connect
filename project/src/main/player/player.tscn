@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://dbd72lfv4xjdr"]
+[gd_scene load_steps=21 format=3 uid="uid://dbd72lfv4xjdr"]
 
 [ext_resource type="Script" uid="uid://scd325yh8swm" path="res://src/main/player/player.gd" id="1_8wxd0"]
 [ext_resource type="Texture2D" uid="uid://bbnbcdni8f5kn" path="res://assets/main/player/character_purple_idle.png" id="2_gmrms"]
@@ -13,7 +13,9 @@
 [ext_resource type="Script" uid="uid://cau2s3vakgrdp" path="res://src/main/player/player_state_walk.gd" id="8_u203y"]
 [ext_resource type="Script" uid="uid://dwmqmrgupm0ue" path="res://src/main/player/player_state_fall.gd" id="11_lc7fh"]
 [ext_resource type="Script" uid="uid://8n3k5hi7bdi7" path="res://src/main/player/player_state_jump.gd" id="12_s00lc"]
+[ext_resource type="Script" uid="uid://bjchwrumampry" path="res://src/main/player/player_move_handler.gd" id="14_idx03"]
 [ext_resource type="Script" uid="uid://dvkamnli58wm3" path="res://src/main/player/player_cursor.gd" id="14_y1tn0"]
+[ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/player/player_puzzle_handler.gd" id="15_vjvpx"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_y07wm"]
 animations = [{
@@ -111,6 +113,14 @@ script = ExtResource("12_s00lc")
 [node name="InputHandler" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("6_4yq1m")
+
+[node name="MoveHandler" type="Node" parent="InputHandler"]
+unique_name_in_owner = true
+script = ExtResource("14_idx03")
+
+[node name="PuzzleHandler" type="Node" parent="InputHandler"]
+unique_name_in_owner = true
+script = ExtResource("15_vjvpx")
 
 [node name="Cursor" type="Node2D" parent="."]
 unique_name_in_owner = true

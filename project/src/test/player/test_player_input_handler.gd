@@ -58,8 +58,8 @@ func test_nearest_point_on_rect() -> void:
 
 
 func _assert_dist_to_rect(rect: Rect2, point: Vector2, expected: float) -> void:
-	assert_almost_eq(PlayerInputHandler.dist_to_rect(rect, point), expected, 0.001)
+	assert_almost_eq(PlayerMoveHandler.dist_to_rect(rect, point), expected, 0.001)
 
 
 func _assert_nearest_point_on_rect(rect: Rect2, point: Vector2, expected: Vector2) -> void:
-	assert_eq(PlayerInputHandler.nearest_point_on_rect(rect, point), expected)
+	assert_eq(PlayerMoveHandler.nearest_point_on_rect(rect, point), expected)
