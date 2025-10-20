@@ -1,0 +1,78 @@
+[gd_scene load_steps=4 format=4 uid="uid://cwg0gsspishux"]
+
+[ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_p5ylp"]
+[ext_resource type="Script" uid="uid://cbtm562mid2d8" path="res://src/demo/nurikabe/demo_nurikabe_solver.gd" id="1_yqxth"]
+[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="3_8djyv"]
+
+[node name="Demo" type="Node"]
+script = ExtResource("1_yqxth")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameBoardHolder" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GameBoard" parent="HBoxContainer/GameBoardHolder" instance=ExtResource("1_p5ylp")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -326.0
+offset_top = -295.0
+offset_right = -326.0
+offset_bottom = -295.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+grid_string = " 2                 2
+             2      
+   2     7          
+                    
+             3   3  
+     2         3    
+ 2     4            
+                    
+   1         2   4  "
+
+[node name="TileMapGround" parent="HBoxContainer/GameBoardHolder/GameBoard" index="0"]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAACAAAAAAAAAAAAAAADAAAAAQAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAQAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAQAAAAAAAAAIAAAAAAAAAAAAAAAJAAAAAQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAAAAAAAAAAACAAEAAQAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAQAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAQAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAQAAAAAAAAAJAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAQAAAAAAAAACAAIAAAAAAAAAAAADAAIAAQAAAAAAAAAEAAIAAAAAAAAAAAAFAAIAAQAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAQAAAAAAAAAIAAIAAAAAAAAAAAAJAAIAAQAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAAAAAAAAAAACAAMAAQAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAQAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAQAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAQAAAAAAAAAJAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAQAAAAAAAAACAAQAAAAAAAAAAAADAAQAAQAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAQAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAQAAAAAAAAAIAAQAAAAAAAAAAAAJAAQAAQAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAAAAAAAAAAACAAUAAQAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAQAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAQAAAAAAAAAHAAUAAAAAAAAAAAAIAAUAAQAAAAAAAAAJAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAABAAYAAQAAAAAAAAACAAYAAAAAAAAAAAADAAYAAQAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAQAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAQAAAAAAAAAIAAYAAAAAAAAAAAAJAAYAAQAAAAAAAAAAAAcAAQAAAAAAAAABAAcAAAAAAAAAAAACAAcAAQAAAAAAAAADAAcAAAAAAAAAAAAEAAcAAQAAAAAAAAAFAAcAAAAAAAAAAAAGAAcAAQAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAQAAAAAAAAAJAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAABAAgAAQAAAAAAAAACAAgAAAAAAAAAAAADAAgAAQAAAAAAAAAEAAgAAAAAAAAAAAAFAAgAAQAAAAAAAAAGAAgAAAAAAAAAAAAHAAgAAQAAAAAAAAAIAAgAAAAAAAAAAAAJAAgAAQAAAAAAAAA=")
+
+[node name="TileMapClue" parent="HBoxContainer/GameBoardHolder/GameBoard" index="3"]
+clues_by_cell = Dictionary[Vector2i, int]({
+Vector2i(0, 0): 2,
+Vector2i(0, 6): 2,
+Vector2i(1, 2): 2,
+Vector2i(1, 8): 1,
+Vector2i(2, 5): 2,
+Vector2i(3, 6): 4,
+Vector2i(4, 2): 7,
+Vector2i(6, 1): 2,
+Vector2i(6, 4): 3,
+Vector2i(6, 8): 2,
+Vector2i(7, 5): 3,
+Vector2i(8, 4): 3,
+Vector2i(8, 8): 4,
+Vector2i(9, 0): 2
+})
+
+[node name="CursorableArea" parent="HBoxContainer/GameBoardHolder/GameBoard" index="5"]
+cursorable_rect = Rect2(0, 0, 2560, 2304)
+
+[node name="MessageLabel" type="RichTextLabel" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/normal_font = ExtResource("3_8djyv")
+theme_override_font_sizes/normal_font_size = 32
+
+[editable path="HBoxContainer/GameBoardHolder/GameBoard"]
