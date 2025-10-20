@@ -81,25 +81,25 @@ func validate() -> ValidationResult:
 	return result
 
 
-## Returns the largest possible groups of island cells, including all blank cells.
+## Returns the largest possible groups of island cells, including all empty cells.
 func find_largest_island_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
 
 
-## Returns the smallest possible groups of wall cells, excluding all blank cells.
+## Returns the smallest possible groups of wall cells, excluding all empty cells.
 func find_smallest_wall_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value in [CELL_WALL])
 
 
-## Returns the largest possible groups of wall cells, including all blank cells.
+## Returns the largest possible groups of wall cells, including all empty cells.
 func find_largest_wall_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value in [CELL_EMPTY, CELL_WALL])
 
 
-## Returns the smallest possible groups of island cells, excluding all blank cells.
+## Returns the smallest possible groups of island cells, excluding all empty cells.
 func find_smallest_island_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_ISLAND])
@@ -122,7 +122,7 @@ func _check_clues(result: ValidationResult, island_groups: Array[Array],
 		if clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() < group.size():
 			result.wrong_size.append_array(group)
 		elif clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() > group.size():
-			# unfixable wrong size -- the group is too small even if all blank cells are islands
+			# unfixable wrong size -- the group is too small even if all empty cells are islands
 			result.wrong_size_unfixable.append_array(group)
 		if clue_cells.size() >= 2:
 			result.joined_islands.append_array(group)
@@ -133,11 +133,11 @@ func _check_clues(result: ValidationResult, island_groups: Array[Array],
 			if get_cell_string(cell).is_valid_int():
 				clue_cells.append(cell)
 		if clue_cells.size() >= 2:
-			# unfixable joined islands -- they are joined even if all blank cells are walls
+			# unfixable joined islands -- they are joined even if all empty cells are walls
 			result.joined_islands_unfixable.append_array(group)
 			result.joined_islands.assign(Utils.subtract(result.joined_islands, group))
 		if clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() < group.size():
-			# unfixable wrong size -- the group is too big even if all blank cells are walls
+			# unfixable wrong size -- the group is too big even if all empty cells are walls
 			result.wrong_size_unfixable.append_array(group)
 			result.wrong_size.assign(Utils.subtract(result.wrong_size, group))
 	

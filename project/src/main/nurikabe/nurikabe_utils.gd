@@ -4,7 +4,7 @@ extends Node
 ## Nurikabe cells:
 ## 	['0'-'99']: Clue
 ## 	'!': Invalid (out of bounds)
-## 	'': Empty
+## 	'': Empty (unknown, either island or wall)
 ## 	'.': Island
 ## 	'##': Wall
 const CELL_EMPTY := ""
