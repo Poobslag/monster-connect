@@ -113,6 +113,20 @@ func get_clue_cells(group: Array[Vector2i]) -> Array[Vector2i]:
 	return clue_cells
 
 
+func get_pool_cells() -> Array[Vector2i]:
+	var pool_cells: Dictionary[Vector2i, bool] = {}
+	for next_cell: Vector2i in cells:
+		if cells.get(next_cell) == CELL_WALL \
+				and cells.get(next_cell + Vector2i.RIGHT) == CELL_WALL \
+				and cells.get(next_cell + Vector2i.DOWN) == CELL_WALL \
+				and cells.get(next_cell + Vector2i(1, 1)) == CELL_WALL:
+			pool_cells[next_cell] = true
+			pool_cells[next_cell + Vector2i.RIGHT] = true
+			pool_cells[next_cell + Vector2i.DOWN] = true
+			pool_cells[next_cell + Vector2i(1, 1)] = true
+	return pool_cells.keys()
+
+
 func _check_clues(result: ValidationResult, island_groups: Array[Array],
 		potential_island_groups: Array[Array]) -> ValidationResult:
 	for group: Array[Vector2i] in island_groups:
@@ -145,17 +159,7 @@ func _check_clues(result: ValidationResult, island_groups: Array[Array],
 
 
 func _check_pools(result: ValidationResult) -> ValidationResult:
-	var pool_cells: Dictionary[Vector2i, bool] = {}
-	for next_cell: Vector2i in cells:
-		if cells.get(next_cell) == CELL_WALL \
-				and cells.get(next_cell + Vector2i.RIGHT) == CELL_WALL \
-				and cells.get(next_cell + Vector2i.DOWN) == CELL_WALL \
-				and cells.get(next_cell + Vector2i(1, 1)) == CELL_WALL:
-			pool_cells[next_cell] = true
-			pool_cells[next_cell + Vector2i.RIGHT] = true
-			pool_cells[next_cell + Vector2i.DOWN] = true
-			pool_cells[next_cell + Vector2i(1, 1)] = true
-	result.pools.append_array(pool_cells.keys())
+	result.pools.append_array(get_pool_cells())
 	return result
 
 
