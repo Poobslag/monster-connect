@@ -1,124 +1,8 @@
-[gd_scene load_steps=40 format=4 uid="uid://c1ikxk7sf1v"]
+[gd_scene load_steps=4 format=4 uid="uid://c1ikxk7sf1v"]
 
-[ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe/nurikabe_game_board.gd" id="1_qm6xo"]
-[ext_resource type="Texture2D" uid="uid://c3dfi5nwftbpf" path="res://assets/main/nurikabe/tile_island.png" id="3_8mqyp"]
-[ext_resource type="Texture2D" uid="uid://1d4oxoe1icnt" path="res://assets/main/nurikabe/tile_blank_2.png" id="3_aypp7"]
-[ext_resource type="Script" uid="uid://dlnf8p4ba4xe3" path="res://src/main/nurikabe/tile_map_clue.gd" id="3_e2tfc"]
-[ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/nurikabe/tile_blank_1.png" id="3_qm6xo"]
-[ext_resource type="Texture2D" uid="uid://b7fehbjoqojt3" path="res://assets/main/nurikabe/tile_ground_error.png" id="4_k5lcv"]
-[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_21uqv"]
-[ext_resource type="Texture2D" uid="uid://ciprhfck7rdkb" path="res://assets/main/nurikabe/tile_wall.png" id="5_e2tfc"]
-[ext_resource type="Texture2D" uid="uid://kj2rt14qlnew" path="res://assets/main/nurikabe/tile_island_error.png" id="6_vr7lx"]
+[ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_0ph7c"]
 [ext_resource type="PackedScene" uid="uid://dbd72lfv4xjdr" path="res://src/main/player/player.tscn" id="7_21uqv"]
-[ext_resource type="Script" uid="uid://bo2x55tn0h5yl" path="res://src/main/world/steppable_tiles.gd" id="7_kn5p3"]
-[ext_resource type="PackedScene" uid="uid://dn3d3m8il6qqm" path="res://src/main/nurikabe/cursorable_area.tscn" id="7_n1qax"]
-[ext_resource type="Texture2D" uid="uid://bdqidd2d2gvmc" path="res://assets/main/nurikabe/tile_island_lowlight.png" id="7_taxvf"]
-[ext_resource type="PackedScene" uid="uid://bjksq0yxrx6cq" path="res://src/main/nurikabe/nurikabe_cursor.tscn" id="8_aypp7"]
-[ext_resource type="Texture2D" uid="uid://dvlo1neqe3ej0" path="res://assets/main/nurikabe/tile_island_half.png" id="8_dsdbk"]
-[ext_resource type="Texture2D" uid="uid://bag65irek14nm" path="res://assets/main/nurikabe/tile_island_half_error.png" id="9_6gjo7"]
-[ext_resource type="Texture2D" uid="uid://ddcvm26x5cw6i" path="res://assets/main/nurikabe/tile_wall_error.png" id="9_w1x8j"]
-[ext_resource type="Texture2D" uid="uid://bd0rx3c53xlst" path="res://assets/main/nurikabe/tile_island_half_lowlight.png" id="10_medt7"]
-[ext_resource type="Texture2D" uid="uid://c1tobp51q6mqv" path="res://assets/main/nurikabe/tile_wall_half.png" id="15_medt7"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="16_2bf7t"]
-[ext_resource type="Texture2D" uid="uid://b83f06lhh2tv" path="res://assets/main/nurikabe/tile_wall_half_error.png" id="16_w77me"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ccndg"]
-texture = ExtResource("3_qm6xo")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_r5o04"]
-texture = ExtResource("3_aypp7")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_nmhbr"]
-tile_size = Vector2i(256, 256)
-sources/0 = SubResource("TileSetAtlasSource_ccndg")
-sources/1 = SubResource("TileSetAtlasSource_r5o04")
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w1x8j"]
-texture = ExtResource("4_k5lcv")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_vr7lx"]
-tile_size = Vector2i(256, 256)
-sources/0 = SubResource("TileSetAtlasSource_w1x8j")
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k5lcv"]
-texture = ExtResource("3_8mqyp")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_taxvf"]
-texture = ExtResource("6_vr7lx")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2bf7t"]
-texture = ExtResource("7_taxvf")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w77me"]
-texture = ExtResource("8_dsdbk")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bpbxa"]
-texture = ExtResource("9_6gjo7")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sb0eg"]
-texture = ExtResource("10_medt7")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_w1x8j"]
-tile_size = Vector2i(256, 256)
-sources/0 = SubResource("TileSetAtlasSource_k5lcv")
-sources/1 = SubResource("TileSetAtlasSource_taxvf")
-sources/2 = SubResource("TileSetAtlasSource_2bf7t")
-sources/3 = SubResource("TileSetAtlasSource_w77me")
-sources/4 = SubResource("TileSetAtlasSource_bpbxa")
-sources/5 = SubResource("TileSetAtlasSource_sb0eg")
-
-[sub_resource type="FontVariation" id="FontVariation_kn5p3"]
-base_font = ExtResource("5_21uqv")
-variation_opentype = {
-2003265652: 600
-}
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8mqyp"]
-texture = ExtResource("5_e2tfc")
-texture_region_size = Vector2i(256, 304)
-0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, 24)
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vr7lx"]
-texture = ExtResource("9_w1x8j")
-texture_region_size = Vector2i(256, 304)
-0:0/0 = 0
-0:0/0/texture_origin = Vector2i(0, 24)
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_m1d6t"]
-texture = ExtResource("15_medt7")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pyfk6"]
-texture = ExtResource("16_w77me")
-texture_region_size = Vector2i(256, 256)
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_ccndg"]
-tile_size = Vector2i(256, 256)
-sources/0 = SubResource("TileSetAtlasSource_8mqyp")
-sources/1 = SubResource("TileSetAtlasSource_vr7lx")
-sources/2 = SubResource("TileSetAtlasSource_m1d6t")
-sources/3 = SubResource("TileSetAtlasSource_pyfk6")
 
 [node name="GameScreen" type="Control"]
 y_sort_enabled = true
@@ -130,16 +14,12 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="GameBoard" type="Control" parent="."]
-y_sort_enabled = true
-layout_mode = 1
-anchors_preset = 0
-offset_left = 772.0
-offset_top = 320.0
-offset_right = 772.0
-offset_bottom = 320.0
-mouse_filter = 2
-script = ExtResource("1_qm6xo")
+[node name="GameBoard" parent="." instance=ExtResource("1_0ph7c")]
+layout_mode = 0
+offset_left = 741.0
+offset_top = 311.0
+offset_right = 741.0
+offset_bottom = 311.0
 grid_string = " 2                 2
              2      
    2     7          
@@ -150,30 +30,10 @@ grid_string = " 2                 2
                     
    1         2   4  "
 
-[node name="TileMapGround" type="TileMapLayer" parent="GameBoard"]
-unique_name_in_owner = true
-scale = Vector2(0.25, 0.25)
-tile_map_data = PackedByteArray("AAAAAAEAAQAAAAAAAAABAAEAAAAAAAAAAAACAAEAAQAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAQAAAAAAAAACAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAACAAAAAAAAAAAAAAADAAAAAQAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAQAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAQAAAAAAAAAIAAAAAAAAAAAAAAAJAAAAAQAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAQAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAQAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAQAAAAAAAAAJAAEAAAAAAAAAAAADAAIAAQAAAAAAAAAEAAIAAAAAAAAAAAAFAAIAAQAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAQAAAAAAAAAIAAIAAAAAAAAAAAAJAAIAAQAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAAAAAAAAAAACAAMAAQAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAQAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAQAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAQAAAAAAAAAJAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAQAAAAAAAAACAAQAAAAAAAAAAAADAAQAAQAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAQAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAQAAAAAAAAAIAAQAAAAAAAAAAAAJAAQAAQAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAAAAAAAAAAACAAUAAQAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAQAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAQAAAAAAAAAHAAUAAAAAAAAAAAAIAAUAAQAAAAAAAAAJAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAABAAYAAQAAAAAAAAACAAYAAAAAAAAAAAADAAYAAQAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAQAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAQAAAAAAAAAIAAYAAAAAAAAAAAAJAAYAAQAAAAAAAAAAAAcAAQAAAAAAAAABAAcAAAAAAAAAAAACAAcAAQAAAAAAAAADAAcAAAAAAAAAAAAEAAcAAQAAAAAAAAAFAAcAAAAAAAAAAAAGAAcAAQAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAQAAAAAAAAAJAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAABAAgAAQAAAAAAAAACAAgAAAAAAAAAAAADAAgAAQAAAAAAAAAEAAgAAAAAAAAAAAAFAAgAAQAAAAAAAAAGAAgAAAAAAAAAAAAHAAgAAQAAAAAAAAAIAAgAAAAAAAAAAAAJAAgAAQAAAAAAAAA=")
-tile_set = SubResource("TileSet_nmhbr")
+[node name="TileMapGround" parent="GameBoard" index="0"]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAACAAAAAAAAAAAAAAADAAAAAQAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAQAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAQAAAAAAAAAIAAAAAAAAAAAAAAAJAAAAAQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAAAAAAAAAAACAAEAAQAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAQAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAQAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAQAAAAAAAAAJAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAQAAAAAAAAACAAIAAAAAAAAAAAADAAIAAQAAAAAAAAAEAAIAAAAAAAAAAAAFAAIAAQAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAQAAAAAAAAAIAAIAAAAAAAAAAAAJAAIAAQAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAAAAAAAAAAACAAMAAQAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAQAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAQAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAQAAAAAAAAAJAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAQAAAAAAAAACAAQAAAAAAAAAAAADAAQAAQAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAQAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAQAAAAAAAAAIAAQAAAAAAAAAAAAJAAQAAQAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAAAAAAAAAAACAAUAAQAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAQAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAQAAAAAAAAAHAAUAAAAAAAAAAAAIAAUAAQAAAAAAAAAJAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAABAAYAAQAAAAAAAAACAAYAAAAAAAAAAAADAAYAAQAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAQAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAQAAAAAAAAAIAAYAAAAAAAAAAAAJAAYAAQAAAAAAAAAAAAcAAQAAAAAAAAABAAcAAAAAAAAAAAACAAcAAQAAAAAAAAADAAcAAAAAAAAAAAAEAAcAAQAAAAAAAAAFAAcAAAAAAAAAAAAGAAcAAQAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAQAAAAAAAAAJAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAABAAgAAQAAAAAAAAACAAgAAAAAAAAAAAADAAgAAQAAAAAAAAAEAAgAAAAAAAAAAAAFAAgAAQAAAAAAAAAGAAgAAAAAAAAAAAAHAAgAAQAAAAAAAAAIAAgAAAAAAAAAAAAJAAgAAQAAAAAAAAA=")
 
-[node name="TileMapError" type="TileMapLayer" parent="GameBoard"]
-unique_name_in_owner = true
-scale = Vector2(0.25, 0.25)
-tile_set = SubResource("TileSet_vr7lx")
-
-[node name="TileMapIsland" type="TileMapLayer" parent="GameBoard"]
-unique_name_in_owner = true
-scale = Vector2(0.25, 0.25)
-tile_set = SubResource("TileSet_w1x8j")
-
-[node name="TileMapClue" type="Node2D" parent="GameBoard"]
-unique_name_in_owner = true
-scale = Vector2(0.5, 0.5)
-script = ExtResource("3_e2tfc")
-tile_size = Vector2i(128, 128)
-font = SubResource("FontVariation_kn5p3")
-font_size = 100
-font_padding = 34.0
+[node name="TileMapClue" parent="GameBoard" index="3"]
 clues_by_cell = Dictionary[Vector2i, int]({
 Vector2i(0, 0): 2,
 Vector2i(0, 6): 2,
@@ -191,30 +51,8 @@ Vector2i(8, 8): 4,
 Vector2i(9, 0): 2
 })
 
-[node name="TileMapWall" type="TileMapLayer" parent="GameBoard"]
-unique_name_in_owner = true
-y_sort_enabled = true
-scale = Vector2(0.25, 0.25)
-tile_set = SubResource("TileSet_ccndg")
-y_sort_origin = 60
-
-[node name="CursorableArea" parent="GameBoard" instance=ExtResource("7_n1qax")]
-unique_name_in_owner = true
-scale = Vector2(0.25, 0.25)
-cursor_scene = ExtResource("8_aypp7")
-tile_size = Vector2(256, 256)
+[node name="CursorableArea" parent="GameBoard" index="5"]
 cursorable_rect = Rect2(0, 0, 2560, 2304)
-
-[node name="SteppableTiles" type="Node2D" parent="GameBoard"]
-unique_name_in_owner = true
-scale = Vector2(0.5, 0.5)
-script = ExtResource("7_kn5p3")
-tile_size = Vector2i(128, 128)
-
-[node name="ValidateTimer" type="Timer" parent="GameBoard"]
-unique_name_in_owner = true
-wait_time = 0.05
-one_shot = true
 
 [node name="Player" parent="." instance=ExtResource("7_21uqv")]
 position = Vector2(1444, 630)
@@ -228,5 +66,4 @@ zoom = Vector2(1.6, 1.6)
 unique_name_in_owner = true
 visible = false
 
-[connection signal="timeout" from="GameBoard/ValidateTimer" to="GameBoard" method="_on_validate_timer_timeout"]
-[connection signal="next_level_button_pressed" from="ResultsOverlay" to="GameBoard" method="_on_results_overlay_next_level_button_pressed"]
+[editable path="GameBoard"]

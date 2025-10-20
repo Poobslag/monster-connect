@@ -1,0 +1,180 @@
+[gd_scene load_steps=38 format=3 uid="uid://b06aw2k2o1thk"]
+
+[ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe/nurikabe_game_board.gd" id="1_7bv3k"]
+[ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/nurikabe/tile_blank_1.png" id="2_j45ic"]
+[ext_resource type="Texture2D" uid="uid://1d4oxoe1icnt" path="res://assets/main/nurikabe/tile_blank_2.png" id="3_vt0yr"]
+[ext_resource type="Texture2D" uid="uid://b7fehbjoqojt3" path="res://assets/main/nurikabe/tile_ground_error.png" id="4_314g8"]
+[ext_resource type="Texture2D" uid="uid://c3dfi5nwftbpf" path="res://assets/main/nurikabe/tile_island.png" id="5_ydv7c"]
+[ext_resource type="Texture2D" uid="uid://kj2rt14qlnew" path="res://assets/main/nurikabe/tile_island_error.png" id="6_bhjks"]
+[ext_resource type="Texture2D" uid="uid://bdqidd2d2gvmc" path="res://assets/main/nurikabe/tile_island_lowlight.png" id="7_fmeva"]
+[ext_resource type="Texture2D" uid="uid://dvlo1neqe3ej0" path="res://assets/main/nurikabe/tile_island_half.png" id="8_1ften"]
+[ext_resource type="Texture2D" uid="uid://bag65irek14nm" path="res://assets/main/nurikabe/tile_island_half_error.png" id="9_lhgev"]
+[ext_resource type="Texture2D" uid="uid://bd0rx3c53xlst" path="res://assets/main/nurikabe/tile_island_half_lowlight.png" id="10_2i4jg"]
+[ext_resource type="Script" uid="uid://dlnf8p4ba4xe3" path="res://src/main/nurikabe/tile_map_clue.gd" id="11_202sf"]
+[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="12_taukv"]
+[ext_resource type="Texture2D" uid="uid://ciprhfck7rdkb" path="res://assets/main/nurikabe/tile_wall.png" id="13_mfmxw"]
+[ext_resource type="Texture2D" uid="uid://ddcvm26x5cw6i" path="res://assets/main/nurikabe/tile_wall_error.png" id="14_okqjo"]
+[ext_resource type="Texture2D" uid="uid://c1tobp51q6mqv" path="res://assets/main/nurikabe/tile_wall_half.png" id="15_3d7am"]
+[ext_resource type="Texture2D" uid="uid://b83f06lhh2tv" path="res://assets/main/nurikabe/tile_wall_half_error.png" id="16_qv411"]
+[ext_resource type="PackedScene" uid="uid://dn3d3m8il6qqm" path="res://src/main/nurikabe/cursorable_area.tscn" id="17_coiav"]
+[ext_resource type="PackedScene" uid="uid://bjksq0yxrx6cq" path="res://src/main/nurikabe/nurikabe_cursor.tscn" id="18_85sqx"]
+[ext_resource type="Script" uid="uid://bo2x55tn0h5yl" path="res://src/main/world/steppable_tiles.gd" id="19_7bs1t"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ccndg"]
+texture = ExtResource("2_j45ic")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_r5o04"]
+texture = ExtResource("3_vt0yr")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_nmhbr"]
+tile_size = Vector2i(256, 256)
+sources/0 = SubResource("TileSetAtlasSource_ccndg")
+sources/1 = SubResource("TileSetAtlasSource_r5o04")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w1x8j"]
+texture = ExtResource("4_314g8")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_vr7lx"]
+tile_size = Vector2i(256, 256)
+sources/0 = SubResource("TileSetAtlasSource_w1x8j")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k5lcv"]
+texture = ExtResource("5_ydv7c")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_taxvf"]
+texture = ExtResource("6_bhjks")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2bf7t"]
+texture = ExtResource("7_fmeva")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w77me"]
+texture = ExtResource("8_1ften")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bpbxa"]
+texture = ExtResource("9_lhgev")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sb0eg"]
+texture = ExtResource("10_2i4jg")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_w1x8j"]
+tile_size = Vector2i(256, 256)
+sources/0 = SubResource("TileSetAtlasSource_k5lcv")
+sources/1 = SubResource("TileSetAtlasSource_taxvf")
+sources/2 = SubResource("TileSetAtlasSource_2bf7t")
+sources/3 = SubResource("TileSetAtlasSource_w77me")
+sources/4 = SubResource("TileSetAtlasSource_bpbxa")
+sources/5 = SubResource("TileSetAtlasSource_sb0eg")
+
+[sub_resource type="FontVariation" id="FontVariation_kn5p3"]
+base_font = ExtResource("12_taukv")
+variation_opentype = {
+2003265652: 600
+}
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8mqyp"]
+texture = ExtResource("13_mfmxw")
+texture_region_size = Vector2i(256, 304)
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, 24)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vr7lx"]
+texture = ExtResource("14_okqjo")
+texture_region_size = Vector2i(256, 304)
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, 24)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_m1d6t"]
+texture = ExtResource("15_3d7am")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pyfk6"]
+texture = ExtResource("16_qv411")
+texture_region_size = Vector2i(256, 256)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ccndg"]
+tile_size = Vector2i(256, 256)
+sources/0 = SubResource("TileSetAtlasSource_8mqyp")
+sources/1 = SubResource("TileSetAtlasSource_vr7lx")
+sources/2 = SubResource("TileSetAtlasSource_m1d6t")
+sources/3 = SubResource("TileSetAtlasSource_pyfk6")
+
+[node name="GameBoard" type="Control"]
+y_sort_enabled = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 772.0
+offset_top = 320.0
+offset_right = 772.0
+offset_bottom = 320.0
+mouse_filter = 2
+script = ExtResource("1_7bv3k")
+
+[node name="TileMapGround" type="TileMapLayer" parent="."]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+tile_set = SubResource("TileSet_nmhbr")
+
+[node name="TileMapError" type="TileMapLayer" parent="."]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+tile_set = SubResource("TileSet_vr7lx")
+
+[node name="TileMapIsland" type="TileMapLayer" parent="."]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+tile_set = SubResource("TileSet_w1x8j")
+
+[node name="TileMapClue" type="Node2D" parent="."]
+unique_name_in_owner = true
+scale = Vector2(0.5, 0.5)
+script = ExtResource("11_202sf")
+tile_size = Vector2i(128, 128)
+font = SubResource("FontVariation_kn5p3")
+font_size = 100
+font_padding = 34.0
+
+[node name="TileMapWall" type="TileMapLayer" parent="."]
+unique_name_in_owner = true
+y_sort_enabled = true
+scale = Vector2(0.25, 0.25)
+tile_set = SubResource("TileSet_ccndg")
+y_sort_origin = 60
+
+[node name="CursorableArea" parent="." instance=ExtResource("17_coiav")]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+cursor_scene = ExtResource("18_85sqx")
+tile_size = Vector2(256, 256)
+
+[node name="SteppableTiles" type="Node2D" parent="."]
+unique_name_in_owner = true
+scale = Vector2(0.5, 0.5)
+script = ExtResource("19_7bs1t")
+tile_size = Vector2i(128, 128)
+
+[node name="ValidateTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.05
+one_shot = true
+
+[connection signal="timeout" from="ValidateTimer" to="." method="_on_validate_timer_timeout"]
