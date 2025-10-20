@@ -5,8 +5,6 @@ const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
-const NEIGHBOR_DIRS := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
-
 var cells: Dictionary[Vector2i, String]
 
 func from_game_board(game_board: NurikabeGameBoard) -> void:
@@ -16,6 +14,10 @@ func from_game_board(game_board: NurikabeGameBoard) -> void:
 
 func get_cell_string(cell_pos: Vector2i) -> String:
 	return cells.get(cell_pos, CELL_INVALID)
+
+
+func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
+	return [cell_pos + Vector2i.UP, cell_pos + Vector2i.DOWN, cell_pos + Vector2i.LEFT, cell_pos + Vector2i.RIGHT]
 
 
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
@@ -42,8 +44,7 @@ func surround_island(cell_pos: Vector2i) -> Array[Dictionary]:
 			ignored_cells[next_cell] = true
 			continue
 		
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor_cell: Vector2i = next_cell + neighbor_dir
+		for neighbor_cell: Vector2i in get_neighbors(next_cell):
 			if ignored_cells.has(neighbor_cell) \
 					or island_cells.has(neighbor_cell) \
 					or clue_cells.has(neighbor_cell) \
@@ -198,8 +199,7 @@ func _find_groups(filter_func: Callable) -> Array[Array]:
 		groups.back().append(next_cell)
 		
 		# recurse to neighboring cells
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor_cell: Vector2i = next_cell + neighbor_dir
+		for neighbor_cell: Vector2i in get_neighbors(next_cell):
 			if neighbor_cell in remaining_cells:
 				queue.push_back(neighbor_cell)
 				remaining_cells.erase(neighbor_cell)
