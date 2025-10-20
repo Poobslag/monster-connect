@@ -65,6 +65,18 @@ func test_deduce_unclued_island_invalid() -> void:
 	assert_deduction(solver.deduce_unclued_island(init_model()), expected)
 
 
+func test_deduce_unclued_island_invalid_2() -> void:
+	# the grid already has an island with no clue; don't perform this deduction
+	grid = [
+		"## 3##",
+		"## .  ",
+		"      ",
+	]
+	var expected: NurikabeSolver.Deduction = NurikabeSolver.Deduction.new([
+		], NurikabeSolver.DeductionReason.UNCLUED_ISLAND)
+	assert_deduction(solver.deduce_unclued_island(init_model()), expected)
+
+
 func test_deduce_unclued_island_1() -> void:
 	grid = [
 		" 2  ##",

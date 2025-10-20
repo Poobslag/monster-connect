@@ -167,19 +167,25 @@ func _empty_islands(board: NurikabeBoardModel) -> Array[Array]:
 	var result: Array[Array] = []
 	var groups: Array[Array] = board.find_largest_island_groups()
 	for group: Array[Vector2i] in groups:
-		var only_empty_cells: bool = true
-		for cell: Vector2i in group:
-			if board.get_cell_string(cell) != CELL_EMPTY:
-				only_empty_cells = false
-				break
-		if only_empty_cells:
+		if _only_empty_cells(board, group):
 			result.append(group)
+	return result
+
+
+func _only_empty_cells(board: NurikabeBoardModel, group: Array[Vector2i]) -> bool:
+	var result: bool = true
+	for cell: Vector2i in group:
+		if board.get_cell_string(cell) != CELL_EMPTY:
+			result = false
+			break
 	return result
 
 
 func _unclued_island_count(board: NurikabeBoardModel) -> int:
 	var result: int = 0
 	for group: Array[Vector2i] in board.find_largest_island_groups():
+		if _only_empty_cells(board, group):
+			continue
 		var clue_cells: Array[Vector2i] = board.get_clue_cells(group)
 		if clue_cells.size() == 0:
 			result += 1
