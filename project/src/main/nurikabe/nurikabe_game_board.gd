@@ -108,6 +108,11 @@ func global_to_map(global_point: Vector2) -> Vector2i:
 	return %TileMapGround.local_to_map(%TileMapGround.to_local(global_point))
 
 
+## Sets the specified cells on the game board.[br]
+## [br]
+## Accepts a dictionary with the following keys:[br]
+## 	'pos': (Vector2i) The cell to update.[br]
+## 	'value': (String) The value to assign.[br]
 func set_cell_strings(changes: Array[Dictionary], player_id: int = -1) -> void:
 	if player_id != -1:
 		var cell_positions: Array[Vector2i] = []
