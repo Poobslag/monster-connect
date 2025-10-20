@@ -7,6 +7,13 @@ const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
 var cells: Dictionary[Vector2i, String]
 
+
+func duplicate() -> NurikabeBoardModel:
+	var copy: NurikabeBoardModel = NurikabeBoardModel.new()
+	copy.cells = cells.duplicate()
+	return copy
+
+
 func from_game_board(game_board: NurikabeGameBoard) -> void:
 	for cell_pos in game_board.get_used_cells():
 		set_cell_string(cell_pos, game_board.get_cell_string(cell_pos))
@@ -98,13 +105,18 @@ func find_smallest_island_groups() -> Array[Array]:
 		return value.is_valid_int() or value in [CELL_ISLAND])
 
 
+func get_clue_cells(group: Array[Vector2i]) -> Array[Vector2i]:
+	var clue_cells: Array[Vector2i] = []
+	for cell: Vector2i in group:
+		if get_cell_string(cell).is_valid_int():
+			clue_cells.append(cell)
+	return clue_cells
+
+
 func _check_clues(result: ValidationResult, island_groups: Array[Array],
 		potential_island_groups: Array[Array]) -> ValidationResult:
 	for group: Array[Vector2i] in island_groups:
-		var clue_cells: Array[Vector2i] = []
-		for cell: Vector2i in group:
-			if get_cell_string(cell).is_valid_int():
-				clue_cells.append(cell)
+		var clue_cells: Array[Vector2i] = get_clue_cells(group)
 		if clue_cells.size() == 0:
 			result.unclued_islands.append_array(group)
 		if clue_cells.size() == 1 and get_cell_string(clue_cells.front()).to_int() < group.size():
