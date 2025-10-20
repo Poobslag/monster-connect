@@ -335,13 +335,13 @@ func assert_rules_invalid(expected_result_dict: Dictionary) -> void:
 
 func assert_island_group_sizes(expected: Array[int]) -> void:
 	var model: NurikabeBoardModel = init_model()
-	var island_groups: Array[Array] = model.find_island_groups()
+	var island_groups: Array[Array] = model.find_largest_island_groups()
 	_assert_group_sizes(island_groups, expected, "island")
 
 
 func assert_wall_group_sizes(expected: Array[int]) -> void:
 	var model: NurikabeBoardModel = init_model()
-	var wall_groups: Array[Array] = model.find_wall_groups()
+	var wall_groups: Array[Array] = model.find_smallest_wall_groups()
 	_assert_group_sizes(wall_groups, expected, "wall")
 
 

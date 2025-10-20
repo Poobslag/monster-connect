@@ -63,10 +63,10 @@ func surround_island(cell_pos: Vector2i) -> Array[Dictionary]:
 
 func validate() -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
-	var island_groups: Array[Array] = find_island_groups()
-	var wall_groups: Array[Array] = find_wall_groups()
-	var potential_wall_groups: Array[Array] = find_potential_wall_groups()
-	var potential_island_groups: Array[Array] = find_potential_island_groups()
+	var island_groups: Array[Array] = find_largest_island_groups()
+	var wall_groups: Array[Array] = find_smallest_wall_groups()
+	var potential_wall_groups: Array[Array] = find_largest_wall_groups()
+	var potential_island_groups: Array[Array] = find_smallest_island_groups()
 	_check_clues(result, island_groups, potential_island_groups)
 	_check_pools(result)
 	_check_split_walls(result, wall_groups, potential_wall_groups)
@@ -74,22 +74,26 @@ func validate() -> ValidationResult:
 	return result
 
 
-func find_island_groups() -> Array[Array]:
+## Returns the largest possible groups of island cells, including all blank cells.
+func find_largest_island_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
 
 
-func find_wall_groups() -> Array[Array]:
+## Returns the smallest possible groups of wall cells, excluding all blank cells.
+func find_smallest_wall_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value in [CELL_WALL])
 
 
-func find_potential_wall_groups() -> Array[Array]:
+## Returns the largest possible groups of wall cells, including all blank cells.
+func find_largest_wall_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value in [CELL_EMPTY, CELL_WALL])
 
 
-func find_potential_island_groups() -> Array[Array]:
+## Returns the smallest possible groups of island cells, excluding all blank cells.
+func find_smallest_island_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_ISLAND])
 
