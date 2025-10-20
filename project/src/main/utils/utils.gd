@@ -2,6 +2,11 @@
 class_name Utils
 ## Contains global utilities.
 
+const NUM_SCANCODES := {
+	KEY_0: 0, KEY_1: 1, KEY_2: 2, KEY_3: 3, KEY_4: 4,
+	KEY_5: 5, KEY_6: 6, KEY_7: 7, KEY_8: 8, KEY_9: 9,
+}
+
 ## Recursively finds all files with the given extension starting at [param path].
 static func find_files(path: String, file_extension: String) -> Array[String]:
 	var found_files: Array[String] = []
@@ -31,6 +36,19 @@ static func find_files(path: String, file_extension: String) -> Array[String]:
 		file = dir.get_next()
 	
 	return found_files
+
+
+## Returns [0-9] for a number key event, or -1 if the event is not a number key event.
+static func key_num(event: InputEvent) -> int:
+	return NUM_SCANCODES.get(key_press(event), -1)
+
+
+## Returns the [member InputEventKey.keycode] for a key press event, or -1 if the event is not a key press event.
+static func key_press(event: InputEvent) -> int:
+	var keycode := -1
+	if event is InputEventKey and event.is_pressed() and not event.is_echo():
+		keycode = event.keycode
+	return keycode
 
 
 ## Invalidates a tween if it is already active.[br]
