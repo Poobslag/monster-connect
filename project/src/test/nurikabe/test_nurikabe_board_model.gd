@@ -346,13 +346,7 @@ func assert_wall_group_sizes(expected: Array[int]) -> void:
 
 
 func init_model() -> NurikabeBoardModel:
-	var model: NurikabeBoardModel = NurikabeBoardModel.new()
-	for y in grid.size():
-		var row_string: String = grid[y]
-		@warning_ignore("integer_division")
-		for x in row_string.length() / 2:
-			model.set_cell_string(Vector2i(x, y), row_string.substr(x * 2, 2).strip_edges())
-	return model
+	return NurikabeTestUtils.init_model(grid)
 
 
 func _assert_rules(expected_result_dict: Dictionary) -> void:
