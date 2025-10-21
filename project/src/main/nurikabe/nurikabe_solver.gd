@@ -68,36 +68,19 @@ func deduce_adjacent_clues(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 
 func deduce_joined_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 	var deductions: Array[NurikabeDeduction] = []
-	
-	# Find the number of single-clue islands bordering each empty cell, store it in neighbor_map.
-	#
-	# -1: invalid
-	# 0: bordering 0 islands with exactly one clue
-	# 1: bordering 1 island with exactly one clue
-	# n: bordering n islands with exactly one clue
-	var neighbor_map: Dictionary[Vector2i, int] = {}
-	for cell: Vector2i in board.cells:
-		neighbor_map[cell] = 0
-	for group: Array[Vector2i] in board.find_smallest_island_groups():
-		if board.get_clue_cells(group).size() != 1:
-			continue
-		var seen: Dictionary[Vector2i, bool] = {}
-		for cell: Vector2i in group:
-			for neighbor_cell: Vector2i in board.get_neighbors(cell):
-				if seen.has(neighbor_cell) or board.get_cell_string(neighbor_cell) != CELL_EMPTY:
-					continue
-				neighbor_map[neighbor_cell] += 1
-				seen[neighbor_cell] = true
-	
+	var clued_neighbor_count_by_cell: Dictionary[Vector2i, int] = _clued_neighbor_count_by_cell(board)
 	# Fill in empty cells bordering 2 or more islands with a wall.
-	for cell: Vector2i in neighbor_map.keys():
-		if neighbor_map[cell] >= 2:
+	for cell: Vector2i in clued_neighbor_count_by_cell.keys():
+		if board.get_cell_string(cell) != CELL_EMPTY:
+			continue
+		if clued_neighbor_count_by_cell[cell] >= 2:
 			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, JOINED_ISLAND))
 	
 	return deductions
 
 
 func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
+	var deduction_cells: Dictionary[Vector2i, bool] = {}
 	var deductions: Array[NurikabeDeduction] = []
 	
 	# Find islands without any clues. These islands must be walls.
@@ -107,20 +90,25 @@ func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 			if board.get_cell_string(cell) != CELL_EMPTY:
 				only_empty_cells = false
 				break
-		if only_empty_cells:
-			for cell: Vector2i in group:
-				deductions.append(NurikabeDeduction.new(cell, CELL_WALL, UNCLUED_ISLAND))
+		if not only_empty_cells:
+			continue
+		for cell: Vector2i in group:
+			deduction_cells[cell] = true
+			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, UNCLUED_ISLAND))
 	
 	# If making an empty cell a wall creates a new unclued island, this cell must be an island.
 	var unclued_island_count: int = _unclued_island_count(board)
 	for cell: Vector2i in board.cells:
+		if cell in deduction_cells:
+			continue
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
-		trial.cells[cell] = CELL_WALL
+		trial.set_cell_string(cell, CELL_WALL)
 		var trial_unclued_island_count: int = _unclued_island_count(trial)
 		if trial_unclued_island_count > unclued_island_count:
+			deduction_cells[cell] = true
 			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, UNCLUED_ISLAND))
 	
 	return deductions
@@ -175,10 +163,10 @@ func deduce_pools(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
-		trial.cells[cell] = CELL_WALL
+		trial.set_cell_string(cell, CELL_WALL)
 		for group: Array[Vector2i] in _empty_islands(trial):
 			for group_cell: Vector2i in group:
-				trial.cells[group_cell] = CELL_WALL
+				trial.set_cell_string(group_cell, CELL_WALL)
 		var trial_pool_count: int = trial.get_pool_cells().size()
 		if trial_pool_count > pool_count:
 			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, POOLS))
@@ -193,12 +181,32 @@ func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
-		trial.cells[cell] = CELL_ISLAND
+		trial.set_cell_string(cell, CELL_ISLAND)
 		var trial_wall_count: int = _largest_non_empty_wall_groups(trial).size()
 		if trial_wall_count > wall_count:
-			trial.find_largest_wall_groups()
 			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, SPLIT_WALLS))
 	return deductions
+
+
+## Returns the number of single-clue islands bordering each empty cell.
+func _clued_neighbor_count_by_cell(board: NurikabeBoardModel) -> Dictionary[Vector2i, int]:
+	var clued_neighbor_count_by_cell: Dictionary[Vector2i, int] = {}
+	var neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] = _neighbor_groups_by_empty_cell(board)
+	for cell: Vector2i in neighbor_groups_by_empty_cell:
+		clued_neighbor_count_by_cell[cell] = 0
+		for group: Array[Vector2i] in neighbor_groups_by_empty_cell[cell]:
+			if board.get_clue_cells(group).size() == 1:
+				clued_neighbor_count_by_cell[cell] += 1
+	return clued_neighbor_count_by_cell
+
+
+func _empty_islands(board: NurikabeBoardModel) -> Array[Array]:
+	var result: Array[Array] = []
+	var groups: Array[Array] = board.find_largest_island_groups()
+	for group: Array[Vector2i] in groups:
+		if _only_empty_cells(board, group):
+			result.append(group)
+	return result
 
 
 func _largest_non_empty_wall_groups(board: NurikabeBoardModel) -> Array[Array]:
@@ -214,6 +222,19 @@ func _largest_non_empty_wall_groups(board: NurikabeBoardModel) -> Array[Array]:
 	return result
 
 
+func _neighbor_groups_by_empty_cell(board: NurikabeBoardModel) -> Dictionary[Vector2i, Array]:
+	var neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] = {}
+	var smallest_island_groups: Array[Array] = board.find_smallest_island_groups()
+	for group: Array[Vector2i] in smallest_island_groups:
+		for cell: Vector2i in group:
+			for neighbor: Vector2i in board.get_neighbors(cell):
+				if not neighbor in neighbor_groups_by_empty_cell:
+					neighbor_groups_by_empty_cell[neighbor] = []
+				if not group in neighbor_groups_by_empty_cell[neighbor]:
+					neighbor_groups_by_empty_cell[neighbor].append(group)
+	return neighbor_groups_by_empty_cell
+
+
 ## Returns a 4-bit mask of neighbor cells which satisfy [param predicate].[br]
 ## [br]
 ## Bit mask: 1=up, 2=down, 4=left, 8=right.
@@ -224,15 +245,6 @@ func _neighbor_mask(board: NurikabeBoardModel, cell: Vector2i, predicate: Callab
 	mask |= 4 if predicate.call(board.get_cell_string(cell + Vector2i.LEFT)) else 0
 	mask |= 8 if predicate.call(board.get_cell_string(cell + Vector2i.RIGHT)) else 0
 	return mask
-
-
-func _empty_islands(board: NurikabeBoardModel) -> Array[Array]:
-	var result: Array[Array] = []
-	var groups: Array[Array] = board.find_largest_island_groups()
-	for group: Array[Vector2i] in groups:
-		if _only_empty_cells(board, group):
-			result.append(group)
-	return result
 
 
 func _only_empty_cells(board: NurikabeBoardModel, group: Array[Vector2i]) -> bool:
