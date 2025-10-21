@@ -7,6 +7,11 @@ const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
 const UNKNOWN_REASON: NurikabeUtils.Reason = NurikabeUtils.UNKNOWN_REASON
 
+## Starting techniques
+const ISLAND_OF_ONE: NurikabeUtils.Reason = NurikabeUtils.ISLAND_OF_ONE
+const ADJACENT_CLUES: NurikabeUtils.Reason = NurikabeUtils.ADJACENT_CLUES
+const DIAGONAL_CLUES: NurikabeUtils.Reason = NurikabeUtils.DIAGONAL_CLUES
+
 ## Rules
 const JOINED_ISLAND: NurikabeUtils.Reason = NurikabeUtils.JOINED_ISLAND
 const UNCLUED_ISLAND: NurikabeUtils.Reason = NurikabeUtils.UNCLUED_ISLAND
@@ -14,6 +19,11 @@ const ISLAND_TOO_LARGE: NurikabeUtils.Reason = NurikabeUtils.ISLAND_TOO_LARGE
 const ISLAND_TOO_SMALL: NurikabeUtils.Reason = NurikabeUtils.ISLAND_TOO_SMALL
 const POOLS: NurikabeUtils.Reason = NurikabeUtils.POOLS
 const SPLIT_WALLS: NurikabeUtils.Reason = NurikabeUtils.SPLIT_WALLS
+
+var starting_techniques: Array[Callable] = [
+	deduce_island_of_one,
+	deduce_adjacent_clues,
+]
 
 var rules: Array[Callable] = [
 	deduce_joined_island,
@@ -23,6 +33,42 @@ var rules: Array[Callable] = [
 	deduce_pools,
 	deduce_split_walls,
 ]
+
+func deduce_island_of_one(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
+	var deductions: Array[NurikabeDeduction] = []
+	var island_of_one_neighbors: Dictionary[Vector2i, bool] = {}
+	var islands_of_one: Array[Vector2i] = []
+	for cell: Vector2i in board.cells:
+		if board.get_cell_string(cell).is_valid_int() and board.get_cell_string(cell).to_int() == 1:
+			islands_of_one.append(cell)
+	for island_of_one: Vector2i in islands_of_one:
+		for neighbor_cell: Vector2i in board.get_neighbors(island_of_one):
+			if board.get_cell_string(neighbor_cell) == CELL_EMPTY:
+				island_of_one_neighbors[neighbor_cell] = true
+	for neighbor: Vector2i in island_of_one_neighbors:
+		deductions.append(NurikabeDeduction.new(neighbor, CELL_WALL, ISLAND_OF_ONE))
+	return deductions
+
+
+func deduce_adjacent_clues(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
+	var deductions: Array[NurikabeDeduction] = []
+	for cell: Vector2i in board.cells:
+		if board.get_cell_string(cell) != CELL_EMPTY:
+			continue
+		# 1=up, 2=down, 4=left, 8=right
+		var clue_mask: int = 0
+		clue_mask |= 1 if board.get_cell_string(cell + Vector2i.UP).is_valid_int() else 0
+		clue_mask |= 2 if board.get_cell_string(cell + Vector2i.DOWN).is_valid_int() else 0
+		clue_mask |= 4 if board.get_cell_string(cell + Vector2i.LEFT).is_valid_int() else 0
+		clue_mask |= 8 if board.get_cell_string(cell + Vector2i.RIGHT).is_valid_int() else 0
+		if clue_mask & 3 == 3 or clue_mask & 12 == 12:
+			deductions.append( \
+					NurikabeDeduction.new(cell, CELL_WALL, ADJACENT_CLUES))
+		elif clue_mask & 5 == 5 or clue_mask & 6 == 6 or clue_mask & 9 == 9 or clue_mask & 10 == 10:
+			deductions.append( \
+					NurikabeDeduction.new(cell, CELL_WALL, DIAGONAL_CLUES))
+	return deductions
+
 
 func deduce_joined_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 	var deductions: Array[NurikabeDeduction] = []
