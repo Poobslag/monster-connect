@@ -2,20 +2,35 @@ extends Node
 ## [b]Keys:[/b][br]
 ## 	[kbd]Q[/kbd]: Solve.
 
+var solver: NurikabeSolver = NurikabeSolver.new()
+
 func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
 		KEY_Q:
-			_solve()
+			solve()
 
 
-func _solve() -> void:
-	var board: NurikabeBoardModel = %GameBoard.to_model()
-	var solver: NurikabeSolver = NurikabeSolver.new()
+func solve() -> void:
 	var changes: Array[Dictionary] = []
 	
 	if not %MessageLabel.text.is_empty():
 		%MessageLabel.text += "--------\n"
-	for callable: Callable in solver.rules:
+	
+	if changes.is_empty():
+		changes = run_rules(solver.starting_techniques, changes)
+	
+	if changes.is_empty():
+		changes = run_rules(solver.rules, changes)
+	
+	if changes.is_empty():
+		%MessageLabel.text += "(no changes)\n"
+	
+	%GameBoard.set_cell_strings(changes)
+
+
+func run_rules(rules: Array[Callable], changes: Array[Dictionary]) -> Array[Dictionary]:
+	var board: NurikabeBoardModel = %GameBoard.to_model()
+	for callable: Callable in rules:
 		var deductions: Array[NurikabeDeduction] = callable.call(board)
 		if deductions.is_empty():
 			continue
@@ -29,8 +44,4 @@ func _solve() -> void:
 			%MessageLabel.text += "%s: %s\n" % [reason_name, deduction_positions_by_reason[reason_name]]
 		for deduction: NurikabeDeduction in deductions:
 			changes.append(deduction.to_change())
-	
-	if changes.is_empty():
-		%MessageLabel.text += "(no changes)\n"
-	
-	%GameBoard.set_cell_strings(changes)
+	return changes
