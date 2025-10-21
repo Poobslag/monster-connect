@@ -22,6 +22,14 @@ const ISLAND_TOO_SMALL: NurikabeUtils.Reason = NurikabeUtils.ISLAND_TOO_SMALL
 const POOLS: NurikabeUtils.Reason = NurikabeUtils.POOLS
 const SPLIT_WALLS: NurikabeUtils.Reason = NurikabeUtils.SPLIT_WALLS
 
+## Basic techniques
+const SURROUNDED_SQUARE: NurikabeUtils.Reason = NurikabeUtils.SURROUNDED_SQUARE
+const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
+const WALL_CONTINUITY: NurikabeUtils.Reason = NurikabeUtils.WALL_CONTINUITY
+const ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.ISLAND_EXPANSION
+const CORNER_ISLAND: NurikabeUtils.Reason = NurikabeUtils.CORNER_ISLAND
+const HIDDEN_ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.HIDDEN_ISLAND_EXPANSION
+
 var solver: NurikabeSolver = NurikabeSolver.new()
 var grid: Array[String] = []
 
