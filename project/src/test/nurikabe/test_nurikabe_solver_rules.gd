@@ -51,6 +51,17 @@ func test_deduce_joined_island_none() -> void:
 	assert_deduction(solver.deduce_joined_island(init_model()), expected)
 
 
+func test_deduce_joined_island_invalid() -> void:
+	grid = [
+		" 1##  ",
+		"## 1  ",
+		"      ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		]
+	assert_deduction(solver.deduce_joined_island(init_model()), expected)
+
+
 func test_deduce_unclued_island_invalid() -> void:
 	# the grid already has an island with no clue; don't perform this deduction
 	grid = [
@@ -74,13 +85,16 @@ func test_deduce_unclued_island_invalid_2() -> void:
 	assert_deduction(solver.deduce_unclued_island(init_model()), expected)
 
 
-func test_deduce_unclued_island_1() -> void:
+func test_unclued_island_surrounded_square() -> void:
 	grid = [
-		" 2  ##",
-		"####  ",
+		"            ",
+		"  ##        ",
+		"## 1## 2##  ",
+		"  ##  ## 5  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(2, 1), CELL_WALL, UNCLUED_ISLAND),
+		NurikabeDeduction.new(Vector2i(0, 3), CELL_WALL, SURROUNDED_SQUARE),
+		NurikabeDeduction.new(Vector2i(2, 3), CELL_WALL, SURROUNDED_SQUARE),
 	]
 	assert_deduction(solver.deduce_unclued_island(init_model()), expected)
 
@@ -149,8 +163,8 @@ func test_island_too_small_1() -> void:
 		" 3    ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_TOO_SMALL),
-		NurikabeDeduction.new(Vector2i(2, 0), CELL_ISLAND, ISLAND_TOO_SMALL),
+		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(2, 0), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
 	]
 	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
 
@@ -162,7 +176,7 @@ func test_island_too_small_multiple() -> void:
 		"##   3",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_TOO_SMALL),
+		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_EXPANSION),
 	]
 	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
 
@@ -174,8 +188,8 @@ func test_island_too_small_chokepoint() -> void:
 		"      ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_TOO_SMALL),
-		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, ISLAND_TOO_SMALL),
+		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
 	]
 	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
 
@@ -187,9 +201,69 @@ func test_island_too_small_chokepoint_2() -> void:
 		"      ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_TOO_SMALL),
-		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, ISLAND_TOO_SMALL),
-		NurikabeDeduction.new(Vector2i(1, 2), CELL_ISLAND, ISLAND_TOO_SMALL),
+		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(1, 2), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
+	]
+	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
+
+
+func test_island_too_small_hidden_island_expansion_1() -> void:
+	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
+	grid = [
+		" 1##    ",
+		"####   5",
+		"## 3    ",
+		"        ",
+		"        ",
+		"        ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, HIDDEN_ISLAND_EXPANSION),
+	]
+	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
+
+
+func test_island_too_small_hidden_island_expansion_2() -> void:
+	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
+	grid = [
+		" 1## . .",
+		"####   5",
+		"## .    ",
+		"        ",
+		"        ",
+		" 5      ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, HIDDEN_ISLAND_EXPANSION),
+	]
+	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
+
+
+func test_island_too_small_invalid() -> void:
+	grid = [
+		" 2      ",
+		"  ##    ",
+		"   2    ",
+		"        ",
+		"       6",
+	]
+	var expected: Array[NurikabeDeduction] = [
+	]
+	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
+
+
+func test_island_too_small_only_two_directions() -> void:
+	# The cell at (2, 3) can't be an island or it would block the 2 island from growing.
+	grid = [
+		" . . .  ",
+		" 7##    ",
+		"## 2    ",
+		"        ",
+		"       1",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(2, 3), CELL_WALL, CORNER_ISLAND),
 	]
 	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
 
@@ -228,7 +302,7 @@ func test_no_split_walls_1() -> void:
 		"  ##  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 1), CELL_WALL, SPLIT_WALLS),
+		NurikabeDeduction.new(Vector2i(1, 1), CELL_WALL, WALL_CONTINUITY),
 	]
 	assert_deduction(solver.deduce_split_walls(init_model()), expected)
 
@@ -240,6 +314,6 @@ func test_no_split_walls_2() -> void:
 		"    ##",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(0, 1), CELL_WALL, SPLIT_WALLS),
+		NurikabeDeduction.new(Vector2i(0, 1), CELL_WALL, WALL_EXPANSION),
 	]
 	assert_deduction(solver.deduce_split_walls(init_model()), expected)
