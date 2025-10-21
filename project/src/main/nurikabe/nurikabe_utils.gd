@@ -1,6 +1,18 @@
 class_name NurikabeUtils
 extends Node
 
+enum Reason {
+	UNKNOWN_REASON,
+	
+	# rules
+	JOINED_ISLAND, # island with 2 or more clues
+	UNCLUED_ISLAND, # island with 0 clues
+	ISLAND_TOO_LARGE, # large island with a small clue
+	ISLAND_TOO_SMALL, # small island with a large clue
+	POOLS, # 2x2 grid of wall cells
+	SPLIT_WALLS, # wall cells cannot be joined
+}
+
 ## Nurikabe cells:
 ## 	['0'-'99']: Clue
 ## 	'!': Invalid (out of bounds)
@@ -11,6 +23,16 @@ const CELL_EMPTY := ""
 const CELL_INVALID := "!"
 const CELL_ISLAND := "."
 const CELL_WALL := "##"
+
+const UNKNOWN_REASON: Reason = Reason.UNKNOWN_REASON
+
+## Rules
+const JOINED_ISLAND: Reason = Reason.JOINED_ISLAND
+const UNCLUED_ISLAND: Reason = Reason.UNCLUED_ISLAND
+const ISLAND_TOO_LARGE: Reason = Reason.ISLAND_TOO_LARGE
+const ISLAND_TOO_SMALL: Reason = Reason.ISLAND_TOO_SMALL
+const POOLS: Reason = Reason.POOLS
+const SPLIT_WALLS: Reason = Reason.SPLIT_WALLS
 
 const ERROR_FG_COLOR: Color = Color.WHITE
 const ERROR_BG_COLOR: Color = Color("ff5a5a")
