@@ -4,6 +4,11 @@ extends Node
 enum Reason {
 	UNKNOWN_REASON,
 	
+	# starting techniques
+	ISLAND_OF_ONE, # surround single-square island with walls
+	ADJACENT_CLUES, # two clues separated by one square horizontally/vertically
+	DIAGONAL_CLUES, # two clues diagonally adjacent
+	
 	# rules
 	JOINED_ISLAND, # island with 2 or more clues
 	UNCLUED_ISLAND, # island with 0 clues
@@ -25,6 +30,11 @@ const CELL_ISLAND := "."
 const CELL_WALL := "##"
 
 const UNKNOWN_REASON: Reason = Reason.UNKNOWN_REASON
+
+## Starting techniques
+const ISLAND_OF_ONE: Reason = Reason.ISLAND_OF_ONE
+const ADJACENT_CLUES: Reason = Reason.ADJACENT_CLUES
+const DIAGONAL_CLUES: Reason = Reason.DIAGONAL_CLUES
 
 ## Rules
 const JOINED_ISLAND: Reason = Reason.JOINED_ISLAND
