@@ -55,12 +55,8 @@ func deduce_adjacent_clues(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 	for cell: Vector2i in board.cells:
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
-		# 1=up, 2=down, 4=left, 8=right
-		var clue_mask: int = 0
-		clue_mask |= 1 if board.get_cell_string(cell + Vector2i.UP).is_valid_int() else 0
-		clue_mask |= 2 if board.get_cell_string(cell + Vector2i.DOWN).is_valid_int() else 0
-		clue_mask |= 4 if board.get_cell_string(cell + Vector2i.LEFT).is_valid_int() else 0
-		clue_mask |= 8 if board.get_cell_string(cell + Vector2i.RIGHT).is_valid_int() else 0
+		var clue_mask: int = _neighbor_mask(board, cell, func(neighbor_value: String) -> bool:
+			return neighbor_value.is_valid_int())
 		if clue_mask & 3 == 3 or clue_mask & 12 == 12:
 			deductions.append( \
 					NurikabeDeduction.new(cell, CELL_WALL, ADJACENT_CLUES))
@@ -216,6 +212,18 @@ func _largest_non_empty_wall_groups(board: NurikabeBoardModel) -> Array[Array]:
 		if not only_empty_cells:
 			result.append(group)
 	return result
+
+
+## Returns a 4-bit mask of neighbor cells which satisfy [param predicate].[br]
+## [br]
+## Bit mask: 1=up, 2=down, 4=left, 8=right.
+func _neighbor_mask(board: NurikabeBoardModel, cell: Vector2i, predicate: Callable) -> int:
+	var mask: int = 0
+	mask |= 1 if predicate.call(board.get_cell_string(cell + Vector2i.UP)) else 0
+	mask |= 2 if predicate.call(board.get_cell_string(cell + Vector2i.DOWN)) else 0
+	mask |= 4 if predicate.call(board.get_cell_string(cell + Vector2i.LEFT)) else 0
+	mask |= 8 if predicate.call(board.get_cell_string(cell + Vector2i.RIGHT)) else 0
+	return mask
 
 
 func _empty_islands(board: NurikabeBoardModel) -> Array[Array]:
