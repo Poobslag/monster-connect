@@ -147,7 +147,7 @@ func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
-		trial.cells[cell] = CELL_WALL
+		trial.set_cell_string(cell, CELL_WALL)
 		var trial_uncompletable_island_count: int = _uncompletable_island_count(trial)
 		if trial_uncompletable_island_count > uncompletable_island_count:
 			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, ISLAND_TOO_SMALL))
