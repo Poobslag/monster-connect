@@ -113,6 +113,11 @@ func get_clue_cells(group: Array[Vector2i]) -> Array[Vector2i]:
 	return clue_cells
 
 
+func get_clue_value(group: Array[Vector2i]) -> int:
+	var clue_cells: Array[Vector2i] = get_clue_cells(group)
+	return get_cell_string(clue_cells[0]).to_int() if clue_cells.size() == 1 else 0
+
+
 func get_pool_cells() -> Array[Vector2i]:
 	var pool_cells: Dictionary[Vector2i, bool] = {}
 	for next_cell: Vector2i in cells:
