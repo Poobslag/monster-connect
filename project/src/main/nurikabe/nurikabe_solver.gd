@@ -27,6 +27,7 @@ const WALL_CONTINUITY: NurikabeUtils.Reason = NurikabeUtils.WALL_CONTINUITY
 const ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.ISLAND_EXPANSION
 const CORNER_ISLAND: NurikabeUtils.Reason = NurikabeUtils.CORNER_ISLAND
 const HIDDEN_ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.HIDDEN_ISLAND_EXPANSION
+const ISLAND_MOAT: NurikabeUtils.Reason = NurikabeUtils.ISLAND_MOAT
 
 var starting_techniques: Array[Callable] = [
 	deduce_island_of_one,
@@ -132,8 +133,7 @@ func deduce_island_too_large(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 	# Find islands which cannot grow any larger, store them in complete_islands.
 	var complete_islands: Array[Array] = []
 	for group: Array[Vector2i] in board.find_smallest_island_groups():
-		var clue_cells: Array[Vector2i] = board.get_clue_cells(group)
-		if clue_cells.size() == 1 and board.get_cell_string(clue_cells[0]).to_int() == group.size():
+		if board.get_clue_value(group) == group.size():
 			complete_islands.append(group)
 	
 	# Fill in all empty cells neighboring a complete island.
@@ -156,10 +156,7 @@ func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 	# If an island can only be completed two ways, the corner cell must be a wall.
 	for group: Array[Vector2i] in board.find_smallest_island_groups():
 		# If the island is 1 less than its desired size, find its liberties
-		var clue_cells: Array[Vector2i] = board.get_clue_cells(group)
-		if clue_cells.size() != 1:
-			continue
-		if board.get_cell_string(clue_cells[0]).to_int() != group.size() + 1:
+		if board.get_clue_value(group) != group.size() + 1:
 			continue
 		var liberty_cells: Array[Vector2i] = _find_liberties(board, group)
 		if liberty_cells.size() != 2:
@@ -178,7 +175,7 @@ func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 			deductions.append(NurikabeDeduction.new(liberty_connector, CELL_WALL, CORNER_ISLAND))
 	
 	# If making an empty cell a wall creates an uncompletable island, this cell must be an island.
-	var uncompletable_island_count: int = _uncompletable_island_count(board)
+	var uncompletable_island_count: int = get_uncompletable_island_count(board)
 	for cell: Vector2i in board.cells:
 		if cell in deduction_cells:
 			continue
@@ -187,7 +184,7 @@ func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 		
 		var trial: NurikabeBoardModel = board.duplicate()
 		trial.set_cell_string(cell, CELL_WALL)
-		var trial_uncompletable_island_count: int = _uncompletable_island_count(trial)
+		var trial_uncompletable_island_count: int = get_uncompletable_island_count(trial)
 		if trial_uncompletable_island_count > uncompletable_island_count:
 			var reason: NurikabeUtils.Reason = HIDDEN_ISLAND_EXPANSION
 			var island_mask: int = _neighbor_mask(board, cell, func(neighbor_value: String) -> bool:
@@ -198,43 +195,17 @@ func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 			deduction_cells[cell] = true
 	
 	# If expanding a clued island blocks in another clued island so it can't be completed, this cell must be a wall.
-	var island_neighbor_count_by_cell: Dictionary[Vector2i, int] = _island_neighbor_count_by_cell(board)
 	for cell: Vector2i in board.cells:
-		if board.get_cell_string(cell) != CELL_EMPTY:
-			continue
 		if cell in deduction_cells:
 			continue
-		# For each cell adjacent to exactly one numbered clue, try making it an island...
-		if island_neighbor_count_by_cell.get(cell, -1) != 1:
+		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
-		
 		var trial: NurikabeBoardModel = board.duplicate()
 		trial.set_cell_string(cell, CELL_ISLAND)
-		
-		# Fill in all cells adjacent to two numbered clues, or a massive blob and a small clue
-		var trial_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] = _neighbor_groups_by_empty_cell(trial)
-		for trial_cell: Vector2i in trial.cells:
-			if trial.get_cell_string(trial_cell) != CELL_EMPTY:
-				continue
-			if trial_neighbor_groups_by_empty_cell.get(trial_cell, []).size() < 2:
-				continue
-			var joined_size: int = 1
-			var total_clues: int = 0
-			var biggest_clue: int = 0
-			for group: Array[Vector2i] in trial_neighbor_groups_by_empty_cell[trial_cell]:
-				var clue_cells: Array[Vector2i] = trial.get_clue_cells(group)
-				joined_size += group.size()
-				total_clues += clue_cells.size()
-				for clue_cell in clue_cells:
-					biggest_clue = max(biggest_clue, trial.get_cell_string(clue_cell).to_int())
-			if total_clues >= 2 or joined_size > biggest_clue:
-				trial.set_cell_string(trial_cell, CELL_WALL)
-		
-		# If any clues can't be completed, the cell must be a wall
-		var trial_uncompletable_island_count: int = _uncompletable_island_count(trial)
+		var trial_uncompletable_island_count: int = get_uncompletable_island_count(trial)
 		if trial_uncompletable_island_count > uncompletable_island_count:
+			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, ISLAND_MOAT))
 			deduction_cells[cell] = true
-			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, HIDDEN_ISLAND_EXPANSION))
 	
 	return deductions
 
@@ -275,6 +246,92 @@ func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 				reason = WALL_EXPANSION
 			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, reason))
 	return deductions
+
+
+func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
+	var uncompletable_islands: Dictionary[Array, bool] = {}
+	var complete_islands: Dictionary[Array, bool] = {}
+	var unclued_groups: Dictionary[Array, bool] = {}
+	var clued_groups: Dictionary[Array, bool] = {}
+	for group: Array[Vector2i] in board.find_smallest_island_groups():
+		var clue_count: int = board.get_clue_cells(group).size()
+		if clue_count == 0:
+			unclued_groups[group] = true
+		elif clue_count == 1:
+			clued_groups[group] = true
+	var unclued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
+			= _neighbor_groups_by_empty_cell(board, unclued_groups.keys())
+	var clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
+			= _neighbor_groups_by_empty_cell(board, clued_groups.keys())
+	
+	for group: Array[Vector2i] in clued_groups:
+		# Ignore complete/invalid islands.
+		var clue_value: int = board.get_clue_value(group)
+		if clue_value <= group.size():
+			complete_islands[group] = true
+	
+	for group: Array[Vector2i] in clued_groups:
+		# Evaluate the liberties of each incomplete group, to ensure that it can grow by one square.
+		if group in uncompletable_islands or group in complete_islands:
+			continue
+		var has_valid_liberty: bool = false
+		var clue_value: int = board.get_clue_value(group)
+		for liberty: Vector2i in _find_liberties(board, group):
+			var total_joined_size: int = 1
+			var total_clues: int = 0
+			var total_biggest_clue: int = 0
+			
+			for joined_group: Array[Vector2i] in \
+					clued_neighbor_groups_by_empty_cell.get(liberty):
+				var joined_clue_cells: Array[Vector2i] = board.get_clue_cells(joined_group)
+				total_clues += joined_clue_cells.size()
+				total_joined_size += joined_group.size()
+				if joined_clue_cells:
+					total_biggest_clue = max(total_biggest_clue, \
+							board.get_cell_string(joined_clue_cells[0]).to_int())
+			
+			for joined_group: Array[Vector2i] in \
+					unclued_neighbor_groups_by_empty_cell.get(liberty, [] as Array[Vector2i]):
+				total_joined_size += joined_group.size()
+			
+			if total_clues == 1 and total_joined_size <= clue_value:
+				has_valid_liberty = true
+		if not has_valid_liberty:
+			uncompletable_islands[group] = true
+	
+	for group: Array[Vector2i] in clued_groups:
+		# Make each clued group as large as possible without joining other clued groups to ensure it can grow large
+		# enough.
+		if group in uncompletable_islands or group in complete_islands:
+			continue
+		var clue_value: int = board.get_clue_value(group)
+		var group_cells: Dictionary[Vector2i, bool] = {}
+		var queue: Dictionary[Vector2i, bool] = {}
+		for group_cell: Vector2i in group:
+			queue[group_cell] = true
+		while not queue.is_empty() and group_cells.size() < clue_value:
+			var next_cell: Vector2i = queue.keys()[0]
+			queue.erase(next_cell)
+			group_cells[next_cell] = true
+			for neighbor_cell: Vector2i in board.get_neighbors(next_cell):
+				if group_cells.has(neighbor_cell):
+					continue
+				if board.get_cell_string(neighbor_cell) in [CELL_WALL, CELL_INVALID]:
+					continue
+				var neighbor_groups: Array[Array] \
+						= clued_neighbor_groups_by_empty_cell.get(neighbor_cell, [] as Array[Array])
+				var has_clued_neighbor_group: bool = false
+				for neighbor_group: Array[Vector2i] in neighbor_groups:
+					if neighbor_group != group and neighbor_group in clued_groups:
+						has_clued_neighbor_group = true
+						break
+				if has_clued_neighbor_group:
+					continue
+				queue[neighbor_cell] = true
+		if group_cells.size() < clue_value:
+			uncompletable_islands[group] = true
+	
+	return uncompletable_islands.size()
 
 
 ## Returns the number of single-clue islands bordering each empty cell.
@@ -331,14 +388,17 @@ func _largest_non_empty_wall_groups(board: NurikabeBoardModel) -> Array[Array]:
 	return result
 
 
-func _neighbor_groups_by_empty_cell(board: NurikabeBoardModel) -> Dictionary[Vector2i, Array]:
+func _neighbor_groups_by_empty_cell(
+			board: NurikabeBoardModel,
+			smallest_island_groups: Array[Array] = board.find_smallest_island_groups()
+		) -> Dictionary[Vector2i, Array]:
+	
 	var neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] = {}
-	var smallest_island_groups: Array[Array] = board.find_smallest_island_groups()
 	for group: Array[Vector2i] in smallest_island_groups:
 		for cell: Vector2i in group:
 			for neighbor: Vector2i in board.get_neighbors(cell):
 				if not neighbor in neighbor_groups_by_empty_cell:
-					neighbor_groups_by_empty_cell[neighbor] = []
+					neighbor_groups_by_empty_cell[neighbor] = [] as Array[Array]
 				if not group in neighbor_groups_by_empty_cell[neighbor]:
 					neighbor_groups_by_empty_cell[neighbor].append(group)
 	return neighbor_groups_by_empty_cell
@@ -382,14 +442,5 @@ func _unclued_island_count(board: NurikabeBoardModel) -> int:
 			continue
 		var clue_cells: Array[Vector2i] = board.get_clue_cells(group)
 		if clue_cells.size() == 0:
-			result += 1
-	return result
-
-
-func _uncompletable_island_count(board: NurikabeBoardModel) -> int:
-	var result: int = 0
-	for group: Array[Vector2i] in board.find_largest_island_groups():
-		var clue_cells: Array[Vector2i] = board.get_clue_cells(group)
-		if clue_cells.size() == 1 and board.get_cell_string(clue_cells[0]).to_int() > group.size():
 			result += 1
 	return result

@@ -1,5 +1,90 @@
 extends TestNurikabeSolver
 
+func test_uncompletable_islands_good() -> void:
+	grid = [
+		" 3   3",
+		"      ",
+		"      ",
+	]
+	var board: NurikabeBoardModel = init_model()
+	assert_eq(solver.get_uncompletable_island_count(board), 0)
+
+
+func test_uncompletable_islands_walled_in_1() -> void:
+	grid = [
+		" 3## 3",
+		"##    ",
+		"      ",
+	]
+	var board: NurikabeBoardModel = init_model()
+	assert_eq(solver.get_uncompletable_island_count(board), 1)
+
+
+func test_uncompletable_islands_walled_in_2() -> void:
+	grid = [
+		" 3## 3",
+		"  ##  ",
+		"####  ",
+	]
+	var board: NurikabeBoardModel = init_model()
+	assert_eq(solver.get_uncompletable_island_count(board), 1)
+
+
+func test_uncompletable_islands_walled_in_3() -> void:
+	grid = [
+		" 3## 3",
+		" .## .",
+		"#### .",
+	]
+	var board: NurikabeBoardModel = init_model()
+	assert_eq(solver.get_uncompletable_island_count(board), 1)
+
+
+func test_uncompletable_islands_too_close_1() -> void:
+	grid = [
+		" 3## 2",
+		" . .  ",
+		"      ",
+	]
+	var board: NurikabeBoardModel = init_model()
+	assert_eq(solver.get_uncompletable_island_count(board), 1)
+
+
+func test_uncompletable_islands_too_close_2() -> void:
+	grid = [
+		"#### 3",
+		" 3##  ",
+		" . .  ",
+		"      ",
+	]
+	var board: NurikabeBoardModel = init_model()
+	assert_eq(solver.get_uncompletable_island_count(board), 1)
+
+
+func test_uncompletable_islands_too_close_3() -> void:
+	grid = [
+		"#### 2",
+		" . .  ",
+		"      ",
+		" 4    ",
+	]
+	var board: NurikabeBoardModel = init_model()
+	assert_eq(solver.get_uncompletable_island_count(board), 1)
+
+
+func test_uncompletable_islands_too_close_4() -> void:
+	grid = [
+		" 1## . .",
+		"####   5",
+		"## . .  ",
+		"        ",
+		"        ",
+		" 5      ",
+	]
+	var board: NurikabeBoardModel = init_model()
+	assert_eq(solver.get_uncompletable_island_count(board), 1)
+
+
 func test_deduce_joined_island_2() -> void:
 	grid = [
 		" 3   3",
@@ -171,12 +256,14 @@ func test_island_too_small_1() -> void:
 
 func test_island_too_small_multiple() -> void:
 	grid = [
-		" 2    ",
-		"##    ",
-		"##   3",
+		" 2      ",
+		"##      ",
+		"##     4",
 	]
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(1, 1), CELL_WALL, ISLAND_MOAT),
+		NurikabeDeduction.new(Vector2i(2, 0), CELL_WALL, ISLAND_MOAT),
 	]
 	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
 
@@ -219,7 +306,8 @@ func test_island_too_small_hidden_island_expansion_1() -> void:
 		"        ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, HIDDEN_ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, ISLAND_MOAT),
+		NurikabeDeduction.new(Vector2i(3, 2), CELL_ISLAND, ISLAND_EXPANSION),
 	]
 	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
 
@@ -235,7 +323,25 @@ func test_island_too_small_hidden_island_expansion_2() -> void:
 		" 5      ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, HIDDEN_ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, ISLAND_MOAT)
+	]
+	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
+
+
+func test_island_too_small_hidden_island_expansion_3() -> void:
+	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
+	grid = [
+		" 1##   5",
+		"####    ",
+		"## 3    ",
+		"        ",
+		"        ",
+		"        ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, ISLAND_MOAT),
+		NurikabeDeduction.new(Vector2i(3, 1), CELL_ISLAND, ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(3, 2), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
 	]
 	assert_deduction(solver.deduce_island_too_small(init_model()), expected)
 
@@ -256,11 +362,11 @@ func test_island_too_small_invalid() -> void:
 func test_island_too_small_only_two_directions() -> void:
 	# The cell at (2, 3) can't be an island or it would block the 2 island from growing.
 	grid = [
-		" . . .  ",
-		" 7##    ",
-		"## 2    ",
-		"        ",
-		"       1",
+		" . . .    ",
+		" 7##      ",
+		"## 2      ",
+		"          ",
+		"       1  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(2, 3), CELL_WALL, CORNER_ISLAND),
