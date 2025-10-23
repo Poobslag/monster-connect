@@ -435,3 +435,71 @@ func test_no_split_walls_3() -> void:
 		NurikabeDeduction.new(Vector2i(2, 2), CELL_ISLAND, SPLIT_WALLS),
 	]
 	assert_deduction(solver.deduce_split_walls(init_model()), expected)
+
+
+func test_unreachable_squares_1() -> void:
+	grid = [
+		" 4    ",
+		"      ",
+		"      ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2(2, 2), CELL_WALL, UNREACHABLE_SQUARE),
+	]
+	assert_deduction(solver.deduce_unreachable_square(init_model()), expected)
+
+
+func test_unreachable_squares_2() -> void:
+	grid = [
+		" 4##  ",
+		" .    ",
+		"      ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2(2, 0), CELL_WALL, UNREACHABLE_SQUARE),
+		NurikabeDeduction.new(Vector2(2, 2), CELL_WALL, UNREACHABLE_SQUARE),
+	]
+	assert_deduction(solver.deduce_unreachable_square(init_model()), expected)
+
+
+func test_unreachable_squares_3() -> void:
+	grid = [
+		"   .    ",
+		"    ## 2",
+		" . 7   .",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2(2, 2), CELL_WALL, UNREACHABLE_SQUARE),
+		NurikabeDeduction.new(Vector2(3, 0), CELL_WALL, UNREACHABLE_SQUARE),
+	]
+	assert_deduction(solver.deduce_unreachable_square(init_model()), expected)
+
+
+func test_unreachable_squares_blocked() -> void:
+	# the upper right cell is reachable by the 4, but it's blocked by the 3
+	grid = [
+		" 4        ",
+		"     3    ",
+		"         2",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2(4, 0), CELL_WALL, UNREACHABLE_SQUARE),
+	]
+	assert_deduction(solver.deduce_unreachable_square(init_model()), expected)
+
+
+func test_unreachable_squares_unclued_squares() -> void:
+	# The center cell at (2, 2) is reachable by the 3, but it's blocked by unclued cells. This isn't deducable with
+	# our current techniques. With unclued blobs of arbitrary size it would essentially require solving the knapsack
+	# problem.
+	grid = [
+		" 3   .",
+		"      ",
+		" .    ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2(1, 2), CELL_WALL, UNREACHABLE_SQUARE),
+		NurikabeDeduction.new(Vector2(2, 1), CELL_WALL, UNREACHABLE_SQUARE),
+		NurikabeDeduction.new(Vector2(2, 2), CELL_WALL, UNREACHABLE_SQUARE),
+	]
+	assert_deduction(solver.deduce_unreachable_square(init_model()), expected)
