@@ -2,6 +2,8 @@ extends Node
 ## [b]Keys:[/b][br]
 ## 	[kbd]Q[/kbd]: Solve.
 
+var ran_starting_techniques: bool = false
+
 func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
 		KEY_Q:
@@ -16,8 +18,9 @@ func solve() -> void:
 	
 	var solver: NurikabeSolver = NurikabeSolver.new()
 	
-	if changes.is_empty():
+	if changes.is_empty() and not ran_starting_techniques:
 		changes = run_rules(solver, solver.starting_techniques, changes)
+		ran_starting_techniques = true
 	
 	if changes.is_empty():
 		changes = run_rules(solver, solver.rules, changes)
@@ -29,6 +32,7 @@ func solve() -> void:
 
 
 func run_rules(solver: NurikabeSolver, rules: Array[Callable], changes: Array[Dictionary]) -> Array[Dictionary]:
+	Global.benchmark_start("run_rules")
 	var board: NurikabeBoardModel = %GameBoard.to_model()
 	for callable: Callable in rules:
 		callable.call(board)
@@ -41,4 +45,6 @@ func run_rules(solver: NurikabeSolver, rules: Array[Callable], changes: Array[Di
 	for reason_name: String in deduction_positions_by_reason:
 		%MessageLabel.text += "%s: %s\n" % [reason_name, deduction_positions_by_reason[reason_name]]
 	changes.append_array(solver.solver_pass.get_changes())
+	Global.benchmark_end("run_rules")
+	print("(%s)" % [%MessageLabel.text.length()])
 	return changes
