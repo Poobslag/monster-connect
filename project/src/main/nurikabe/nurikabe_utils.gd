@@ -18,19 +18,19 @@ enum Reason {
 	SPLIT_WALLS, # wall cells cannot be joined
 	
 	# basic techniques
-	SURROUNDED_WALL, # empty square surrounded by walls
-	SURROUNDED_ISLAND, # empty square surrounded by islands
-	WALL_EXPANSION, # wall with only one direction to expand
-	WALL_CONTINUITY, # two walls disconnected by a chokepoint
-	ISLAND_EXPANSION, # island with only one direction to expand
-	CORNER_ISLAND, # island with only two directions to expand
-	HIDDEN_ISLAND_EXPANSION, # island which can only expand through a chokepoint
-	ISLAND_MOAT, # wall which preserves space for an island to grow
-	ISLAND_CONTINUITY, # clueless island which must find a clued island
-	SURROUND_COMPLETE_ISLAND, # surround complete islands with walls
-	AVOID_POOLS, # avoid creating a 2x2 grid of wall cells
-	UNREACHABLE_SQUARE, # empty square which no clue can 'reach'
-	SEPARATE_CLUED_ISLANDS, # wall between two clued islands
+	CORNER_ISLAND, # add a wall diagonally from an island with only two directions to expand
+	ISLAND_BUBBLE, # fill in a square surrounded by islands
+	ISLAND_BUFFER, # add a wall to preserve space for an island to grow
+	ISLAND_CHOKEPOINT, # expand an island through a chokepoint
+	ISLAND_CONNECTOR, # connect a clueless island to a clued island
+	ISLAND_DIVIDER, # fill in a square to keep two clued islands apart
+	ISLAND_EXPANSION, # expand an island in the only possible direction
+	ISLAND_MOAT, # seal a completed island with walls
+	POOL_TRIPLET, # fill in the fourth cell to prevent a 2x2 grid of wall cells
+	UNREACHABLE_SQUARE, # fill in a square which no clue can reach
+	WALL_BUBBLE, # fill in a square surrounded by walls
+	WALL_CONNECTOR, # connect two walls through a chokepoint
+	WALL_EXPANSION, # expand a wall in the only possible direction
 }
 
 ## Nurikabe cells:
@@ -60,19 +60,19 @@ const POOLS: Reason = Reason.POOLS
 const SPLIT_WALLS: Reason = Reason.SPLIT_WALLS
 
 ## Basic techniques
-const SURROUNDED_WALL: Reason = Reason.SURROUNDED_WALL
-const SURROUNDED_ISLAND: Reason = Reason.SURROUNDED_ISLAND
+const WALL_BUBBLE: Reason = Reason.WALL_BUBBLE
+const ISLAND_BUBBLE: Reason = Reason.ISLAND_BUBBLE
 const WALL_EXPANSION: Reason = Reason.WALL_EXPANSION
-const WALL_CONTINUITY: Reason = Reason.WALL_CONTINUITY
+const WALL_CONNECTOR: Reason = Reason.WALL_CONNECTOR
 const ISLAND_EXPANSION: Reason = Reason.ISLAND_EXPANSION
+const ISLAND_CHOKEPOINT: Reason = Reason.ISLAND_CHOKEPOINT
 const CORNER_ISLAND: Reason = Reason.CORNER_ISLAND
-const HIDDEN_ISLAND_EXPANSION: Reason = Reason.HIDDEN_ISLAND_EXPANSION
-const ISLAND_MOAT: NurikabeUtils.Reason = Reason.ISLAND_MOAT
-const ISLAND_CONTINUITY: Reason = Reason.ISLAND_CONTINUITY
-const SURROUND_COMPLETE_ISLAND: Reason = Reason.SURROUND_COMPLETE_ISLAND
-const AVOID_POOLS: Reason = Reason.AVOID_POOLS
+const ISLAND_BUFFER: NurikabeUtils.Reason = Reason.ISLAND_BUFFER
+const ISLAND_CONNECTOR: Reason = Reason.ISLAND_CONNECTOR
+const ISLAND_MOAT: Reason = Reason.ISLAND_MOAT
+const POOL_TRIPLET: Reason = Reason.POOL_TRIPLET
 const UNREACHABLE_SQUARE: Reason = Reason.UNREACHABLE_SQUARE
-const SEPARATE_CLUED_ISLANDS: Reason = Reason.SEPARATE_CLUED_ISLANDS
+const ISLAND_DIVIDER: Reason = Reason.ISLAND_DIVIDER
 
 const ERROR_FG_COLOR: Color = Color.WHITE
 const ERROR_BG_COLOR: Color = Color("ff5a5a")
