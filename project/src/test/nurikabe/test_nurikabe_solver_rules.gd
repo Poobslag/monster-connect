@@ -92,7 +92,7 @@ func test_deduce_joined_island_2() -> void:
 		"      ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 0), CELL_WALL, JOINED_ISLAND),
+		NurikabeDeduction.new(Vector2i(1, 0), CELL_WALL, SEPARATE_CLUED_ISLANDS),
 	]
 	assert_deduction(solver.deduce_joined_island(init_model()), expected)
 
@@ -105,9 +105,9 @@ func test_deduce_joined_island_3() -> void:
 		"        ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 0), CELL_WALL, JOINED_ISLAND),
-		NurikabeDeduction.new(Vector2i(0, 1), CELL_WALL, JOINED_ISLAND),
-		NurikabeDeduction.new(Vector2i(2, 1), CELL_WALL, JOINED_ISLAND),
+		NurikabeDeduction.new(Vector2i(1, 0), CELL_WALL, SEPARATE_CLUED_ISLANDS),
+		NurikabeDeduction.new(Vector2i(0, 1), CELL_WALL, SEPARATE_CLUED_ISLANDS),
+		NurikabeDeduction.new(Vector2i(2, 1), CELL_WALL, SEPARATE_CLUED_ISLANDS),
 	]
 	assert_deduction(solver.deduce_joined_island(init_model()), expected)
 
@@ -121,7 +121,7 @@ func test_deduce_joined_island_mistake() -> void:
 		" 2   2",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 4), CELL_WALL, JOINED_ISLAND),
+		NurikabeDeduction.new(Vector2i(1, 4), CELL_WALL, SEPARATE_CLUED_ISLANDS),
 	]
 	assert_deduction(solver.deduce_joined_island(init_model()), expected)
 
@@ -178,8 +178,8 @@ func test_unclued_island_surrounded_square() -> void:
 		"  ##  ## 5  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(0, 3), CELL_WALL, SURROUNDED_SQUARE),
-		NurikabeDeduction.new(Vector2i(2, 3), CELL_WALL, SURROUNDED_SQUARE),
+		NurikabeDeduction.new(Vector2i(0, 3), CELL_WALL, SURROUNDED_WALL),
+		NurikabeDeduction.new(Vector2i(2, 3), CELL_WALL, SURROUNDED_WALL),
 	]
 	assert_deduction(solver.deduce_unclued_island(init_model()), expected)
 
@@ -191,7 +191,7 @@ func test_deduce_unclued_island_chokepoint() -> void:
 		"  ##  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, UNCLUED_ISLAND),
+		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, ISLAND_CONTINUITY),
 	]
 	assert_deduction(solver.deduce_unclued_island(init_model()), expected)
 
@@ -203,8 +203,8 @@ func test_deduce_unclued_island_chokepoint_2() -> void:
 		" .    ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, UNCLUED_ISLAND),
-		NurikabeDeduction.new(Vector2i(1, 2), CELL_ISLAND, UNCLUED_ISLAND),
+		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_CONTINUITY),
+		NurikabeDeduction.new(Vector2i(1, 2), CELL_ISLAND, ISLAND_CONTINUITY),
 	]
 	assert_deduction(solver.deduce_unclued_island(init_model()), expected)
 
@@ -214,7 +214,7 @@ func test_deduce_island_too_large_1() -> void:
 		" 2 .  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(2, 0), CELL_WALL, ISLAND_TOO_LARGE),
+		NurikabeDeduction.new(Vector2i(2, 0), CELL_WALL, SURROUND_COMPLETE_ISLAND),
 	]
 	assert_deduction(solver.deduce_island_too_large(init_model()), expected)
 
@@ -225,9 +225,9 @@ func test_deduce_island_too_large_2() -> void:
 		"      ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(0, 1), CELL_WALL, ISLAND_TOO_LARGE),
-		NurikabeDeduction.new(Vector2i(1, 1), CELL_WALL, ISLAND_TOO_LARGE),
-		NurikabeDeduction.new(Vector2i(2, 0), CELL_WALL, ISLAND_TOO_LARGE),
+		NurikabeDeduction.new(Vector2i(0, 1), CELL_WALL, SURROUND_COMPLETE_ISLAND),
+		NurikabeDeduction.new(Vector2i(1, 1), CELL_WALL, SURROUND_COMPLETE_ISLAND),
+		NurikabeDeduction.new(Vector2i(2, 0), CELL_WALL, SURROUND_COMPLETE_ISLAND),
 	]
 	assert_deduction(solver.deduce_island_too_large(init_model()), expected)
 
@@ -381,7 +381,7 @@ func test_pools_1() -> void:
 		"  ####",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, POOLS),
+		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, AVOID_POOLS),
 	]
 	assert_deduction(solver.deduce_pools(init_model()), expected)
 
@@ -393,10 +393,10 @@ func test_pools_cut_off() -> void:
 		"  ##  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(0, 1), CELL_ISLAND, POOLS),
-		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, POOLS),
-		NurikabeDeduction.new(Vector2i(2, 0), CELL_ISLAND, POOLS),
-		NurikabeDeduction.new(Vector2i(2, 1), CELL_ISLAND, POOLS),
+		NurikabeDeduction.new(Vector2i(0, 1), CELL_ISLAND, AVOID_POOLS),
+		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, AVOID_POOLS),
+		NurikabeDeduction.new(Vector2i(2, 0), CELL_ISLAND, AVOID_POOLS),
+		NurikabeDeduction.new(Vector2i(2, 1), CELL_ISLAND, AVOID_POOLS),
 	]
 	assert_deduction(solver.deduce_pools(init_model()), expected)
 
@@ -432,7 +432,7 @@ func test_no_split_walls_3() -> void:
 		"## 4  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(2, 2), CELL_ISLAND, SPLIT_WALLS),
+		NurikabeDeduction.new(Vector2i(2, 2), CELL_ISLAND, SURROUNDED_ISLAND),
 	]
 	assert_deduction(solver.deduce_split_walls(init_model()), expected)
 

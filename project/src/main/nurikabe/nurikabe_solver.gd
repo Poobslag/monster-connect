@@ -21,14 +21,19 @@ const POOLS: NurikabeUtils.Reason = NurikabeUtils.POOLS
 const SPLIT_WALLS: NurikabeUtils.Reason = NurikabeUtils.SPLIT_WALLS
 
 ## Basic techniques
-const SURROUNDED_SQUARE: NurikabeUtils.Reason = NurikabeUtils.SURROUNDED_SQUARE
+const SURROUNDED_WALL: NurikabeUtils.Reason = NurikabeUtils.SURROUNDED_WALL
+const SURROUNDED_ISLAND: NurikabeUtils.Reason = NurikabeUtils.SURROUNDED_ISLAND
 const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 const WALL_CONTINUITY: NurikabeUtils.Reason = NurikabeUtils.WALL_CONTINUITY
 const ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.ISLAND_EXPANSION
 const CORNER_ISLAND: NurikabeUtils.Reason = NurikabeUtils.CORNER_ISLAND
 const HIDDEN_ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.HIDDEN_ISLAND_EXPANSION
 const ISLAND_MOAT: NurikabeUtils.Reason = NurikabeUtils.ISLAND_MOAT
+const ISLAND_CONTINUITY: NurikabeUtils.Reason = NurikabeUtils.ISLAND_CONTINUITY
+const SURROUND_COMPLETE_ISLAND: NurikabeUtils.Reason = NurikabeUtils.SURROUND_COMPLETE_ISLAND
+const AVOID_POOLS: NurikabeUtils.Reason = NurikabeUtils.AVOID_POOLS
 const UNREACHABLE_SQUARE: NurikabeUtils.Reason = NurikabeUtils.UNREACHABLE_SQUARE
+const SEPARATE_CLUED_ISLANDS: NurikabeUtils.Reason = NurikabeUtils.SEPARATE_CLUED_ISLANDS
 
 var starting_techniques: Array[Callable] = [
 	deduce_island_of_one,
@@ -85,7 +90,7 @@ func deduce_joined_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction]
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
 		if clued_neighbor_count_by_cell[cell] >= 2:
-			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, JOINED_ISLAND))
+			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, SEPARATE_CLUED_ISLANDS))
 	
 	return deductions
 
@@ -94,7 +99,7 @@ func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 	var deduction_cells: Dictionary[Vector2i, bool] = {}
 	var deductions: Array[NurikabeDeduction] = []
 	
-	# Find islands without any clues. These islands must be walls.
+	# Find empty areas surrounded by walls. These areas must be walls.
 	for group: Array[Vector2i] in board.find_largest_island_groups():
 		var only_empty_cells: bool = true
 		for cell: Vector2i in group:
@@ -103,15 +108,11 @@ func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 				break
 		if not only_empty_cells:
 			continue
-		if group.size() == 1:
-			deduction_cells[group[0]] = true
-			deductions.append(NurikabeDeduction.new(group[0], CELL_WALL, SURROUNDED_SQUARE))
-			continue
 		for cell: Vector2i in group:
 			if cell in deduction_cells:
 				continue
 			deduction_cells[cell] = true
-			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, UNCLUED_ISLAND))
+			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, SURROUNDED_WALL))
 	
 	# If making an empty cell a wall creates a new unclued island, this cell must be an island.
 	var unclued_island_count: int = _unclued_island_count(board)
@@ -126,7 +127,7 @@ func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 		var trial_unclued_island_count: int = _unclued_island_count(trial)
 		if trial_unclued_island_count > unclued_island_count:
 			deduction_cells[cell] = true
-			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, UNCLUED_ISLAND))
+			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, ISLAND_CONTINUITY))
 	
 	return deductions
 
@@ -147,7 +148,7 @@ func deduce_island_too_large(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 			for neighbor_cell: Vector2i in board.get_neighbors(cell):
 				if seen.has(neighbor_cell) or board.get_cell_string(neighbor_cell) != CELL_EMPTY:
 					continue
-				deductions.append(NurikabeDeduction.new(neighbor_cell, CELL_WALL, ISLAND_TOO_LARGE))
+				deductions.append(NurikabeDeduction.new(neighbor_cell, CELL_WALL, SURROUND_COMPLETE_ISLAND))
 				seen[neighbor_cell] = true
 	
 	return deductions
@@ -228,7 +229,7 @@ func deduce_pools(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 				trial.set_cell_string(group_cell, CELL_WALL)
 		var trial_pool_count: int = trial.get_pool_cells().size()
 		if trial_pool_count > pool_count:
-			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, POOLS))
+			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, AVOID_POOLS))
 	return deductions
 
 
@@ -254,18 +255,20 @@ func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 			deduction_cells[cell] = true
 			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, reason))
 	
-	for cell: Vector2i in board.cells:
-		if cell in deduction_cells:
+	# Find empty areas surrounded by islands. These areas must be islands.
+	for group: Array[Vector2i] in board.find_largest_wall_groups():
+		var only_empty_cells: bool = true
+		for cell: Vector2i in group:
+			if board.get_cell_string(cell) != CELL_EMPTY:
+				only_empty_cells = false
+				break
+		if not only_empty_cells:
 			continue
-		if board.get_cell_string(cell) != CELL_EMPTY:
-			continue
-		
-		var trial: NurikabeBoardModel = board.duplicate()
-		trial.set_cell_string(cell, CELL_WALL)
-		var trial_wall_count: int = _largest_non_empty_wall_groups(trial).size()
-		if trial_wall_count > wall_count:
+		for cell: Vector2i in group:
+			if cell in deduction_cells:
+				continue
 			deduction_cells[cell] = true
-			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, SPLIT_WALLS))
+			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, SURROUNDED_ISLAND))
 	
 	return deductions
 

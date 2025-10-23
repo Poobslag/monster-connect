@@ -23,14 +23,19 @@ const POOLS: NurikabeUtils.Reason = NurikabeUtils.POOLS
 const SPLIT_WALLS: NurikabeUtils.Reason = NurikabeUtils.SPLIT_WALLS
 
 ## Basic techniques
-const SURROUNDED_SQUARE: NurikabeUtils.Reason = NurikabeUtils.SURROUNDED_SQUARE
+const SURROUNDED_WALL: NurikabeUtils.Reason = NurikabeUtils.SURROUNDED_WALL
+const SURROUNDED_ISLAND: NurikabeUtils.Reason = NurikabeUtils.SURROUNDED_ISLAND
 const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 const WALL_CONTINUITY: NurikabeUtils.Reason = NurikabeUtils.WALL_CONTINUITY
 const ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.ISLAND_EXPANSION
 const CORNER_ISLAND: NurikabeUtils.Reason = NurikabeUtils.CORNER_ISLAND
 const HIDDEN_ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.HIDDEN_ISLAND_EXPANSION
 const ISLAND_MOAT: NurikabeUtils.Reason = NurikabeUtils.ISLAND_MOAT
+const ISLAND_CONTINUITY: NurikabeUtils.Reason = NurikabeUtils.ISLAND_CONTINUITY
+const SURROUND_COMPLETE_ISLAND: NurikabeUtils.Reason = NurikabeUtils.SURROUND_COMPLETE_ISLAND
+const AVOID_POOLS: NurikabeUtils.Reason = NurikabeUtils.AVOID_POOLS
 const UNREACHABLE_SQUARE: NurikabeUtils.Reason = NurikabeUtils.UNREACHABLE_SQUARE
+const SEPARATE_CLUED_ISLANDS: NurikabeUtils.Reason = NurikabeUtils.SEPARATE_CLUED_ISLANDS
 
 var solver: NurikabeSolver = NurikabeSolver.new()
 var grid: Array[String] = []
