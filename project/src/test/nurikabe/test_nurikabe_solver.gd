@@ -40,8 +40,13 @@ const SEPARATE_CLUED_ISLANDS: NurikabeUtils.Reason = NurikabeUtils.SEPARATE_CLUE
 var solver: NurikabeSolver = NurikabeSolver.new()
 var grid: Array[String] = []
 
-func assert_deduction(actual: Array[NurikabeDeduction], expected: Array[NurikabeDeduction]) -> void:
-	var actual_str_array: Array[String] = deductions_to_strings(actual)
+func before_each() -> void:
+	solver.solver_pass.clear()
+
+
+func assert_deduction(callable: Callable, expected: Array[NurikabeDeduction]) -> void:
+	callable.call(init_model())
+	var actual_str_array: Array[String] = deductions_to_strings(solver.solver_pass.deductions)
 	var expected_str_array: Array[String] = deductions_to_strings(expected)
 	assert_eq(actual_str_array, expected_str_array)
 
