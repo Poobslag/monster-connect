@@ -85,7 +85,7 @@ func test_uncompletable_islands_too_close_4() -> void:
 	assert_eq(solver.get_uncompletable_island_count(board), 1)
 
 
-func test_deduce_joined_island_2() -> void:
+func test_joined_island_2() -> void:
 	grid = [
 		" 3   3",
 		"      ",
@@ -94,10 +94,10 @@ func test_deduce_joined_island_2() -> void:
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(1, 0), CELL_WALL, SEPARATE_CLUED_ISLANDS),
 	]
-	assert_deduction(solver.deduce_joined_island, expected)
+	assert_deduction(solver.deduce_separate_clued_islands, expected)
 
 
-func test_deduce_joined_island_3() -> void:
+func test_joined_island_3() -> void:
 	grid = [
 		" 1      ",
 		"   2   3",
@@ -109,10 +109,10 @@ func test_deduce_joined_island_3() -> void:
 		NurikabeDeduction.new(Vector2i(0, 1), CELL_WALL, SEPARATE_CLUED_ISLANDS),
 		NurikabeDeduction.new(Vector2i(2, 1), CELL_WALL, SEPARATE_CLUED_ISLANDS),
 	]
-	assert_deduction(solver.deduce_joined_island, expected)
+	assert_deduction(solver.deduce_separate_clued_islands, expected)
 
 
-func test_deduce_joined_island_mistake() -> void:
+func test_joined_island_mistake() -> void:
 	grid = [
 		" 2 . 2",
 		"      ",
@@ -123,20 +123,20 @@ func test_deduce_joined_island_mistake() -> void:
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(1, 4), CELL_WALL, SEPARATE_CLUED_ISLANDS),
 	]
-	assert_deduction(solver.deduce_joined_island, expected)
+	assert_deduction(solver.deduce_separate_clued_islands, expected)
 
 
-func test_deduce_joined_island_none() -> void:
+func test_joined_island_none() -> void:
 	grid = [
 		" 2    ",
 		"     2",
 	]
 	var expected: Array[NurikabeDeduction] = [
 		]
-	assert_deduction(solver.deduce_joined_island, expected)
+	assert_deduction(solver.deduce_separate_clued_islands, expected)
 
 
-func test_deduce_joined_island_invalid() -> void:
+func test_joined_island_invalid() -> void:
 	grid = [
 		" 1##  ",
 		"## 1  ",
@@ -144,10 +144,10 @@ func test_deduce_joined_island_invalid() -> void:
 	]
 	var expected: Array[NurikabeDeduction] = [
 		]
-	assert_deduction(solver.deduce_joined_island, expected)
+	assert_deduction(solver.deduce_separate_clued_islands, expected)
 
 
-func test_deduce_unclued_island_invalid() -> void:
+func test_unclued_island_invalid() -> void:
 	# the grid already has an island with no clue; don't perform this deduction
 	grid = [
 		" .##  ",
@@ -155,10 +155,10 @@ func test_deduce_unclued_island_invalid() -> void:
 	]
 	var expected: Array[NurikabeDeduction] = [
 		]
-	assert_deduction(solver.deduce_unclued_island, expected)
+	assert_deduction(solver.deduce_surrounded_wall, expected)
 
 
-func test_deduce_unclued_island_invalid_2() -> void:
+func test_unclued_island_invalid_2() -> void:
 	# the grid already has an island with no clue; don't perform this deduction
 	grid = [
 		"## 3##",
@@ -167,7 +167,7 @@ func test_deduce_unclued_island_invalid_2() -> void:
 	]
 	var expected: Array[NurikabeDeduction] = [
 		]
-	assert_deduction(solver.deduce_unclued_island, expected)
+	assert_deduction(solver.deduce_surrounded_wall, expected)
 
 
 func test_unclued_island_surrounded_square() -> void:
@@ -181,10 +181,10 @@ func test_unclued_island_surrounded_square() -> void:
 		NurikabeDeduction.new(Vector2i(0, 3), CELL_WALL, SURROUNDED_WALL),
 		NurikabeDeduction.new(Vector2i(2, 3), CELL_WALL, SURROUNDED_WALL),
 	]
-	assert_deduction(solver.deduce_unclued_island, expected)
+	assert_deduction(solver.deduce_surrounded_wall, expected)
 
 
-func test_deduce_unclued_island_chokepoint() -> void:
+func test_unclued_island_chokepoint() -> void:
 	grid = [
 		"  ##  ",
 		" 3   .",
@@ -193,10 +193,10 @@ func test_deduce_unclued_island_chokepoint() -> void:
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, ISLAND_CONTINUITY),
 	]
-	assert_deduction(solver.deduce_unclued_island, expected)
+	assert_deduction(solver.deduce_island_continuity, expected)
 
 
-func test_deduce_unclued_island_chokepoint_2() -> void:
+func test_unclued_island_chokepoint_2() -> void:
 	grid = [
 		" 5    ",
 		"##    ",
@@ -206,20 +206,20 @@ func test_deduce_unclued_island_chokepoint_2() -> void:
 		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_CONTINUITY),
 		NurikabeDeduction.new(Vector2i(1, 2), CELL_ISLAND, ISLAND_CONTINUITY),
 	]
-	assert_deduction(solver.deduce_unclued_island, expected)
+	assert_deduction(solver.deduce_island_continuity, expected)
 
 
-func test_deduce_island_too_large_1() -> void:
+func test_surround_complete_island_1() -> void:
 	grid = [
 		" 2 .  ",
 	]
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(2, 0), CELL_WALL, SURROUND_COMPLETE_ISLAND),
 	]
-	assert_deduction(solver.deduce_island_too_large, expected)
+	assert_deduction(solver.deduce_surround_complete_island, expected)
 
 
-func test_deduce_island_too_large_2() -> void:
+func test_surround_complete_island_2() -> void:
 	grid = [
 		" 2 .  ",
 		"      ",
@@ -229,10 +229,10 @@ func test_deduce_island_too_large_2() -> void:
 		NurikabeDeduction.new(Vector2i(1, 1), CELL_WALL, SURROUND_COMPLETE_ISLAND),
 		NurikabeDeduction.new(Vector2i(2, 0), CELL_WALL, SURROUND_COMPLETE_ISLAND),
 	]
-	assert_deduction(solver.deduce_island_too_large, expected)
+	assert_deduction(solver.deduce_surround_complete_island, expected)
 
 
-func test_deduce_island_too_large_invalid() -> void:
+func test_surround_complete_island_invalid() -> void:
 	# the island is already too large; don't perform this deduction
 	grid = [
 		" 2 . .",
@@ -240,10 +240,10 @@ func test_deduce_island_too_large_invalid() -> void:
 	]
 	var expected: Array[NurikabeDeduction] = [
 	]
-	assert_deduction(solver.deduce_island_too_large, expected)
+	assert_deduction(solver.deduce_surround_complete_island, expected)
 
 
-func test_island_too_small_1() -> void:
+func test_island_expansion_1() -> void:
 	grid = [
 		" 3    ",
 	]
@@ -251,10 +251,10 @@ func test_island_too_small_1() -> void:
 		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_EXPANSION),
 		NurikabeDeduction.new(Vector2i(2, 0), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_island_expansion, expected)
 
 
-func test_island_too_small_multiple() -> void:
+func test_island_expansion_multiple() -> void:
 	grid = [
 		" 2      ",
 		"##      ",
@@ -262,13 +262,24 @@ func test_island_too_small_multiple() -> void:
 	]
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_EXPANSION),
+	]
+	assert_deduction(solver.deduce_island_expansion, expected)
+
+
+func test_island_moat_multiple() -> void:
+	grid = [
+		" 2      ",
+		"##      ",
+		"##     4",
+	]
+	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(1, 1), CELL_WALL, ISLAND_MOAT),
 		NurikabeDeduction.new(Vector2i(2, 0), CELL_WALL, ISLAND_MOAT),
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_island_moat, expected)
 
 
-func test_island_too_small_chokepoint() -> void:
+func test_island_expansion_chokepoint() -> void:
 	grid = [
 		" 4    ",
 		"##  ##",
@@ -278,10 +289,10 @@ func test_island_too_small_chokepoint() -> void:
 		NurikabeDeduction.new(Vector2i(1, 0), CELL_ISLAND, ISLAND_EXPANSION),
 		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_island_expansion, expected)
 
 
-func test_island_too_small_chokepoint_2() -> void:
+func test_island_expansion_chokepoint_2() -> void:
 	grid = [
 		" 4  ##",
 		"##  ##",
@@ -292,10 +303,26 @@ func test_island_too_small_chokepoint_2() -> void:
 		NurikabeDeduction.new(Vector2i(1, 1), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
 		NurikabeDeduction.new(Vector2i(1, 2), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_island_expansion, expected)
 
 
-func test_island_too_small_hidden_island_expansion_1() -> void:
+func test_island_expansion_hidden_island_expansion_1() -> void:
+	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
+	grid = [
+		" 1##    ",
+		"####   5",
+		"## 3    ",
+		"        ",
+		"        ",
+		"        ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(3, 2), CELL_ISLAND, ISLAND_EXPANSION),
+	]
+	assert_deduction(solver.deduce_island_expansion, expected)
+
+
+func test_island_expansion_hidden_island_moat_1() -> void:
 	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
 	grid = [
 		" 1##    ",
@@ -307,12 +334,11 @@ func test_island_too_small_hidden_island_expansion_1() -> void:
 	]
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, ISLAND_MOAT),
-		NurikabeDeduction.new(Vector2i(3, 2), CELL_ISLAND, ISLAND_EXPANSION),
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_island_moat, expected)
 
 
-func test_island_too_small_hidden_island_expansion_2() -> void:
+func test_island_expansion_hidden_island_moat_2() -> void:
 	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
 	grid = [
 		" 1## . .",
@@ -325,10 +351,27 @@ func test_island_too_small_hidden_island_expansion_2() -> void:
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, ISLAND_MOAT)
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_island_moat, expected)
 
 
-func test_island_too_small_hidden_island_expansion_3() -> void:
+func test_island_expansion_3() -> void:
+	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
+	grid = [
+		" 1##   5",
+		"####    ",
+		"## 3    ",
+		"        ",
+		"        ",
+		"        ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(3, 1), CELL_ISLAND, ISLAND_EXPANSION),
+		NurikabeDeduction.new(Vector2i(3, 2), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
+	]
+	assert_deduction(solver.deduce_island_expansion, expected)
+
+
+func test_island_moat_3() -> void:
 	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
 	grid = [
 		" 1##   5",
@@ -340,13 +383,11 @@ func test_island_too_small_hidden_island_expansion_3() -> void:
 	]
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(2, 2), CELL_WALL, ISLAND_MOAT),
-		NurikabeDeduction.new(Vector2i(3, 1), CELL_ISLAND, ISLAND_EXPANSION),
-		NurikabeDeduction.new(Vector2i(3, 2), CELL_ISLAND, HIDDEN_ISLAND_EXPANSION),
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_island_moat, expected)
 
 
-func test_island_too_small_invalid() -> void:
+func test_island_expansion_invalid() -> void:
 	grid = [
 		" 2      ",
 		"  ##    ",
@@ -356,10 +397,10 @@ func test_island_too_small_invalid() -> void:
 	]
 	var expected: Array[NurikabeDeduction] = [
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_island_expansion, expected)
 
 
-func test_island_too_small_only_two_directions() -> void:
+func test_island_expansion_only_two_directions() -> void:
 	# The cell at (2, 3) can't be an island or it would block the 2 island from growing.
 	grid = [
 		" . . .    ",
@@ -371,7 +412,7 @@ func test_island_too_small_only_two_directions() -> void:
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(2, 3), CELL_WALL, CORNER_ISLAND),
 	]
-	assert_deduction(solver.deduce_island_too_small, expected)
+	assert_deduction(solver.deduce_corner_island, expected)
 
 
 func test_pools_1() -> void:
@@ -401,7 +442,7 @@ func test_pools_cut_off() -> void:
 	assert_deduction(solver.deduce_pools, expected)
 
 
-func test_no_split_walls_1() -> void:
+func test_split_walls_1() -> void:
 	grid = [
 		" 3##  ",
 		"     3",
@@ -413,7 +454,7 @@ func test_no_split_walls_1() -> void:
 	assert_deduction(solver.deduce_split_walls, expected)
 
 
-func test_no_split_walls_2() -> void:
+func test_split_walls_2() -> void:
 	grid = [
 		"## 4  ",
 		"      ",
@@ -425,7 +466,7 @@ func test_no_split_walls_2() -> void:
 	assert_deduction(solver.deduce_split_walls, expected)
 
 
-func test_no_split_walls_3() -> void:
+func test_surrounded_island() -> void:
 	grid = [
 		"      ",
 		"##   .",
@@ -434,10 +475,10 @@ func test_no_split_walls_3() -> void:
 	var expected: Array[NurikabeDeduction] = [
 		NurikabeDeduction.new(Vector2i(2, 2), CELL_ISLAND, SURROUNDED_ISLAND),
 	]
-	assert_deduction(solver.deduce_split_walls, expected)
+	assert_deduction(solver.deduce_surrounded_island, expected)
 
 
-func test_unreachable_squares_1() -> void:
+func test_unreachable_square_1() -> void:
 	grid = [
 		" 4    ",
 		"      ",
@@ -449,7 +490,7 @@ func test_unreachable_squares_1() -> void:
 	assert_deduction(solver.deduce_unreachable_square, expected)
 
 
-func test_unreachable_squares_2() -> void:
+func test_unreachable_square_2() -> void:
 	grid = [
 		" 4##  ",
 		" .    ",
@@ -462,7 +503,7 @@ func test_unreachable_squares_2() -> void:
 	assert_deduction(solver.deduce_unreachable_square, expected)
 
 
-func test_unreachable_squares_3() -> void:
+func test_unreachable_square_3() -> void:
 	grid = [
 		"   .    ",
 		"    ## 2",
@@ -475,7 +516,7 @@ func test_unreachable_squares_3() -> void:
 	assert_deduction(solver.deduce_unreachable_square, expected)
 
 
-func test_unreachable_squares_blocked() -> void:
+func test_unreachable_square_blocked() -> void:
 	# the upper right cell is reachable by the 4, but it's blocked by the 3
 	grid = [
 		" 4        ",
@@ -488,7 +529,7 @@ func test_unreachable_squares_blocked() -> void:
 	assert_deduction(solver.deduce_unreachable_square, expected)
 
 
-func test_unreachable_squares_unclued_squares() -> void:
+func test_unreachable_square_unclued_squares() -> void:
 	# The center cell at (2, 2) is reachable by the 3, but it's blocked by unclued cells. This isn't deducable with
 	# our current techniques. With unclued blobs of arbitrary size it would essentially require solving the knapsack
 	# problem.
