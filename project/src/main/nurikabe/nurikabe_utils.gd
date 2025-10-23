@@ -25,6 +25,7 @@ enum Reason {
 	CORNER_ISLAND, # island with only two directions to expand
 	HIDDEN_ISLAND_EXPANSION, # island which can only expand through a chokepoint
 	ISLAND_MOAT, # wall which preserves space for an island to grow
+	UNREACHABLE_SQUARE, # empty square which no clue can 'reach'
 }
 
 ## Nurikabe cells:
@@ -61,6 +62,7 @@ const ISLAND_EXPANSION: Reason = Reason.ISLAND_EXPANSION
 const CORNER_ISLAND: Reason = Reason.CORNER_ISLAND
 const HIDDEN_ISLAND_EXPANSION: Reason = Reason.HIDDEN_ISLAND_EXPANSION
 const ISLAND_MOAT: NurikabeUtils.Reason = Reason.ISLAND_MOAT
+const UNREACHABLE_SQUARE: Reason = Reason.UNREACHABLE_SQUARE
 
 const ERROR_FG_COLOR: Color = Color.WHITE
 const ERROR_BG_COLOR: Color = Color("ff5a5a")

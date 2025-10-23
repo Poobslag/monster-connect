@@ -28,6 +28,7 @@ const ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.ISLAND_EXPANSION
 const CORNER_ISLAND: NurikabeUtils.Reason = NurikabeUtils.CORNER_ISLAND
 const HIDDEN_ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.HIDDEN_ISLAND_EXPANSION
 const ISLAND_MOAT: NurikabeUtils.Reason = NurikabeUtils.ISLAND_MOAT
+const UNREACHABLE_SQUARE: NurikabeUtils.Reason = NurikabeUtils.UNREACHABLE_SQUARE
 
 var starting_techniques: Array[Callable] = [
 	deduce_island_of_one,
@@ -41,6 +42,7 @@ var rules: Array[Callable] = [
 	deduce_island_too_small,
 	deduce_pools,
 	deduce_split_walls,
+	deduce_unreachable_square,
 ]
 
 func deduce_island_of_one(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
@@ -106,6 +108,8 @@ func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 			deductions.append(NurikabeDeduction.new(group[0], CELL_WALL, SURROUNDED_SQUARE))
 			continue
 		for cell: Vector2i in group:
+			if cell in deduction_cells:
+				continue
 			deduction_cells[cell] = true
 			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, UNCLUED_ISLAND))
 	
@@ -266,6 +270,24 @@ func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 	return deductions
 
 
+func deduce_unreachable_square(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
+	var deductions: Array[NurikabeDeduction] = []
+	var reachable: Dictionary[Vector2i, bool]
+	var clued_groups: Array[Array] = []
+	for group: Array[Vector2i] in board.find_smallest_island_groups():
+		if board.get_clue_cells(group).size() == 1:
+			clued_groups.append(group)
+	var clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
+		= _neighbor_groups_by_empty_cell(board, clued_groups)
+	for group: Array[Vector2i] in clued_groups:
+		for cell: Vector2i in _flood_reachable_cells(board, group, clued_neighbor_groups_by_empty_cell):
+			reachable[cell] = true
+	for cell: Vector2i in board.cells:
+		if board.get_cell_string(cell) == CELL_EMPTY and not cell in reachable:
+			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, UNREACHABLE_SQUARE))
+	return deductions
+
+
 func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
 	var uncompletable_islands: Dictionary[Array, bool] = {}
 	var complete_islands: Dictionary[Array, bool] = {}
@@ -382,6 +404,41 @@ func _find_liberties(board: NurikabeBoardModel, group: Array[Vector2i]) -> Array
 				liberties.append(neighbor_cell)
 			seen[neighbor_cell] = true
 	return liberties
+
+
+func _flood_reachable_cells( \
+		board: NurikabeBoardModel,
+		group: Array[Vector2i],
+		clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array]) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	var queue: Array[Vector2i] = group.duplicate()
+	var min_group_size_by_cell: Dictionary[Vector2i, int] = {}
+	var visited: Dictionary[Vector2i, bool] = {}
+	var clue_value: int = board.get_clue_value(group)
+	for cell: Vector2i in group:
+		min_group_size_by_cell[cell] = group.size()
+	while not queue.is_empty():
+		var cell: Vector2i = queue.pop_front()
+		if visited.has(cell):
+			continue
+		visited[cell] = true
+		result.append(cell)
+		if min_group_size_by_cell[cell] == clue_value:
+			continue
+		for neighbor_cell in board.get_neighbors(cell):
+			if visited.has(neighbor_cell):
+				continue
+			if board.get_cell_string(neighbor_cell) not in [CELL_EMPTY, CELL_ISLAND]:
+				continue
+			var clued_neighbor_groups: Array[Array]\
+					= clued_neighbor_groups_by_empty_cell.get(neighbor_cell, [] as Array[Array])
+			if clued_neighbor_groups.size() > 1 \
+					or clued_neighbor_groups.size() == 1 and clued_neighbor_groups[0] != group:
+				continue
+			queue.append(neighbor_cell)
+			min_group_size_by_cell[neighbor_cell] = min(
+					min_group_size_by_cell.get(neighbor_cell, 99), min_group_size_by_cell[cell] + 1)
+	return result
 
 
 ## Returns the number of islands bordering each empty cell.
