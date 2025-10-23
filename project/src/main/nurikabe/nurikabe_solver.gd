@@ -50,8 +50,9 @@ var rules: Array[Callable] = [
 	deduce_unreachable_square,
 ]
 
-func deduce_island_of_one(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deductions: Array[NurikabeDeduction] = []
+var solver_pass: NurikabeSolverPass = NurikabeSolverPass.new()
+
+func deduce_island_of_one(board: NurikabeBoardModel) -> void:
 	var island_of_one_neighbors: Dictionary[Vector2i, bool] = {}
 	var islands_of_one: Array[Vector2i] = []
 	for cell: Vector2i in board.cells:
@@ -62,43 +63,32 @@ func deduce_island_of_one(board: NurikabeBoardModel) -> Array[NurikabeDeduction]
 			if board.get_cell_string(neighbor_cell) == CELL_EMPTY:
 				island_of_one_neighbors[neighbor_cell] = true
 	for neighbor: Vector2i in island_of_one_neighbors:
-		deductions.append(NurikabeDeduction.new(neighbor, CELL_WALL, ISLAND_OF_ONE))
-	return deductions
+		solver_pass.add_deduction(neighbor, CELL_WALL, ISLAND_OF_ONE)
 
 
-func deduce_adjacent_clues(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deductions: Array[NurikabeDeduction] = []
+func deduce_adjacent_clues(board: NurikabeBoardModel) -> void:
 	for cell: Vector2i in board.cells:
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
 		var clue_mask: int = _neighbor_mask(board, cell, func(neighbor_value: String) -> bool:
 			return neighbor_value.is_valid_int())
 		if clue_mask & 3 == 3 or clue_mask & 12 == 12:
-			deductions.append( \
-					NurikabeDeduction.new(cell, CELL_WALL, ADJACENT_CLUES))
+			solver_pass.add_deduction(cell, CELL_WALL, ADJACENT_CLUES)
 		elif clue_mask & 5 == 5 or clue_mask & 6 == 6 or clue_mask & 9 == 9 or clue_mask & 10 == 10:
-			deductions.append( \
-					NurikabeDeduction.new(cell, CELL_WALL, DIAGONAL_CLUES))
-	return deductions
+			solver_pass.add_deduction(cell, CELL_WALL, DIAGONAL_CLUES)
 
 
-func deduce_joined_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deductions: Array[NurikabeDeduction] = []
+func deduce_joined_island(board: NurikabeBoardModel) -> void:
 	var clued_neighbor_count_by_cell: Dictionary[Vector2i, int] = _clued_neighbor_count_by_cell(board)
 	# Fill in empty cells bordering 2 or more islands with a wall.
 	for cell: Vector2i in clued_neighbor_count_by_cell.keys():
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
 		if clued_neighbor_count_by_cell[cell] >= 2:
-			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, SEPARATE_CLUED_ISLANDS))
-	
-	return deductions
+			solver_pass.add_deduction(cell, CELL_WALL, SEPARATE_CLUED_ISLANDS)
 
 
-func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deduction_cells: Dictionary[Vector2i, bool] = {}
-	var deductions: Array[NurikabeDeduction] = []
-	
+func deduce_unclued_island(board: NurikabeBoardModel) -> void:
 	# Find empty areas surrounded by walls. These areas must be walls.
 	for group: Array[Vector2i] in board.find_largest_island_groups():
 		var only_empty_cells: bool = true
@@ -109,15 +99,14 @@ func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 		if not only_empty_cells:
 			continue
 		for cell: Vector2i in group:
-			if cell in deduction_cells:
+			if cell in solver_pass.deduction_cells:
 				continue
-			deduction_cells[cell] = true
-			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, SURROUNDED_WALL))
+			solver_pass.add_deduction(cell, CELL_WALL, SURROUNDED_WALL)
 	
 	# If making an empty cell a wall creates a new unclued island, this cell must be an island.
 	var unclued_island_count: int = _unclued_island_count(board)
 	for cell: Vector2i in board.cells:
-		if cell in deduction_cells:
+		if cell in solver_pass.deduction_cells:
 			continue
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
@@ -126,15 +115,10 @@ func deduce_unclued_island(board: NurikabeBoardModel) -> Array[NurikabeDeduction
 		trial.set_cell_string(cell, CELL_WALL)
 		var trial_unclued_island_count: int = _unclued_island_count(trial)
 		if trial_unclued_island_count > unclued_island_count:
-			deduction_cells[cell] = true
-			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, ISLAND_CONTINUITY))
-	
-	return deductions
+			solver_pass.add_deduction(cell, CELL_ISLAND, ISLAND_CONTINUITY)
 
 
-func deduce_island_too_large(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deductions: Array[NurikabeDeduction] = []
-	
+func deduce_island_too_large(board: NurikabeBoardModel) -> void:
 	# Find islands which cannot grow any larger, store them in complete_islands.
 	var complete_islands: Array[Array] = []
 	for group: Array[Vector2i] in board.find_smallest_island_groups():
@@ -148,16 +132,11 @@ func deduce_island_too_large(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 			for neighbor_cell: Vector2i in board.get_neighbors(cell):
 				if seen.has(neighbor_cell) or board.get_cell_string(neighbor_cell) != CELL_EMPTY:
 					continue
-				deductions.append(NurikabeDeduction.new(neighbor_cell, CELL_WALL, SURROUND_COMPLETE_ISLAND))
+				solver_pass.add_deduction(neighbor_cell, CELL_WALL, SURROUND_COMPLETE_ISLAND)
 				seen[neighbor_cell] = true
-	
-	return deductions
 
 
-func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deduction_cells: Dictionary[Vector2i, bool] = {}
-	var deductions: Array[NurikabeDeduction] = []
-	
+func deduce_island_too_small(board: NurikabeBoardModel) -> void:
 	# If an island can only be completed two ways, the corner cell must be a wall.
 	for group: Array[Vector2i] in board.find_smallest_island_groups():
 		# If the island is 1 less than its desired size, find its liberties
@@ -172,17 +151,16 @@ func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 		liberty_connectors.assign(Utils.intersection( \
 				board.get_neighbors(liberty_cells[0]), board.get_neighbors(liberty_cells[1])))
 		for liberty_connector: Vector2i in liberty_connectors:
-			if liberty_connector in deduction_cells:
+			if liberty_connector in solver_pass.deduction_cells:
 				continue
 			if board.get_cell_string(liberty_connector) != CELL_EMPTY:
 				continue
-			deduction_cells[liberty_connector] = true
-			deductions.append(NurikabeDeduction.new(liberty_connector, CELL_WALL, CORNER_ISLAND))
+			solver_pass.add_deduction(liberty_connector, CELL_WALL, CORNER_ISLAND)
 	
 	# If making an empty cell a wall creates an uncompletable island, this cell must be an island.
 	var uncompletable_island_count: int = get_uncompletable_island_count(board)
 	for cell: Vector2i in board.cells:
-		if cell in deduction_cells:
+		if cell in solver_pass.deduction_cells:
 			continue
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
@@ -196,12 +174,11 @@ func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 				return neighbor_value == CELL_ISLAND or neighbor_value.is_valid_int())
 			if island_mask != 0:
 				reason = ISLAND_EXPANSION
-			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, reason))
-			deduction_cells[cell] = true
+			solver_pass.add_deduction(cell, CELL_ISLAND, reason)
 	
 	# If expanding a clued island blocks in another clued island so it can't be completed, this cell must be a wall.
 	for cell: Vector2i in board.cells:
-		if cell in deduction_cells:
+		if cell in solver_pass.deduction_cells:
 			continue
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
@@ -209,14 +186,10 @@ func deduce_island_too_small(board: NurikabeBoardModel) -> Array[NurikabeDeducti
 		trial.set_cell_string(cell, CELL_ISLAND)
 		var trial_uncompletable_island_count: int = get_uncompletable_island_count(trial)
 		if trial_uncompletable_island_count > uncompletable_island_count:
-			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, ISLAND_MOAT))
-			deduction_cells[cell] = true
-	
-	return deductions
+			solver_pass.add_deduction(cell, CELL_WALL, ISLAND_MOAT)
 
 
-func deduce_pools(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deductions: Array[NurikabeDeduction] = []
+func deduce_pools(board: NurikabeBoardModel) -> void:
 	var pool_count: int = board.get_pool_cells().size()
 	for cell: Vector2i in board.cells:
 		if board.get_cell_string(cell) != CELL_EMPTY:
@@ -229,16 +202,13 @@ func deduce_pools(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 				trial.set_cell_string(group_cell, CELL_WALL)
 		var trial_pool_count: int = trial.get_pool_cells().size()
 		if trial_pool_count > pool_count:
-			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, AVOID_POOLS))
-	return deductions
+			solver_pass.add_deduction(cell, CELL_ISLAND, AVOID_POOLS)
 
 
-func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deduction_cells: Dictionary[Vector2i, bool] = {}
-	var deductions: Array[NurikabeDeduction] = []
+func deduce_split_walls(board: NurikabeBoardModel) -> void:
 	var wall_count: int = _largest_non_empty_wall_groups(board).size()
 	for cell: Vector2i in board.cells:
-		if cell in deduction_cells:
+		if cell in solver_pass.deduction_cells:
 			continue
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
@@ -252,8 +222,7 @@ func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 			var reason: NurikabeUtils.Reason = WALL_CONTINUITY
 			if wall_mask in [0, 1, 2, 4, 8]:
 				reason = WALL_EXPANSION
-			deduction_cells[cell] = true
-			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, reason))
+			solver_pass.add_deduction(cell, CELL_WALL, reason)
 	
 	# Find empty areas surrounded by islands. These areas must be islands.
 	for group: Array[Vector2i] in board.find_largest_wall_groups():
@@ -265,16 +234,12 @@ func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 		if not only_empty_cells:
 			continue
 		for cell: Vector2i in group:
-			if cell in deduction_cells:
+			if cell in solver_pass.deduction_cells:
 				continue
-			deduction_cells[cell] = true
-			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, SURROUNDED_ISLAND))
-	
-	return deductions
+			solver_pass.add_deduction(cell, CELL_ISLAND, SURROUNDED_ISLAND)
 
 
-func deduce_unreachable_square(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
-	var deductions: Array[NurikabeDeduction] = []
+func deduce_unreachable_square(board: NurikabeBoardModel) -> void:
 	var reachable: Dictionary[Vector2i, bool]
 	var clued_groups: Array[Array] = []
 	for group: Array[Vector2i] in board.find_smallest_island_groups():
@@ -287,8 +252,7 @@ func deduce_unreachable_square(board: NurikabeBoardModel) -> Array[NurikabeDeduc
 			reachable[cell] = true
 	for cell: Vector2i in board.cells:
 		if board.get_cell_string(cell) == CELL_EMPTY and not cell in reachable:
-			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, UNREACHABLE_SQUARE))
-	return deductions
+			solver_pass.add_deduction(cell, CELL_WALL, UNREACHABLE_SQUARE)
 
 
 func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
