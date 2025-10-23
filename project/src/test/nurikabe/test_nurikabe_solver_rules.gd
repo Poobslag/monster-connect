@@ -423,3 +423,15 @@ func test_no_split_walls_2() -> void:
 		NurikabeDeduction.new(Vector2i(0, 1), CELL_WALL, WALL_EXPANSION),
 	]
 	assert_deduction(solver.deduce_split_walls(init_model()), expected)
+
+
+func test_no_split_walls_3() -> void:
+	grid = [
+		"      ",
+		"##   .",
+		"## 4  ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(2, 2), CELL_ISLAND, SPLIT_WALLS),
+	]
+	assert_deduction(solver.deduce_split_walls(init_model()), expected)

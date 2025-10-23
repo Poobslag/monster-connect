@@ -229,9 +229,12 @@ func deduce_pools(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 
 
 func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
+	var deduction_cells: Dictionary[Vector2i, bool] = {}
 	var deductions: Array[NurikabeDeduction] = []
 	var wall_count: int = _largest_non_empty_wall_groups(board).size()
 	for cell: Vector2i in board.cells:
+		if cell in deduction_cells:
+			continue
 		if board.get_cell_string(cell) != CELL_EMPTY:
 			continue
 		
@@ -244,7 +247,22 @@ func deduce_split_walls(board: NurikabeBoardModel) -> Array[NurikabeDeduction]:
 			var reason: NurikabeUtils.Reason = WALL_CONTINUITY
 			if wall_mask in [0, 1, 2, 4, 8]:
 				reason = WALL_EXPANSION
+			deduction_cells[cell] = true
 			deductions.append(NurikabeDeduction.new(cell, CELL_WALL, reason))
+	
+	for cell: Vector2i in board.cells:
+		if cell in deduction_cells:
+			continue
+		if board.get_cell_string(cell) != CELL_EMPTY:
+			continue
+		
+		var trial: NurikabeBoardModel = board.duplicate()
+		trial.set_cell_string(cell, CELL_WALL)
+		var trial_wall_count: int = _largest_non_empty_wall_groups(trial).size()
+		if trial_wall_count > wall_count:
+			deduction_cells[cell] = true
+			deductions.append(NurikabeDeduction.new(cell, CELL_ISLAND, SPLIT_WALLS))
+	
 	return deductions
 
 
