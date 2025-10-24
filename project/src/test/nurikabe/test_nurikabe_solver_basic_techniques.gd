@@ -85,7 +85,7 @@ func test_uncompletable_islands_too_close_4() -> void:
 	assert_eq(solver.get_uncompletable_island_count(board), 1)
 
 
-func test_joined_island_2() -> void:
+func test_island_divider_2() -> void:
 	grid = [
 		" 3   3",
 		"      ",
@@ -97,7 +97,7 @@ func test_joined_island_2() -> void:
 	assert_deduction(solver.deduce_island_divider, expected)
 
 
-func test_joined_island_3() -> void:
+func test_island_divider_3() -> void:
 	grid = [
 		" 1      ",
 		"   2   3",
@@ -112,7 +112,7 @@ func test_joined_island_3() -> void:
 	assert_deduction(solver.deduce_island_divider, expected)
 
 
-func test_joined_island_mistake() -> void:
+func test_island_divider_mistake() -> void:
 	grid = [
 		" 2 . 2",
 		"      ",
@@ -126,7 +126,7 @@ func test_joined_island_mistake() -> void:
 	assert_deduction(solver.deduce_island_divider, expected)
 
 
-func test_joined_island_none() -> void:
+func test_island_divider_none() -> void:
 	grid = [
 		" 2    ",
 		"     2",
@@ -136,7 +136,7 @@ func test_joined_island_none() -> void:
 	assert_deduction(solver.deduce_island_divider, expected)
 
 
-func test_joined_island_invalid() -> void:
+func test_island_divider_invalid() -> void:
 	grid = [
 		" 1##  ",
 		"## 1  ",
@@ -147,7 +147,7 @@ func test_joined_island_invalid() -> void:
 	assert_deduction(solver.deduce_island_divider, expected)
 
 
-func test_unclued_island_invalid() -> void:
+func test_wall_bubble_invalid() -> void:
 	# the grid already has an island with no clue; don't perform this deduction
 	grid = [
 		" .##  ",
@@ -158,7 +158,7 @@ func test_unclued_island_invalid() -> void:
 	assert_deduction(solver.deduce_wall_bubble, expected)
 
 
-func test_unclued_island_invalid_2() -> void:
+func test_wall_bubble_invalid_2() -> void:
 	# the grid already has an island with no clue; don't perform this deduction
 	grid = [
 		"## 3##",
@@ -170,7 +170,7 @@ func test_unclued_island_invalid_2() -> void:
 	assert_deduction(solver.deduce_wall_bubble, expected)
 
 
-func test_unclued_island_surrounded_square() -> void:
+func test_wall_bubble_surrounded_square() -> void:
 	grid = [
 		"            ",
 		"  ##        ",
@@ -184,7 +184,7 @@ func test_unclued_island_surrounded_square() -> void:
 	assert_deduction(solver.deduce_wall_bubble, expected)
 
 
-func test_unclued_island_chokepoint() -> void:
+func test_island_connector_chokepoint() -> void:
 	grid = [
 		"  ##  ",
 		" 3   .",
@@ -196,7 +196,7 @@ func test_unclued_island_chokepoint() -> void:
 	assert_deduction(solver.deduce_island_connector, expected)
 
 
-func test_unclued_island_chokepoint_2() -> void:
+func test_island_connector_chokepoint_2() -> void:
 	grid = [
 		" 5    ",
 		"##    ",
@@ -322,7 +322,7 @@ func test_island_expansion_island_chokepoint_1() -> void:
 	assert_deduction(solver.deduce_island_expansion, expected)
 
 
-func test_island_expansion_hidden_island_buffer_1() -> void:
+func test_island_buffer_1() -> void:
 	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
 	grid = [
 		" 1##    ",
@@ -338,7 +338,7 @@ func test_island_expansion_hidden_island_buffer_1() -> void:
 	assert_deduction(solver.deduce_island_buffer, expected)
 
 
-func test_island_expansion_hidden_island_buffer_2() -> void:
+func test_island_buffer_2() -> void:
 	# The cell at (2, 2) can't be an island or it would block the top 5 island from growing.
 	grid = [
 		" 1## . .",
@@ -415,7 +415,7 @@ func test_island_expansion_only_two_directions() -> void:
 	assert_deduction(solver.deduce_corner_island, expected)
 
 
-func test_pools_1() -> void:
+func test_pool_triplets_1() -> void:
 	grid = [
 		" 4    ",
 		"    ##",
@@ -427,7 +427,7 @@ func test_pools_1() -> void:
 	assert_deduction(solver.deduce_pool_triplets, expected)
 
 
-func test_pools_cut_off() -> void:
+func test_pool_triplets_cut_off() -> void:
 	grid = [
 		" 5    ",
 		"  ##  ",
@@ -442,7 +442,7 @@ func test_pools_cut_off() -> void:
 	assert_deduction(solver.deduce_pool_triplets, expected)
 
 
-func test_split_walls_1() -> void:
+func test_wall_expansion_1() -> void:
 	grid = [
 		" 3##  ",
 		"     3",
@@ -454,7 +454,7 @@ func test_split_walls_1() -> void:
 	assert_deduction(solver.deduce_wall_expansion, expected)
 
 
-func test_split_walls_2() -> void:
+func test_wall_expansion_2() -> void:
 	grid = [
 		"## 4  ",
 		"      ",
@@ -466,7 +466,7 @@ func test_split_walls_2() -> void:
 	assert_deduction(solver.deduce_wall_expansion, expected)
 
 
-func test_island_bubble() -> void:
+func test_island_bubble_1() -> void:
 	grid = [
 		"      ",
 		"##   .",
