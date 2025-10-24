@@ -112,6 +112,21 @@ func test_island_divider_3() -> void:
 	assert_deduction(solver.deduce_island_divider, expected)
 
 
+func test_island_divider_unclued() -> void:
+	grid = [
+		"            ",
+		"   2        ",
+		"     .      ",
+		"         9  ",
+		"            ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(1, 2), CELL_WALL, ISLAND_DIVIDER),
+		NurikabeDeduction.new(Vector2i(2, 1), CELL_WALL, ISLAND_DIVIDER),
+	]
+	assert_deduction(solver.deduce_island_divider, expected)
+
+
 func test_island_divider_mistake() -> void:
 	grid = [
 		" 2 . 2",

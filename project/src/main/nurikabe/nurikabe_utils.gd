@@ -23,7 +23,7 @@ enum Reason {
 	ISLAND_BUFFER, # add a wall to preserve space for an island to grow
 	ISLAND_CHOKEPOINT, # expand an island through a chokepoint
 	ISLAND_CONNECTOR, # connect a clueless island to a clued island
-	ISLAND_DIVIDER, # fill in a square to keep two clued islands apart
+	ISLAND_DIVIDER, # fill in a square to keep two islands apart
 	ISLAND_EXPANSION, # expand an island in the only possible direction
 	ISLAND_MOAT, # seal a completed island with walls
 	POOL_TRIPLET, # fill in the fourth cell to prevent a 2x2 grid of wall cells
