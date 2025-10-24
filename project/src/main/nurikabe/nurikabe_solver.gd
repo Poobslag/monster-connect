@@ -277,6 +277,8 @@ func deduce_island_bubble(board: NurikabeBoardModel) -> void:
 
 func deduce_unreachable_square(board: NurikabeBoardModel) -> void:
 	for unreachable_cell: Vector2i in _unreachable_cells(board):
+		if not _can_deduce(board, unreachable_cell):
+			continue
 		solver_pass.add_deduction(unreachable_cell, CELL_WALL, UNREACHABLE_SQUARE)
 
 
