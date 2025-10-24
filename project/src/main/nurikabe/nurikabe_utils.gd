@@ -35,6 +35,7 @@ enum Reason {
 	# advanced techniques
 	FORBIDDEN_COURTYARD, # extending an island will create a 2x2 grid of unreachable cells
 	LAST_LIGHT, # creating a wall will create a 2x2 grid of unreachable cells
+	DEAD_END_WALL, # creating an island will create a split wall
 	
 	BIFURCATION, # fill in a square if the opposite assumption leads to a contradiction
 }
@@ -83,6 +84,7 @@ const ISLAND_DIVIDER: Reason = Reason.ISLAND_DIVIDER
 ## Advanced techniques
 const FORBIDDEN_COURTYARD: Reason = Reason.FORBIDDEN_COURTYARD
 const LAST_LIGHT: Reason = Reason.LAST_LIGHT
+const DEAD_END_WALL: Reason = Reason.DEAD_END_WALL
 
 const BIFURCATION: Reason = Reason.BIFURCATION
 

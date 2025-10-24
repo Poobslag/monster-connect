@@ -38,6 +38,7 @@ const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 ## Advanced techniques
 const FORBIDDEN_COURTYARD: NurikabeUtils.Reason = NurikabeUtils.FORBIDDEN_COURTYARD
 const LAST_LIGHT: NurikabeUtils.Reason = NurikabeUtils.LAST_LIGHT
+const DEAD_END_WALL: NurikabeUtils.Reason = NurikabeUtils.DEAD_END_WALL
 
 const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
 
@@ -63,6 +64,7 @@ var basic_techniques: Array[Callable] = [
 var advanced_techniques: Array[Callable] = [
 	deduce_forbidden_courtyard,
 	deduce_last_light,
+	deduce_dead_end_wall,
 ]
 
 var solver_pass: NurikabeSolverPass = NurikabeSolverPass.new()
@@ -277,9 +279,11 @@ func deduce_island_bubble(board: NurikabeBoardModel) -> void:
 			for cell: Vector2i in other_group:
 				trial.set_cell_string(cell, CELL_ISLAND)
 		var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
-		if trial_validation_result.joined_islands.size() > validation_result.joined_islands.size():
+		if trial_validation_result.joined_islands_unfixable.size() > validation_result.joined_islands_unfixable.size():
 			can_contain_every_wall = false
 		if trial_validation_result.wrong_size_unfixable.size() > validation_result.wrong_size_unfixable.size():
+			can_contain_every_wall = false
+		if trial_validation_result.split_walls_unfixable.size() > validation_result.split_walls_unfixable.size():
 			can_contain_every_wall = false
 		if can_contain_every_wall:
 			continue
@@ -391,6 +395,37 @@ func deduce_last_light(board: NurikabeBoardModel) -> void:
 		var trial_pool_cell_count: int = trial.get_pool_cells().size()
 		if trial_pool_cell_count > pool_cell_count:
 			solver_pass.add_deduction(cell, CELL_ISLAND, LAST_LIGHT)
+
+
+func deduce_dead_end_wall(board: NurikabeBoardModel) -> void:
+	var validation_result: NurikabeBoardModel.ValidationResult = board.validate()
+	var largest_wall_groups: Array[Array] = board.find_largest_wall_groups()
+	for cell: Vector2i in board.cells:
+		if not _can_deduce(board, cell):
+			continue
+		
+		var trial: NurikabeBoardModel = board.duplicate()
+		trial.set_cell_string(cell, CELL_ISLAND)
+		var trial_largest_wall_groups: Array[Array] = trial.find_largest_wall_groups()
+		if trial_largest_wall_groups.size() <= largest_wall_groups.size():
+			continue
+		
+		var solver: NurikabeSolver = NurikabeSolver.new()
+		solver.deduce_island_bubble(trial)
+		trial.set_cell_strings(solver.solver_pass.get_changes())
+		var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
+		
+		var can_split_walls: bool = true
+		if trial_validation_result.joined_islands_unfixable.size() > validation_result.joined_islands_unfixable.size():
+			can_split_walls = false
+		if trial_validation_result.wrong_size_unfixable.size() > validation_result.wrong_size_unfixable.size():
+			can_split_walls = false
+		if trial_validation_result.split_walls_unfixable.size() > validation_result.split_walls_unfixable.size():
+			can_split_walls = false
+		if can_split_walls:
+			continue
+		
+		solver_pass.add_deduction(cell, CELL_WALL, DEAD_END_WALL)
 
 
 func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:

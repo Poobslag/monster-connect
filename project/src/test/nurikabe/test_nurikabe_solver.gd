@@ -40,6 +40,7 @@ const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 ## Advanced techniques
 const FORBIDDEN_COURTYARD: NurikabeUtils.Reason = NurikabeUtils.FORBIDDEN_COURTYARD
 const LAST_LIGHT: NurikabeUtils.Reason = NurikabeUtils.LAST_LIGHT
+const DEAD_END_WALL: NurikabeUtils.Reason = NurikabeUtils.DEAD_END_WALL
 
 const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
 
