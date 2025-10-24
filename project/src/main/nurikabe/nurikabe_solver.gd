@@ -76,7 +76,7 @@ func deduce_island_of_one(board: NurikabeBoardModel) -> void:
 
 func deduce_adjacent_clues(board: NurikabeBoardModel) -> void:
 	for cell: Vector2i in board.cells:
-		if board.get_cell_string(cell) != CELL_EMPTY:
+		if not _can_deduce(board, cell):
 			continue
 		var clue_mask: int = _neighbor_mask(board, cell, func(neighbor_value: String) -> bool:
 			return neighbor_value.is_valid_int())
@@ -90,7 +90,7 @@ func deduce_adjacent_clues(board: NurikabeBoardModel) -> void:
 func deduce_island_divider(board: NurikabeBoardModel) -> void:
 	var clued_neighbor_count_by_cell: Dictionary[Vector2i, int] = _clued_neighbor_count_by_cell(board)
 	for cell: Vector2i in clued_neighbor_count_by_cell.keys():
-		if board.get_cell_string(cell) != CELL_EMPTY:
+		if not _can_deduce(board, cell):
 			continue
 		if clued_neighbor_count_by_cell[cell] >= 2:
 			solver_pass.add_deduction(cell, CELL_WALL, ISLAND_DIVIDER)
@@ -116,9 +116,7 @@ func deduce_wall_bubble(board: NurikabeBoardModel) -> void:
 func deduce_island_connector(board: NurikabeBoardModel) -> void:
 	var unclued_island_count: int = _unclued_island_count(board)
 	for cell: Vector2i in board.cells:
-		if cell in solver_pass.deduction_cells:
-			continue
-		if board.get_cell_string(cell) != CELL_EMPTY:
+		if not _can_deduce(board, cell):
 			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
@@ -140,7 +138,7 @@ func deduce_island_moat(board: NurikabeBoardModel) -> void:
 	for group: Array[Vector2i] in complete_islands:
 		for cell: Vector2i in group:
 			for neighbor_cell: Vector2i in board.get_neighbors(cell):
-				if seen.has(neighbor_cell) or board.get_cell_string(neighbor_cell) != CELL_EMPTY:
+				if seen.has(neighbor_cell) or not _can_deduce(board, neighbor_cell):
 					continue
 				solver_pass.add_deduction(neighbor_cell, CELL_WALL, ISLAND_MOAT)
 				seen[neighbor_cell] = true
@@ -161,9 +159,7 @@ func deduce_corner_island(board: NurikabeBoardModel) -> void:
 		liberty_connectors.assign(Utils.intersection( \
 				board.get_neighbors(liberty_cells[0]), board.get_neighbors(liberty_cells[1])))
 		for liberty_connector: Vector2i in liberty_connectors:
-			if liberty_connector in solver_pass.deduction_cells:
-				continue
-			if board.get_cell_string(liberty_connector) != CELL_EMPTY:
+			if not _can_deduce(board, liberty_connector):
 				continue
 			solver_pass.add_deduction(liberty_connector, CELL_WALL, CORNER_ISLAND)
 
@@ -172,9 +168,7 @@ func deduce_corner_island(board: NurikabeBoardModel) -> void:
 func deduce_island_expansion(board: NurikabeBoardModel) -> void:
 	var uncompletable_island_count: int = get_uncompletable_island_count(board)
 	for cell: Vector2i in board.cells:
-		if cell in solver_pass.deduction_cells:
-			continue
-		if board.get_cell_string(cell) != CELL_EMPTY:
+		if not _can_deduce(board, cell):
 			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
@@ -193,9 +187,7 @@ func deduce_island_expansion(board: NurikabeBoardModel) -> void:
 func deduce_island_buffer(board: NurikabeBoardModel) -> void:
 	var uncompletable_island_count: int = get_uncompletable_island_count(board)
 	for cell: Vector2i in board.cells:
-		if cell in solver_pass.deduction_cells:
-			continue
-		if board.get_cell_string(cell) != CELL_EMPTY:
+		if not _can_deduce(board, cell):
 			continue
 		var trial: NurikabeBoardModel = board.duplicate()
 		trial.set_cell_string(cell, CELL_ISLAND)
@@ -207,7 +199,7 @@ func deduce_island_buffer(board: NurikabeBoardModel) -> void:
 func deduce_pool_triplets(board: NurikabeBoardModel) -> void:
 	var pool_count: int = board.get_pool_cells().size()
 	for cell: Vector2i in board.cells:
-		if board.get_cell_string(cell) != CELL_EMPTY:
+		if not _can_deduce(board, cell):
 			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
@@ -223,9 +215,7 @@ func deduce_pool_triplets(board: NurikabeBoardModel) -> void:
 func deduce_wall_expansion(board: NurikabeBoardModel) -> void:
 	var wall_count: int = _largest_non_empty_wall_groups(board).size()
 	for cell: Vector2i in board.cells:
-		if cell in solver_pass.deduction_cells:
-			continue
-		if board.get_cell_string(cell) != CELL_EMPTY:
+		if not _can_deduce(board, cell):
 			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
@@ -251,7 +241,7 @@ func deduce_island_bubble(board: NurikabeBoardModel) -> void:
 		if not only_empty_cells:
 			continue
 		for cell: Vector2i in group:
-			if cell in solver_pass.deduction_cells:
+			if not _can_deduce(board, cell):
 				continue
 			solver_pass.add_deduction(cell, CELL_ISLAND, ISLAND_BUBBLE)
 
@@ -356,6 +346,10 @@ func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
 			uncompletable_islands[group] = true
 	
 	return uncompletable_islands.size()
+
+
+func _can_deduce(board: NurikabeBoardModel, cell: Vector2i) -> bool:
+	return board.get_cell_string(cell) == CELL_EMPTY and not cell in solver_pass.deduction_cells
 
 
 ## Returns the number of single-clue islands bordering each empty cell.
