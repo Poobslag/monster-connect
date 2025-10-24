@@ -38,6 +38,9 @@ const WALL_CONNECTOR: NurikabeUtils.Reason = NurikabeUtils.WALL_CONNECTOR
 const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 
 ## Advanced techniques
+const FORBIDDEN_COURTYARD: NurikabeUtils.Reason = NurikabeUtils.FORBIDDEN_COURTYARD
+const LAST_LIGHT: NurikabeUtils.Reason = NurikabeUtils.LAST_LIGHT
+
 const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
 
 var solver: NurikabeSolver = NurikabeSolver.new()

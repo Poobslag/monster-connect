@@ -26,6 +26,9 @@ func solve() -> void:
 		changes = run_techniques(solver, solver.basic_techniques, changes)
 	
 	if changes.is_empty():
+		changes = run_techniques(solver, solver.advanced_techniques, changes)
+	
+	if changes.is_empty():
 		changes = run_techniques(solver, [solver.deduce_bifurcation], changes)
 	
 	if changes.is_empty():
