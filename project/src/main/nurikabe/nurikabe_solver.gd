@@ -46,6 +46,8 @@ const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
 var starting_techniques: Array[Callable] = [
 	deduce_island_of_one,
 	deduce_adjacent_clues,
+	deduce_corner_island, # optional starting technique; not all people will do it
+	deduce_unreachable_square, # optional starting technique; not all people will do it
 ]
 
 var basic_techniques: Array[Callable] = [
