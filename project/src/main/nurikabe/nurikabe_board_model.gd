@@ -128,6 +128,27 @@ func get_clue_value(group: Array[Vector2i]) -> int:
 	return get_cell_string(clue_cells[0]).to_int() if clue_cells.size() == 1 else 0
 
 
+func print_cells() -> void:
+	if cells.size() == 0:
+		print("(empty)")
+		return
+	
+	var rect: Rect2i = Rect2i(cells.keys()[0].x, cells.keys()[0].y, 0, 0)
+	for cell: Vector2i in cells.keys():
+		rect = rect.expand(cell)
+	
+	var header_line: String = "+-"
+	for x: int in range(rect.position.x, rect.end.x + 1):
+		header_line += "--"
+	print(header_line)
+	
+	for y: int in range(rect.position.y, rect.end.y + 1):
+		var line: String = "| "
+		for x: int in range(rect.position.x, rect.end.x + 1):
+			line += get_cell_string(Vector2i(x, y)).lpad(2, " ")
+		print(line)
+
+
 func get_pool_cells() -> Array[Vector2i]:
 	var pool_cells: Dictionary[Vector2i, bool] = {}
 	for next_cell: Vector2i in cells:
