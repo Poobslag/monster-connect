@@ -105,6 +105,21 @@ func deduce_island_divider(board: NurikabeBoardModel) -> void:
 			continue
 		if clued_neighbor_count_by_cell[cell] >= 2:
 			solver_pass.add_deduction(cell, CELL_WALL, ISLAND_DIVIDER)
+	
+	var smallest_island_groups: Array[Array] = board.find_smallest_island_groups()
+	var neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
+			= _neighbor_groups_by_empty_cell(board, smallest_island_groups)
+	for group: Array[Vector2i] in smallest_island_groups:
+		# If the island is 1 less than its desired size, find its liberties
+		if board.get_clue_value(group) != group.size() + 1:
+			continue
+		var liberty_cells: Array[Vector2i] = _find_liberties(board, group)
+		for liberty_cell: Vector2i in liberty_cells:
+			if not _can_deduce(board, liberty_cell):
+				continue
+			var neighbor_groups: Array[Array] = neighbor_groups_by_empty_cell.get(liberty_cell, [] as Array[Array])
+			if neighbor_groups.size() >= 2:
+				solver_pass.add_deduction(liberty_cell, CELL_WALL, ISLAND_DIVIDER)
 
 
 ## Find empty areas surrounded by walls. These areas must be walls.
