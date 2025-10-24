@@ -19,14 +19,14 @@ func solve() -> void:
 	var solver: NurikabeSolver = NurikabeSolver.new()
 	
 	if changes.is_empty() and not ran_starting_techniques:
-		changes = run_rules(solver, solver.starting_techniques, changes)
+		changes = run_techniques(solver, solver.starting_techniques, changes)
 		ran_starting_techniques = true
 	
 	if changes.is_empty():
-		changes = run_rules(solver, solver.rules, changes)
+		changes = run_techniques(solver, solver.basic_techniques, changes)
 	
 	if changes.is_empty():
-		changes = run_rules(solver, [solver.deduce_bifurcation], changes)
+		changes = run_techniques(solver, [solver.deduce_bifurcation], changes)
 	
 	if changes.is_empty():
 		%MessageLabel.text += "(no changes)\n"
@@ -34,10 +34,10 @@ func solve() -> void:
 	%GameBoard.set_cell_strings(changes)
 
 
-func run_rules(solver: NurikabeSolver, rules: Array[Callable], changes: Array[Dictionary]) -> Array[Dictionary]:
-	Global.benchmark_start("run_rules")
+func run_techniques(solver: NurikabeSolver, techniques: Array[Callable], changes: Array[Dictionary]) -> Array[Dictionary]:
+	Global.benchmark_start("run_techniques")
 	var board: NurikabeBoardModel = %GameBoard.to_model()
-	for callable: Callable in rules:
+	for callable: Callable in techniques:
 		callable.call(board)
 	var deduction_positions_by_reason: Dictionary[String, Array] = {}
 	for deduction in solver.solver_pass.deductions:
@@ -48,6 +48,6 @@ func run_rules(solver: NurikabeSolver, rules: Array[Callable], changes: Array[Di
 	for reason_name: String in deduction_positions_by_reason:
 		%MessageLabel.text += "%s: %s\n" % [reason_name, deduction_positions_by_reason[reason_name]]
 	changes.append_array(solver.solver_pass.get_changes())
-	Global.benchmark_end("run_rules")
+	Global.benchmark_end("run_techniques")
 	print("(%s)" % [%MessageLabel.text.length()])
 	return changes

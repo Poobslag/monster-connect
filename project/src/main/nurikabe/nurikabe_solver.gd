@@ -43,7 +43,7 @@ var starting_techniques: Array[Callable] = [
 	deduce_adjacent_clues,
 ]
 
-var rules: Array[Callable] = [
+var basic_techniques: Array[Callable] = [
 	deduce_corner_island,
 	deduce_island_bubble,
 	deduce_island_buffer,
@@ -278,10 +278,10 @@ func deduce_bifurcation(board: NurikabeBoardModel) -> void:
 		for guess_value: String in [CELL_WALL, CELL_EMPTY]:
 			solver.clear()
 			
-			# assume this cell's value and run one deduction pass
+			# assume this cell's value and run one deduction pass of basic techniques
 			trial.set_cell_string(cell, guess_value)
-			for rule: Callable in solver.rules:
-				rule.call(trial)
+			for technique: Callable in solver.basic_techniques:
+				technique.call(trial)
 			
 			# if that assumption causes an unfixable error, the opposite value must be correct
 			trial.set_cell_strings(solver.solver_pass.get_changes())
