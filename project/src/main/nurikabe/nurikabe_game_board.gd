@@ -11,7 +11,7 @@ const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
 @export_multiline var grid_string: String
 
-@export_tool_button("Import Grid String") var import_grid_action: Callable = _import_grid
+@export_tool_button("Import Grid String") var import_grid_action: Callable = import_grid
 
 var error_cells: Dictionary[Vector2i, bool] = {}:
 	set(value):
@@ -45,7 +45,7 @@ func _process(_delta: float) -> void:
 
 
 func reset() -> void:
-	_import_grid()
+	import_grid()
 
 
 func clear_half_cells(player_id: int) -> void:
@@ -106,6 +106,29 @@ func get_used_cells() -> Array[Vector2i]:
 
 func global_to_map(global_point: Vector2) -> Vector2i:
 	return %TileMapGround.local_to_map(%TileMapGround.to_local(global_point))
+
+
+func import_grid() -> void:
+	%TileMapGround.clear()
+	%TileMapClue.clear()
+	%TileMapError.clear()
+	%TileMapWall.clear()
+	if not Engine.is_editor_hint():
+		%SteppableTiles.clear()
+	%CursorableArea.clear()
+	var grid_string_rows: PackedStringArray = grid_string.split("\n")
+	for y in grid_string_rows.size():
+		var row_string: String = grid_string_rows[y]
+		@warning_ignore("integer_division")
+		for x in row_string.length() / 2:
+			set_cell_string(Vector2i(x, y), row_string.substr(x * 2, 2).strip_edges())
+	
+	_undo_stack.clear()
+	_redo_stack.clear()
+	
+	error_cells = {}
+	half_cells = {}
+	lowlight_cells = {}
 
 
 ## Sets the specified cells on the game board.[br]
@@ -212,29 +235,6 @@ func _can_apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> b
 		if get_cell_string(undo_action.cell_positions[i]) != expected_values[i]:
 			conflict_count += 1
 	return conflict_count == 0
-
-
-func _import_grid() -> void:
-	%TileMapGround.clear()
-	%TileMapClue.clear()
-	%TileMapError.clear()
-	%TileMapWall.clear()
-	if not Engine.is_editor_hint():
-		%SteppableTiles.clear()
-	%CursorableArea.clear()
-	var grid_string_rows: PackedStringArray = grid_string.split("\n")
-	for y in grid_string_rows.size():
-		var row_string: String = grid_string_rows[y]
-		@warning_ignore("integer_division")
-		for x in row_string.length() / 2:
-			set_cell_string(Vector2i(x, y), row_string.substr(x * 2, 2).strip_edges())
-	
-	_undo_stack.clear()
-	_redo_stack.clear()
-	
-	error_cells = {}
-	half_cells = {}
-	lowlight_cells = {}
 
 
 func _erase_cell(cell_pos: Vector2i) -> void:

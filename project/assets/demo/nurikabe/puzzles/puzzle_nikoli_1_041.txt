@@ -1,0 +1,19 @@
+// puzzle 41 from nikoli's book "nurikabe 1"
+                   4
+           4        
+                    
+                    
+             6      
+ 6             6    
+                    
+                 2  
+                    
+ 4               4  
+     2       6      
+         8          
+     2              
+           2        
+ 4             4   2
+     2       4      
+                   8
+       6            

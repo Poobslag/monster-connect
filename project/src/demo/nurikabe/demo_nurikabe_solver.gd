@@ -1,6 +1,12 @@
+@tool
 extends Node
 ## [b]Keys:[/b][br]
 ## 	[kbd]Q[/kbd]: Solve.
+
+@export_file("*.txt") var puzzle_path: String:
+	set(value):
+		puzzle_path = value
+		_refresh_puzzle_path()
 
 var ran_starting_techniques: bool = false
 
@@ -8,6 +14,10 @@ func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
 		KEY_Q:
 			solve()
+
+
+func _ready() -> void:
+	_refresh_puzzle_path()
 
 
 func solve() -> void:
@@ -57,3 +67,18 @@ func run_techniques(
 	Global.benchmark_end("run_techniques")
 	print("(%s)" % [%MessageLabel.text.length()])
 	return changes
+
+
+func _refresh_puzzle_path() -> void:
+	if not is_inside_tree():
+		return
+	
+	var s: String = FileAccess.get_file_as_string(puzzle_path)
+	var file_lines: PackedStringArray = s.split("\n")
+	var puzzle_lines: Array[String] = []
+	for file_line: String in file_lines:
+		if file_line.begins_with("//"):
+			continue
+		puzzle_lines.append(file_line)
+	%GameBoard.grid_string = "\n".join(PackedStringArray(puzzle_lines))
+	%GameBoard.import_grid()
