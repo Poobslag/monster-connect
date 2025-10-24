@@ -26,6 +26,9 @@ func solve() -> void:
 		changes = run_rules(solver, solver.rules, changes)
 	
 	if changes.is_empty():
+		changes = run_rules(solver, [solver.deduce_bifurcation], changes)
+	
+	if changes.is_empty():
 		%MessageLabel.text += "(no changes)\n"
 	
 	%GameBoard.set_cell_strings(changes)

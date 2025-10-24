@@ -37,6 +37,9 @@ const WALL_BUBBLE: NurikabeUtils.Reason = NurikabeUtils.WALL_BUBBLE
 const WALL_CONNECTOR: NurikabeUtils.Reason = NurikabeUtils.WALL_CONNECTOR
 const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 
+## Advanced techniques
+const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
+
 var solver: NurikabeSolver = NurikabeSolver.new()
 var grid: Array[String] = []
 
