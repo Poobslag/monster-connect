@@ -238,9 +238,14 @@ func deduce_wall_expansion(board: NurikabeBoardModel) -> void:
 			solver_pass.add_deduction(cell, CELL_WALL, reason)
 
 
+## Any contiguous empty areas surrounded by islands must either contain every wall, or no walls.
 func deduce_island_bubble(board: NurikabeBoardModel) -> void:
-	# Find empty areas surrounded by islands. These areas must be islands.
-	for group: Array[Vector2i] in board.find_largest_wall_groups():
+	var empty_groups: Array[Array] = board.find_largest_wall_groups()
+	if empty_groups.size() == 1:
+		return
+	
+	var validation_result: NurikabeBoardModel.ValidationResult = board.validate()
+	for group: Array[Vector2i] in empty_groups:
 		var only_empty_cells: bool = true
 		for cell: Vector2i in group:
 			if board.get_cell_string(cell) != CELL_EMPTY:
@@ -248,6 +253,22 @@ func deduce_island_bubble(board: NurikabeBoardModel) -> void:
 				break
 		if not only_empty_cells:
 			continue
+		
+		var can_contain_every_wall: bool = true
+		var trial: NurikabeBoardModel = board.duplicate()
+		for other_group: Array[Vector2i] in empty_groups:
+			if group == other_group:
+				continue
+			for cell: Vector2i in other_group:
+				trial.set_cell_string(cell, CELL_ISLAND)
+		var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
+		if trial_validation_result.joined_islands.size() > validation_result.joined_islands.size():
+			can_contain_every_wall = false
+		if trial_validation_result.wrong_size_unfixable.size() > validation_result.wrong_size_unfixable.size():
+			can_contain_every_wall = false
+		if can_contain_every_wall:
+			continue
+		
 		for cell: Vector2i in group:
 			if not _can_deduce(board, cell):
 				continue

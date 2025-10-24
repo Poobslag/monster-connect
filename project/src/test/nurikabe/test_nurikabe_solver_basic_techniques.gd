@@ -478,6 +478,41 @@ func test_island_bubble_1() -> void:
 	assert_deduction(solver.deduce_island_bubble, expected)
 
 
+func test_island_bubble_2() -> void:
+	grid = [
+		"      ",
+		"     .",
+		"   4  ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(2, 2), CELL_ISLAND, ISLAND_BUBBLE),
+	]
+	assert_deduction(solver.deduce_island_bubble, expected)
+
+
+func test_island_bubble_3() -> void:
+	# The cell at (2, 2) is not an island bubble. It is not enclosed by islands.
+	grid = [
+		"      ",
+		"    ##",
+		"   4  ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+	]
+	assert_deduction(solver.deduce_island_bubble, expected)
+
+
+func test_island_bubble_invalid() -> void:
+	grid = [
+		"      ",
+		"      ",
+		"   4  ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+	]
+	assert_deduction(solver.deduce_island_bubble, expected)
+
+
 func test_unreachable_square_1() -> void:
 	grid = [
 		" 4    ",
