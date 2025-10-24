@@ -35,6 +35,9 @@ const WALL_BUBBLE: NurikabeUtils.Reason = NurikabeUtils.WALL_BUBBLE
 const WALL_CONNECTOR: NurikabeUtils.Reason = NurikabeUtils.WALL_CONNECTOR
 const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 
+## Advanced techniques
+const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
+
 var starting_techniques: Array[Callable] = [
 	deduce_island_of_one,
 	deduce_adjacent_clues,
@@ -260,6 +263,34 @@ func deduce_unreachable_square(board: NurikabeBoardModel) -> void:
 	for cell: Vector2i in board.cells:
 		if board.get_cell_string(cell) == CELL_EMPTY and not cell in reachable:
 			solver_pass.add_deduction(cell, CELL_WALL, UNREACHABLE_SQUARE)
+
+
+func deduce_bifurcation(board: NurikabeBoardModel) -> void:
+	var validation_result: NurikabeBoardModel.ValidationResult = board.validate()
+	if validation_result.unfixable_error_count > 0:
+		return
+	
+	var solver: NurikabeSolver = NurikabeSolver.new()
+	for cell: Vector2i in board.cells:
+		if not _can_deduce(board, cell):
+			continue
+		var trial: NurikabeBoardModel = board.duplicate()
+		for guess_value: String in [CELL_WALL, CELL_EMPTY]:
+			solver.clear()
+			
+			# assume this cell's value and run one deduction pass
+			trial.set_cell_string(cell, guess_value)
+			for rule: Callable in solver.rules:
+				rule.call(trial)
+			
+			# if that assumption causes an unfixable error, the opposite value must be correct
+			trial.set_cell_strings(solver.solver_pass.get_changes())
+			trial.validate()
+			var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
+			if trial_validation_result.unfixable_error_count > 0:
+				var deduction_value: String = CELL_ISLAND if guess_value == CELL_WALL else CELL_WALL
+				solver_pass.add_deduction(cell, deduction_value, BIFURCATION)
+				break
 
 
 func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:

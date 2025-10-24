@@ -31,6 +31,16 @@ func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 	cells[cell_pos] = value
 
 
+## Sets the specified cells on the game board model.[br]
+## [br]
+## Accepts a dictionary with the following keys:[br]
+## 	'pos': (Vector2i) The cell to update.[br]
+## 	'value': (String) The value to assign.[br]
+func set_cell_strings(changes: Array[Dictionary]) -> void:
+	for change: Dictionary in changes:
+		set_cell_string(change["pos"], change["value"])
+
+
 func surround_island(cell_pos: Vector2i) -> Array[Dictionary]:
 	var changes: Array[Dictionary] = []
 	
@@ -246,10 +256,14 @@ class ValidationResult:
 			return joined_islands.size() + joined_islands_unfixable.size() \
 					+ pools.size() + split_walls.size() + split_walls_unfixable.size() \
 					+ unclued_islands.size() + wrong_size.size() + + wrong_size_unfixable.size()
+	var unfixable_error_count: int:
+		get:
+			return joined_islands_unfixable.size() \
+					+ pools.size() + split_walls_unfixable.size() \
+					+ wrong_size_unfixable.size()
 	
 	func _to_string() -> String:
 		return str({
-			"error_count": error_count,
 			"joined_islands": joined_islands,
 			"joined_islands_unfixable": joined_islands_unfixable,
 			"pools": pools,

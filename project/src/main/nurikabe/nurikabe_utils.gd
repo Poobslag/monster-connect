@@ -31,6 +31,9 @@ enum Reason {
 	WALL_BUBBLE, # fill in a square surrounded by walls
 	WALL_CONNECTOR, # connect two walls through a chokepoint
 	WALL_EXPANSION, # expand a wall in the only possible direction
+	
+	# advanced techniques
+	BIFURCATION, # fill in a square if the opposite assumption leads to a contradiction
 }
 
 ## Nurikabe cells:
@@ -73,6 +76,9 @@ const ISLAND_MOAT: Reason = Reason.ISLAND_MOAT
 const POOL_TRIPLET: Reason = Reason.POOL_TRIPLET
 const UNREACHABLE_SQUARE: Reason = Reason.UNREACHABLE_SQUARE
 const ISLAND_DIVIDER: Reason = Reason.ISLAND_DIVIDER
+
+## Advanced techniques
+const BIFURCATION: Reason = Reason.BIFURCATION
 
 const ERROR_FG_COLOR: Color = Color.WHITE
 const ERROR_BG_COLOR: Color = Color("ff5a5a")
