@@ -45,4 +45,19 @@ func test_dead_end_wall() -> void:
 		NurikabeDeduction.new(Vector2i(4, 4), CELL_WALL, DEAD_END_WALL),
 	]
 	assert_deduction(solver.deduce_dead_end_wall, expected)
-	
+
+
+func text_wall_strangle() -> void:
+	grid = [
+		" . . . .    ",
+		" 6####      ",
+		"##          ",
+		"## 2        ",
+		"    ####    ",
+		"            ",
+		"            ",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(4, 4), CELL_WALL, WALL_STRANGLE),
+	]
+	assert_deduction(solver.deduce_wall_strangle, expected)
