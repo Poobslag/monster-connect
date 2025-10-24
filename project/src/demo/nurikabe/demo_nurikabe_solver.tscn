@@ -74,5 +74,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/normal_font = ExtResource("3_8djyv")
 theme_override_font_sizes/normal_font_size = 32
+scroll_following = true
 
 [editable path="HBoxContainer/GameBoardHolder/GameBoard"]
