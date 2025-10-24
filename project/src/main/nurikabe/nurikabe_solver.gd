@@ -39,6 +39,7 @@ const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 const FORBIDDEN_COURTYARD: NurikabeUtils.Reason = NurikabeUtils.FORBIDDEN_COURTYARD
 const LAST_LIGHT: NurikabeUtils.Reason = NurikabeUtils.LAST_LIGHT
 const DEAD_END_WALL: NurikabeUtils.Reason = NurikabeUtils.DEAD_END_WALL
+const WALL_STRANGLE: NurikabeUtils.Reason = NurikabeUtils.WALL_STRANGLE
 
 const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
 
@@ -65,6 +66,7 @@ var advanced_techniques: Array[Callable] = [
 	deduce_forbidden_courtyard,
 	deduce_last_light,
 	deduce_dead_end_wall,
+	deduce_wall_strangle,
 ]
 
 var solver_pass: NurikabeSolverPass = NurikabeSolverPass.new()
@@ -426,6 +428,34 @@ func deduce_dead_end_wall(board: NurikabeBoardModel) -> void:
 			continue
 		
 		solver_pass.add_deduction(cell, CELL_WALL, DEAD_END_WALL)
+
+
+func deduce_wall_strangle(board: NurikabeBoardModel) -> void:
+	var validation_result: NurikabeBoardModel.ValidationResult = board.validate()
+	for group: Array[Vector2i] in board.find_smallest_island_groups():
+		# If the island is 1 less than its desired size, find its liberties
+		if board.get_clue_value(group) != group.size() + 1:
+			continue
+		var liberty_cells: Array[Vector2i] = _find_liberties(board, group)
+		# If completing the island leads to a split wall, we have a wall strangle.
+		for liberty_cell: Vector2i in liberty_cells:
+			if not _can_deduce(board, liberty_cell):
+				continue
+			
+			# Complete and surround the island
+			var trial: NurikabeBoardModel = board.duplicate()
+			trial.set_cell_string(liberty_cell, CELL_ISLAND)
+			var trial_group: Array[Vector2i] = group.duplicate()
+			trial_group.append(liberty_cell)
+			for moat_cell: Vector2i in _island_neighbor_cells(trial, trial_group):
+				if trial.get_cell_string(moat_cell) != CELL_EMPTY:
+					continue
+				trial.set_cell_string(moat_cell, CELL_WALL)
+			
+			# Check for split walls
+			var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
+			if trial_validation_result.split_walls_unfixable.size() > validation_result.split_walls_unfixable.size():
+				solver_pass.add_deduction(liberty_cell, CELL_WALL, WALL_STRANGLE)
 
 
 func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
