@@ -36,6 +36,9 @@ const WALL_CONNECTOR: NurikabeUtils.Reason = NurikabeUtils.WALL_CONNECTOR
 const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
 
 ## Advanced techniques
+const FORBIDDEN_COURTYARD: NurikabeUtils.Reason = NurikabeUtils.FORBIDDEN_COURTYARD
+const LAST_LIGHT: NurikabeUtils.Reason = NurikabeUtils.LAST_LIGHT
+
 const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
 
 var starting_techniques: Array[Callable] = [
@@ -55,6 +58,11 @@ var basic_techniques: Array[Callable] = [
 	deduce_unreachable_square,
 	deduce_wall_bubble,
 	deduce_wall_expansion,
+]
+
+var advanced_techniques: Array[Callable] = [
+	deduce_forbidden_courtyard,
+	deduce_last_light,
 ]
 
 var solver_pass: NurikabeSolverPass = NurikabeSolverPass.new()
@@ -137,14 +145,11 @@ func deduce_island_moat(board: NurikabeBoardModel) -> void:
 		if board.get_clue_value(group) == group.size():
 			complete_islands.append(group)
 	
-	var seen: Dictionary[Vector2i, bool] = {}
 	for group: Array[Vector2i] in complete_islands:
-		for cell: Vector2i in group:
-			for neighbor_cell: Vector2i in board.get_neighbors(cell):
-				if seen.has(neighbor_cell) or not _can_deduce(board, neighbor_cell):
-					continue
-				solver_pass.add_deduction(neighbor_cell, CELL_WALL, ISLAND_MOAT)
-				seen[neighbor_cell] = true
+		for cell: Vector2i in _island_neighbor_cells(board, group):
+			if not _can_deduce(board, cell):
+				continue
+			solver_pass.add_deduction(cell, CELL_WALL, ISLAND_MOAT)
 
 
 ## If an island can only be completed two ways, the corner cell must be a wall.
@@ -250,19 +255,8 @@ func deduce_island_bubble(board: NurikabeBoardModel) -> void:
 
 
 func deduce_unreachable_square(board: NurikabeBoardModel) -> void:
-	var reachable: Dictionary[Vector2i, bool]
-	var clued_groups: Array[Array] = []
-	for group: Array[Vector2i] in board.find_smallest_island_groups():
-		if board.get_clue_cells(group).size() == 1:
-			clued_groups.append(group)
-	var clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
-		= _neighbor_groups_by_empty_cell(board, clued_groups)
-	for group: Array[Vector2i] in clued_groups:
-		for cell: Vector2i in _flood_reachable_cells(board, group, clued_neighbor_groups_by_empty_cell):
-			reachable[cell] = true
-	for cell: Vector2i in board.cells:
-		if board.get_cell_string(cell) == CELL_EMPTY and not cell in reachable:
-			solver_pass.add_deduction(cell, CELL_WALL, UNREACHABLE_SQUARE)
+	for unreachable_cell: Vector2i in _unreachable_cells(board):
+		solver_pass.add_deduction(unreachable_cell, CELL_WALL, UNREACHABLE_SQUARE)
 
 
 func deduce_bifurcation(board: NurikabeBoardModel) -> void:
@@ -291,6 +285,74 @@ func deduce_bifurcation(board: NurikabeBoardModel) -> void:
 				var deduction_value: String = CELL_ISLAND if guess_value == CELL_WALL else CELL_WALL
 				solver_pass.add_deduction(cell, deduction_value, BIFURCATION)
 				break
+
+
+func deduce_forbidden_courtyard(board: NurikabeBoardModel) -> void:
+	var pool_cell_count: int = board.get_pool_cells().size()
+	for group: Array[Vector2i] in board.find_smallest_island_groups():
+		# If the island is 1 less than its desired size, find its liberties
+		if board.get_clue_value(group) != group.size() + 1:
+			continue
+		var liberty_cells: Array[Vector2i] = _find_liberties(board, group)
+		# If completing the island leads to unreachable cells which form a pool, we have a forbidden courtyard.
+		for liberty_cell: Vector2i in liberty_cells:
+			if not _can_deduce(board, liberty_cell):
+				continue
+			
+			# Complete and surround the island
+			var trial: NurikabeBoardModel = board.duplicate()
+			trial.set_cell_string(liberty_cell, CELL_ISLAND)
+			var trial_group: Array[Vector2i] = group.duplicate()
+			trial_group.append(liberty_cell)
+			for moat_cell: Vector2i in _island_neighbor_cells(trial, trial_group):
+				if trial.get_cell_string(moat_cell) != CELL_EMPTY:
+					continue
+				trial.set_cell_string(moat_cell, CELL_WALL)
+			
+			# Fill in unreachable cells
+			for unreachable_cell: Vector2i in _unreachable_cells(trial):
+				if trial.get_cell_string(unreachable_cell) != CELL_EMPTY:
+					continue
+				trial.set_cell_string(unreachable_cell, CELL_WALL)
+			
+			# Fill in empty islands
+			for empty_island: Array[Vector2i] in _empty_islands(trial):
+				for empty_island_cell: Vector2i in empty_island:
+					if trial.get_cell_string(empty_island_cell) != CELL_EMPTY:
+						continue
+					trial.set_cell_string(empty_island_cell, CELL_WALL)
+			
+			# Check for pools
+			var trial_pool_cell_count: int = trial.get_pool_cells().size()
+			if trial_pool_cell_count > pool_cell_count:
+				solver_pass.add_deduction(liberty_cell, CELL_WALL, FORBIDDEN_COURTYARD)
+
+
+func deduce_last_light(board: NurikabeBoardModel) -> void:
+	var pool_cell_count: int = board.get_pool_cells().size()
+	for cell: Vector2i in board.cells:
+		if not _can_deduce(board, cell):
+			continue
+		var trial: NurikabeBoardModel = board.duplicate()
+		trial.set_cell_string(cell, CELL_WALL)
+		
+		# Fill in unreachable cells
+		for unreachable_cell: Vector2i in _unreachable_cells(trial):
+			if trial.get_cell_string(unreachable_cell) != CELL_EMPTY:
+				continue
+			trial.set_cell_string(unreachable_cell, CELL_WALL)
+		
+		# Fill in empty islands
+		for empty_island: Array[Vector2i] in _empty_islands(trial):
+			for empty_island_cell: Vector2i in empty_island:
+				if trial.get_cell_string(empty_island_cell) != CELL_EMPTY:
+					continue
+				trial.set_cell_string(empty_island_cell, CELL_WALL)
+		
+		# Check for pools
+		var trial_pool_cell_count: int = trial.get_pool_cells().size()
+		if trial_pool_cell_count > pool_cell_count:
+			solver_pass.add_deduction(cell, CELL_ISLAND, LAST_LIGHT)
 
 
 func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
@@ -450,6 +512,18 @@ func _flood_reachable_cells( \
 	return result
 
 
+func _island_neighbor_cells(board: NurikabeBoardModel, group: Array[Vector2i]) -> Array[Vector2i]:
+	var group_cells: Dictionary[Vector2i, bool] = {}
+	for cell: Vector2i in group:
+		group_cells[cell] = true
+	var island_neighbor_cells: Dictionary[Vector2i, bool] = {}
+	for cell: Vector2i in group:
+		for neighbor_cell: Vector2i in board.get_neighbors(cell):
+			if not neighbor_cell in group_cells:
+				island_neighbor_cells[neighbor_cell] = true
+	return island_neighbor_cells.keys()
+
+
 ## Returns the number of islands bordering each empty cell.
 func _island_neighbor_count_by_cell(board: NurikabeBoardModel) -> Dictionary[Vector2i, int]:
 	var island_neighbor_count_by_cell: Dictionary[Vector2i, int] = {}
@@ -528,3 +602,21 @@ func _unclued_island_count(board: NurikabeBoardModel) -> int:
 		if clue_cells.size() == 0:
 			result += 1
 	return result
+
+
+func _unreachable_cells(board: NurikabeBoardModel) -> Array[Vector2i]:
+	var reachable_cells: Dictionary[Vector2i, bool]
+	var clued_groups: Array[Array] = []
+	for group: Array[Vector2i] in board.find_smallest_island_groups():
+		if board.get_clue_cells(group).size() == 1:
+			clued_groups.append(group)
+	var clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
+		= _neighbor_groups_by_empty_cell(board, clued_groups)
+	for group: Array[Vector2i] in clued_groups:
+		for cell: Vector2i in _flood_reachable_cells(board, group, clued_neighbor_groups_by_empty_cell):
+			reachable_cells[cell] = true
+	var unreachable_cells: Array[Vector2i] = []
+	for cell: Vector2i in board.cells:
+		if board.get_cell_string(cell) == CELL_EMPTY and not cell in reachable_cells:
+			unreachable_cells.append(cell)
+	return unreachable_cells

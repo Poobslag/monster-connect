@@ -33,6 +33,9 @@ enum Reason {
 	WALL_EXPANSION, # expand a wall in the only possible direction
 	
 	# advanced techniques
+	FORBIDDEN_COURTYARD, # extending an island will create a 2x2 grid of unreachable cells
+	LAST_LIGHT, # creating a wall will create a 2x2 grid of unreachable cells
+	
 	BIFURCATION, # fill in a square if the opposite assumption leads to a contradiction
 }
 
@@ -78,6 +81,9 @@ const UNREACHABLE_SQUARE: Reason = Reason.UNREACHABLE_SQUARE
 const ISLAND_DIVIDER: Reason = Reason.ISLAND_DIVIDER
 
 ## Advanced techniques
+const FORBIDDEN_COURTYARD: Reason = Reason.FORBIDDEN_COURTYARD
+const LAST_LIGHT: Reason = Reason.LAST_LIGHT
+
 const BIFURCATION: Reason = Reason.BIFURCATION
 
 const ERROR_FG_COLOR: Color = Color.WHITE
