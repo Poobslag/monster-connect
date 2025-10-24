@@ -10,7 +10,7 @@ func add_deduction(pos: Vector2i, value: String, reason: NurikabeUtils.Reason) -
 
 func get_changes() -> Array[Dictionary]:
 	var changes: Array[Dictionary] = []
-	for deduction in deductions:
+	for deduction: NurikabeDeduction in deductions:
 		changes.append(deduction.to_change())
 	return changes
 

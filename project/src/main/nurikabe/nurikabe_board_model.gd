@@ -134,7 +134,7 @@ func print_cells() -> void:
 		return
 	
 	var rect: Rect2i = Rect2i(cells.keys()[0].x, cells.keys()[0].y, 0, 0)
-	for cell: Vector2i in cells.keys():
+	for cell: Vector2i in cells:
 		rect = rect.expand(cell)
 	
 	var header_line: String = "+-"

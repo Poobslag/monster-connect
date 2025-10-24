@@ -34,13 +34,16 @@ func solve() -> void:
 	%GameBoard.set_cell_strings(changes)
 
 
-func run_techniques(solver: NurikabeSolver, techniques: Array[Callable], changes: Array[Dictionary]) -> Array[Dictionary]:
+func run_techniques(
+			solver: NurikabeSolver,
+			techniques: Array[Callable],
+			changes: Array[Dictionary]) -> Array[Dictionary]:
 	Global.benchmark_start("run_techniques")
 	var board: NurikabeBoardModel = %GameBoard.to_model()
 	for callable: Callable in techniques:
 		callable.call(board)
 	var deduction_positions_by_reason: Dictionary[String, Array] = {}
-	for deduction in solver.solver_pass.deductions:
+	for deduction: NurikabeDeduction in solver.solver_pass.deductions:
 		var reason_name: String = Utils.enum_to_snake_case(NurikabeUtils.Reason, deduction["reason"])
 		if not deduction_positions_by_reason.has(reason_name):
 			deduction_positions_by_reason[reason_name] = []
