@@ -51,13 +51,12 @@ func test_wall_strangle() -> void:
 	grid = [
 		" . . . .    ",
 		" 6####      ",
-		"##          ",
 		"## 2        ",
-		"    ####    ",
+		"##  ####    ",
 		"            ",
 		"            ",
 	]
 	var expected: Array[NurikabeDeduction] = [
-		NurikabeDeduction.new(Vector2i(4, 4), CELL_WALL, WALL_STRANGLE),
+		NurikabeDeduction.new(Vector2i(3, 1), CELL_WALL, WALL_STRANGLE),
 	]
 	assert_deduction(solver.deduce_wall_strangle, expected)

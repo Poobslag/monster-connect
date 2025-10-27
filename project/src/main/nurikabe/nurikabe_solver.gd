@@ -442,15 +442,19 @@ func deduce_wall_strangle(board: NurikabeBoardModel) -> void:
 			if not _can_deduce(board, liberty_cell):
 				continue
 			
-			# Complete and surround the island
+			var solver: NurikabeSolver = NurikabeSolver.new()
 			var trial: NurikabeBoardModel = board.duplicate()
-			trial.set_cell_string(liberty_cell, CELL_ISLAND)
+			
+			# Complete and surround the island
 			var trial_group: Array[Vector2i] = group.duplicate()
+			trial.set_cell_string(liberty_cell, CELL_ISLAND)
 			trial_group.append(liberty_cell)
-			for moat_cell: Vector2i in _island_neighbor_cells(trial, trial_group):
-				if trial.get_cell_string(moat_cell) != CELL_EMPTY:
-					continue
-				trial.set_cell_string(moat_cell, CELL_WALL)
+			
+			solver.deduce_island_moat(trial)
+			trial.set_cell_strings(solver.solver_pass.get_changes())
+			
+			solver.deduce_pool_triplets(trial)
+			trial.set_cell_strings(solver.solver_pass.get_changes())
 			
 			# Check for split walls
 			var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
