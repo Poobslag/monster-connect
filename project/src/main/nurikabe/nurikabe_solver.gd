@@ -377,29 +377,23 @@ func deduce_forbidden_courtyard(board: NurikabeBoardModel) -> void:
 
 
 func deduce_last_light(board: NurikabeBoardModel) -> void:
-	var pool_cell_count: int = board.get_pool_cells().size()
+	var validation_result: NurikabeBoardModel.ValidationResult = board.validate()
 	for cell: Vector2i in board.cells:
 		if not _can_deduce(board, cell):
 			continue
+		var solver: NurikabeSolver = NurikabeSolver.new()
 		var trial: NurikabeBoardModel = board.duplicate()
 		trial.set_cell_string(cell, CELL_WALL)
 		
-		# Fill in unreachable cells
-		for unreachable_cell: Vector2i in _unreachable_cells(trial):
-			if trial.get_cell_string(unreachable_cell) != CELL_EMPTY:
-				continue
-			trial.set_cell_string(unreachable_cell, CELL_WALL)
+		solver.deduce_unreachable_square(trial)
+		trial.set_cell_strings(solver.solver_pass.get_changes())
 		
-		# Fill in empty islands
-		for empty_island: Array[Vector2i] in _empty_islands(trial):
-			for empty_island_cell: Vector2i in empty_island:
-				if trial.get_cell_string(empty_island_cell) != CELL_EMPTY:
-					continue
-				trial.set_cell_string(empty_island_cell, CELL_WALL)
+		solver.deduce_island_bubble(trial)
+		trial.set_cell_strings(solver.solver_pass.get_changes())
 		
 		# Check for pools
-		var trial_pool_cell_count: int = trial.get_pool_cells().size()
-		if trial_pool_cell_count > pool_cell_count:
+		var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
+		if trial_validation_result.pools > validation_result.pools:
 			solver_pass.add_deduction(cell, CELL_ISLAND, LAST_LIGHT)
 
 
@@ -410,15 +404,17 @@ func deduce_dead_end_wall(board: NurikabeBoardModel) -> void:
 		if not _can_deduce(board, cell):
 			continue
 		
+		var solver: NurikabeSolver = NurikabeSolver.new()
 		var trial: NurikabeBoardModel = board.duplicate()
+		
 		trial.set_cell_string(cell, CELL_ISLAND)
 		var trial_largest_wall_groups: Array[Array] = trial.find_largest_wall_groups()
 		if trial_largest_wall_groups.size() <= largest_wall_groups.size():
 			continue
 		
-		var solver: NurikabeSolver = NurikabeSolver.new()
 		solver.deduce_island_bubble(trial)
 		trial.set_cell_strings(solver.solver_pass.get_changes())
+		
 		var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
 		
 		var can_split_walls: bool = true
@@ -505,7 +501,7 @@ func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
 							board.get_cell_string(joined_clue_cells[0]).to_int())
 			
 			for joined_group: Array[Vector2i] in \
-					unclued_neighbor_groups_by_empty_cell.get(liberty, [] as Array[Vector2i]):
+					unclued_neighbor_groups_by_empty_cell.get(liberty, [] as Array[Array]):
 				total_joined_size += joined_group.size()
 			
 			if total_clues == 1 and total_joined_size <= clue_value:
@@ -662,6 +658,8 @@ func _neighbor_groups_by_empty_cell(
 	for group: Array[Vector2i] in smallest_island_groups:
 		for cell: Vector2i in group:
 			for neighbor: Vector2i in board.get_neighbors(cell):
+				if not board.get_cell_string(neighbor) == CELL_EMPTY:
+					continue
 				if not neighbor in neighbor_groups_by_empty_cell:
 					neighbor_groups_by_empty_cell[neighbor] = [] as Array[Array]
 				if not group in neighbor_groups_by_empty_cell[neighbor]:
