@@ -47,7 +47,7 @@ func test_dead_end_wall() -> void:
 	assert_deduction(solver.deduce_dead_end_wall, expected)
 
 
-func text_wall_strangle() -> void:
+func test_wall_strangle() -> void:
 	grid = [
 		" . . . .    ",
 		" 6####      ",

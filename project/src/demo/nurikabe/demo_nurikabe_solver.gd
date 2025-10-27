@@ -2,6 +2,7 @@
 extends Node
 ## [b]Keys:[/b][br]
 ## 	[kbd]Q[/kbd]: Solve.
+## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 
 @export_file("*.txt") var puzzle_path: String:
 	set(value):
@@ -14,10 +15,16 @@ func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
 		KEY_Q:
 			solve()
+		KEY_P:
+			print_grid_string()
 
 
 func _ready() -> void:
 	_refresh_puzzle_path()
+
+
+func print_grid_string() -> void:
+	%GameBoard.to_model().print_cells()
 
 
 func solve() -> void:
