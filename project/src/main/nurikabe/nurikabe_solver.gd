@@ -69,6 +69,7 @@ var advanced_techniques: Array[Callable] = [
 	deduce_last_light,
 	deduce_dead_end_wall,
 	deduce_wall_strangle,
+	deduce_island_buffer_advanced,
 ]
 
 var solver_pass: NurikabeSolverPass = NurikabeSolverPass.new()
@@ -460,6 +461,59 @@ func deduce_wall_strangle(board: NurikabeBoardModel) -> void:
 			var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
 			if trial_validation_result.split_walls_unfixable.size() > validation_result.split_walls_unfixable.size():
 				solver_pass.add_deduction(liberty_cell, CELL_WALL, WALL_STRANGLE)
+
+
+func deduce_island_buffer_advanced(board: NurikabeBoardModel) -> void:
+	var validation_result: NurikabeBoardModel.ValidationResult = board.validate()
+	
+	# locate positions where two clues are two spaces apart
+	var buffer_cells: Dictionary[Vector2i, bool] = {}
+	var clued_groups: Dictionary[Array, bool] = {}
+	for group: Array[Vector2i] in board.find_smallest_island_groups():
+		var clue_count: int = board.get_clue_cells(group).size()
+		if clue_count == 1:
+			clued_groups[group] = true
+	var clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
+			= _neighbor_groups_by_empty_cell(board, clued_groups.keys())
+	for cell: Vector2i in clued_neighbor_groups_by_empty_cell:
+		if cell in buffer_cells:
+			continue
+		if clued_neighbor_groups_by_empty_cell.get(cell, [] as Array[Array]).size() == 0:
+			continue
+		for neighbor_cell in board.get_neighbors(cell):
+			if clued_neighbor_groups_by_empty_cell.get(neighbor_cell, [] as Array[Array]).size() == 0:
+				continue
+			buffer_cells[cell] = true
+			buffer_cells[neighbor_cell] = true
+			break
+	
+	for buffer_cell: Vector2i in buffer_cells:
+		var solver: NurikabeSolver = NurikabeSolver.new()
+		var trial: NurikabeBoardModel = board.duplicate()
+		
+		trial.set_cell_string(buffer_cell, CELL_ISLAND)
+		solver.deduce_island_divider(trial)
+		trial.set_cell_strings(solver.solver_pass.get_changes())
+		
+		solver.deduce_wall_expansion(trial)
+		trial.set_cell_strings(solver.solver_pass.get_changes())
+	
+		solver.deduce_island_expansion(trial)
+		trial.set_cell_strings(solver.solver_pass.get_changes())
+		
+		# Check for errors caused by invading the buffer
+		var trial_validation_result: NurikabeBoardModel.ValidationResult = trial.validate()
+		var can_expand: bool = true
+		if trial_validation_result.joined_islands_unfixable.size() > validation_result.joined_islands_unfixable.size():
+			can_expand = false
+		if trial_validation_result.wrong_size_unfixable.size() > validation_result.wrong_size_unfixable.size():
+			can_expand = false
+		if trial_validation_result.split_walls_unfixable.size() > validation_result.split_walls_unfixable.size():
+			can_expand = false
+		if can_expand:
+			continue
+		
+		solver_pass.add_deduction(buffer_cell, CELL_WALL, ISLAND_BUFFER)
 
 
 func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:

@@ -60,3 +60,21 @@ func test_wall_strangle() -> void:
 		NurikabeDeduction.new(Vector2i(3, 1), CELL_WALL, WALL_STRANGLE),
 	]
 	assert_deduction(solver.deduce_wall_strangle, expected)
+
+
+func test_island_buffer_advanced() -> void:
+	grid = [
+		" 8## 3 . .## 2",
+		" .########## .",
+		" .## 3 . .####",
+		" . .###### 1##",
+		"## . .    ##  ",
+		" 2##  ##   3  ",
+		" .##   4  ####",
+		"##      ## 1##",
+	]
+	var expected: Array[NurikabeDeduction] = [
+		NurikabeDeduction.new(Vector2i(2, 5), CELL_WALL, ISLAND_BUFFER),
+		NurikabeDeduction.new(Vector2i(4, 6), CELL_WALL, ISLAND_BUFFER),
+	]
+	assert_deduction(solver.deduce_island_buffer_advanced, expected)
