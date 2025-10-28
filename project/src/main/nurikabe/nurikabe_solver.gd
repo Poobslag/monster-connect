@@ -247,13 +247,15 @@ func deduce_wall_expansion(board: NurikabeBoardModel) -> void:
 	for cell: Vector2i in board.cells:
 		if not _can_deduce(board, cell):
 			continue
+		var wall_mask: int = _neighbor_mask(board, cell, func(neighbor_value: String) -> bool:
+			return neighbor_value == CELL_WALL)
+		if wall_mask == 0:
+			continue
 		
 		var trial: NurikabeBoardModel = board.duplicate()
 		trial.set_cell_string(cell, CELL_ISLAND)
 		var trial_wall_count: int = _largest_non_empty_wall_groups(trial).size()
 		if trial_wall_count > wall_count:
-			var wall_mask: int = _neighbor_mask(board, cell, func(neighbor_value: String) -> bool:
-				return neighbor_value == CELL_WALL)
 			var reason: NurikabeUtils.Reason = WALL_CONNECTOR
 			if wall_mask in [0, 1, 2, 4, 8]:
 				reason = WALL_EXPANSION
