@@ -3,6 +3,7 @@ extends Node
 ## [b]Keys:[/b][br]
 ## 	[kbd]Q[/kbd]: Solve one step.
 ## 	[kbd]W[/kbd]: Performance test a full solution.
+## 	[kbd]R[/kbd]: Reset the board.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 
 @export_file("*.txt") var puzzle_path: String:
@@ -22,6 +23,8 @@ func _input(event: InputEvent) -> void:
 			performance_test()
 		KEY_P:
 			print_grid_string()
+		KEY_R:
+			%GameBoard.reset()
 
 
 func _ready() -> void:
