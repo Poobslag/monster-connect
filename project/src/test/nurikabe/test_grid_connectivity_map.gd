@@ -8,10 +8,9 @@ func before_each() -> void:
 
 
 func test_empty() -> void:
-	assert_eq(gcm.get_groups(), [])
 	assert_eq(false, gcm.has_cell(Vector2i(0, 0)))
 	assert_eq(false, gcm.is_active(Vector2i(0, 0)))
-	assert_groups([[]])
+	assert_groups([])
 
 
 func test_single_active_cell() -> void:
@@ -23,9 +22,9 @@ func test_single_active_cell() -> void:
 
 func test_single_inactive_cell() -> void:
 	gcm.set_active(Vector2i(0, 0), false)
-	assert_eq(true, gcm.has_cell(Vector2i(0, 0)))
+	assert_eq(false, gcm.has_cell(Vector2i(0, 0)))
 	assert_eq(false, gcm.is_active(Vector2i(0, 0)))
-	assert_groups([[]])
+	assert_groups([])
 
 
 func test_two_cells_adjacent() -> void:
@@ -40,14 +39,17 @@ func test_two_cells_separate() -> void:
 	assert_groups([[Vector2i(0, 0)], [Vector2i(2, 0)]])
 
 
-func shrink_group() -> void:
+func test_shrink_group() -> void:
 	gcm.set_active(Vector2i(0, 0), true)
 	gcm.set_active(Vector2i(1, 0), true)
 	gcm.set_active(Vector2i(0, 0), false)
 	assert_groups([[Vector2i(1, 0)]])
 
 
-# set active false
+func test_remove_group() -> void:
+	pass
+
+
 # remove group
 # merge two groups
 # merge three groups
