@@ -12,7 +12,7 @@ static func init_model(grid: Array[String]) -> NurikabeBoardModel:
 
 static func sort_groups(groups: Array[Array]) -> Array[Array]:
 	var new_groups: Array[Array] = []
-	for group in groups:
+	for group: Array[Variant] in groups:
 		var new_group: Array[Vector2i] = []
 		new_group.assign(group)
 		new_group.sort()
