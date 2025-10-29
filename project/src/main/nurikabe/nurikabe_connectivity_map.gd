@@ -1,4 +1,7 @@
 class_name NurikabeUnionFind
+## Implementation of the union-find data structure for a nurikabe puzzle.[br]
+## [br]
+## Efficiently finds clusters of nurikabe cells matching a filter.
 
 var cell_filter: Callable
 var guf: GridUnionFind = GridUnionFind.new()

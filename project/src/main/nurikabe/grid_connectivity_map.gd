@@ -1,4 +1,10 @@
 class_name GridUnionFind
+## Implementation of the union-find data structure.[br]
+## [br]
+## Stores a collection of disjoint (non-overlapping) sets, providing operations for adding new sets, merging sets, and
+## finding a representative member of a set. The last operation makes it possible to determine efficiently whether any
+## two elements belong to the same set or to different sets. See
+## https://en.wikipedia.org/wiki/Disjoint-set_data_structure
 
 var _active: Dictionary[Vector2i, bool] = {}
 var _parent: Dictionary[Vector2i, Vector2i] = {}
