@@ -101,13 +101,13 @@ func validate() -> ValidationResult:
 ## Returns the largest possible groups of island cells, including all empty cells.
 func find_largest_island_groups() -> Array[Array]:
 	var slow_result: Array[Array] = _find_groups(func(value: String) -> bool:
-		return value in [CELL_WALL])
+		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
 	var fast_result: Array[Array] = _largest_island_ncm.get_groups()
 	slow_result = sort_groups(slow_result)
 	fast_result = sort_groups(fast_result)
-	if slow_result == fast_result:
-		print("109: slow_result=%s fast_result=%s" % [slow_result, fast_result])
-	return slow_result
+	if str(slow_result) != str(fast_result):
+		push_error("mismatch: slow_result=%s fast_result=%s" % [slow_result, fast_result])
+	return fast_result
 
 
 func sort_groups(groups: Array[Array]) -> Array[Array]:

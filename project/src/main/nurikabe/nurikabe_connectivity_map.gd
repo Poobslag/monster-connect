@@ -18,5 +18,5 @@ func get_groups() -> Array[Array]:
 
 func duplicate() -> NurikabeConnectivityMap:
 	var copy: NurikabeConnectivityMap = NurikabeConnectivityMap.new(cell_filter)
-	gcm = gcm.duplicate()
+	copy.gcm = gcm.duplicate()
 	return copy

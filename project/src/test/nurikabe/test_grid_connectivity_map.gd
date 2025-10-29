@@ -9,35 +9,35 @@ func before_each() -> void:
 func test_empty() -> void:
 	assert_eq(false, gcm.has_cell(Vector2i(0, 0)))
 	assert_eq(false, gcm.is_active(Vector2i(0, 0)))
-	assert_groups([])
+	assert_groups(gcm.get_groups(), [])
 
 
 func test_single_active_cell() -> void:
 	gcm.set_active(Vector2i(0, 0), true)
 	assert_eq(true, gcm.has_cell(Vector2i(0, 0)))
 	assert_eq(true, gcm.is_active(Vector2i(0, 0)))
-	assert_groups([[Vector2i(0, 0)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0)]])
 
 
 func test_single_inactive_cell() -> void:
 	gcm.set_active(Vector2i(0, 0), false)
 	assert_eq(false, gcm.has_cell(Vector2i(0, 0)))
 	assert_eq(false, gcm.is_active(Vector2i(0, 0)))
-	assert_groups([])
+	assert_groups(gcm.get_groups(), [])
 
 
 func test_two_cells_adjacent() -> void:
 	load_grid([
 		"12",
 	])
-	assert_groups([[Vector2i(0, 0), Vector2i(1, 0)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0), Vector2i(1, 0)]])
 
 
 func test_two_cells_separate() -> void:
 	load_grid([
 		"1 2",
 	])
-	assert_groups([[Vector2i(0, 0)], [Vector2i(2, 0)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0)], [Vector2i(2, 0)]])
 
 
 func test_shrink_group() -> void:
@@ -45,13 +45,13 @@ func test_shrink_group() -> void:
 		"12",
 	])
 	gcm.set_active(Vector2i(0, 0), false)
-	assert_groups([[Vector2i(1, 0)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(1, 0)]])
 
 
 func test_remove_group() -> void:
 	gcm.set_active(Vector2i(0, 0), true)
 	gcm.set_active(Vector2i(0, 0), false)
-	assert_groups([])
+	assert_groups(gcm.get_groups(), [])
 
 
 func test_merge_groups_two() -> void:
@@ -59,7 +59,7 @@ func test_merge_groups_two() -> void:
 		"13",
 		" 2",
 	])
-	assert_groups([[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]])
 
 
 func test_merge_groups_three() -> void:
@@ -67,7 +67,7 @@ func test_merge_groups_three() -> void:
 		"143",
 		" 2",
 	])
-	assert_groups([[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0)]])
 
 
 func test_merge_groups_four() -> void:
@@ -76,7 +76,7 @@ func test_merge_groups_four() -> void:
 		"254",
 		" 3",
 	])
-	assert_groups([[Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(2, 1)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(2, 1)]])
 
 
 func test_split_groups_two() -> void:
@@ -84,7 +84,7 @@ func test_split_groups_two() -> void:
 		"123",
 	])
 	gcm.set_active(Vector2i(1, 0), false)
-	assert_groups([[Vector2i(0, 0)], [Vector2i(2, 0)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0)], [Vector2i(2, 0)]])
 
 
 func test_split_groups_three() -> void:
@@ -93,7 +93,7 @@ func test_split_groups_three() -> void:
 		" 4 ",
 	])
 	gcm.set_active(Vector2i(1, 0), false)
-	assert_groups([[Vector2i(0, 0)], [Vector2i(1, 1)], [Vector2i(2, 0)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0)], [Vector2i(1, 1)], [Vector2i(2, 0)]])
 
 
 func test_split_groups_four() -> void:
@@ -103,7 +103,7 @@ func test_split_groups_four() -> void:
 		" 5 ",
 	])
 	gcm.set_active(Vector2i(1, 1), false)
-	assert_groups([[Vector2i(0, 1)], [Vector2i(1, 0)], [Vector2i(1, 2)], [Vector2i(2, 1)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 1)], [Vector2i(1, 0)], [Vector2i(1, 2)], [Vector2i(2, 1)]])
 
 
 func test_split_groups_half() -> void:
@@ -113,13 +113,30 @@ func test_split_groups_half() -> void:
 		"  6",
 	])
 	gcm.set_active(Vector2i(1, 1), false)
-	assert_groups([[Vector2i(0, 0), Vector2i(0, 1)], [Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)]])
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0), Vector2i(0, 1)], [Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)]])
 
 
-func assert_groups(expected: Array[Array]) -> void:
-	var actual: Array[Array] = gcm.get_groups()
-	var actual_sorted: Array[Array] = sort_groups(actual)
-	var expected_sorted: Array[Array] = sort_groups(expected)
+func test_duplicate() -> void:
+	gcm.set_active(Vector2i(0, 0), true)
+	var gcm_copy: GridConnectivityMap = gcm.duplicate()
+	gcm_copy.set_active(Vector2i(1, 0), true)
+	
+	assert_eq(true, gcm.has_cell(Vector2i(0, 0)))
+	assert_eq(true, gcm.is_active(Vector2i(0, 0)))
+	assert_eq(false, gcm.has_cell(Vector2i(1, 0)))
+	assert_eq(false, gcm.is_active(Vector2i(1, 0)))
+	assert_groups(gcm.get_groups(), [[Vector2i(0, 0)]])
+	
+	assert_eq(true, gcm_copy.has_cell(Vector2i(0, 0)))
+	assert_eq(true, gcm_copy.is_active(Vector2i(0, 0)))
+	assert_eq(true, gcm_copy.has_cell(Vector2i(1, 0)))
+	assert_eq(true, gcm_copy.is_active(Vector2i(1, 0)))
+	assert_groups(gcm_copy.get_groups(), [[Vector2i(0, 0), Vector2i(1, 0)]])
+
+
+func assert_groups(actual: Array[Array], expected: Array[Array]) -> void:
+	var actual_sorted: Array[Array] = NurikabeTestUtils.sort_groups(actual)
+	var expected_sorted: Array[Array] = NurikabeTestUtils.sort_groups(expected)
 	assert_eq(actual_sorted, expected_sorted)
 
 
@@ -137,17 +154,3 @@ func load_grid(rows: Array[String]) -> void:
 			return a.label < b.label)
 	for entry: Dictionary[String, Variant] in active_cells:
 		gcm.set_active(entry.pos, true)
-
-
-func sort_groups(groups: Array[Array]) -> Array[Array]:
-	var new_groups: Array[Array] = []
-	for group in groups:
-		var new_group: Array[Vector2i] = []
-		new_group.assign(group)
-		new_group.sort()
-		new_groups.append(new_group)
-	new_groups.sort_custom(func(a: Array[Vector2i], b: Array[Vector2i]) -> bool:
-		if a.is_empty() != b.is_empty():
-			return a.is_empty()
-		return a[0] < b[0])
-	return new_groups
