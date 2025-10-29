@@ -13,6 +13,16 @@ func clear() -> void:
 	_groups_dirty = true
 
 
+func duplicate() -> GridConnectivityMap:
+	var copy: GridConnectivityMap = GridConnectivityMap.new()
+	copy._active = _active.duplicate()
+	copy._parent = _parent.duplicate()
+	copy._size = _size.duplicate()
+	copy._groups_dirty = _groups_dirty
+	copy._cached_groups = _cached_groups.duplicate()
+	return copy
+
+
 func has_cell(pos: Vector2i) -> bool:
 	return _active.has(pos)
 
@@ -42,7 +52,7 @@ func get_groups() -> Array[Array]:
 				continue
 			var root: Vector2i = _find(cell)
 			if not groups_by_cell.has(root):
-				groups_by_cell[root] = []
+				groups_by_cell[root] = [] as Array[Vector2i]
 			groups_by_cell[root].append(cell)
 		_cached_groups = groups_by_cell.values()
 		_groups_dirty = false

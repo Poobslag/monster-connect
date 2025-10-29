@@ -15,6 +15,7 @@ var _largest_island_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
 func duplicate() -> NurikabeBoardModel:
 	var copy: NurikabeBoardModel = NurikabeBoardModel.new()
 	copy.cells = cells.duplicate()
+	copy._largest_island_ncm = _largest_island_ncm.duplicate()
 	return copy
 
 
@@ -99,7 +100,28 @@ func validate() -> ValidationResult:
 
 ## Returns the largest possible groups of island cells, including all empty cells.
 func find_largest_island_groups() -> Array[Array]:
-	return _largest_island_ncm.get_groups()
+	var slow_result: Array[Array] = _find_groups(func(value: String) -> bool:
+		return value in [CELL_WALL])
+	var fast_result: Array[Array] = _largest_island_ncm.get_groups()
+	slow_result = sort_groups(slow_result)
+	fast_result = sort_groups(fast_result)
+	if slow_result == fast_result:
+		print("109: slow_result=%s fast_result=%s" % [slow_result, fast_result])
+	return slow_result
+
+
+func sort_groups(groups: Array[Array]) -> Array[Array]:
+	var new_groups: Array[Array] = []
+	for group in groups:
+		var new_group: Array[Vector2i] = []
+		new_group.assign(group)
+		new_group.sort()
+		new_groups.append(new_group)
+	new_groups.sort_custom(func(a: Array[Vector2i], b: Array[Vector2i]) -> bool:
+		if a.is_empty() != b.is_empty():
+			return a.is_empty()
+		return a[0] < b[0])
+	return new_groups
 
 
 ## Returns the smallest possible groups of wall cells, excluding all empty cells.
