@@ -80,13 +80,13 @@ func surround_island(cell_pos: Vector2i) -> Array[Dictionary]:
 
 func validate() -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
-	var island_groups: Array[Array] = find_largest_island_groups()
-	var wall_groups: Array[Array] = find_smallest_wall_groups()
-	var potential_wall_groups: Array[Array] = find_largest_wall_groups()
-	var potential_island_groups: Array[Array] = find_smallest_island_groups()
-	_check_clues(result, island_groups, potential_island_groups)
+	var largest_island_groups: Array[Array] = find_largest_island_groups()
+	var largest_wall_groups: Array[Array] = find_largest_wall_groups()
+	var smallest_island_groups: Array[Array] = find_smallest_island_groups()
+	var smallest_wall_groups: Array[Array] = find_smallest_wall_groups()
+	_check_clues(result, largest_island_groups, smallest_island_groups)
 	_check_pools(result)
-	_check_split_walls(result, wall_groups, potential_wall_groups)
+	_check_split_walls(result, smallest_wall_groups, largest_wall_groups)
 	
 	return result
 
@@ -95,12 +95,6 @@ func validate() -> ValidationResult:
 func find_largest_island_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
-
-
-## Returns the smallest possible groups of wall cells, excluding all empty cells.
-func find_smallest_wall_groups() -> Array[Array]:
-	return _find_groups(func(value: String) -> bool:
-		return value in [CELL_WALL])
 
 
 ## Returns the largest possible groups of wall cells, including all empty cells.
@@ -113,6 +107,12 @@ func find_largest_wall_groups() -> Array[Array]:
 func find_smallest_island_groups() -> Array[Array]:
 	return _find_groups(func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_ISLAND])
+
+
+## Returns the smallest possible groups of wall cells, excluding all empty cells.
+func find_smallest_wall_groups() -> Array[Array]:
+	return _find_groups(func(value: String) -> bool:
+		return value in [CELL_WALL])
 
 
 func get_clue_cells(group: Array[Vector2i]) -> Array[Vector2i]:
@@ -163,9 +163,9 @@ func get_pool_cells() -> Array[Vector2i]:
 	return pool_cells.keys()
 
 
-func _check_clues(result: ValidationResult, island_groups: Array[Array],
-		potential_island_groups: Array[Array]) -> ValidationResult:
-	for group: Array[Vector2i] in island_groups:
+func _check_clues(result: ValidationResult, largest_island_groups: Array[Array],
+		smallest_island_groups: Array[Array]) -> ValidationResult:
+	for group: Array[Vector2i] in largest_island_groups:
 		var clue_cells: Array[Vector2i] = get_clue_cells(group)
 		if clue_cells.size() == 0:
 			result.unclued_islands.append_array(group)
@@ -177,7 +177,7 @@ func _check_clues(result: ValidationResult, island_groups: Array[Array],
 		if clue_cells.size() >= 2:
 			result.joined_islands.append_array(group)
 	
-	for group: Array[Vector2i] in potential_island_groups:
+	for group: Array[Vector2i] in smallest_island_groups:
 		var clue_cells: Array[Vector2i] = []
 		for cell: Vector2i in group:
 			if get_cell_string(cell).is_valid_int():
@@ -199,30 +199,30 @@ func _check_pools(result: ValidationResult) -> ValidationResult:
 	return result
 
 
-func _check_split_walls(result: ValidationResult, wall_groups: Array[Array],
-		potential_wall_groups: Array[Array]) -> ValidationResult:
-	if wall_groups.size() >= 2:
-		var largest_group: Array[Vector2i] = wall_groups[0]
-		for group: Array[Vector2i] in wall_groups:
+func _check_split_walls(result: ValidationResult, smallest_wall_groups: Array[Array],
+		largest_wall_groups: Array[Array]) -> ValidationResult:
+	if smallest_wall_groups.size() >= 2:
+		var largest_group: Array[Vector2i] = smallest_wall_groups[0]
+		for group: Array[Vector2i] in smallest_wall_groups:
 			if group.size() > largest_group.size():
 				largest_group = group
-		for group: Array[Vector2i] in wall_groups:
+		for group: Array[Vector2i] in smallest_wall_groups:
 			if group == largest_group:
 				continue
 			result.split_walls.append_array(group)
 	
-	var potential_wall_groups_with_a_wall: Array[Array] \
-			= potential_wall_groups.filter(func(group: Array[Vector2i]) -> bool:
+	var largest_wall_groups_with_a_wall: Array[Array] \
+			= largest_wall_groups.filter(func(group: Array[Vector2i]) -> bool:
 				for cell: Vector2i in group:
 					if get_cell_string(cell) == CELL_WALL:
 						return true
 				return false)
-	if potential_wall_groups_with_a_wall.size() >= 2:
-		var largest_group: Array[Vector2i] = potential_wall_groups_with_a_wall[0]
-		for group: Array[Vector2i] in potential_wall_groups_with_a_wall:
+	if largest_wall_groups_with_a_wall.size() >= 2:
+		var largest_group: Array[Vector2i] = largest_wall_groups_with_a_wall[0]
+		for group: Array[Vector2i] in largest_wall_groups_with_a_wall:
 			if group.size() > largest_group.size():
 				largest_group = group
-		for group: Array[Vector2i] in potential_wall_groups_with_a_wall:
+		for group: Array[Vector2i] in largest_wall_groups_with_a_wall:
 			if group == largest_group:
 				continue
 			var unfixable_wall_cells: Array[Vector2i] = group.filter(func(cell: Vector2i) -> bool:

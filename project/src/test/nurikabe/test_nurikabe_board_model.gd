@@ -1,109 +1,139 @@
 extends GutTest
 
+const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
+const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: String = NurikabeUtils.CELL_WALL
+
 var grid: Array[String] = []
 
-func test_island_groups_zero() -> void:
+func test_largest_island_groups_zero() -> void:
 	grid = [
 		"######",
 		"######",
 		"######",
 	]
-	assert_island_group_sizes([])
+	assert_largest_island_groups([])
 	
 	grid = [
 		"",
 	]
-	assert_island_group_sizes([])
+	assert_largest_island_groups([])
 
 
-func test_island_groups_one() -> void:
+func test_largest_island_groups_one() -> void:
 	grid = [
 		" . . .",
 		"######",
 		"######",
 	]
-	assert_island_group_sizes([3])
+	assert_largest_island_groups([[
+		Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)
+	]])
 	
 	grid = [
 		"######",
 		"   3 .",
 		"####  ",
 	]
-	assert_island_group_sizes([4])
+	assert_largest_island_groups([[
+		Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(2, 2),
+	]])
 	
 	grid = [
 		"      ",
 		"      ",
 		" 3   3",
 	]
-	assert_island_group_sizes([9])
+	assert_largest_island_groups([[
+		Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2),
+		Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2),
+		Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2),
+	]])
 
 
-func test_island_groups_many() -> void:
+func test_largest_island_groups_many() -> void:
 	grid = [
 		" 2 .##",
 		"######",
 		"   3  ",
 	]
-	assert_island_group_sizes([2, 3])
+	assert_largest_island_groups([
+		[Vector2i(0, 0), Vector2i(1, 0)],
+		[Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2)],
+	])
 	
 	grid = [
 		"##    ",
 		"  ## 5",
 		"##    ",
 	]
-	assert_island_group_sizes([1, 5])
+	assert_largest_island_groups([
+		[Vector2i(0, 1)],
+		[Vector2i(1, 0), Vector2i(1, 2), Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)],
+	])
 
 
-func test_wall_groups_zero() -> void:
+func test_smallest_wall_groups_zero() -> void:
 	grid = [
 		"",
 	]
-	assert_wall_group_sizes([])
+	assert_smallest_wall_groups([])
 	
 	grid = [
 		"      ",
 		"      ",
 		"      ",
 	]
-	assert_wall_group_sizes([])
+	assert_smallest_wall_groups([])
 	
 	grid = [
 		" . . .",
 		" . 9 .",
 		" . . .",
 	]
-	assert_wall_group_sizes([])
+	assert_smallest_wall_groups([])
 
 
-func test_wall_groups_one() -> void:
+func test_smallest_wall_groups_one() -> void:
 	grid = [
 		"######",
 	]
-	assert_wall_group_sizes([3])
+	assert_smallest_wall_groups([[
+		Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0),
+	]])
 	
 	grid = [
 		" .## .",
 		" .## .",
 		" 3## 3",
 	]
-	assert_wall_group_sizes([3])
+	assert_smallest_wall_groups([[
+		Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2),
+	]])
 
 
-func test_wall_groups_many() -> void:
+func test_smallest_wall_groups_many() -> void:
 	grid = [
 		" 5 .  ",
 		"  ##  ",
 		"## 3##",
 	]
-	assert_wall_group_sizes([1, 1, 1])
+	assert_smallest_wall_groups([
+		[Vector2i(0, 2)],
+		[Vector2i(1, 1)],
+		[Vector2i(2, 2)],
+	])
 	
 	grid = [
 		"####  ",
 		"   3##",
 		"######",
 	]
-	assert_wall_group_sizes([2, 4])
+	assert_smallest_wall_groups([
+		[Vector2i(0, 0), Vector2i(1, 0)],
+		[Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 1), Vector2i(2, 2)],
+	])
 
 
 func test_joined_islands_ok() -> void:
@@ -325,24 +355,54 @@ func test_wrong_size_many() -> void:
 	assert_rules_invalid({"wrong_size_unfixable": [Vector2i(0, 2), Vector2i(2, 0), Vector2i(2, 2)]})
 
 
+func test_duplicate() -> void:
+	grid = [
+		" 1## 2",
+		"######",
+		" 3## 4",
+	]
+	var model: NurikabeBoardModel = init_model()
+	var model_copy: NurikabeBoardModel = model.duplicate()
+	model_copy.set_cell_string(Vector2i(1, 0), CELL_ISLAND)
+	
+	assert_groups(model.find_largest_island_groups(), [
+		[Vector2i(0, 0)],
+		[Vector2i(0, 2)],
+		[Vector2i(2, 0)],
+		[Vector2i(2, 2)],
+	])
+	
+	assert_groups(model_copy.find_largest_island_groups(), [
+		[Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)],
+		[Vector2i(0, 2)],
+		[Vector2i(2, 2)],
+	])
+
+
+func assert_largest_island_groups(expected: Array[Array]) -> void:
+	var model: NurikabeBoardModel = init_model()
+	var actual: Array[Array] = model.find_largest_island_groups()
+	assert_groups(actual, expected)
+
+
+func assert_smallest_wall_groups(expected: Array[Array]) -> void:
+	var model: NurikabeBoardModel = init_model()
+	var actual: Array[Array] = model.find_smallest_wall_groups()
+	assert_groups(actual, expected)
+
+
+func assert_groups(actual: Array[Array], expected: Array[Array]) -> void:
+	var actual_sorted: Array[Array] = NurikabeTestUtils.sort_groups(actual)
+	var expected_sorted: Array[Array] = NurikabeTestUtils.sort_groups(expected)
+	assert_eq(actual_sorted, expected_sorted)
+
+
 func assert_rules_valid() -> void:
 	_assert_rules({})
 
 
 func assert_rules_invalid(expected_result_dict: Dictionary) -> void:
 	_assert_rules(expected_result_dict)
-
-
-func assert_island_group_sizes(expected: Array[int]) -> void:
-	var model: NurikabeBoardModel = init_model()
-	var island_groups: Array[Array] = model.find_largest_island_groups()
-	_assert_group_sizes(island_groups, expected, "island")
-
-
-func assert_wall_group_sizes(expected: Array[int]) -> void:
-	var model: NurikabeBoardModel = init_model()
-	var wall_groups: Array[Array] = model.find_smallest_wall_groups()
-	_assert_group_sizes(wall_groups, expected, "wall")
 
 
 func init_model() -> NurikabeBoardModel:
@@ -358,11 +418,3 @@ func _assert_rules(expected_result_dict: Dictionary) -> void:
 		var validation_result_value: Array[Vector2i] = validation_result.get(key)
 		validation_result_value.sort()
 		assert_eq(expected_result_dict.get(key, []), validation_result_value, "Incorrect %s." % [key])
-
-
-func _assert_group_sizes(got_groups: Array[Array], expected: Array[int], group_name: String) -> void:
-	var group_sizes: Array[int] = []
-	for group: Array[Vector2i] in got_groups:
-		group_sizes.push_back(group.size())
-	group_sizes.sort()
-	assert_eq(group_sizes, expected, "Incorrect %s group sizes." % [group_name])

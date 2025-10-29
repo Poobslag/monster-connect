@@ -687,15 +687,6 @@ func _island_neighbor_cells(board: NurikabeBoardModel, group: Array[Vector2i]) -
 	return island_neighbor_cells.keys()
 
 
-## Returns the number of islands bordering each empty cell.
-func _island_neighbor_count_by_cell(board: NurikabeBoardModel) -> Dictionary[Vector2i, int]:
-	var island_neighbor_count_by_cell: Dictionary[Vector2i, int] = {}
-	var neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] = _neighbor_groups_by_empty_cell(board)
-	for cell: Vector2i in neighbor_groups_by_empty_cell:
-		island_neighbor_count_by_cell[cell] = neighbor_groups_by_empty_cell[cell].size()
-	return island_neighbor_count_by_cell
-
-
 func _largest_non_empty_wall_groups(board: NurikabeBoardModel) -> Array[Array]:
 	var result: Array[Array] = []
 	for group: Array[Vector2i] in board.find_largest_wall_groups():
@@ -746,16 +737,6 @@ func _only_empty_cells(board: NurikabeBoardModel, group: Array[Vector2i]) -> boo
 			result = false
 			break
 	return result
-
-
-func _unclued_island_sizes_by_cell(board: NurikabeBoardModel) -> Dictionary[Vector2i, int]:
-	var unclued_island_sizes_by_cell: Dictionary[Vector2i, int] = {}
-	for group: Array[Vector2i] in board.find_smallest_island_groups():
-		if board.get_clue_cells(group).size() != 0:
-			continue
-		for cell: Vector2i in group:
-			unclued_island_sizes_by_cell[cell] = group.size()
-	return unclued_island_sizes_by_cell
 
 
 func _unclued_island_count(board: NurikabeBoardModel) -> int:
