@@ -1,4 +1,4 @@
-class_name GridConnectivityMap
+class_name GridUnionFind
 
 var _active: Dictionary[Vector2i, bool] = {}
 var _parent: Dictionary[Vector2i, Vector2i] = {}
@@ -13,8 +13,8 @@ func clear() -> void:
 	_groups_dirty = true
 
 
-func duplicate() -> GridConnectivityMap:
-	var copy: GridConnectivityMap = GridConnectivityMap.new()
+func duplicate() -> GridUnionFind:
+	var copy: GridUnionFind = GridUnionFind.new()
 	copy._active = _active.duplicate()
 	copy._parent = _parent.duplicate()
 	copy._size = _size.duplicate()

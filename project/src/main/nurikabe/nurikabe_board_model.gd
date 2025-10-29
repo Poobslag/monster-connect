@@ -7,19 +7,19 @@ const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
 var cells: Dictionary[Vector2i, String]
 
-var _largest_island_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
+var _largest_island_nuf: NurikabeUnionFind = NurikabeUnionFind.new(
 	func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
 
-var _largest_wall_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
+var _largest_wall_nuf: NurikabeUnionFind = NurikabeUnionFind.new(
 	func(value: String) -> bool:
 		return value in [CELL_EMPTY, CELL_WALL])
 
-var _smallest_island_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
+var _smallest_island_nuf: NurikabeUnionFind = NurikabeUnionFind.new(
 	func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_ISLAND])
 
-var _smallest_wall_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
+var _smallest_wall_nuf: NurikabeUnionFind = NurikabeUnionFind.new(
 	func(value: String) -> bool:
 		return value in [CELL_WALL])
 
@@ -27,10 +27,10 @@ var _smallest_wall_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
 func duplicate() -> NurikabeBoardModel:
 	var copy: NurikabeBoardModel = NurikabeBoardModel.new()
 	copy.cells = cells.duplicate()
-	copy._largest_island_ncm = _largest_island_ncm.duplicate()
-	copy._largest_wall_ncm = _largest_wall_ncm.duplicate()
-	copy._smallest_island_ncm = _smallest_island_ncm.duplicate()
-	copy._smallest_wall_ncm = _smallest_wall_ncm.duplicate()
+	copy._largest_island_nuf = _largest_island_nuf.duplicate()
+	copy._largest_wall_nuf = _largest_wall_nuf.duplicate()
+	copy._smallest_island_nuf = _smallest_island_nuf.duplicate()
+	copy._smallest_wall_nuf = _smallest_wall_nuf.duplicate()
 	return copy
 
 
@@ -50,9 +50,9 @@ func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 	cells[cell_pos] = value
 	
-	for ncm: NurikabeConnectivityMap in [
-			_largest_island_ncm, _largest_wall_ncm, _smallest_island_ncm, _smallest_wall_ncm]:
-		ncm.set_cell_string(cell_pos, value)
+	for nuf: NurikabeUnionFind in [
+			_largest_island_nuf, _largest_wall_nuf, _smallest_island_nuf, _smallest_wall_nuf]:
+		nuf.set_cell_string(cell_pos, value)
 
 
 ## Sets the specified cells on the game board model.[br]
@@ -117,22 +117,22 @@ func validate() -> ValidationResult:
 
 ## Returns the largest possible groups of island cells, including all empty cells.
 func find_largest_island_groups() -> Array[Array]:
-	return _largest_island_ncm.get_groups()
-
-
-## Returns the smallest possible groups of wall cells, excluding all empty cells.
-func find_smallest_wall_groups() -> Array[Array]:
-	return _smallest_wall_ncm.get_groups()
+	return _largest_island_nuf.get_groups()
 
 
 ## Returns the largest possible groups of wall cells, including all empty cells.
 func find_largest_wall_groups() -> Array[Array]:
-	return _largest_wall_ncm.get_groups()
+	return _largest_wall_nuf.get_groups()
 
 
 ## Returns the smallest possible groups of island cells, excluding all empty cells.
 func find_smallest_island_groups() -> Array[Array]:
-	return _smallest_island_ncm.get_groups()
+	return _smallest_island_nuf.get_groups()
+
+
+## Returns the smallest possible groups of wall cells, excluding all empty cells.
+func find_smallest_wall_groups() -> Array[Array]:
+	return _smallest_wall_nuf.get_groups()
 
 
 func get_clue_cells(group: Array[Vector2i]) -> Array[Vector2i]:

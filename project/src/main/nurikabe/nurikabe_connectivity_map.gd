@@ -1,7 +1,7 @@
-class_name NurikabeConnectivityMap
+class_name NurikabeUnionFind
 
 var cell_filter: Callable
-var gcm: GridConnectivityMap = GridConnectivityMap.new()
+var guf: GridUnionFind = GridUnionFind.new()
 
 func _init(init_cell_filter: Callable) -> void:
 	cell_filter = init_cell_filter
@@ -9,14 +9,14 @@ func _init(init_cell_filter: Callable) -> void:
 
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 	var new_active: bool = cell_filter.call(value)
-	gcm.set_active(cell_pos, new_active)
+	guf.set_active(cell_pos, new_active)
 
 
 func get_groups() -> Array[Array]:
-	return gcm.get_groups()
+	return guf.get_groups()
 
 
-func duplicate() -> NurikabeConnectivityMap:
-	var copy: NurikabeConnectivityMap = NurikabeConnectivityMap.new(cell_filter)
-	copy.gcm = gcm.duplicate()
+func duplicate() -> NurikabeUnionFind:
+	var copy: NurikabeUnionFind = NurikabeUnionFind.new(cell_filter)
+	copy.guf = guf.duplicate()
 	return copy
