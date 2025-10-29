@@ -9,13 +9,28 @@ var cells: Dictionary[Vector2i, String]
 
 var _largest_island_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
 	func(value: String) -> bool:
-		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND]
-)
+		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+
+var _largest_wall_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
+	func(value: String) -> bool:
+		return value in [CELL_EMPTY, CELL_WALL])
+
+var _smallest_island_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
+	func(value: String) -> bool:
+		return value.is_valid_int() or value in [CELL_ISLAND])
+
+var _smallest_wall_ncm: NurikabeConnectivityMap = NurikabeConnectivityMap.new(
+	func(value: String) -> bool:
+		return value in [CELL_WALL])
+
 
 func duplicate() -> NurikabeBoardModel:
 	var copy: NurikabeBoardModel = NurikabeBoardModel.new()
 	copy.cells = cells.duplicate()
 	copy._largest_island_ncm = _largest_island_ncm.duplicate()
+	copy._largest_wall_ncm = _largest_wall_ncm.duplicate()
+	copy._smallest_island_ncm = _smallest_island_ncm.duplicate()
+	copy._smallest_wall_ncm = _smallest_wall_ncm.duplicate()
 	return copy
 
 
@@ -35,7 +50,9 @@ func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 	cells[cell_pos] = value
 	
-	_largest_island_ncm.set_cell_string(cell_pos, value)
+	for ncm: NurikabeConnectivityMap in [
+			_largest_island_ncm, _largest_wall_ncm, _smallest_island_ncm, _smallest_wall_ncm]:
+		ncm.set_cell_string(cell_pos, value)
 
 
 ## Sets the specified cells on the game board model.[br]
@@ -100,46 +117,22 @@ func validate() -> ValidationResult:
 
 ## Returns the largest possible groups of island cells, including all empty cells.
 func find_largest_island_groups() -> Array[Array]:
-	var slow_result: Array[Array] = _find_groups(func(value: String) -> bool:
-		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
-	var fast_result: Array[Array] = _largest_island_ncm.get_groups()
-	slow_result = sort_groups(slow_result)
-	fast_result = sort_groups(fast_result)
-	if str(slow_result) != str(fast_result):
-		push_error("mismatch: slow_result=%s fast_result=%s" % [slow_result, fast_result])
-	return fast_result
-
-
-func sort_groups(groups: Array[Array]) -> Array[Array]:
-	var new_groups: Array[Array] = []
-	for group in groups:
-		var new_group: Array[Vector2i] = []
-		new_group.assign(group)
-		new_group.sort()
-		new_groups.append(new_group)
-	new_groups.sort_custom(func(a: Array[Vector2i], b: Array[Vector2i]) -> bool:
-		if a.is_empty() != b.is_empty():
-			return a.is_empty()
-		return a[0] < b[0])
-	return new_groups
+	return _largest_island_ncm.get_groups()
 
 
 ## Returns the smallest possible groups of wall cells, excluding all empty cells.
 func find_smallest_wall_groups() -> Array[Array]:
-	return _find_groups(func(value: String) -> bool:
-		return value in [CELL_WALL])
+	return _smallest_wall_ncm.get_groups()
 
 
 ## Returns the largest possible groups of wall cells, including all empty cells.
 func find_largest_wall_groups() -> Array[Array]:
-	return _find_groups(func(value: String) -> bool:
-		return value in [CELL_EMPTY, CELL_WALL])
+	return _largest_wall_ncm.get_groups()
 
 
 ## Returns the smallest possible groups of island cells, excluding all empty cells.
 func find_smallest_island_groups() -> Array[Array]:
-	return _find_groups(func(value: String) -> bool:
-		return value.is_valid_int() or value in [CELL_ISLAND])
+	return _smallest_island_ncm.get_groups()
 
 
 func get_clue_cells(group: Array[Vector2i]) -> Array[Vector2i]:
