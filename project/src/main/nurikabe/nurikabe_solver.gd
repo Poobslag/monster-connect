@@ -219,9 +219,13 @@ func deduce_island_buffer(board: NurikabeBoardModel) -> void:
 	for cell: Vector2i in board.cells:
 		if not _can_deduce(board, cell):
 			continue
+		SplitTimer.start("duplicate")
 		var trial: NurikabeBoardModel = board.duplicate()
+		SplitTimer.split("set_cell_string")
 		trial.set_cell_string(cell, CELL_ISLAND)
+		SplitTimer.split("get_uncompletable_island_count")
 		var trial_uncompletable_island_count: int = get_uncompletable_island_count(trial)
+		SplitTimer.end()
 		if trial_uncompletable_island_count > uncompletable_island_count:
 			solver_pass.add_deduction(cell, CELL_WALL, ISLAND_BUFFER)
 

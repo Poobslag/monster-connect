@@ -144,6 +144,8 @@ func performance_test() -> void:
 		total_duration / total_call_count,
 		float(total_deduction_count) / total_call_count,
 	])
+	
+	SplitTimer.print_results()
 
 
 func run_techniques(
