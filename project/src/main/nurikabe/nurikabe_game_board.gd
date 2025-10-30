@@ -194,6 +194,12 @@ func to_model() -> NurikabeBoardModel:
 	return model
 
 
+func to_fast_board() -> FastBoard:
+	var board: FastBoard = FastBoard.new()
+	board.from_game_board(self)
+	return board
+
+
 func undo(player_id: int) -> void:
 	for undo_index in _undo_stack.size():
 		if _undo_stack[undo_index].player_id != player_id:
