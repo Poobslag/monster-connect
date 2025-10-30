@@ -106,36 +106,36 @@ func test_split_groups_four() -> void:
 	assert_groups(guf.get_groups(), [[Vector2i(0, 1)], [Vector2i(1, 0)], [Vector2i(1, 2)], [Vector2i(2, 1)]])
 
 
-func test_get_neighboring_groups_one() -> void:
+func test_get_neighbor_groups_one() -> void:
 	load_grid([
 		"1  ",
 		"2  ",
 		"  3",
 	])
-	assert_groups(guf.get_neighboring_groups(Vector2i(1, 1)), [
+	assert_groups(guf.get_neighbor_groups(Vector2i(1, 1)), [
 			[Vector2i(0, 0), Vector2i(0, 1)],
 		])
 
 
-func test_get_neighboring_groups_two() -> void:
+func test_get_neighbor_groups_two() -> void:
 	load_grid([
 		"1  ",
 		"2 3",
 		"  4",
 	])
-	assert_groups(guf.get_neighboring_groups(Vector2i(1, 1)), [
+	assert_groups(guf.get_neighbor_groups(Vector2i(1, 1)), [
 			[Vector2i(0, 0), Vector2i(0, 1)],
 			[Vector2i(2, 1), Vector2i(2, 2)],
 		])
 
 
-func test_get_neighboring_groups_duplicate() -> void:
+func test_get_neighbor_groups_duplicate() -> void:
 	load_grid([
 		"13 ",
 		"2  ",
 		"   ",
 	])
-	assert_groups(guf.get_neighboring_groups(Vector2i(1, 1)), [
+	assert_groups(guf.get_neighbor_groups(Vector2i(1, 1)), [
 			[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 0)],
 		])
 

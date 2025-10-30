@@ -56,7 +56,7 @@ func get_groups() -> Array[Array]:
 	return _cached_groups_by_root.values()
 
 
-func get_neighboring_groups(cell: Vector2i) -> Array[Array]:
+func get_neighbor_groups(cell: Vector2i) -> Array[Array]:
 	if _groups_dirty:
 		_refresh_cached_groups_by_cell()
 	var visited: Dictionary[Vector2i, bool] = {}

@@ -20,9 +20,9 @@ func get_groups() -> Array[Array]:
 	return _guf.get_groups()
 
 
-func get_neighboring_groups(cell: Vector2i) -> Array[Array]:
+func get_neighbor_groups(cell: Vector2i) -> Array[Array]:
 	_apply_pending_updates()
-	return _guf.get_neighboring_groups(cell)
+	return _guf.get_neighbor_groups(cell)
 
 
 func duplicate() -> NurikabeUnionFind:

@@ -106,16 +106,13 @@ func deduce_adjacent_clues(board: NurikabeBoardModel) -> void:
 
 ## Fill in empty cells bordering 2 or more islands with a wall.
 func deduce_island_divider(board: NurikabeBoardModel) -> void:
-	var clued_neighbor_count_by_cell: Dictionary[Vector2i, int] = _clued_neighbor_count_by_cell(board)
-	for cell: Vector2i in clued_neighbor_count_by_cell.keys():
+	for cell: Vector2i in board.cells:
 		if not _can_deduce(board, cell):
 			continue
-		if clued_neighbor_count_by_cell[cell] >= 2:
+		if board.get_clued_neighbor_groups(cell).size() >= 2:
 			solver_pass.add_deduction(cell, CELL_WALL, ISLAND_DIVIDER)
 	
 	var smallest_island_groups: Array[Array] = board.find_smallest_island_groups()
-	var neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
-			= _neighbor_groups_by_empty_cell(board, smallest_island_groups)
 	for group: Array[Vector2i] in smallest_island_groups:
 		# If the island is 1 less than its desired size, find its liberties
 		if board.get_clue_value(group) != group.size() + 1:
@@ -124,7 +121,7 @@ func deduce_island_divider(board: NurikabeBoardModel) -> void:
 		for liberty_cell: Vector2i in liberty_cells:
 			if not _can_deduce(board, liberty_cell):
 				continue
-			var neighbor_groups: Array[Array] = neighbor_groups_by_empty_cell.get(liberty_cell, [] as Array[Array])
+			var neighbor_groups: Array[Array] = board.get_neighbor_groups(liberty_cell)
 			if neighbor_groups.size() >= 2:
 				solver_pass.add_deduction(liberty_cell, CELL_WALL, ISLAND_DIVIDER)
 
@@ -475,15 +472,17 @@ func deduce_island_buffer_advanced(board: NurikabeBoardModel) -> void:
 		var clue_count: int = board.get_clue_cells(group).size()
 		if clue_count == 1:
 			clued_groups[group] = true
-	var clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
-			= _neighbor_groups_by_empty_cell(board, clued_groups.keys())
-	for cell: Vector2i in clued_neighbor_groups_by_empty_cell:
+	for cell: Vector2i in board.cells:
+		if board.get_cell_string(cell) != CELL_EMPTY:
+			continue
 		if cell in buffer_cells:
 			continue
-		if clued_neighbor_groups_by_empty_cell.get(cell, [] as Array[Array]).size() == 0:
+		if board.get_clued_neighbor_groups(cell).size()  == 0:
 			continue
 		for neighbor_cell in board.get_neighbors(cell):
-			if clued_neighbor_groups_by_empty_cell.get(neighbor_cell, [] as Array[Array]).size() == 0:
+			if board.get_cell_string(neighbor_cell) != CELL_EMPTY:
+				continue
+			if board.get_clued_neighbor_groups(neighbor_cell).size() == 0:
 				continue
 			buffer_cells[cell] = true
 			buffer_cells[neighbor_cell] = true
@@ -530,10 +529,6 @@ func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
 			unclued_groups[group] = true
 		elif clue_count == 1:
 			clued_groups[group] = true
-	var unclued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
-			= _neighbor_groups_by_empty_cell(board, unclued_groups.keys())
-	var clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
-			= _neighbor_groups_by_empty_cell(board, clued_groups.keys())
 	
 	SplitTimer.split("ignore_completed_islands")
 	for group: Array[Vector2i] in clued_groups:
@@ -555,17 +550,13 @@ func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
 			var total_biggest_clue: int = 0
 			
 			for joined_group: Array[Vector2i] in \
-					clued_neighbor_groups_by_empty_cell.get(liberty):
-				var joined_clue_cells: Array[Vector2i] = board.get_clue_cells(joined_group)
-				total_clues += joined_clue_cells.size()
+					board.get_neighbor_groups(liberty):
 				total_joined_size += joined_group.size()
-				if joined_clue_cells:
+				var joined_clue_cells: Array[Vector2i] = board.get_clue_cells(joined_group)
+				if joined_clue_cells.size() > 0:
+					total_clues += joined_clue_cells.size()
 					total_biggest_clue = max(total_biggest_clue, \
 							board.get_cell_string(joined_clue_cells[0]).to_int())
-			
-			for joined_group: Array[Vector2i] in \
-					unclued_neighbor_groups_by_empty_cell.get(liberty, [] as Array[Array]):
-				total_joined_size += joined_group.size()
 			
 			if total_clues == 1 and total_joined_size <= clue_value:
 				has_valid_liberty = true
@@ -593,7 +584,7 @@ func get_uncompletable_island_count(board: NurikabeBoardModel) -> int:
 				if board.get_cell_string(neighbor_cell) in [CELL_WALL, CELL_INVALID]:
 					continue
 				var neighbor_groups: Array[Array] \
-						= clued_neighbor_groups_by_empty_cell.get(neighbor_cell, [] as Array[Array])
+						= board.get_clued_neighbor_groups(neighbor_cell)
 				var has_clued_neighbor_group: bool = false
 				for neighbor_group: Array[Vector2i] in neighbor_groups:
 					if neighbor_group != group and neighbor_group in clued_groups:
@@ -616,12 +607,9 @@ func _can_deduce(board: NurikabeBoardModel, cell: Vector2i) -> bool:
 ## Returns the number of single-clue islands bordering each empty cell.
 func _clued_neighbor_count_by_cell(board: NurikabeBoardModel) -> Dictionary[Vector2i, int]:
 	var clued_neighbor_count_by_cell: Dictionary[Vector2i, int] = {}
-	var neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] = _neighbor_groups_by_empty_cell(board)
-	for cell: Vector2i in neighbor_groups_by_empty_cell:
-		clued_neighbor_count_by_cell[cell] = 0
-		for group: Array[Vector2i] in neighbor_groups_by_empty_cell[cell]:
-			if board.get_clue_cells(group).size() == 1:
-				clued_neighbor_count_by_cell[cell] += 1
+	for cell: Vector2i in board.cells:
+		if board.get_cell_string(cell) == CELL_EMPTY:
+			clued_neighbor_count_by_cell[cell] = board.get_clued_neighbor_groups(cell).size()
 	return clued_neighbor_count_by_cell
 
 
@@ -701,24 +689,6 @@ func _largest_non_empty_wall_groups(board: NurikabeBoardModel) -> Array[Array]:
 		if not only_empty_cells:
 			result.append(group)
 	return result
-
-
-func _neighbor_groups_by_empty_cell(
-			board: NurikabeBoardModel,
-			smallest_island_groups: Array[Array] = board.find_smallest_island_groups()
-		) -> Dictionary[Vector2i, Array]:
-	
-	var neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] = {}
-	for group: Array[Vector2i] in smallest_island_groups:
-		for cell: Vector2i in group:
-			for neighbor: Vector2i in board.get_neighbors(cell):
-				if not board.get_cell_string(neighbor) == CELL_EMPTY:
-					continue
-				if not neighbor in neighbor_groups_by_empty_cell:
-					neighbor_groups_by_empty_cell[neighbor] = [] as Array[Array]
-				if not group in neighbor_groups_by_empty_cell[neighbor]:
-					neighbor_groups_by_empty_cell[neighbor].append(group)
-	return neighbor_groups_by_empty_cell
 
 
 ## Returns a 4-bit mask of neighbor cells which satisfy [param predicate].[br]

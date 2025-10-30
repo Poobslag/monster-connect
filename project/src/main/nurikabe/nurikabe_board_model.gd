@@ -23,6 +23,9 @@ var _smallest_wall_nuf: NurikabeUnionFind = NurikabeUnionFind.new(
 	func(value: String) -> bool:
 		return value in [CELL_WALL])
 
+var _cached_neighbor_groups_by_cell: Dictionary[Vector2i, Array] = {}
+var _cached_clued_neighbor_groups_by_cell: Dictionary[Vector2i, Array] = {}
+
 
 func duplicate() -> NurikabeBoardModel:
 	var copy: NurikabeBoardModel = NurikabeBoardModel.new()
@@ -31,6 +34,8 @@ func duplicate() -> NurikabeBoardModel:
 	copy._largest_wall_nuf = _largest_wall_nuf.duplicate()
 	copy._smallest_island_nuf = _smallest_island_nuf.duplicate()
 	copy._smallest_wall_nuf = _smallest_wall_nuf.duplicate()
+	copy._cached_neighbor_groups_by_cell = _cached_neighbor_groups_by_cell.duplicate()
+	copy._cached_clued_neighbor_groups_by_cell = _cached_clued_neighbor_groups_by_cell.duplicate()
 	return copy
 
 
@@ -50,6 +55,11 @@ func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 	cells[cell_pos] = value
 	
+	# invalidate group caches
+	_cached_neighbor_groups_by_cell.clear()
+	_cached_clued_neighbor_groups_by_cell.clear()
+	
+	# update union find data structures
 	for nuf: NurikabeUnionFind in [
 			_largest_island_nuf, _largest_wall_nuf, _smallest_island_nuf, _smallest_wall_nuf]:
 		nuf.set_cell_string(cell_pos, value)
@@ -142,13 +152,20 @@ func get_clue_cells(group: Array[Vector2i]) -> Array[Vector2i]:
 			clue_cells.append(cell)
 	return clue_cells
 
+func get_neighbor_groups(cell: Vector2i) -> Array[Array]:
+	if not _cached_neighbor_groups_by_cell.has(cell):
+		_cached_neighbor_groups_by_cell[cell] = _smallest_island_nuf.get_neighbor_groups(cell)
+	return _cached_neighbor_groups_by_cell[cell]
+
 
 func get_clued_neighbor_groups(cell: Vector2i) -> Array[Array]:
-	var clued_neighbor_groups: Array[Array] = []
-	for neighboring_group: Array[Vector2i] in _smallest_island_nuf.get_neighboring_groups(cell):
-		if get_clue_value(neighboring_group) > 0:
-			clued_neighbor_groups.append(neighboring_group)
-	return clued_neighbor_groups
+	if not _cached_clued_neighbor_groups_by_cell.has(cell):
+		var clued_neighbor_groups: Array[Array] = []
+		for neighbor_group: Array[Vector2i] in get_neighbor_groups(cell):
+			if get_clue_value(neighbor_group) > 0:
+				clued_neighbor_groups.append(neighbor_group)
+		_cached_clued_neighbor_groups_by_cell[cell] = clued_neighbor_groups
+	return _cached_clued_neighbor_groups_by_cell[cell]
 
 
 func get_clue_value(group: Array[Vector2i]) -> int:
