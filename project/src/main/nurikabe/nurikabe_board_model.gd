@@ -143,6 +143,14 @@ func get_clue_cells(group: Array[Vector2i]) -> Array[Vector2i]:
 	return clue_cells
 
 
+func get_clued_neighbor_groups(cell: Vector2i) -> Array[Array]:
+	var clued_neighbor_groups: Array[Array] = []
+	for neighboring_group: Array[Vector2i] in _smallest_island_nuf.get_neighboring_groups(cell):
+		if get_clue_value(neighboring_group) > 0:
+			clued_neighbor_groups.append(neighboring_group)
+	return clued_neighbor_groups
+
+
 func get_clue_value(group: Array[Vector2i]) -> int:
 	var clue_cells: Array[Vector2i] = get_clue_cells(group)
 	return get_cell_string(clue_cells[0]).to_int() if clue_cells.size() == 1 else 0

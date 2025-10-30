@@ -16,11 +16,13 @@ func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 
 
 func get_groups() -> Array[Array]:
-	for update: Dictionary[String, Variant] in _pending_updates:
-		var new_active: bool = cell_filter.call(update["value"])
-		_guf.set_active(update["cell_pos"], new_active)
-	
+	_apply_pending_updates()
 	return _guf.get_groups()
+
+
+func get_neighboring_groups(cell: Vector2i) -> Array[Array]:
+	_apply_pending_updates()
+	return _guf.get_neighboring_groups(cell)
 
 
 func duplicate() -> NurikabeUnionFind:
@@ -28,3 +30,9 @@ func duplicate() -> NurikabeUnionFind:
 	copy._guf = _guf.duplicate()
 	copy._pending_updates = _pending_updates.duplicate()
 	return copy
+
+
+func _apply_pending_updates() -> void:
+	for update: Dictionary[String, Variant] in _pending_updates:
+		var new_active: bool = cell_filter.call(update["value"])
+		_guf.set_active(update["cell_pos"], new_active)

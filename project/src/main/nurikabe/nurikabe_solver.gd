@@ -647,8 +647,7 @@ func _find_liberties(board: NurikabeBoardModel, group: Array[Vector2i]) -> Array
 
 func _flood_reachable_cells( \
 		board: NurikabeBoardModel,
-		group: Array[Vector2i],
-		clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array]) -> Array[Vector2i]:
+		group: Array[Vector2i]) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 	var queue: Array[Vector2i] = group.duplicate()
 	var min_group_size_by_cell: Dictionary[Vector2i, int] = {}
@@ -669,8 +668,7 @@ func _flood_reachable_cells( \
 				continue
 			if board.get_cell_string(neighbor_cell) not in [CELL_EMPTY, CELL_ISLAND]:
 				continue
-			var clued_neighbor_groups: Array[Array]\
-					= clued_neighbor_groups_by_empty_cell.get(neighbor_cell, [] as Array[Array])
+			var clued_neighbor_groups: Array[Array] = board.get_clued_neighbor_groups(neighbor_cell)
 			if clued_neighbor_groups.size() > 1 \
 					or clued_neighbor_groups.size() == 1 and clued_neighbor_groups[0] != group:
 				continue
@@ -761,10 +759,8 @@ func _unreachable_cells(board: NurikabeBoardModel) -> Array[Vector2i]:
 	for group: Array[Vector2i] in board.find_smallest_island_groups():
 		if board.get_clue_cells(group).size() == 1:
 			clued_groups.append(group)
-	var clued_neighbor_groups_by_empty_cell: Dictionary[Vector2i, Array] \
-		= _neighbor_groups_by_empty_cell(board, clued_groups)
 	for group: Array[Vector2i] in clued_groups:
-		for cell: Vector2i in _flood_reachable_cells(board, group, clued_neighbor_groups_by_empty_cell):
+		for cell: Vector2i in _flood_reachable_cells(board, group):
 			reachable_cells[cell] = true
 	var unreachable_cells: Array[Vector2i] = []
 	for cell: Vector2i in board.cells:

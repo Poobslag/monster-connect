@@ -10,7 +10,7 @@ var _active: Dictionary[Vector2i, bool] = {}
 var _parent: Dictionary[Vector2i, Vector2i] = {}
 var _size: Dictionary[Vector2i, int] = {}
 var _groups_dirty: bool = true
-var _cached_groups: Array[Array] = []
+var _cached_groups_by_root: Dictionary[Vector2i, Array] = {}
 
 func clear() -> void:
 	_active.clear()
@@ -25,60 +25,77 @@ func duplicate() -> GridUnionFind:
 	copy._parent = _parent.duplicate()
 	copy._size = _size.duplicate()
 	copy._groups_dirty = _groups_dirty
-	copy._cached_groups = _cached_groups.duplicate()
+	copy._cached_groups_by_root = _cached_groups_by_root.duplicate()
 	return copy
 
 
-func has_cell(pos: Vector2i) -> bool:
-	return _active.has(pos)
+func has_cell(cell: Vector2i) -> bool:
+	return _active.has(cell)
 
 
-func is_active(pos: Vector2i) -> bool:
-	return _active.get(pos, false)
+func is_active(cell: Vector2i) -> bool:
+	return _active.get(cell, false)
 
 
-func set_active(pos: Vector2i, active: bool) -> void:
-	var was_active: bool = _active.get(pos, false)
+func set_active(cell: Vector2i, active: bool) -> void:
+	var was_active: bool = _active.get(cell, false)
 	if was_active == active:
 		return
 
-	_active[pos] = active
+	_active[cell] = active
 	if active:
-		_add_cell(pos)
+		_add_cell(cell)
 	else:
-		_remove_cell(pos)
+		_remove_cell(cell)
 	_groups_dirty = true
 
 
 func get_groups() -> Array[Array]:
 	if _groups_dirty:
-		var groups_by_cell: Dictionary[Vector2i, Array] = {}
-		for cell: Vector2i in _active:
-			if not _active[cell]:
-				continue
-			var root: Vector2i = _find(cell)
-			if not groups_by_cell.has(root):
-				groups_by_cell[root] = [] as Array[Vector2i]
-			groups_by_cell[root].append(cell)
-		_cached_groups = groups_by_cell.values()
-		_groups_dirty = false
-	
-	return _cached_groups
+		_refresh_cached_groups_by_cell()
+	return _cached_groups_by_root.values()
 
 
-func _get_neighbors(pos: Vector2i) -> Array[Vector2i]:
+func get_neighboring_groups(cell: Vector2i) -> Array[Array]:
+	if _groups_dirty:
+		_refresh_cached_groups_by_cell()
+	var visited: Dictionary[Vector2i, bool] = {}
+	var result: Array[Array] = []
+	for neighbor_cell in _get_neighbors(cell):
+		if not _active.get(neighbor_cell, false):
+			continue
+		var root: Vector2i = _find(neighbor_cell)
+		if not root in visited:
+			visited[root] = true
+			result.append(_cached_groups_by_root[root])
+	return result
+
+
+func _refresh_cached_groups_by_cell() -> void:
+	_cached_groups_by_root = {}
+	for cell: Vector2i in _active:
+		if not _active[cell]:
+			continue
+		var root: Vector2i = _find(cell)
+		if not _cached_groups_by_root.has(root):
+			_cached_groups_by_root[root] = [] as Array[Vector2i]
+		_cached_groups_by_root[root].append(cell)
+	_groups_dirty = false
+
+
+func _get_neighbors(cell: Vector2i) -> Array[Vector2i]:
 	return [
-		pos + Vector2i.LEFT,
-		pos + Vector2i.RIGHT,
-		pos + Vector2i.UP,
-		pos + Vector2i.DOWN,
+		cell + Vector2i.LEFT,
+		cell + Vector2i.RIGHT,
+		cell + Vector2i.UP,
+		cell + Vector2i.DOWN,
 	]
 
 
-func _find(pos: Vector2i) -> Vector2i:
-	if _parent.get(pos) != pos:
-		_parent[pos] = _find(_parent[pos])
-	return _parent[pos]
+func _find(cell: Vector2i) -> Vector2i:
+	if _parent.get(cell) != cell:
+		_parent[cell] = _find(_parent[cell])
+	return _parent[cell]
 
 
 func _union(cell_a: Vector2i, cell_b: Vector2i) -> void:
@@ -96,22 +113,22 @@ func _union(cell_a: Vector2i, cell_b: Vector2i) -> void:
 		_size.erase(root_b)
 
 
-func _add_cell(pos: Vector2i) -> void:
-	_parent[pos] = pos
-	_size[pos] = 1
-	for neighbor_cell: Vector2i in _get_neighbors(pos):
+func _add_cell(cell: Vector2i) -> void:
+	_parent[cell] = cell
+	_size[cell] = 1
+	for neighbor_cell: Vector2i in _get_neighbors(cell):
 		if _active.get(neighbor_cell, false):
-			_union(pos, neighbor_cell)
+			_union(cell, neighbor_cell)
 
 
-func _remove_cell(pos: Vector2i) -> void:
-	_active.erase(pos)
-	_parent.erase(pos)
-	_size.erase(pos)
+func _remove_cell(cell: Vector2i) -> void:
+	_active.erase(cell)
+	_parent.erase(cell)
+	_size.erase(cell)
 
 	# find potentially split neighbors
 	var active_neighbor_cells: Array[Vector2i] = []
-	for neighbor_cell: Vector2i in _get_neighbors(pos):
+	for neighbor_cell: Vector2i in _get_neighbors(cell):
 		if _active.get(neighbor_cell, false):
 			active_neighbor_cells.append(neighbor_cell)
 
