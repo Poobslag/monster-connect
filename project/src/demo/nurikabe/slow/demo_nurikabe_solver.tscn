@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=4 uid="uid://b1bwe434q8o3r"]
+[gd_scene load_steps=4 format=4 uid="uid://cwg0gsspishux"]
 
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_p5ylp"]
 [ext_resource type="Script" uid="uid://cbtm562mid2d8" path="res://src/demo/nurikabe/demo_nurikabe_solver.gd" id="1_yqxth"]
