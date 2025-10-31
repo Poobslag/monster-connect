@@ -46,11 +46,12 @@ func solve() -> void:
 	if not %MessageLabel.text.is_empty():
 		%MessageLabel.text += "--------\n"
 	
-	while changes.size() < 5:
-		solver.do_something()
+	var idle_steps: int = 0
+	while changes.size() < 5 and idle_steps < 10:
+		solver.step()
 		changes = solver.get_changes()
 		if solver.is_queue_empty():
-			break
+			idle_steps += 1
 	
 	if changes.is_empty():
 		%MessageLabel.text += "(no changes)\n"
@@ -61,7 +62,7 @@ func solve() -> void:
 			if solver.board.get_cell_string(cell_pos) != CELL_EMPTY:
 				push_error("Illegal change: %s == %s" % [cell_pos, solver.board.get_cell_string(cell_pos)])
 		
-		for deduction: FastDeduction in solver.fast_pass.deductions:
+		for deduction: FastDeduction in solver.deductions.deductions:
 			%MessageLabel.text += "%s: %s\n" % [deduction.pos, deduction.reason]
 		
 		solver.apply_changes()
