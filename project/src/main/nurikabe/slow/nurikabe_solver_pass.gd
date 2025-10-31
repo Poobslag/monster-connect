@@ -3,7 +3,7 @@ class_name NurikabeSolverPass
 var deductions: Array[NurikabeDeduction] = []
 var deduction_cells: Dictionary[Vector2i, bool]
 
-func add_deduction(pos: Vector2i, value: String, reason: NurikabeUtils.Reason) -> void:
+func add_deduction(pos: Vector2i, value: String, reason: NurikabeSolver.Reason) -> void:
 	deductions.append(NurikabeDeduction.new(pos, value, reason))
 	deduction_cells[pos] = true
 

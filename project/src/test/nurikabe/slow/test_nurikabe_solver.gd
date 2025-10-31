@@ -7,43 +7,43 @@ const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
-const UNKNOWN_REASON: NurikabeUtils.Reason = NurikabeUtils.UNKNOWN_REASON
+const UNKNOWN_REASON: NurikabeSolver.Reason = NurikabeSolver.UNKNOWN_REASON
 
 ## Starting techniques
-const ISLAND_OF_ONE: NurikabeUtils.Reason = NurikabeUtils.ISLAND_OF_ONE
-const ADJACENT_CLUES: NurikabeUtils.Reason = NurikabeUtils.ADJACENT_CLUES
-const DIAGONAL_CLUES: NurikabeUtils.Reason = NurikabeUtils.DIAGONAL_CLUES
+const ISLAND_OF_ONE: NurikabeSolver.Reason = NurikabeSolver.ISLAND_OF_ONE
+const ADJACENT_CLUES: NurikabeSolver.Reason = NurikabeSolver.ADJACENT_CLUES
+const DIAGONAL_CLUES: NurikabeSolver.Reason = NurikabeSolver.DIAGONAL_CLUES
 
 ## Rules
-const JOINED_ISLAND: NurikabeUtils.Reason = NurikabeUtils.JOINED_ISLAND
-const UNCLUED_ISLAND: NurikabeUtils.Reason = NurikabeUtils.UNCLUED_ISLAND
-const ISLAND_TOO_LARGE: NurikabeUtils.Reason = NurikabeUtils.ISLAND_TOO_LARGE
-const ISLAND_TOO_SMALL: NurikabeUtils.Reason = NurikabeUtils.ISLAND_TOO_SMALL
-const POOLS: NurikabeUtils.Reason = NurikabeUtils.POOLS
-const SPLIT_WALLS: NurikabeUtils.Reason = NurikabeUtils.SPLIT_WALLS
+const JOINED_ISLAND: NurikabeSolver.Reason = NurikabeSolver.JOINED_ISLAND
+const UNCLUED_ISLAND: NurikabeSolver.Reason = NurikabeSolver.UNCLUED_ISLAND
+const ISLAND_TOO_LARGE: NurikabeSolver.Reason = NurikabeSolver.ISLAND_TOO_LARGE
+const ISLAND_TOO_SMALL: NurikabeSolver.Reason = NurikabeSolver.ISLAND_TOO_SMALL
+const POOLS: NurikabeSolver.Reason = NurikabeSolver.POOLS
+const SPLIT_WALLS: NurikabeSolver.Reason = NurikabeSolver.SPLIT_WALLS
 
 ## Basic techniques
-const CORNER_ISLAND: NurikabeUtils.Reason = NurikabeUtils.CORNER_ISLAND
-const ISLAND_BUBBLE: NurikabeUtils.Reason = NurikabeUtils.ISLAND_BUBBLE
-const ISLAND_BUFFER: NurikabeUtils.Reason = NurikabeUtils.ISLAND_BUFFER
-const ISLAND_CHOKEPOINT: NurikabeUtils.Reason = NurikabeUtils.ISLAND_CHOKEPOINT
-const ISLAND_CONNECTOR: NurikabeUtils.Reason = NurikabeUtils.ISLAND_CONNECTOR
-const ISLAND_DIVIDER: NurikabeUtils.Reason = NurikabeUtils.ISLAND_DIVIDER
-const ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.ISLAND_EXPANSION
-const ISLAND_MOAT: NurikabeUtils.Reason = NurikabeUtils.ISLAND_MOAT
-const POOL_TRIPLET: NurikabeUtils.Reason = NurikabeUtils.POOL_TRIPLET
-const UNREACHABLE_SQUARE: NurikabeUtils.Reason = NurikabeUtils.UNREACHABLE_SQUARE
-const WALL_BUBBLE: NurikabeUtils.Reason = NurikabeUtils.WALL_BUBBLE
-const WALL_CONNECTOR: NurikabeUtils.Reason = NurikabeUtils.WALL_CONNECTOR
-const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
+const CORNER_ISLAND: NurikabeSolver.Reason = NurikabeSolver.CORNER_ISLAND
+const ISLAND_BUBBLE: NurikabeSolver.Reason = NurikabeSolver.ISLAND_BUBBLE
+const ISLAND_BUFFER: NurikabeSolver.Reason = NurikabeSolver.ISLAND_BUFFER
+const ISLAND_CHOKEPOINT: NurikabeSolver.Reason = NurikabeSolver.ISLAND_CHOKEPOINT
+const ISLAND_CONNECTOR: NurikabeSolver.Reason = NurikabeSolver.ISLAND_CONNECTOR
+const ISLAND_DIVIDER: NurikabeSolver.Reason = NurikabeSolver.ISLAND_DIVIDER
+const ISLAND_EXPANSION: NurikabeSolver.Reason = NurikabeSolver.ISLAND_EXPANSION
+const ISLAND_MOAT: NurikabeSolver.Reason = NurikabeSolver.ISLAND_MOAT
+const POOL_TRIPLET: NurikabeSolver.Reason = NurikabeSolver.POOL_TRIPLET
+const UNREACHABLE_SQUARE: NurikabeSolver.Reason = NurikabeSolver.UNREACHABLE_SQUARE
+const WALL_BUBBLE: NurikabeSolver.Reason = NurikabeSolver.WALL_BUBBLE
+const WALL_CONNECTOR: NurikabeSolver.Reason = NurikabeSolver.WALL_CONNECTOR
+const WALL_EXPANSION: NurikabeSolver.Reason = NurikabeSolver.WALL_EXPANSION
 
 ## Advanced techniques
-const FORBIDDEN_COURTYARD: NurikabeUtils.Reason = NurikabeUtils.FORBIDDEN_COURTYARD
-const LAST_LIGHT: NurikabeUtils.Reason = NurikabeUtils.LAST_LIGHT
-const DEAD_END_WALL: NurikabeUtils.Reason = NurikabeUtils.DEAD_END_WALL
-const WALL_STRANGLE: NurikabeUtils.Reason = NurikabeUtils.WALL_STRANGLE
+const FORBIDDEN_COURTYARD: NurikabeSolver.Reason = NurikabeSolver.FORBIDDEN_COURTYARD
+const LAST_LIGHT: NurikabeSolver.Reason = NurikabeSolver.LAST_LIGHT
+const DEAD_END_WALL: NurikabeSolver.Reason = NurikabeSolver.DEAD_END_WALL
+const WALL_STRANGLE: NurikabeSolver.Reason = NurikabeSolver.WALL_STRANGLE
 
-const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
+const BIFURCATION: NurikabeSolver.Reason = NurikabeSolver.BIFURCATION
 
 var solver: NurikabeSolver = NurikabeSolver.new()
 var grid: Array[String] = []

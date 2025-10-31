@@ -159,7 +159,7 @@ func run_techniques(
 		_record_deduction_result(callable, start_ticks_usec, deduction_count)
 	var deduction_positions_by_reason: Dictionary[String, Array] = {}
 	for deduction: NurikabeDeduction in solver.solver_pass.deductions:
-		var reason_name: String = Utils.enum_to_snake_case(NurikabeUtils.Reason, deduction["reason"])
+		var reason_name: String = Utils.enum_to_snake_case(NurikabeSolver.Reason, deduction["reason"])
 		if not deduction_positions_by_reason.has(reason_name):
 			deduction_positions_by_reason[reason_name] = []
 		deduction_positions_by_reason[reason_name].append(deduction["pos"])

@@ -1,47 +1,87 @@
 class_name NurikabeSolver
 
+enum Reason {
+	UNKNOWN_REASON,
+	
+	# starting techniques
+	ISLAND_OF_ONE, # surround single-square island with walls
+	ADJACENT_CLUES, # two clues separated by one square horizontally/vertically
+	DIAGONAL_CLUES, # two clues diagonally adjacent
+	
+	# rules
+	JOINED_ISLAND, # island with 2 or more clues
+	UNCLUED_ISLAND, # island with 0 clues
+	ISLAND_TOO_LARGE, # large island with a small clue
+	ISLAND_TOO_SMALL, # small island with a large clue
+	POOLS, # 2x2 grid of wall cells
+	SPLIT_WALLS, # wall cells cannot be joined
+	
+	# basic techniques
+	CORNER_ISLAND, # add a wall diagonally from an island with only two directions to expand
+	ISLAND_BUBBLE, # fill in a square surrounded by islands
+	ISLAND_BUFFER, # add a wall to preserve space for an island to grow
+	ISLAND_CHOKEPOINT, # expand an island through a chokepoint
+	ISLAND_CONNECTOR, # connect a clueless island to a clued island
+	ISLAND_DIVIDER, # fill in a square to keep two islands apart
+	ISLAND_EXPANSION, # expand an island in the only possible direction
+	ISLAND_MOAT, # seal a completed island with walls
+	POOL_TRIPLET, # fill in the fourth cell to prevent a 2x2 grid of wall cells
+	UNREACHABLE_SQUARE, # fill in a square which no clue can reach
+	WALL_BUBBLE, # fill in a square surrounded by walls
+	WALL_CONNECTOR, # connect two walls through a chokepoint
+	WALL_EXPANSION, # expand a wall in the only possible direction
+	
+	# advanced techniques
+	FORBIDDEN_COURTYARD, # extending an island will create a 2x2 grid of unreachable cells
+	LAST_LIGHT, # creating a wall will create a 2x2 grid of unreachable cells
+	DEAD_END_WALL, # creating an island will create a split wall
+	WALL_STRANGLE, # extending an island will create a split wall
+	
+	BIFURCATION, # fill in a square if the opposite assumption leads to a contradiction
+}
+
 const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
 const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
-const UNKNOWN_REASON: NurikabeUtils.Reason = NurikabeUtils.UNKNOWN_REASON
+const UNKNOWN_REASON: Reason = Reason.UNKNOWN_REASON
 
 ## Starting techniques
-const ISLAND_OF_ONE: NurikabeUtils.Reason = NurikabeUtils.ISLAND_OF_ONE
-const ADJACENT_CLUES: NurikabeUtils.Reason = NurikabeUtils.ADJACENT_CLUES
-const DIAGONAL_CLUES: NurikabeUtils.Reason = NurikabeUtils.DIAGONAL_CLUES
+const ISLAND_OF_ONE: Reason = Reason.ISLAND_OF_ONE
+const ADJACENT_CLUES: Reason = Reason.ADJACENT_CLUES
+const DIAGONAL_CLUES: Reason = Reason.DIAGONAL_CLUES
 
 ## Rules
-const JOINED_ISLAND: NurikabeUtils.Reason = NurikabeUtils.JOINED_ISLAND
-const UNCLUED_ISLAND: NurikabeUtils.Reason = NurikabeUtils.UNCLUED_ISLAND
-const ISLAND_TOO_LARGE: NurikabeUtils.Reason = NurikabeUtils.ISLAND_TOO_LARGE
-const ISLAND_TOO_SMALL: NurikabeUtils.Reason = NurikabeUtils.ISLAND_TOO_SMALL
-const POOLS: NurikabeUtils.Reason = NurikabeUtils.POOLS
-const SPLIT_WALLS: NurikabeUtils.Reason = NurikabeUtils.SPLIT_WALLS
+const JOINED_ISLAND: Reason = Reason.JOINED_ISLAND
+const UNCLUED_ISLAND: Reason = Reason.UNCLUED_ISLAND
+const ISLAND_TOO_LARGE: Reason = Reason.ISLAND_TOO_LARGE
+const ISLAND_TOO_SMALL: Reason = Reason.ISLAND_TOO_SMALL
+const POOLS: Reason = Reason.POOLS
+const SPLIT_WALLS: Reason = Reason.SPLIT_WALLS
 
 ## Basic techniques
-const CORNER_ISLAND: NurikabeUtils.Reason = NurikabeUtils.CORNER_ISLAND
-const ISLAND_BUBBLE: NurikabeUtils.Reason = NurikabeUtils.ISLAND_BUBBLE
-const ISLAND_BUFFER: NurikabeUtils.Reason = NurikabeUtils.ISLAND_BUFFER
-const ISLAND_CHOKEPOINT: NurikabeUtils.Reason = NurikabeUtils.ISLAND_CHOKEPOINT
-const ISLAND_CONNECTOR: NurikabeUtils.Reason = NurikabeUtils.ISLAND_CONNECTOR
-const ISLAND_DIVIDER: NurikabeUtils.Reason = NurikabeUtils.ISLAND_DIVIDER
-const ISLAND_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.ISLAND_EXPANSION
-const ISLAND_MOAT: NurikabeUtils.Reason = NurikabeUtils.ISLAND_MOAT
-const POOL_TRIPLET: NurikabeUtils.Reason = NurikabeUtils.POOL_TRIPLET
-const UNREACHABLE_SQUARE: NurikabeUtils.Reason = NurikabeUtils.UNREACHABLE_SQUARE
-const WALL_BUBBLE: NurikabeUtils.Reason = NurikabeUtils.WALL_BUBBLE
-const WALL_CONNECTOR: NurikabeUtils.Reason = NurikabeUtils.WALL_CONNECTOR
-const WALL_EXPANSION: NurikabeUtils.Reason = NurikabeUtils.WALL_EXPANSION
+const CORNER_ISLAND: Reason = Reason.CORNER_ISLAND
+const ISLAND_BUBBLE: Reason = Reason.ISLAND_BUBBLE
+const ISLAND_BUFFER: Reason = Reason.ISLAND_BUFFER
+const ISLAND_CHOKEPOINT: Reason = Reason.ISLAND_CHOKEPOINT
+const ISLAND_CONNECTOR: Reason = Reason.ISLAND_CONNECTOR
+const ISLAND_DIVIDER: Reason = Reason.ISLAND_DIVIDER
+const ISLAND_EXPANSION: Reason = Reason.ISLAND_EXPANSION
+const ISLAND_MOAT: Reason = Reason.ISLAND_MOAT
+const POOL_TRIPLET: Reason = Reason.POOL_TRIPLET
+const UNREACHABLE_SQUARE: Reason = Reason.UNREACHABLE_SQUARE
+const WALL_BUBBLE: Reason = Reason.WALL_BUBBLE
+const WALL_CONNECTOR: Reason = Reason.WALL_CONNECTOR
+const WALL_EXPANSION: Reason = Reason.WALL_EXPANSION
 
 ## Advanced techniques
-const FORBIDDEN_COURTYARD: NurikabeUtils.Reason = NurikabeUtils.FORBIDDEN_COURTYARD
-const LAST_LIGHT: NurikabeUtils.Reason = NurikabeUtils.LAST_LIGHT
-const DEAD_END_WALL: NurikabeUtils.Reason = NurikabeUtils.DEAD_END_WALL
-const WALL_STRANGLE: NurikabeUtils.Reason = NurikabeUtils.WALL_STRANGLE
+const FORBIDDEN_COURTYARD: Reason = Reason.FORBIDDEN_COURTYARD
+const LAST_LIGHT: Reason = Reason.LAST_LIGHT
+const DEAD_END_WALL: Reason = Reason.DEAD_END_WALL
+const WALL_STRANGLE: Reason = Reason.WALL_STRANGLE
 
-const BIFURCATION: NurikabeUtils.Reason = NurikabeUtils.BIFURCATION
+const BIFURCATION: Reason = Reason.BIFURCATION
 
 var starting_techniques: Array[Callable] = [
 	deduce_island_of_one,
@@ -205,7 +245,7 @@ func deduce_island_expansion(board: NurikabeBoardModel) -> void:
 		trial.set_cell_string(cell, CELL_WALL)
 		var trial_uncompletable_island_count: int = get_uncompletable_island_count(trial)
 		if trial_uncompletable_island_count > uncompletable_island_count:
-			var reason: NurikabeUtils.Reason = ISLAND_CHOKEPOINT
+			var reason: Reason = ISLAND_CHOKEPOINT
 			var island_mask: int = _neighbor_mask(board, cell, func(neighbor_value: String) -> bool:
 				return neighbor_value == CELL_ISLAND or neighbor_value.is_valid_int())
 			if island_mask != 0:
@@ -256,7 +296,7 @@ func deduce_wall_expansion(board: NurikabeBoardModel) -> void:
 		trial.set_cell_string(cell, CELL_ISLAND)
 		var trial_wall_count: int = _largest_non_empty_wall_groups(trial).size()
 		if trial_wall_count > wall_count:
-			var reason: NurikabeUtils.Reason = WALL_CONNECTOR
+			var reason: Reason = WALL_CONNECTOR
 			if wall_mask in [0, 1, 2, 4, 8]:
 				reason = WALL_EXPANSION
 			solver_pass.add_deduction(cell, CELL_WALL, reason)
