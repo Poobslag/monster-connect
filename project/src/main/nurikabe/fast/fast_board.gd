@@ -40,6 +40,25 @@ func get_filled_cell_count() -> int:
 	return _cache[cache_key]
 
 
+func get_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
+	var cache_key: String = "liberties %s" % ["-" if group.is_empty() else str(group[0])]
+	if not _cache.has(cache_key):
+		var group_cell_set: Dictionary[Vector2i, bool] = {}
+		var liberty_cell_set: Dictionary[Vector2i, bool] = {}
+		for group_cell: Vector2i in group:
+			group_cell_set[group_cell] = true
+		for group_cell: Vector2i in group:
+			for neighbor_cell: Vector2i in get_neighbors(group_cell):
+				if neighbor_cell in group_cell_set:
+					continue
+				if get_cell_string(neighbor_cell) != CELL_EMPTY:
+					continue
+				liberty_cell_set[neighbor_cell] = true
+		var result: Array[Vector2i] = liberty_cell_set.keys()
+		_cache[cache_key] = result
+	return _cache[cache_key]
+
+
 func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
 	return [cell_pos + Vector2i.UP, cell_pos + Vector2i.DOWN, cell_pos + Vector2i.LEFT, cell_pos + Vector2i.RIGHT]
 
@@ -47,6 +66,14 @@ func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 	_cache.clear()
 	cells[cell_pos] = value
+
+
+func get_smallest_island_groups() -> Array[Array]:
+	var cache_key: String = "smallest_island_groups"
+	if not _cache.has(cache_key):
+		_cache[cache_key] = _find_groups(func(value: String) -> bool:
+			return value.is_valid_int() or value == CELL_ISLAND)
+	return _cache[cache_key]
 
 
 ## Sets the specified cells on the model.[br]

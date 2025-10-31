@@ -38,6 +38,9 @@ func schedule_tasks() -> void:
 	
 	if _task_queue.is_empty() and not _task_history.has("enqueue_adjacent_clues"):
 		schedule_task(enqueue_adjacent_clues.bind())
+	
+	if _task_queue.is_empty() and not _task_history.has("enqueue_clued_islands"):
+		schedule_task(enqueue_clued_islands.bind())
 
 
 func schedule_task(callable: Callable) -> void:
@@ -98,10 +101,44 @@ func deduce_island_of_one(clue_cell: Vector2i) -> void:
 			"island_of_one %s" % [clue_cell])
 
 
+func deduce_clued_island(island_group: Array[Vector2i]) -> void:
+	var clue_value: int = board.get_clue_value(island_group)
+	if clue_value == 0:
+		# unclued group
+		return
+	var liberties: Array[Vector2i] = board.get_liberties(island_group)
+	if clue_value == island_group.size():
+		for liberty: Vector2i in liberties:
+			if not _can_deduce(board, liberty):
+				continue
+			deductions.add_deduction(liberty, CELL_WALL, "island_moat %s" % [island_group[0]])
+	elif liberties.size() == 1 and clue_value == island_group.size() + 1:
+		if _can_deduce(board, liberties[0]):
+			deductions.add_deduction(liberties[0], CELL_ISLAND, "island_expansion %s" % [island_group[0]])
+		for new_wall_cell: Vector2i in board.get_neighbors(liberties[0]):
+			if _can_deduce(board, new_wall_cell):
+				deductions.add_deduction(new_wall_cell, CELL_WALL, "island_moat %s" % [island_group[0]])
+	elif liberties.size() == 1 and clue_value > island_group.size():
+		if _can_deduce(board, liberties[0]):
+			deductions.add_deduction(liberties[0], CELL_ISLAND, "island_expansion %s" % [island_group[0]])
+
+
 func enqueue_adjacent_clues() -> void:
 	for cell: Vector2i in board.cells:
 		if board.get_cell_string(cell).is_valid_int():
 			_task_queue.append(deduce_adjacent_clues.bind(cell))
+
+
+func enqueue_clued_islands() -> void:
+	var smallest_island_groups: Array[Array] = board.get_smallest_island_groups()
+	for island_group: Array[Vector2i] in smallest_island_groups:
+		var clue_value: int = board.get_clue_value(island_group)
+		if clue_value == 0:
+			# unclued island
+			continue
+		var liberties: Array[Vector2i] = board.get_liberties(island_group)
+		if liberties.size() > 0:
+			_task_queue.append(deduce_clued_island.bind(island_group))
 
 
 func enqueue_islands_of_one() -> void:
