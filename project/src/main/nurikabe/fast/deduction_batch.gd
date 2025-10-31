@@ -1,11 +1,11 @@
-class_name FastPass
+class_name DeductionBatch
 
 var deductions: Array[FastDeduction] = []
-var deduction_cells: Dictionary[Vector2i, bool]
+var cells: Dictionary[Vector2i, bool]
 
 func add_deduction(pos: Vector2i, value: String, reason: String) -> void:
 	deductions.append(FastDeduction.new(pos, value, reason))
-	deduction_cells[pos] = true
+	cells[pos] = true
 
 
 func get_changes() -> Array[Dictionary]:
@@ -17,4 +17,4 @@ func get_changes() -> Array[Dictionary]:
 
 func clear() -> void:
 	deductions.clear()
-	deduction_cells.clear()
+	cells.clear()
