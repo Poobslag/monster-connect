@@ -3,6 +3,7 @@ class_name GroupMap
 var cells: Array[Vector2i]
 var groups_by_cell: Dictionary[Vector2i, Array]
 var groups: Array[Array]
+var roots_by_cell: Dictionary[Vector2i, Vector2i]
 
 func _init(init_cells: Array[Vector2i]) -> void:
 	cells = init_cells
@@ -10,6 +11,7 @@ func _init(init_cells: Array[Vector2i]) -> void:
 
 
 func _build() -> void:
+	roots_by_cell = {}
 	groups_by_cell = {}
 	groups = []
 	
@@ -29,6 +31,7 @@ func _build() -> void:
 			var cell: Vector2i = queue.pop_front()
 			group.append(cell)
 			groups_by_cell[cell] = group
+			roots_by_cell[cell] = group.front()
 			
 			for neighbor_cell: Vector2i in [
 				cell + Vector2i.UP, cell + Vector2i.DOWN,
