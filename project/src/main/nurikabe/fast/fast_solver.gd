@@ -108,7 +108,7 @@ func deduce_island_of_one(clue_cell: Vector2i) -> void:
 
 
 func deduce_clued_island(island_group: Array[Vector2i]) -> void:
-	var clue_value: int = board.get_clue_value_for_group(island_group)
+	var clue_value: int = board.get_clue_for_group(island_group)
 	if clue_value == 0:
 		# unclued group
 		return
@@ -131,8 +131,8 @@ func deduce_clued_island(island_group: Array[Vector2i]) -> void:
 
 func deduce_island_divider(island_group: Array[Vector2i]) -> void:
 	var liberties: Array[Vector2i] = board.get_liberties(island_group)
-	var smallest_island_group_roots_by_cell: Dictionary[Vector2i, Vector2i] \
-			= board.get_smallest_island_group_roots_by_cell()
+	var island_roots_by_cell: Dictionary[Vector2i, Vector2i] \
+			= board.get_island_roots_by_cell()
 	for liberty: Vector2i in liberties:
 		if not _can_deduce(board, liberty):
 			continue
@@ -140,7 +140,7 @@ func deduce_island_divider(island_group: Array[Vector2i]) -> void:
 		for neighbor_cell: Vector2i in board.get_neighbors(liberty):
 			if board.get_clue_value_for_cell(neighbor_cell) == 0:
 				continue
-			var neighbor_root: Vector2i = smallest_island_group_roots_by_cell[neighbor_cell]
+			var neighbor_root: Vector2i = island_roots_by_cell[neighbor_cell]
 			clued_neighbor_roots[neighbor_root] = true
 		if clued_neighbor_roots.size() >= 2:
 			deductions.add_deduction(liberty, CELL_WALL, "island_divider %s %s"
@@ -149,7 +149,7 @@ func deduce_island_divider(island_group: Array[Vector2i]) -> void:
 
 func deduce_wall(wall_group: Array[Vector2i]) -> void:
 	var liberties: Array[Vector2i] = board.get_liberties(wall_group)
-	if liberties.size() == 1 and board.get_smallest_wall_groups().size() >= 2:
+	if liberties.size() == 1 and board.get_walls().size() >= 2:
 		deductions.add_deduction(liberties[0], CELL_WALL, "wall_expansion %s" % [wall_group.front()])
 
 
@@ -160,9 +160,9 @@ func enqueue_adjacent_clues() -> void:
 
 
 func enqueue_clued_islands() -> void:
-	var smallest_island_groups: Array[Array] = board.get_smallest_island_groups()
-	for island_group: Array[Vector2i] in smallest_island_groups:
-		var clue_value: int = board.get_clue_value_for_group(island_group)
+	var islands: Array[Array] = board.get_islands()
+	for island_group: Array[Vector2i] in islands:
+		var clue_value: int = board.get_clue_for_group(island_group)
 		if clue_value == 0:
 			# unclued island
 			continue
@@ -172,9 +172,9 @@ func enqueue_clued_islands() -> void:
 
 
 func enqueue_island_dividers() -> void:
-	var smallest_island_groups: Array[Array] = board.get_smallest_island_groups()
-	for island_group: Array[Vector2i] in smallest_island_groups:
-		var clue_value: int = board.get_clue_value_for_group(island_group)
+	var islands: Array[Array] = board.get_islands()
+	for island_group: Array[Vector2i] in islands:
+		var clue_value: int = board.get_clue_for_group(island_group)
 		if clue_value == 0:
 			# unclued island
 			continue
@@ -190,8 +190,8 @@ func enqueue_islands_of_one() -> void:
 
 
 func enqueue_wall_expansions() -> void:
-	var smallest_wall_groups: Array[Array] = board.get_smallest_wall_groups()
-	for wall_group: Array[Vector2i] in smallest_wall_groups:
+	var walls: Array[Array] = board.get_walls()
+	for wall_group: Array[Vector2i] in walls:
 		var liberties: Array[Vector2i] = board.get_liberties(wall_group)
 		if liberties.size() > 0:
 			_task_queue.append(deduce_wall.bind(wall_group))
