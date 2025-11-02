@@ -21,10 +21,15 @@ func get_cell_string(cell_pos: Vector2i) -> String:
 ## Returns the clue value for the specified group of cells.[br]
 ## [br]
 ## If zero clues or multiple clues are present, returns 0.
-func get_clue_value(group: Array[Vector2i]) -> int:
+func get_clue_value_for_group(group: Array[Vector2i]) -> int:
 	return _get_cached(
-		"clue_value %s" % ["-" if group.is_empty() else str(group[0])],
+		"clue_value_for_group %s" % ["-" if group.is_empty() else str(group[0])],
 		_build_clue_value.bind(group))
+
+
+func get_clue_value_for_cell(cell: Vector2i) -> int:
+	var group: Array[Vector2i] = get_smallest_island_group_map().groups_by_cell.get(cell, [] as Array[Vector2i])
+	return get_clue_value_for_group(group) if group else 0
 
 
 func get_filled_cell_count() -> int:
@@ -59,10 +64,33 @@ func get_smallest_island_groups_by_cell() -> Dictionary[Vector2i, Array]:
 	return get_smallest_island_group_map().groups_by_cell
 
 
+func get_smallest_island_group_roots_by_cell() -> Dictionary[Vector2i, Vector2i]:
+	return get_smallest_island_group_map().roots_by_cell
+
+
 func get_smallest_island_group_map() -> FastGroupMap:
 	return _get_cached(
 		"smallest_island_group_map",
 		_build_smallest_island_group_map
+	)
+
+
+func get_smallest_wall_groups() -> Array[Array]:
+	return get_smallest_wall_group_map().groups
+
+
+func get_smallest_wall_groups_by_cell() -> Dictionary[Vector2i, Array]:
+	return get_smallest_wall_group_map().groups_by_cell
+
+
+func get_smallest_wall_group_roots_by_cell() -> Dictionary[Vector2i, Vector2i]:
+	return get_smallest_wall_group_map().roots_by_cell
+
+
+func get_smallest_wall_group_map() -> FastGroupMap:
+	return _get_cached(
+		"smallest_wall_group_map",
+		_build_smallest_wall_group_map
 	)
 
 
@@ -127,6 +155,11 @@ func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
 func _build_smallest_island_group_map() -> FastGroupMap:
 	return FastGroupMap.new(self, func(value: String) -> bool:
 		return value.is_valid_int() or value == CELL_ISLAND)
+
+
+func _build_smallest_wall_group_map() -> FastGroupMap:
+	return FastGroupMap.new(self, func(value: String) -> bool:
+		return value == CELL_WALL)
 
 
 func _get_cached(cache_key: String, builder: Callable) -> Variant:

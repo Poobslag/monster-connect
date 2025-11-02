@@ -12,6 +12,12 @@ var groups_by_cell: Dictionary[Vector2i, Array]:
 			_build_group_map()
 		return _group_map.groups_by_cell
 
+var roots_by_cell: Dictionary[Vector2i, Vector2i]:
+	get():
+		if _group_map == null:
+			_build_group_map()
+		return _group_map.roots_by_cell
+
 var _board: FastBoard
 var _cell_filter: Callable
 var _group_map: GroupMap
