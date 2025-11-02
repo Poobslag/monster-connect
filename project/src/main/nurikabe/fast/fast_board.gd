@@ -52,9 +52,18 @@ func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 
 
 func get_smallest_island_groups() -> Array[Array]:
+	return get_smallest_island_group_map().groups
+
+
+func get_smallest_island_groups_by_cell() -> Dictionary[Vector2i, Array]:
+	return get_smallest_island_group_map().groups_by_cell
+
+
+func get_smallest_island_group_map() -> FastGroupMap:
 	return _get_cached(
-		"smallest_island_groups",
-		_build_smallest_island_groups)
+		"smallest_island_group_map",
+		_build_smallest_island_group_map
+	)
 
 
 ## Sets the specified cells on the model.[br]
@@ -115,40 +124,9 @@ func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
 	return liberty_cell_set.keys()
 
 
-func _build_smallest_island_groups() -> Array[Array]:
-	return _find_groups(func(value: String) -> bool:
+func _build_smallest_island_group_map() -> FastGroupMap:
+	return FastGroupMap.new(self, func(value: String) -> bool:
 		return value.is_valid_int() or value == CELL_ISLAND)
-
-
-func _find_groups(filter_func: Callable) -> Array[Array]:
-	var remaining_cells: Dictionary[Vector2i, bool] = {}
-	for next_cell: Vector2i in cells:
-		if filter_func.call(cells[next_cell]):
-			remaining_cells[next_cell] = true
-	
-	var groups: Array[Array] = []
-	var queue: Array[Vector2i] = []
-	while not remaining_cells.is_empty() or not queue.is_empty():
-		var next_cell: Vector2i
-		if queue.is_empty():
-			# start a new group
-			next_cell = remaining_cells.keys().front()
-			remaining_cells.erase(next_cell)
-			groups.append([] as Array[Vector2i])
-		else:
-			# pop the next cell from the queue
-			next_cell = queue.pop_front()
-		
-		# append the next cell to this group
-		groups.back().append(next_cell)
-		
-		# recurse to neighboring cells
-		for neighbor_cell: Vector2i in get_neighbors(next_cell):
-			if neighbor_cell in remaining_cells:
-				queue.push_back(neighbor_cell)
-				remaining_cells.erase(neighbor_cell)
-	
-	return groups
 
 
 func _get_cached(cache_key: String, builder: Callable) -> Variant:
