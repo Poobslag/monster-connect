@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=4 uid="uid://cwg0gsspishux"]
 
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_p5ylp"]
-[ext_resource type="Script" uid="uid://cbtm562mid2d8" path="res://src/demo/nurikabe/demo_nurikabe_solver.gd" id="1_yqxth"]
+[ext_resource type="Script" uid="uid://cbtm562mid2d8" path="res://src/demo/nurikabe/slow/demo_nurikabe_solver.gd" id="1_yqxth"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="3_8djyv"]
 
 [node name="Demo" type="Node"]
@@ -35,9 +35,9 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 6
 size_flags_vertical = 4
-grid_string = " 5               2  
+grid_string = "   5             2  
            3        
- 4               2  
+   4             2  
                    4
  2     1            
    3     4   2      
@@ -52,10 +52,10 @@ tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAACAAAAAAAAAAA
 
 [node name="TileMapClue" parent="HBoxContainer/GameBoardHolder/GameBoard" index="3"]
 clues_by_cell = Dictionary[Vector2i, int]({
-Vector2i(0, 0): 5,
-Vector2i(0, 2): 4,
 Vector2i(0, 4): 2,
 Vector2i(0, 8): 3,
+Vector2i(1, 0): 5,
+Vector2i(1, 2): 4,
 Vector2i(1, 5): 3,
 Vector2i(3, 4): 1,
 Vector2i(4, 5): 4,
