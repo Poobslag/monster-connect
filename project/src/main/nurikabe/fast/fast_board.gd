@@ -1,5 +1,13 @@
 class_name FastBoard
 
+enum ClueReachability {
+	UNKNOWN,
+	REACHABLE,
+	UNREACHABLE,
+	IMPOSSIBLE,
+	CONFLICT,
+}
+
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
 const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
@@ -29,6 +37,14 @@ func get_clue_for_group(group: Array[Vector2i]) -> int:
 		_build_clue_value.bind(group))
 
 
+func get_clue_reachability(cell: Vector2i) -> ClueReachability:
+	return get_clue_reachability_by_cell().get(cell, ClueReachability.UNKNOWN)
+
+
+func get_nearest_clue_cell(cell: Vector2i) -> Vector2i:
+	return get_nearest_clue_cell_by_cell().get(cell, POS_NOT_FOUND)
+
+
 func get_clue_value_for_cell(cell: Vector2i) -> int:
 	var group: Array[Vector2i] = get_island_group_map().groups_by_cell.get(cell, [] as Array[Vector2i])
 	return get_clue_for_group(group) if group else 0
@@ -51,6 +67,24 @@ func get_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
 
 func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
 	return [cell_pos + Vector2i.UP, cell_pos + Vector2i.DOWN, cell_pos + Vector2i.LEFT, cell_pos + Vector2i.RIGHT]
+
+
+func get_clue_reachability_by_cell() -> Dictionary[Vector2i, ClueReachability]:
+	return _get_cached(
+		"clue_reachability_by_cell",
+		_build_clue_reachability_by_cell)
+
+
+func get_nearest_clue_cell_by_cell() -> Dictionary[Vector2i, Vector2i]:
+	return _get_cached(
+		"nearest_clue_cell_by_cell",
+		_build_nearest_clue_cell_by_cell)
+
+
+func get_reachability_map() -> Dictionary[Vector2i, Dictionary]:
+	return _get_cached(
+		"reachability_map",
+		_build_reachability_map)
 
 
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
@@ -141,6 +175,93 @@ func print_cells() -> void:
 		for x: int in range(rect.position.x, rect.end.x + 1):
 			line += get_cell_string(Vector2i(x, y)).lpad(2, " ")
 		print(line)
+
+
+func _build_clue_reachability() -> Dictionary[Vector2i, Dictionary]:
+	var reachability_map: Dictionary[Vector2i, Dictionary] = get_reachability_map()
+	return reachability_map
+
+
+func _build_clue_reachability_by_cell() -> Dictionary[Vector2i, ClueReachability]:
+	var reachability_by_cell: Dictionary[Vector2i, ClueReachability] = {}
+	var reachability_map: Dictionary[Vector2i, Dictionary] = get_reachability_map()
+	for cell: Vector2i in cells:
+		var cell_info: Dictionary[String, Variant] = reachability_map.get(cell, {} as Dictionary[String, Variant])
+		var reachability: ClueReachability = ClueReachability.UNKNOWN
+		if cell_info.is_empty():
+			reachability = ClueReachability.IMPOSSIBLE
+		elif cell_info["adjacent_clues"] >= 2:
+			reachability = ClueReachability.CONFLICT
+		elif cell_info["cell_info"] >= 1:
+			reachability = ClueReachability.REACHABLE
+		else:
+			reachability = ClueReachability.UNREACHABLE
+		reachability_by_cell[cell] = reachability
+	return reachability_by_cell
+
+
+func _build_nearest_clue_cell_by_cell() -> Dictionary[Vector2i, Vector2i]:
+	var nearest_clue_cell_by_cell: Dictionary[Vector2i, Vector2i] = {}
+	var reachability_map: Dictionary[Vector2i, Dictionary] = get_reachability_map()
+	for cell: Vector2i in reachability_map:
+		nearest_clue_cell_by_cell[cell] = reachability_map[cell]["nearest_clue_root"]
+	return nearest_clue_cell_by_cell
+
+
+func _build_reachability_map() -> Dictionary[Vector2i, Dictionary]:
+	var islands: Array[Array] = get_islands()
+	var reachability_map: Dictionary[Vector2i, Dictionary] = {}
+	
+	var visitable: Dictionary[Vector2i, bool] = {}
+	for cell: Vector2i in cells:
+		if get_cell_string(cell) in [CELL_ISLAND, CELL_EMPTY] \
+				and get_clue_value_for_cell(cell) == 0:
+			visitable[cell] = true
+	
+	var queue: Array[Vector2i] = []
+	for island: Array[Vector2i] in islands:
+		var clue_value: int = get_clue_for_group(island)
+		if clue_value == 0:
+			continue
+		var cell_info: int = clue_value - island.size()
+		for liberty: Vector2i in get_liberties(island):
+			if reachability_map.has(liberty):
+				# cell is adjacent to two or more islands, so no islands can reach it
+				reachability_map[liberty]["cell_info"] = 0
+				reachability_map[liberty]["adjacent_clues"] += 1
+				continue
+			
+			reachability_map[liberty] = {
+				"cell_info": cell_info,
+				"nearest_clue_root": island.front(),
+				"adjacent_clues": 1,
+			} as Dictionary[String, Variant]
+			queue.append(liberty)
+	
+	while not queue.is_empty():
+		var cell: Vector2i = queue.pop_front()
+		var cell_info: Dictionary[String, Variant] = reachability_map[cell]
+		
+		for neighbor: Vector2i in get_neighbors(cell):
+			if not visitable.has(neighbor):
+				continue
+			if reachability_map.has(neighbor):
+				var neighbor_cell_info: Dictionary[String, Variant] = reachability_map[neighbor]
+				if neighbor_cell_info["adjacent_clues"] >= 1:
+					# cell is adjacent to an island, so only one island can reach it
+					continue
+				if neighbor_cell_info["cell_info"] >= cell_info["cell_info"] - 1:
+					# cell is closer to another island
+					continue
+			
+			reachability_map[neighbor] = {
+				"cell_info": cell_info["cell_info"] - 1,
+				"nearest_clue_root": cell_info["nearest_clue_root"],
+				"adjacent_clues": 0,
+			} as Dictionary[String, Variant]
+			queue.append(neighbor)
+	
+	return reachability_map
 
 
 func _build_clue_value(group: Array[Vector2i]) -> int:

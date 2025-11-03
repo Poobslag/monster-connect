@@ -62,6 +62,9 @@ func schedule_tasks() -> void:
 	
 	if get_last_run(enqueue_island_dividers) == -1:
 		schedule_task(enqueue_island_dividers, 140)
+	
+	if get_last_run(enqueue_unreachable_squares) == -1:
+		schedule_task(enqueue_unreachable_squares, 135)
 
 
 func get_last_run(callable: Callable) -> int:
@@ -182,15 +185,28 @@ func deduce_island_divider(island_cell: Vector2i) -> void:
 	for liberty: Vector2i in liberties:
 		if not _can_deduce(board, liberty):
 			continue
-		var clued_neighbor_roots: Dictionary[Vector2i, bool] = {}
-		for neighbor_cell: Vector2i in board.get_neighbors(liberty):
-			if board.get_clue_value_for_cell(neighbor_cell) == 0:
-				continue
-			var neighbor_root: Vector2i = board.get_island_root_for_cell(neighbor_cell)
-			clued_neighbor_roots[neighbor_root] = true
+		var clued_neighbor_roots: Array[Vector2i] = _find_clued_neighbor_roots(liberty)
 		if clued_neighbor_roots.size() >= 2:
 			deductions.add_deduction(liberty, CELL_WALL, "island_divider %s %s"
-					% [clued_neighbor_roots.keys()[0], clued_neighbor_roots.keys()[1]])
+					% [clued_neighbor_roots[0], clued_neighbor_roots[1]])
+
+
+func deduce_unreachable_square(cell: Vector2i) -> void:
+	if not _can_deduce(board, cell):
+		return
+	
+	match board.get_clue_reachability(cell):
+		FastBoard.ClueReachability.UNREACHABLE:
+			deductions.add_deduction(cell, CELL_WALL, "unreachable_square %s"
+					% [board.get_nearest_clue_cell(cell)])
+		
+		FastBoard.ClueReachability.IMPOSSIBLE:
+			deductions.add_deduction(cell, CELL_WALL, "wall_bubble")
+		
+		FastBoard.ClueReachability.CONFLICT:
+			var clued_neighbor_roots: Array[Vector2i] = _find_clued_neighbor_roots(cell)
+			deductions.add_deduction(cell, CELL_WALL, "island_divider %s %s"
+					% [clued_neighbor_roots[0], clued_neighbor_roots[1]])
 
 
 func deduce_wall(wall_cell: Vector2i) -> void:
@@ -289,6 +305,13 @@ func enqueue_walls() -> void:
 			schedule_task(deduce_wall.bind(wall.front()), 245)
 
 
+func enqueue_unreachable_squares() -> void:
+	for cell: Vector2i in board.cells:
+		if not _can_deduce(board, cell):
+			continue
+		schedule_task(deduce_unreachable_square.bind(cell), 235)
+
+
 func _can_deduce(target_board: FastBoard, cell: Vector2i) -> bool:
 	return target_board.get_cell_string(cell) == CELL_EMPTY and not cell in deductions.cells
 
@@ -299,6 +322,16 @@ func _find_adjacent_clues(cell: Vector2i) -> Array[Vector2i]:
 		if board.get_cell_string(neighbor_cell).is_valid_int():
 			result.append(neighbor_cell)
 	return result
+
+
+func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
+	var clued_neighbor_roots: Dictionary[Vector2i, bool] = {}
+	for neighbor_cell: Vector2i in board.get_neighbors(cell):
+		if board.get_clue_value_for_cell(neighbor_cell) == 0:
+			continue
+		var neighbor_root: Vector2i = board.get_island_root_for_cell(neighbor_cell)
+		clued_neighbor_roots[neighbor_root] = true
+	return clued_neighbor_roots.keys()
 
 
 func _react_to_changes(changes: Array[Dictionary]) -> void:
