@@ -1,5 +1,7 @@
 class_name FastBoard
 
+const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
+
 const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
 const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
@@ -64,8 +66,16 @@ func get_islands_by_cell() -> Dictionary[Vector2i, Array]:
 	return get_island_group_map().groups_by_cell
 
 
+func get_island_for_cell(cell: Vector2i) -> Array[Vector2i]:
+	return get_islands_by_cell().get(cell, [] as Array[Vector2i])
+
+
 func get_island_roots_by_cell() -> Dictionary[Vector2i, Vector2i]:
 	return get_island_group_map().roots_by_cell
+
+
+func get_island_root_for_cell(cell: Vector2i) -> Vector2i:
+	return get_island_roots_by_cell().get(cell, POS_NOT_FOUND)
 
 
 func get_island_group_map() -> FastGroupMap:
@@ -83,8 +93,16 @@ func get_walls_by_cell() -> Dictionary[Vector2i, Array]:
 	return get_wall_group_map().groups_by_cell
 
 
+func get_wall_for_cell(cell: Vector2i) -> Array[Vector2i]:
+	return get_walls_by_cell().get(cell, [] as Array[Vector2i])
+
+
 func get_wall_roots_by_cell() -> Dictionary[Vector2i, Vector2i]:
 	return get_wall_group_map().roots_by_cell
+
+
+func get_wall_root_for_cell(cell: Vector2i) -> Vector2i:
+	return get_wall_roots_by_cell().get(cell, POS_NOT_FOUND)
 
 
 func get_wall_group_map() -> FastGroupMap:
