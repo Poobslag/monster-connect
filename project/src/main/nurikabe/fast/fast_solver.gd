@@ -57,8 +57,8 @@ func schedule_tasks() -> void:
 	if get_last_run(enqueue_clued_islands) == -1:
 		schedule_task(enqueue_clued_islands, 150)
 	
-	if get_last_run(enqueue_wall_expansions) == -1:
-		schedule_task(enqueue_wall_expansions, 145)
+	if get_last_run(enqueue_walls) == -1:
+		schedule_task(enqueue_walls, 145)
 	
 	if get_last_run(enqueue_island_dividers) == -1:
 		schedule_task(enqueue_island_dividers, 140)
@@ -194,9 +194,55 @@ func deduce_island_divider(island_cell: Vector2i) -> void:
 
 
 func deduce_wall(wall_cell: Vector2i) -> void:
-	var liberties: Array[Vector2i] = board.get_liberties(board.get_wall_for_cell(wall_cell))
-	if liberties.size() == 1 and board.get_walls().size() >= 2:
+	deduce_wall_expansion(wall_cell)
+	deduce_pool(wall_cell)
+
+
+func deduce_wall_expansion(wall_cell: Vector2i) -> void:
+	var wall: Array[Vector2i] = board.get_wall_for_cell(wall_cell)
+	var liberties: Array[Vector2i] = board.get_liberties(wall)
+	if board.get_walls().size() <= 1:
+		return
+	
+	if liberties.size() == 1:
 		deductions.add_deduction(liberties[0], CELL_WALL, "wall_expansion %s" % [wall_cell])
+
+
+func deduce_pool(wall_cell: Vector2i) -> void:
+	var wall: Array[Vector2i] = board.get_wall_for_cell(wall_cell)
+	var liberties: Array[Vector2i] = board.get_liberties(wall)
+	if liberties.size() == 0:
+		return
+	if wall.size() < 3:
+		return
+	
+	var wall_cell_set: Dictionary[Vector2i, bool] = {}
+	for next_wall_cell in wall:
+		wall_cell_set[next_wall_cell] = true
+	for liberty: Vector2i in liberties:
+		if not _can_deduce(board, liberty):
+			continue
+		var wall_mask: int = neighbor_mask(liberty, func(cell: Vector2i) -> bool:
+			return wall_cell_set.has(cell))
+		if wall_mask in [5, 6, 9, 10]:
+			# Calculate the three pool cells: The two wall cells adjacent to the liberty, and the diagonal cell.
+			var pool: Array[Vector2i] = []
+			for neighbor_cell in board.get_neighbors(liberty):
+				if neighbor_cell in wall_cell_set:
+					pool.append(neighbor_cell)
+			pool.append(Vector2i(pool[1].x, pool[0].y) if pool[0].x == liberty.x else Vector2i(pool[0].x, pool[1].y))
+			pool.sort()
+			
+			deductions.add_deduction(liberty, CELL_ISLAND, "pool_triplet %s %s %s" % [pool[0], pool[1], pool[2]])
+
+
+func neighbor_mask(cell: Vector2i, callable: Callable) -> int:
+	var result: int = 0
+	result |= 1 if callable.call(cell + Vector2i.UP) else 0
+	result |= 2 if callable.call(cell + Vector2i.DOWN) else 0
+	result |= 4 if callable.call(cell + Vector2i.LEFT) else 0
+	result |= 8 if callable.call(cell + Vector2i.RIGHT) else 0
+	return result
 
 
 func enqueue_adjacent_clues() -> void:
@@ -235,7 +281,7 @@ func enqueue_islands_of_one() -> void:
 			schedule_task(deduce_island_of_one.bind(cell), 1100)
 
 
-func enqueue_wall_expansions() -> void:
+func enqueue_walls() -> void:
 	var walls: Array[Array] = board.get_walls()
 	for wall: Array[Vector2i] in walls:
 		var liberties: Array[Vector2i] = board.get_liberties(wall)
