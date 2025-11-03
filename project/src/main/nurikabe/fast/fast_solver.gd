@@ -5,7 +5,7 @@ const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
-const POS_NOT_FOUND: Vector2i = Vector2i(-1, -1)
+const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
 var deductions: DeductionBatch = DeductionBatch.new()
 var board: FastBoard
@@ -23,6 +23,7 @@ func apply_changes() -> void:
 		history_item["pos"] = change["pos"]
 		history_item["value"] = change["value"]
 		history_item["tick"] = board.get_filled_cell_count()
+		_change_history.append(history_item)
 	
 	_change_history.append_array(changes)
 	board.set_cell_strings(changes)
