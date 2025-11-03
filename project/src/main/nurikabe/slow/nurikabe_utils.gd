@@ -17,4 +17,6 @@ const ERROR_BG_COLOR: Color = Color("ff5a5a")
 const CLUE_LOWLIGHT_COLOR: Color = Color("bbbbbb")
 const CLUE_COLOR: Color = Color("666666")
 
+const POS_NOT_FOUND: Vector2i = Vector2i(-1, -1)
+
 const NEIGHBOR_DIRS: Array[Vector2i] = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
