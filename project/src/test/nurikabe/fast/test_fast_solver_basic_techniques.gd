@@ -1,20 +1,18 @@
 extends TestFastSolver
 
-func test_clued_islands_add_island_moat() -> void:
+func test_enqueue_island_dividers() -> void:
 	grid = [
-		" 2    ",
-		" .    ",
+		" .   3",
+		" 3    ",
 		"      ",
 	]
 	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(1, 0), CELL_WALL, "island_moat (0, 0)"),
-		FastDeduction.new(Vector2i(1, 1), CELL_WALL, "island_moat (0, 0)"),
-		FastDeduction.new(Vector2i(0, 2), CELL_WALL, "island_moat (0, 0)"),
+		FastDeduction.new(Vector2i(1, 0), CELL_WALL, "island_divider (0, 0) (2, 0)"),
 	]
-	assert_deduction(solver.enqueue_islands, expected)
+	assert_deduction(solver.enqueue_island_dividers, expected)
 
 
-func test_clued_islands_island_expansion() -> void:
+func test_enqueue_islands_island_expansion() -> void:
 	grid = [
 		" 4    ",
 		"####  ",
@@ -26,7 +24,7 @@ func test_clued_islands_island_expansion() -> void:
 	assert_deduction(solver.enqueue_islands, expected)
 
 
-func test_clued_islands_island_expansion_and_moat() -> void:
+func test_enqueue_islands_island_expansion_and_moat() -> void:
 	grid = [
 		" 2    ",
 		"##    ",
@@ -40,54 +38,33 @@ func test_clued_islands_island_expansion_and_moat() -> void:
 	assert_deduction(solver.enqueue_islands, expected)
 
 
-func test_wall_expansions_1() -> void:
+func test_enqueue_islands_island_connector() -> void:
 	grid = [
-		"## 4  ",
+		"     6",
+		"##    ",
+		" .    ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 2), CELL_ISLAND, "island_connector (0, 2)"),
+	]
+	assert_deduction(solver.enqueue_islands, expected)
+
+
+func test_enqueue_islands_island_moat() -> void:
+	grid = [
+		" 2    ",
+		" .    ",
 		"      ",
-		"    ##",
 	]
 	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(0, 1), CELL_WALL, "wall_expansion (0, 0)"),
+		FastDeduction.new(Vector2i(1, 0), CELL_WALL, "island_moat (0, 0)"),
+		FastDeduction.new(Vector2i(1, 1), CELL_WALL, "island_moat (0, 0)"),
+		FastDeduction.new(Vector2i(0, 2), CELL_WALL, "island_moat (0, 0)"),
 	]
-	assert_deduction(solver.enqueue_walls, expected)
+	assert_deduction(solver.enqueue_islands, expected)
 
 
-func test_island_dividers_1() -> void:
-	grid = [
-		" .   3",
-		" 3    ",
-		"      ",
-	]
-	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(1, 0), CELL_WALL, "island_divider (0, 0) (2, 0)"),
-	]
-	assert_deduction(solver.enqueue_island_dividers, expected)
-
-
-func test_pool_triplets_1() -> void:
-	grid = [
-		" 4    ",
-		"    ##",
-		"  ####",
-	]
-	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(1, 1), CELL_ISLAND, "pool_triplet (1, 2) (2, 1) (2, 2)"),
-	]
-	assert_deduction(solver.enqueue_walls, expected)
-
-
-func test_pool_triplets_invalid() -> void:
-	grid = [
-		" 3#### 3",
-		"        ",
-		"  ####  ",
-	]
-	var expected: Array[FastDeduction] = [
-	]
-	assert_deduction(solver.enqueue_walls, expected)
-
-
-func test_unreachable_square_1() -> void:
+func test_enqueue_unreachable_squares_1() -> void:
 	grid = [
 		" 4    ",
 		"      ",
@@ -99,7 +76,7 @@ func test_unreachable_square_1() -> void:
 	assert_deduction(solver.enqueue_unreachable_squares, expected)
 
 
-func test_unreachable_square_2() -> void:
+func test_enqueue_unreachable_squares_2() -> void:
 	grid = [
 		" 4##  ",
 		" .    ",
@@ -112,7 +89,7 @@ func test_unreachable_square_2() -> void:
 	assert_deduction(solver.enqueue_unreachable_squares, expected)
 
 
-func test_unreachable_square_3() -> void:
+func test_enqueue_unreachable_squares_3() -> void:
 	grid = [
 		"   .    ",
 		"    ## 2",
@@ -125,7 +102,7 @@ func test_unreachable_square_3() -> void:
 	assert_deduction(solver.enqueue_unreachable_squares, expected)
 
 
-func test_unreachable_square_blocked() -> void:
+func test_enqueue_unreachable_squares_blocked() -> void:
 	# the upper right cell is reachable by the 4, but it's blocked by the 3
 	grid = [
 		" 4        ",
@@ -138,7 +115,7 @@ func test_unreachable_square_blocked() -> void:
 	assert_deduction(solver.enqueue_unreachable_squares, expected)
 
 
-func test_wall_bubble_surrounded_square() -> void:
+func test_enqueue_unreachable_squares_wall_bubble() -> void:
 	grid = [
 		" 3  ######  ",
 		"  ####      ",
@@ -152,13 +129,36 @@ func test_wall_bubble_surrounded_square() -> void:
 	assert_deduction(solver.enqueue_unreachable_squares, expected)
 
 
-func test_island_connector() -> void:
+func test_enqueue_walls_pool_triplet_1() -> void:
 	grid = [
-		"     6",
-		"##    ",
-		" .    ",
+		" 4    ",
+		"    ##",
+		"  ####",
 	]
 	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(1, 2), CELL_ISLAND, "island_connector (0, 2)"),
+		FastDeduction.new(Vector2i(1, 1), CELL_ISLAND, "pool_triplet (1, 2) (2, 1) (2, 2)"),
 	]
-	assert_deduction(solver.enqueue_islands, expected)
+	assert_deduction(solver.enqueue_walls, expected)
+
+
+func test_enqueue_walls_pool_triplets_invalid() -> void:
+	grid = [
+		" 3#### 3",
+		"        ",
+		"  ####  ",
+	]
+	var expected: Array[FastDeduction] = [
+	]
+	assert_deduction(solver.enqueue_walls, expected)
+
+
+func test_enqueue_walls_wall_expansion_1() -> void:
+	grid = [
+		"## 4  ",
+		"      ",
+		"    ##",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(0, 1), CELL_WALL, "wall_expansion (0, 0)"),
+	]
+	assert_deduction(solver.enqueue_walls, expected)
