@@ -30,7 +30,7 @@ func get_cell_string(cell_pos: Vector2i) -> String:
 
 ## Returns the clue value for the specified group of cells.[br]
 ## [br]
-## If zero clues or multiple clues are present, returns 0.
+## If zero clues are present, returns 0. If multiple clues are present, returns -1.
 func get_clue_for_group(group: Array[Vector2i]) -> int:
 	return _get_cached(
 		"clue_for_group %s" % ["-" if group.is_empty() else str(group[0])],
@@ -270,7 +270,7 @@ func _build_clue_value(group: Array[Vector2i]) -> int:
 		if cells[cell].is_valid_int():
 			if result > 0:
 				# too many clues
-				result = 0
+				result = -1
 				break
 			result = cells[cell].to_int()
 	return result

@@ -54,8 +54,8 @@ func schedule_tasks() -> void:
 	if get_last_run(enqueue_adjacent_clues) == -1:
 		schedule_task(enqueue_adjacent_clues, 1000)
 	
-	if get_last_run(enqueue_clued_islands) == -1:
-		schedule_task(enqueue_clued_islands, 150)
+	if get_last_run(enqueue_islands) == -1:
+		schedule_task(enqueue_islands, 150)
 	
 	if get_last_run(enqueue_walls) == -1:
 		schedule_task(enqueue_walls, 145)
@@ -160,8 +160,8 @@ func deduce_island_of_one(clue_cell: Vector2i) -> void:
 func deduce_clued_island(island_cell: Vector2i) -> void:
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
 	var clue_value: int = board.get_clue_for_group(island)
-	if clue_value == 0:
-		# unclued group
+	if clue_value < 1:
+		# unclued/invalid group
 		return
 	var liberties: Array[Vector2i] = board.get_liberties(island)
 	if clue_value == island.size():
@@ -178,6 +178,17 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 	elif liberties.size() == 1 and clue_value > island.size():
 		if _can_deduce(board, liberties[0]):
 			deductions.add_deduction(liberties[0], CELL_ISLAND, "island_expansion %s" % [island[0]])
+
+
+func deduce_unclued_island(island_cell: Vector2i) -> void:
+	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
+	var clue_value: int = board.get_clue_for_group(island)
+	if clue_value != 0:
+		# clued/invalid group
+		return
+	var liberties: Array[Vector2i] = board.get_liberties(island)
+	if liberties.size() == 1:
+		deductions.add_deduction(liberties[0], CELL_ISLAND, "island_connector %s" % [island[0]])
 
 
 func deduce_island_divider(island_cell: Vector2i) -> void:
@@ -267,15 +278,21 @@ func enqueue_adjacent_clues() -> void:
 			schedule_task(deduce_adjacent_clues.bind(cell), 1100)
 
 
-func enqueue_clued_islands() -> void:
+func enqueue_islands() -> void:
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
-		var clue_value: int = board.get_clue_for_group(island)
-		if clue_value == 0:
-			# unclued island
-			continue
 		var liberties: Array[Vector2i] = board.get_liberties(island)
-		if liberties.size() > 0:
+		if liberties.size() == 0:
+			continue
+		var clue_value: int = board.get_clue_for_group(island)
+		if clue_value == -1:
+			# invalid island
+			continue
+		elif clue_value == 0:
+			# unclued island
+			schedule_task(deduce_unclued_island.bind(island.front()), 250)
+		else:
+			# clued island
 			schedule_task(deduce_clued_island.bind(island.front()), 250)
 
 
@@ -283,8 +300,8 @@ func enqueue_island_dividers() -> void:
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
 		var clue_value: int = board.get_clue_for_group(island)
-		if clue_value == 0:
-			# unclued island
+		if clue_value < 1:
+			# unclued/invalid island
 			continue
 		var liberties: Array[Vector2i] = board.get_liberties(island)
 		if liberties.size() > 0:
@@ -358,8 +375,12 @@ func _react_to_changes(changes: Array[Dictionary]) -> void:
 	
 	for island_root: Vector2i in affected_island_roots:
 		var island: Array[Vector2i] = board.get_island_for_cell(island_root)
-		if board.get_clue_for_group(island) != 0 and board.get_liberties(island).size() > 0:
+		if board.get_liberties(island).size() == 0:
+			continue
+		if board.get_clue_for_group(island) >= 1:
 			schedule_task(deduce_clued_island.bind(island_root), 350)
+		if board.get_clue_for_group(island) == 0:
+			schedule_task(deduce_unclued_island.bind(island_root), 350)
 
 
 func _task_key(callable: Callable) -> String:
