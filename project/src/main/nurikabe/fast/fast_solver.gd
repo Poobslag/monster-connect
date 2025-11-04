@@ -54,17 +54,40 @@ func schedule_tasks() -> void:
 	if get_last_run(enqueue_adjacent_clues) == -1:
 		schedule_task(enqueue_adjacent_clues, 1000)
 	
-	if get_last_run(enqueue_islands) == -1:
+	if has_scheduled_task(enqueue_islands):
+		pass
+	elif get_last_run(enqueue_islands) == -1:
 		schedule_task(enqueue_islands, 150)
+	elif get_last_run(enqueue_islands) < board.get_filled_cell_count():
+		schedule_task(enqueue_islands, 50)
 	
-	if get_last_run(enqueue_walls) == -1:
+	if has_scheduled_task(enqueue_walls):
+		pass
+	elif get_last_run(enqueue_walls) == -1:
 		schedule_task(enqueue_walls, 145)
+	elif get_last_run(enqueue_walls) < board.get_filled_cell_count():
+		schedule_task(enqueue_islands, 45)
 	
-	if get_last_run(enqueue_island_dividers) == -1:
+	if has_scheduled_task(enqueue_island_dividers):
+		pass
+	elif get_last_run(enqueue_island_dividers) == -1:
 		schedule_task(enqueue_island_dividers, 140)
+	elif get_last_run(enqueue_walls) < board.get_filled_cell_count():
+		schedule_task(enqueue_island_dividers, 40)
 	
-	if get_last_run(enqueue_unreachable_squares) == -1:
+	if has_scheduled_task(enqueue_unreachable_squares):
+		pass
+	elif get_last_run(enqueue_unreachable_squares) == -1:
 		schedule_task(enqueue_unreachable_squares, 135)
+	elif get_last_run(enqueue_unreachable_squares) < board.get_filled_cell_count():
+		schedule_task(enqueue_unreachable_squares, 35)
+	
+	if has_scheduled_task(enqueue_island_chokepoints):
+		pass
+	elif get_last_run(enqueue_island_chokepoints) == -1:
+		schedule_task(enqueue_island_chokepoints, 130)
+	elif get_last_run(enqueue_island_chokepoints) < board.get_filled_cell_count():
+		schedule_task(enqueue_island_chokepoints, 30)
 
 
 func get_last_run(callable: Callable) -> int:
@@ -145,6 +168,24 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 		if adjacent_clues.size() >= 2:
 			deductions.add_deduction(neighbor_cell, CELL_WALL,
 				"adjacent_clues %s %s" % [adjacent_clues[0], adjacent_clues[1]])
+
+
+func deduce_island_chokepoint(chokepoint_cell: Vector2i) -> void:
+	if not _can_deduce(board, chokepoint_cell):
+		return
+	var clue_cell: Vector2i = board.get_nearest_clue_cell(chokepoint_cell)
+	if clue_cell == POS_NOT_FOUND:
+		return
+	var unchoked_cell_count: int = \
+			board.get_island_chokepoint_map().get_unchoked_cell_count(chokepoint_cell, clue_cell)
+	if unchoked_cell_count < int(board.cells[clue_cell]):
+		var liberties: Array[Vector2i] = board.get_liberties(board.get_island_for_cell(clue_cell))
+		if chokepoint_cell in liberties:
+			deductions.add_deduction(chokepoint_cell, CELL_ISLAND,
+				"island_expansion %s" % [clue_cell])
+		else:
+			deductions.add_deduction(chokepoint_cell, CELL_ISLAND,
+				"island_chokepoint %s" % [clue_cell])
 
 
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
@@ -276,6 +317,12 @@ func enqueue_adjacent_clues() -> void:
 	for cell: Vector2i in board.cells:
 		if board.get_cell_string(cell).is_valid_int():
 			schedule_task(deduce_adjacent_clues.bind(cell), 1100)
+
+
+func enqueue_island_chokepoints() -> void:
+	var chokepoints: Array[Vector2i] = board.get_island_chokepoint_map().chokepoints_by_cell.keys()
+	for chokepoint: Vector2i in chokepoints:
+		schedule_task(deduce_island_chokepoint.bind(chokepoint), 230)
 
 
 func enqueue_islands() -> void:

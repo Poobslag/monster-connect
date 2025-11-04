@@ -41,6 +41,10 @@ func get_clue_reachability(cell: Vector2i) -> ClueReachability:
 	return get_clue_reachability_by_cell().get(cell, ClueReachability.UNKNOWN)
 
 
+## Returns the "most reachable" clue to [param cell].[br]
+## [br]
+## Reachability accounts for clue distance, clue value, and current island size. A large nearby clue with few existing
+## island cells ranks high, while a small distant clue with many existing island cells ranks low.
 func get_nearest_clue_cell(cell: Vector2i) -> Vector2i:
 	return get_nearest_clue_cell_by_cell().get(cell, POS_NOT_FOUND)
 
@@ -85,6 +89,12 @@ func get_reachability_map() -> Dictionary[Vector2i, Dictionary]:
 	return _get_cached(
 		"reachability_map",
 		_build_reachability_map)
+
+
+func get_island_chokepoint_map() -> FastChokepointMap:
+	return _get_cached(
+		"island_chokepoint_map",
+		_build_island_chokepoint_map)
 
 
 func set_cell_string(cell_pos: Vector2i, value: String) -> void:
@@ -294,6 +304,11 @@ func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
 func _build_island_group_map() -> FastGroupMap:
 	return FastGroupMap.new(self, func(value: String) -> bool:
 		return value.is_valid_int() or value == CELL_ISLAND)
+
+
+func _build_island_chokepoint_map() -> FastChokepointMap:
+	return FastChokepointMap.new(self, func(value: String) -> bool:
+		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
 
 
 func _build_wall_group_map() -> FastGroupMap:
