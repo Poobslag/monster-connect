@@ -3,6 +3,7 @@ extends Node
 ## [b]Keys:[/b][br]
 ## 	[kbd]Q[/kbd]: Solve one step.
 ## 	[kbd]R[/kbd]: Reset the board.
+## 	[kbd]W[/kbd]: Performance test.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 
 @export_file("*.txt") var puzzle_path: String:

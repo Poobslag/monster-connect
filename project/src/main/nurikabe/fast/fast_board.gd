@@ -58,9 +58,13 @@ func get_filled_cell_count() -> int:
 	return _get_cached("filled_cell_count", func() -> int:
 		var result: int = 0
 		for cell: Vector2i in cells:
-			if cells[cell] in [CELL_ISLAND, CELL_WALL]:
+			if cells[cell] != CELL_EMPTY:
 				result += 1
 		return result)
+
+
+func is_filled() -> bool:
+	return get_filled_cell_count() == cells.size()
 
 
 func get_liberties(group: Array[Vector2i]) -> Array[Vector2i]:

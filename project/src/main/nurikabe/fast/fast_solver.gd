@@ -66,13 +66,13 @@ func schedule_tasks() -> void:
 	elif get_last_run(enqueue_walls) == -1:
 		schedule_task(enqueue_walls, 145)
 	elif get_last_run(enqueue_walls) < board.get_filled_cell_count():
-		schedule_task(enqueue_islands, 45)
+		schedule_task(enqueue_walls, 45)
 	
 	if has_scheduled_task(enqueue_island_dividers):
 		pass
 	elif get_last_run(enqueue_island_dividers) == -1:
 		schedule_task(enqueue_island_dividers, 140)
-	elif get_last_run(enqueue_walls) < board.get_filled_cell_count():
+	elif get_last_run(enqueue_island_dividers) < board.get_filled_cell_count():
 		schedule_task(enqueue_island_dividers, 40)
 	
 	if has_scheduled_task(enqueue_unreachable_squares):
