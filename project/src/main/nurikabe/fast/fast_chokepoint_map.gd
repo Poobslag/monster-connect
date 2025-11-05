@@ -15,6 +15,18 @@ func _init(init_board: FastBoard, init_cell_filter: Callable) -> void:
 	_cell_filter = init_cell_filter
 
 
+func get_component_cell_count(cell: Vector2i) -> int:
+	if _chokepoint_map == null:
+		_build_chokepoint_map()
+	return _chokepoint_map.get_component_cell_count(cell)
+
+
+func get_component_cells(cell: Vector2i) -> Array[Vector2i]:
+	if _chokepoint_map == null:
+		_build_chokepoint_map()
+	return _chokepoint_map.get_component_cells(cell)
+
+
 func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 	if _chokepoint_map == null:
 		_build_chokepoint_map()

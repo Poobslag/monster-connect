@@ -16,6 +16,10 @@ var _lowest_index_by_cell: Dictionary[Vector2i, int] = {}
 ## Parent of each cell in the DFS tree.
 var _parent_by_cell: Dictionary[Vector2i, Vector2i] = {}
 
+var _subtree_cells_by_root: Dictionary[Vector2i, Array] = {}
+
+var _subtree_root_by_cell: Dictionary[Vector2i, Vector2i] = {}
+
 ## Number of nodes in each cell's DFS subtree. Not required for Tarjan's algorithm, but used by [unchoked_cell_count].
 var _subtree_size_by_cell: Dictionary[Vector2i, int] = {}
 
@@ -25,6 +29,16 @@ var _discovery_time: int = 0
 func _init(init_cells: Array[Vector2i]) -> void:
 	cells = init_cells
 	_build()
+
+
+func get_component_cell_count(cell: Vector2i) -> int:
+	var cell_root: Vector2i = _find_subtree_root(cell)
+	return _subtree_size_by_cell[cell_root]
+
+
+func get_component_cells(cell: Vector2i) -> Array[Vector2i]:
+	var cell_root: Vector2i = _find_subtree_root(cell)
+	return _subtree_cells_by_root[cell_root]
 
 
 func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
@@ -65,7 +79,7 @@ func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 func _build() -> void:
 	# store adjacency graph in _neighbors_by_cell
 	for cell: Vector2i in cells:
-		_neighbors_by_cell[cell] = []
+		_neighbors_by_cell[cell] = [] as Array[Vector2i]
 	for cell: Vector2i in cells:
 		for neighbor_cell: Vector2i in [
 				cell + Vector2i.UP, cell + Vector2i.DOWN,
@@ -87,11 +101,16 @@ func _perform_dfs(cell: Vector2i) -> void:
 	_discovery_time += 1
 	var children: int = 0
 	var subtree_size: int = 1
+	var subtree_root: Vector2i = _find_subtree_root(cell)
+	if not _subtree_cells_by_root.has(subtree_root):
+		_subtree_cells_by_root[subtree_root] = [] as Array[Vector2i]
+	_subtree_cells_by_root[subtree_root].append(cell)
 	
 	for neighbor_cell: Vector2i in _neighbors_by_cell[cell]:
 		if not _discovery_time_by_cell.has(neighbor_cell):
 			children += 1
 			_parent_by_cell[neighbor_cell] = cell
+			_subtree_root_by_cell[neighbor_cell] = subtree_root
 			_perform_dfs(neighbor_cell)
 			subtree_size += _subtree_size_by_cell[neighbor_cell]
 			_lowest_index_by_cell[cell] = min(_lowest_index_by_cell[cell], _lowest_index_by_cell[neighbor_cell])
@@ -120,7 +139,4 @@ func _find_subtree_root_under_chokepoint(chokepoint: Vector2i, cell: Vector2i) -
 
 ## Returns the topmost ancestor of [param cell].
 func _find_subtree_root(cell: Vector2i) -> Vector2i:
-	var curr: Vector2i = cell
-	while _parent_by_cell.has(curr):
-		curr = _parent_by_cell[curr]
-	return curr
+	return _subtree_root_by_cell[cell] if _subtree_root_by_cell.has(cell) else cell
