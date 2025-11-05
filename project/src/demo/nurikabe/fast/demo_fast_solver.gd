@@ -16,7 +16,6 @@ const CELL_INVALID := "!"
 const CELL_ISLAND := "."
 const CELL_WALL := "##"
 
-var ran_starting_techniques: bool = false
 var performance_data: Dictionary[String, Variant] = {}
 var solver: FastSolver = FastSolver.new()
 
@@ -24,6 +23,8 @@ func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
 		KEY_Q:
 			solve()
+		KEY_W:
+			performance_test()
 		KEY_P:
 			print_grid_string()
 		KEY_R:
@@ -42,10 +43,13 @@ func print_grid_string() -> void:
 
 
 func solve() -> void:
+	if solver.board.is_filled():
+		return
+	
 	var changes: Array[Dictionary] = []
 	
 	if not %MessageLabel.text.is_empty():
-		%MessageLabel.text += "--------\n"
+		_show_message("--------")
 	
 	var idle_steps: int = 0
 	while changes.size() < 5 and idle_steps < 10:
@@ -55,7 +59,7 @@ func solve() -> void:
 			idle_steps += 1
 	
 	if changes.is_empty():
-		%MessageLabel.text += "(no changes)\n"
+		_show_message("(no changes)")
 	
 	if not changes.is_empty():
 		for change: Dictionary[String, Variant] in changes:
@@ -64,10 +68,39 @@ func solve() -> void:
 				push_error("Illegal change: %s == %s" % [cell_pos, solver.board.get_cell_string(cell_pos)])
 		
 		for deduction: FastDeduction in solver.deductions.deductions:
-			%MessageLabel.text += "%s: %s\n" % [deduction.pos, deduction.reason]
+			_show_message("%s: %s" % [deduction.pos, deduction.reason])
 		
 		solver.apply_changes()
 		%GameBoard.set_cell_strings(changes)
+
+
+func performance_test() -> void:
+	performance_data.clear()
+	
+	var start_time: float = Time.get_ticks_usec()
+	
+	var idle_steps: int = 0
+	while idle_steps < 100 and not solver.board.is_filled():
+		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
+		
+		solver.step()
+		solver.apply_changes()
+		
+		if old_filled_cell_count == solver.board.get_filled_cell_count():
+			idle_steps += 1
+		else:
+			idle_steps = 0
+	
+	if not %MessageLabel.text.is_empty():
+		_show_message("--------")
+	_show_message("%.3f msec" % [(Time.get_ticks_usec() - start_time) / 1000.0])
+	
+	for cell: Vector2i in solver.board.cells:
+		%GameBoard.set_cell_string(cell, solver.board.get_cell_string(cell))
+
+
+func _show_message(s: String) -> void:
+	%MessageLabel.text += s + "\n"
 
 
 func _record_deduction_result(callable: Callable, start_ticks_usec: int, deduction_count: int) -> void:
