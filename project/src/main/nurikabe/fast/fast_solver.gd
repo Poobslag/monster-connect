@@ -173,7 +173,7 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 func deduce_island_chokepoint(chokepoint_cell: Vector2i) -> void:
 	if not _can_deduce(board, chokepoint_cell):
 		return
-	var clue_cell: Vector2i = board.get_nearest_clue_cell(chokepoint_cell)
+	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint_cell)
 	if clue_cell == POS_NOT_FOUND:
 		return
 	var unchoked_cell_count: int = \
@@ -257,15 +257,15 @@ func deduce_unreachable_square(cell: Vector2i) -> void:
 	if not _can_deduce(board, cell):
 		return
 	
-	match board.get_clue_reachability(cell):
-		FastBoard.ClueReachability.UNREACHABLE:
+	match board.get_global_reachability_map().get_clue_reachability(cell):
+		GlobalReachabilityMap.ClueReachability.UNREACHABLE:
 			deductions.add_deduction(cell, CELL_WALL, "unreachable_square %s"
-					% [board.get_nearest_clue_cell(cell)])
+					% [board.get_global_reachability_map().get_nearest_clue_cell(cell)])
 		
-		FastBoard.ClueReachability.IMPOSSIBLE:
+		GlobalReachabilityMap.ClueReachability.IMPOSSIBLE:
 			deductions.add_deduction(cell, CELL_WALL, "wall_bubble")
 		
-		FastBoard.ClueReachability.CONFLICT:
+		GlobalReachabilityMap.ClueReachability.CONFLICT:
 			var clued_neighbor_roots: Array[Vector2i] = _find_clued_neighbor_roots(cell)
 			deductions.add_deduction(cell, CELL_WALL, "island_divider %s %s"
 					% [clued_neighbor_roots[0], clued_neighbor_roots[1]])
