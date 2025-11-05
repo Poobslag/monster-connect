@@ -205,6 +205,10 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 		# unclued/invalid group
 		return
 	var liberties: Array[Vector2i] = board.get_liberties(island)
+	if liberties.size() == 0:
+		# sealed group
+		return
+	
 	if clue_value == island.size():
 		for liberty: Vector2i in liberties:
 			if not _can_deduce(board, liberty):
@@ -219,6 +223,12 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 	elif liberties.size() == 1 and clue_value > island.size():
 		if _can_deduce(board, liberties[0]):
 			deductions.add_deduction(liberties[0], CELL_ISLAND, "island_expansion %s" % [island[0]])
+	else:
+		var component_cell_count: int = board.get_island_chokepoint_map().get_component_cell_count(island_cell)
+		if component_cell_count == clue_value:
+			for deduction_cell: Vector2i in board.get_island_chokepoint_map().get_component_cells(island_cell):
+				if _can_deduce(board, deduction_cell):
+					deductions.add_deduction(deduction_cell, CELL_ISLAND, "island_snug %s" % [island_cell])
 
 
 func deduce_unclued_island(island_cell: Vector2i) -> void:

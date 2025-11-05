@@ -77,6 +77,19 @@ func test_enqueue_islands_island_moat() -> void:
 	assert_deduction(solver.enqueue_islands, expected)
 
 
+func test_enqueue_islands_island_snug() -> void:
+	grid = [
+		"   4  ",
+		"####  ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(0, 0), CELL_ISLAND, "island_snug (1, 0)"),
+		FastDeduction.new(Vector2i(2, 0), CELL_ISLAND, "island_snug (1, 0)"),
+		FastDeduction.new(Vector2i(2, 1), CELL_ISLAND, "island_snug (1, 0)"),
+	]
+	assert_deduction(solver.enqueue_islands, expected)
+
+
 func test_enqueue_unreachable_squares_1() -> void:
 	grid = [
 		" 4    ",

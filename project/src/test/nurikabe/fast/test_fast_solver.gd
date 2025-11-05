@@ -20,7 +20,7 @@ func assert_deduction(callable: Callable, expected: Array[FastDeduction]) -> voi
 	solver.run_all_tasks()
 	var actual_str_array: Array[String] = deductions_to_strings(solver.deductions.deductions)
 	var expected_str_array: Array[String] = deductions_to_strings(expected)
-	assert_eq(actual_str_array, expected_str_array)
+	assert_eq(str(actual_str_array), str(expected_str_array))
 
 
 func deductions_to_strings(deductions: Array[FastDeduction]) -> Array[String]:
