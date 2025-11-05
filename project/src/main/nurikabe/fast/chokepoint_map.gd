@@ -27,6 +27,41 @@ func _init(init_cells: Array[Vector2i]) -> void:
 	_build()
 
 
+func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
+	var result: int
+	
+	var chokepoint_root: Vector2i = _find_subtree_root(chokepoint)
+	var cell_root: Vector2i = _find_subtree_root(cell)
+	if not chokepoints_by_cell.get(chokepoint, false) or chokepoint_root != cell_root:
+		# Specified chokepoint is not a chokepoint or it's in a different component.
+		
+		if cell_root == chokepoint_root:
+			# Cell shares a component with chokepoint.
+			# Return the size of the cell component - 1.
+			result = _subtree_size_by_cell[cell_root] - 1
+		else:
+			# Cell does not share a component with chokepoint.
+			# Return the size of the cell component.
+			result = _subtree_size_by_cell[cell_root]
+	else:
+		var branch_root: Vector2i = _find_subtree_root_under_chokepoint(chokepoint, cell)
+		if _parent_by_cell.get(branch_root) == chokepoint:
+			# Cell is a descendant of the chokepoint.
+			# Return the size of the chokepoint subtree containing cell.
+			result = _subtree_size_by_cell[branch_root]
+		else:
+			# Cell is not a descendant of the chokepoint.
+			# Return the size of the subtree excluding the chokepoint's subtrees and excluding the chokepoint itself.
+			var detached_sum := 0
+			for neighbor_cell: Vector2i in _neighbors_by_cell[chokepoint]:
+				if _parent_by_cell.get(neighbor_cell) == chokepoint and \
+						_lowest_index_by_cell[neighbor_cell] >= _discovery_time_by_cell[chokepoint]:
+					detached_sum += _subtree_size_by_cell[neighbor_cell]
+			result = _subtree_size_by_cell[cell_root] - detached_sum - 1
+	
+	return result
+
+
 func _build() -> void:
 	# store adjacency graph in _neighbors_by_cell
 	for cell: Vector2i in cells:
@@ -68,41 +103,6 @@ func _perform_dfs(cell: Vector2i) -> void:
 			_lowest_index_by_cell[cell] = min(_lowest_index_by_cell[cell], _discovery_time_by_cell[neighbor_cell])
 	
 	_subtree_size_by_cell[cell] = subtree_size
-
-
-func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
-	var result: int
-	
-	var chokepoint_root: Vector2i = _find_subtree_root(chokepoint)
-	var cell_root: Vector2i = _find_subtree_root(cell)
-	if not chokepoints_by_cell.get(chokepoint, false) or chokepoint_root != cell_root:
-		# Specified chokepoint is not a chokepoint or it's in a different component.
-		
-		if cell_root == chokepoint_root:
-			# Cell shares a component with chokepoint.
-			# Return the size of the cell component - 1.
-			result = _subtree_size_by_cell[cell_root] - 1
-		else:
-			# Cell does not share a component with chokepoint.
-			# Return the size of the cell component.
-			result = _subtree_size_by_cell[cell_root]
-	else:
-		var branch_root: Vector2i = _find_subtree_root_under_chokepoint(chokepoint, cell)
-		if _parent_by_cell.get(branch_root) == chokepoint:
-			# Cell is a descendant of the chokepoint.
-			# Return the size of the chokepoint subtree containing cell.
-			result = _subtree_size_by_cell[branch_root]
-		else:
-			# Cell is not a descendant of the chokepoint.
-			# Return the size of the subtree excluding the chokepoint's subtrees and excluding the chokepoint itself.
-			var detached_sum := 0
-			for neighbor_cell: Vector2i in _neighbors_by_cell[chokepoint]:
-				if _parent_by_cell.get(neighbor_cell) == chokepoint and \
-						_lowest_index_by_cell[neighbor_cell] >= _discovery_time_by_cell[chokepoint]:
-					detached_sum += _subtree_size_by_cell[neighbor_cell]
-			result = _subtree_size_by_cell[cell_root] - detached_sum - 1
-	
-	return result
 
 
 ## Returns the topmost ancestor of [param cell] whose parent is [param chokepoint].[br]
