@@ -188,6 +188,21 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 				"island_chokepoint %s" % [clue_cell])
 
 
+func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
+	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
+	var result: Dictionary[Vector2i, String] = board.get_per_clue_chokepoint_map().choke_island(island_cell)
+	for choked_cell in result:
+		if not _can_deduce(board, choked_cell):
+			continue
+		if result[choked_cell] == CELL_ISLAND:
+			if choked_cell in board.get_liberties(island):
+				deductions.add_deduction(choked_cell, CELL_ISLAND, "island_expansion %s" % [island_cell])
+			else:
+				deductions.add_deduction(choked_cell, CELL_ISLAND, "island_chokepoint %s" % [island_cell])
+		else:
+			deductions.add_deduction(choked_cell, CELL_WALL, "island_buffer %s" % [island_cell])
+
+
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
 	if not board.get_cell_string(clue_cell) == "1":
 		return
@@ -333,6 +348,10 @@ func enqueue_island_chokepoints() -> void:
 	var chokepoints: Array[Vector2i] = board.get_island_chokepoint_map().chokepoints_by_cell.keys()
 	for chokepoint: Vector2i in chokepoints:
 		schedule_task(deduce_island_chokepoint.bind(chokepoint), 230)
+	
+	var islands: Array[Array] = board.get_islands()
+	for island: Array[Vector2i] in islands:
+		schedule_task(deduce_clue_chokepoint.bind(island.front()), 225)
 
 
 func enqueue_islands() -> void:
