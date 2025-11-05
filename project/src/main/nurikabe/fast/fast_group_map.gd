@@ -1,4 +1,7 @@
 class_name FastGroupMap
+## Groups connected cells of a given type (islands, walls, etc.) into disjoint sets.[br]
+## [br]
+## Flood-fills all cells matching the filter. O(n) build.
 
 var groups: Array[Array]:
 	get():

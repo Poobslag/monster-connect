@@ -1,4 +1,8 @@
 class_name GlobalReachabilityMap
+## Calculates whether each empty cell is reachable by a clue.[br]
+## [br]
+## Expands a multi-source BFS wave from all clues, where each clue's reach decays with distance and remaining quota
+## (clue value - island size). Conceptually forms overlapping pyramids of influence. O(n) build.
 
 enum ClueReachability {
 	UNKNOWN,

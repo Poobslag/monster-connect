@@ -1,4 +1,7 @@
 class_name GroupMap
+## Groups connected cells into disjoint sets.[br]
+## [br]
+## Flood-fills all provided cells. O(n) build, single pass over grid.
 
 var cells: Array[Vector2i]
 var groups_by_cell: Dictionary[Vector2i, Array]

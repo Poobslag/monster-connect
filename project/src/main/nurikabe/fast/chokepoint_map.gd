@@ -1,5 +1,7 @@
 class_name ChokepointMap
-## Implements Tarjan's Articulation Point algorithm for finding chokepoints in a set of orthogonally connected cells.
+## Identifies articulation points within the specified cells.[br]
+## [br]
+## Uses Tarjan's articulation-point algorithm. O(n) build.
 
 var cells: Array[Vector2i]
 var chokepoints_by_cell: Dictionary[Vector2i, bool] = {}

@@ -1,4 +1,7 @@
 class_name FastChokepointMap
+## Identifies articulation points within the specified Nurikabe region type (islands, walls, etc.)[br]
+## [br]
+## Uses Tarjan's articulation-point algorithm on cells matching the filter. O(n) build.
 
 var chokepoints_by_cell: Dictionary[Vector2i, bool]:
 	get():
