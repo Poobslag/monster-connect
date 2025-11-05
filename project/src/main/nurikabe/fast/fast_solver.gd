@@ -170,21 +170,21 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 				"adjacent_clues %s %s" % [adjacent_clues[0], adjacent_clues[1]])
 
 
-func deduce_island_chokepoint(chokepoint_cell: Vector2i) -> void:
-	if not _can_deduce(board, chokepoint_cell):
+func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
+	if not _can_deduce(board, chokepoint):
 		return
-	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint_cell)
+	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint)
 	if clue_cell == POS_NOT_FOUND:
 		return
 	var unchoked_cell_count: int = \
-			board.get_island_chokepoint_map().get_unchoked_cell_count(chokepoint_cell, clue_cell)
+			board.get_island_chokepoint_map().get_unchoked_cell_count(chokepoint, clue_cell)
 	if unchoked_cell_count < int(board.cells[clue_cell]):
 		var liberties: Array[Vector2i] = board.get_liberties(board.get_island_for_cell(clue_cell))
-		if chokepoint_cell in liberties:
-			deductions.add_deduction(chokepoint_cell, CELL_ISLAND,
+		if chokepoint in liberties:
+			deductions.add_deduction(chokepoint, CELL_ISLAND,
 				"island_expansion %s" % [clue_cell])
 		else:
-			deductions.add_deduction(chokepoint_cell, CELL_ISLAND,
+			deductions.add_deduction(chokepoint, CELL_ISLAND,
 				"island_chokepoint %s" % [clue_cell])
 
 

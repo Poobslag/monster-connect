@@ -43,6 +43,7 @@ func get_component_cells(cell: Vector2i) -> Array[Vector2i]:
 	return _subtree_cells_by_root[cell_root]
 
 
+## Returns the number of cells reachable from [param cell] if the specified [param chokepoint] were removed.
 func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 	var result: int
 	
