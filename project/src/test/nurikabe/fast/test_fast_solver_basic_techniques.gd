@@ -37,6 +37,20 @@ func test_enqueue_islands_island_expansion_2() -> void:
 	assert_deduction(solver.enqueue_island_chokepoints, expected)
 
 
+func test_enqueue_islands_island_chokepoint_1() -> void:
+	grid = [
+		"   2####",
+		"       5",
+		"        ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 1), CELL_WALL, "island_buffer (3, 1)"),
+		FastDeduction.new(Vector2i(1, 2), CELL_ISLAND, "island_chokepoint (3, 1)"),
+		FastDeduction.new(Vector2i(2, 2), CELL_ISLAND, "island_chokepoint (3, 1)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
 func test_enqueue_islands_island_expansion_and_moat() -> void:
 	grid = [
 		" 2    ",
