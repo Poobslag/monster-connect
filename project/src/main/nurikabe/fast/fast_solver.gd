@@ -82,6 +82,13 @@ func schedule_tasks() -> void:
 	elif get_last_run(enqueue_unreachable_squares) < board.get_filled_cell_count():
 		schedule_task(enqueue_unreachable_squares, 35)
 	
+	if has_scheduled_task(enqueue_wall_chokepoints):
+		pass
+	elif get_last_run(enqueue_wall_chokepoints) == -1:
+		schedule_task(enqueue_wall_chokepoints, 135)
+	elif get_last_run(enqueue_wall_chokepoints) < board.get_filled_cell_count():
+		schedule_task(enqueue_wall_chokepoints, 35)
+	
 	if has_scheduled_task(enqueue_island_chokepoints):
 		pass
 	elif get_last_run(enqueue_island_chokepoints) == -1:
@@ -306,6 +313,27 @@ func deduce_wall(wall_cell: Vector2i) -> void:
 	deduce_pool(wall_cell)
 
 
+func deduce_wall_chokepoint(chokepoint: Vector2i) -> void:
+	if not _can_deduce(board, chokepoint):
+		return
+	
+	var max_choked_special_count: int = 0
+	var split_neighbor: Vector2i = POS_NOT_FOUND
+	for neighbor: Vector2i in board.get_neighbors(chokepoint):
+		if board.get_cell_string(neighbor) != CELL_WALL:
+			continue
+		var special_count: int = board.get_wall_chokepoint_map().get_component_special_count(neighbor)
+		var unchoked_special_count: int = board.get_wall_chokepoint_map().get_unchoked_special_count(chokepoint, neighbor)
+		var choked_special_count: int = special_count - unchoked_special_count
+		if choked_special_count > max_choked_special_count:
+			split_neighbor = neighbor
+			choked_special_count = max_choked_special_count
+			break
+	
+	if split_neighbor != POS_NOT_FOUND:
+		deductions.add_deduction(chokepoint, CELL_WALL, "wall_connector %s" % [split_neighbor])
+
+
 func deduce_wall_expansion(wall_cell: Vector2i) -> void:
 	var wall: Array[Vector2i] = board.get_wall_for_cell(wall_cell)
 	var liberties: Array[Vector2i] = board.get_liberties(wall)
@@ -367,6 +395,12 @@ func enqueue_island_chokepoints() -> void:
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
 		schedule_task(deduce_clue_chokepoint.bind(island.front()), 225)
+
+
+func enqueue_wall_chokepoints() -> void:
+	var chokepoints: Array[Vector2i] = board.get_wall_chokepoint_map().chokepoints_by_cell.keys()
+	for chokepoint: Vector2i in chokepoints:
+		schedule_task(deduce_wall_chokepoint.bind(chokepoint), 235)
 
 
 func enqueue_islands() -> void:

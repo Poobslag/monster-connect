@@ -69,6 +69,12 @@ func get_island_chokepoint_map() -> FastChokepointMap:
 		_build_island_chokepoint_map)
 
 
+func get_wall_chokepoint_map() -> FastChokepointMap:
+	return _get_cached(
+		"wall_chokepoint_map",
+		_build_wall_chokepoint_map)
+
+
 func get_per_clue_chokepoint_map() -> PerClueChokepointMap:
 	return _get_cached(
 		"per_clue_chokepoint_map",
@@ -204,6 +210,14 @@ func _build_island_group_map() -> FastGroupMap:
 func _build_island_chokepoint_map() -> FastChokepointMap:
 	return FastChokepointMap.new(self, func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+
+
+func _build_wall_chokepoint_map() -> FastChokepointMap:
+	return FastChokepointMap.new(self,
+		func(value: String) -> bool:
+			return value in [CELL_EMPTY, CELL_WALL],
+		func(cell: Vector2i) -> bool:
+			return get_cell_string(cell) == CELL_WALL)
 
 
 func _build_per_clue_chokepoint_map() -> PerClueChokepointMap:

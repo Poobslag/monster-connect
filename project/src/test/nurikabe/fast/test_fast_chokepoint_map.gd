@@ -125,10 +125,34 @@ func test_component_cells_two_clues() -> void:
 	assert_component_cells(chokepoint_map, Vector2(2, 0), [Vector2i(2, 0), Vector2i(2, 1)])
 
 
+func test_special_cell_count_1() -> void:
+	grid = [
+		" 3##  ",
+		"     3",
+		"####  ",
+	]
+	var chokepoint_map: FastChokepointMap = _build_wall_chokepoint_map()
+	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(0, 1)), 2)
+	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(0, 2)), 2)
+	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(1, 0)), 1)
+	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(1, 2)), 2)
+	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(2, 0)), 1)
+	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(2, 2)), 2)
+
+
 func _build_island_chokepoint_map() -> FastChokepointMap:
 	var board: FastBoard = FastTestUtils.init_board(grid)
 	return FastChokepointMap.new(board, func(value: String) -> bool:
 		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+
+
+func _build_wall_chokepoint_map() -> FastChokepointMap:
+	var board: FastBoard = FastTestUtils.init_board(grid)
+	return FastChokepointMap.new(board,
+		func(value: String) -> bool:
+			return value in [CELL_EMPTY, CELL_WALL],
+		func(cell: Vector2i) -> bool:
+			return board.get_cell_string(cell) == CELL_WALL)
 
 
 func assert_chokepoints(chokepoint_map: FastChokepointMap,
