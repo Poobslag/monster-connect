@@ -275,7 +275,7 @@ class ValidationResult:
 		get:
 			return joined_islands.size() + joined_islands_unfixable.size() \
 					+ pools.size() + split_walls.size() + split_walls_unfixable.size() \
-					+ unclued_islands.size() + wrong_size.size() + + wrong_size_unfixable.size()
+					+ unclued_islands.size() + wrong_size.size() + wrong_size_unfixable.size()
 	var unfixable_error_count: int:
 		get:
 			return joined_islands_unfixable.size() \

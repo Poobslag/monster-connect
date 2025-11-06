@@ -40,9 +40,62 @@ func _init(init_board: FastBoard) -> void:
 				_visitable.erase(liberty)
 
 
-func _get_chokepoint_map(island_cell: Vector2i) -> ChokepointMap:
+func get_chokepoint_map(island_cell: Vector2i) -> ChokepointMap:
+	if not _has_chokepoint_map(island_cell):
+		_init_chokepoint_map(island_cell)
 	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
 	return _chokepoint_map_by_clue.get(island_root)
+
+
+## If there are any chokepoints which would prevent the island from being completed, this method returns the cell
+## changes to preserve the island.
+func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String]:
+	var result: Dictionary[Vector2i, String] = {}
+	var chokepoint_map: ChokepointMap = get_chokepoint_map(island_cell)
+	var clue_value: int = _board.get_clue_value_for_cell(island_cell)
+	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
+	
+	for chokepoint: Vector2i in chokepoint_map.chokepoints_by_cell:
+		var unchoked_cell_count: int = chokepoint_map.get_unchoked_cell_count(chokepoint, island_cell)
+		if unchoked_cell_count >= clue_value:
+			continue
+		
+		if _board.get_cell_string(chokepoint) == CELL_EMPTY:
+			# the chokepoint itself must be an island
+			result[chokepoint] = CELL_ISLAND
+		
+		for neighbor_cell: Vector2i in _board.get_neighbors(chokepoint):
+			# buffer wall between this and other clued islands
+			if _needs_buffer(island_root, neighbor_cell):
+				result[neighbor_cell] = CELL_WALL
+		
+		if _board.get_cell_string(chokepoint) == CELL_ISLAND and _board.get_clue_value_for_cell(chokepoint) == 0:
+			# buffer wall for any adjoining unclued islands
+			for liberty_cell in _board.get_liberties(_board.get_island_for_cell(chokepoint)):
+				if _needs_buffer(island_root, liberty_cell):
+					result[liberty_cell] = CELL_WALL
+	
+	return result
+
+
+## If there is exactly enough space for the island to grow, this method returns the cell changes to complete the
+## island.
+func find_snug_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String]:
+	var result: Dictionary[Vector2i, String] = {}
+	var chokepoint_map: ChokepointMap = get_chokepoint_map(island_cell)
+	var clue_value: int = _board.get_clue_value_for_cell(island_cell)
+	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
+	
+	if chokepoint_map.get_component_cell_count(island_cell) == clue_value:
+		var component_cells: Array[Vector2i] = chokepoint_map.get_component_cells(island_cell)
+		for component_cell: Vector2i in component_cells:
+			if _board.get_cell_string(component_cell) == CELL_EMPTY:
+				result[component_cell] = CELL_ISLAND
+			for neighbor_cell: Vector2i in _board.get_neighbors(component_cell):
+				if _needs_buffer(island_root, neighbor_cell):
+					result[neighbor_cell] = CELL_WALL
+	
+	return result
 
 
 func _has_chokepoint_map(island_cell: Vector2i) -> bool:
@@ -83,63 +136,6 @@ func _init_chokepoint_map(island_cell: Vector2i) -> void:
 			queue.append(neighbor)
 	
 	_chokepoint_map_by_clue[island.front()] = ChokepointMap.new(reach_score_by_cell.keys())
-
-
-## If there are any chokepoints which would prevent the island from being completed, this method returns the cell
-## changes to preserve the island.
-func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String]:
-	if not _has_chokepoint_map(island_cell):
-		_init_chokepoint_map(island_cell)
-	
-	var result: Dictionary[Vector2i, String] = {}
-	var chokepoint_map: ChokepointMap = _get_chokepoint_map(island_cell)
-	var clue_value: int = _board.get_clue_value_for_cell(island_cell)
-	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
-	
-	for chokepoint: Vector2i in chokepoint_map.chokepoints_by_cell:
-		var unchoked_cell_count: int = chokepoint_map.get_unchoked_cell_count(chokepoint, island_cell)
-		if unchoked_cell_count >= clue_value:
-			continue
-		
-		if _board.get_cell_string(chokepoint) == CELL_EMPTY:
-			# the chokepoint itself must be an island
-			result[chokepoint] = CELL_ISLAND
-		
-		for neighbor_cell: Vector2i in _board.get_neighbors(chokepoint):
-			# buffer wall between this and other clued islands
-			if _needs_buffer(island_root, neighbor_cell):
-				result[neighbor_cell] = CELL_WALL
-		
-		if _board.get_cell_string(chokepoint) == CELL_ISLAND and _board.get_clue_value_for_cell(chokepoint) == 0:
-			# buffer wall for any adjoining unclued islands
-			for liberty_cell in _board.get_liberties(_board.get_island_for_cell(chokepoint)):
-				if _needs_buffer(island_root, liberty_cell):
-					result[liberty_cell] = CELL_WALL
-	
-	return result
-
-
-## If there is exactly enough space for the island to grow, this method returns the cell changes to complete the
-## island.
-func find_snug_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String]:
-	if not _has_chokepoint_map(island_cell):
-		_init_chokepoint_map(island_cell)
-	
-	var result: Dictionary[Vector2i, String] = {}
-	var chokepoint_map: ChokepointMap = _get_chokepoint_map(island_cell)
-	var clue_value: int = _board.get_clue_value_for_cell(island_cell)
-	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
-	
-	if chokepoint_map.get_component_cell_count(island_cell) == clue_value:
-		var component_cells: Array[Vector2i] = chokepoint_map.get_component_cells(island_cell)
-		for component_cell: Vector2i in component_cells:
-			if _board.get_cell_string(component_cell) == CELL_EMPTY:
-				result[component_cell] = CELL_ISLAND
-			for neighbor_cell: Vector2i in _board.get_neighbors(component_cell):
-				if _needs_buffer(island_root, neighbor_cell):
-					result[neighbor_cell] = CELL_WALL
-	
-	return result
 
 
 func _needs_buffer(island_root: Vector2i, cell: Vector2i) -> bool:

@@ -228,7 +228,7 @@ func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
 	if not board.get_cell_string(clue_cell) == "1":
 		return
-	for neighbor_cell in board.get_neighbors(clue_cell):
+	for neighbor_cell: Vector2i in board.get_neighbors(clue_cell):
 		if not _can_deduce(board, neighbor_cell):
 			continue
 		deductions.add_deduction(neighbor_cell, CELL_WALL,
@@ -376,7 +376,7 @@ func deduce_pool(wall_cell: Vector2i) -> void:
 		if wall_mask in [5, 6, 9, 10]:
 			# Calculate the three pool cells: The two wall cells adjacent to the liberty, and the diagonal cell.
 			var pool: Array[Vector2i] = []
-			for neighbor_cell in board.get_neighbors(liberty):
+			for neighbor_cell: Vector2i in board.get_neighbors(liberty):
 				if neighbor_cell in wall_cell_set:
 					pool.append(neighbor_cell)
 			pool.append(Vector2i(pool[1].x, pool[0].y) if pool[0].x == liberty.x else Vector2i(pool[0].x, pool[1].y))
