@@ -73,6 +73,18 @@ func test_enqueue_island_dividers() -> void:
 	assert_deduction(solver.enqueue_island_dividers, expected)
 
 
+func test_enqueue_islands_corner_island() -> void:
+	# The cell at (1, 1) can't be an island or it would block the 2 island from growing.
+	grid = [
+		" 2  ####",
+		"    ## 1",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 1), CELL_WALL, "corner_island (0, 0)"),
+	]
+	assert_deduction(solver.enqueue_islands, expected)
+
+
 func test_enqueue_islands_island_expansion_1() -> void:
 	grid = [
 		" 4    ",

@@ -242,7 +242,7 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 		# unclued/invalid group
 		return
 	var liberties: Array[Vector2i] = board.get_liberties(island)
-	if liberties.size() == 0:
+	if liberties.is_empty():
 		# sealed group
 		return
 	
@@ -266,6 +266,17 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 			for deduction_cell: Vector2i in board.get_island_chokepoint_map().get_component_cells(island_cell):
 				if _can_deduce(board, deduction_cell):
 					deductions.add_deduction(deduction_cell, CELL_ISLAND, "island_snug %s" % [island_cell])
+		
+		if liberties.size() == 2 and clue_value == island.size() + 1:
+			# If there are two liberties, and the liberties are diagonal, any blank squares connecting those liberties
+			# must be walls.
+			var liberty_connectors: Array[Vector2i] = []
+			liberty_connectors.assign(Utils.intersection( \
+					board.get_neighbors(liberties[0]), board.get_neighbors(liberties[1])))
+			for liberty_connector: Vector2i in liberty_connectors:
+				if not _can_deduce(board, liberty_connector):
+					continue
+				deductions.add_deduction(liberty_connector, CELL_WALL, "corner_island %s" % [island_cell])
 
 
 func deduce_unclued_island(island_cell: Vector2i) -> void:
@@ -349,7 +360,7 @@ func deduce_wall_expansion(wall_cell: Vector2i) -> void:
 func deduce_pool(wall_cell: Vector2i) -> void:
 	var wall: Array[Vector2i] = board.get_wall_for_cell(wall_cell)
 	var liberties: Array[Vector2i] = board.get_liberties(wall)
-	if liberties.size() == 0:
+	if liberties.is_empty():
 		return
 	if wall.size() < 3:
 		return
@@ -392,24 +403,29 @@ func enqueue_adjacent_clues() -> void:
 func enqueue_island_chokepoints() -> void:
 	var chokepoints: Array[Vector2i] = board.get_island_chokepoint_map().chokepoints_by_cell.keys()
 	for chokepoint: Vector2i in chokepoints:
+		if not _can_deduce(board, chokepoint):
+			continue
 		schedule_task(deduce_island_chokepoint.bind(chokepoint), 230)
 	
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
+		if board.get_liberties(island).is_empty():
+			continue
 		schedule_task(deduce_clue_chokepoint.bind(island.front()), 225)
 
 
 func enqueue_wall_chokepoints() -> void:
 	var chokepoints: Array[Vector2i] = board.get_wall_chokepoint_map().chokepoints_by_cell.keys()
 	for chokepoint: Vector2i in chokepoints:
+		if not _can_deduce(board, chokepoint):
+			continue
 		schedule_task(deduce_wall_chokepoint.bind(chokepoint), 235)
 
 
 func enqueue_islands() -> void:
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
-		var liberties: Array[Vector2i] = board.get_liberties(island)
-		if liberties.size() == 0:
+		if board.get_liberties(island).is_empty():
 			continue
 		var clue_value: int = board.get_clue_for_group(island)
 		if clue_value == -1:
@@ -430,23 +446,26 @@ func enqueue_island_dividers() -> void:
 		if clue_value < 1:
 			# unclued/invalid island
 			continue
-		var liberties: Array[Vector2i] = board.get_liberties(island)
-		if liberties.size() > 0:
-			schedule_task(deduce_island_divider.bind(island.front()), 240)
+		if board.get_liberties(island).is_empty():
+			continue
+		schedule_task(deduce_island_divider.bind(island.front()), 240)
 
 
 func enqueue_islands_of_one() -> void:
 	for cell: Vector2i in board.cells:
-		if board.get_cell_string(cell) == "1":
-			schedule_task(deduce_island_of_one.bind(cell), 1100)
+		if board.get_cell_string(cell) != "1":
+			continue
+		if board.get_liberties(board.get_island_for_cell(cell)).is_empty():
+			continue
+		schedule_task(deduce_island_of_one.bind(cell), 1100)
 
 
 func enqueue_walls() -> void:
 	var walls: Array[Array] = board.get_walls()
 	for wall: Array[Vector2i] in walls:
-		var liberties: Array[Vector2i] = board.get_liberties(wall)
-		if liberties.size() > 0:
-			schedule_task(deduce_wall.bind(wall.front()), 245)
+		if board.get_liberties(wall).is_empty():
+			continue
+		schedule_task(deduce_wall.bind(wall.front()), 245)
 
 
 func enqueue_unreachable_squares() -> void:
@@ -500,12 +519,13 @@ func _react_to_changes(changes: Array[Dictionary]) -> void:
 	
 	for wall_root: Vector2i in affected_wall_roots:
 		var wall: Array[Vector2i] = board.get_wall_for_cell(wall_root)
-		if board.get_liberties(wall).size() > 0:
-			schedule_task(deduce_wall.bind(wall_root), 345)
+		if board.get_liberties(wall).is_empty():
+			continue
+		schedule_task(deduce_wall.bind(wall_root), 345)
 	
 	for island_root: Vector2i in affected_island_roots:
 		var island: Array[Vector2i] = board.get_island_for_cell(island_root)
-		if board.get_liberties(island).size() == 0:
+		if board.get_liberties(island).is_empty():
 			continue
 		if board.get_clue_for_group(island) >= 1:
 			schedule_task(deduce_clued_island.bind(island_root), 350)
