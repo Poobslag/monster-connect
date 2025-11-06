@@ -100,6 +100,10 @@ func has_scheduled_task(callable: Callable) -> bool:
 	return not get_scheduled_task(callable).is_empty()
 
 
+func has_scheduled_tasks() -> bool:
+	return not _task_queue.is_empty()
+
+
 func get_scheduled_task(callable: Callable) -> Dictionary[String, Variant]:
 	var key: String = _task_key(callable)
 	var result: Dictionary[String, Variant]
@@ -126,9 +130,6 @@ func schedule_task(callable: Callable, priority: int) -> void:
 
 
 func step() -> void:
-	if _task_queue.is_empty():
-		schedule_tasks()
-	
 	if not _task_queue.is_empty():
 		run_next_task()
 
