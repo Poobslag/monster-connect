@@ -171,6 +171,80 @@ func print_cells() -> void:
 		print(line)
 
 
+func validate() -> ValidationResult:
+	var result: ValidationResult = ValidationResult.new()
+	
+	# joined islands
+	for island: Array[Vector2i] in get_islands():
+		if get_clue_for_group(island) == -1:
+			for cell: Vector2i in island:
+				result.joined_islands.append(cell)
+	
+	# pools
+	for wall: Array[Vector2i] in get_walls():
+		if wall.size() < 4:
+			continue
+		var wall_cell_set: Dictionary[Vector2i, bool] = {}
+		var pool_cell_set: Dictionary[Vector2i, bool] = {}
+		for next_wall_cell: Vector2i in wall:
+			wall_cell_set[next_wall_cell] = true
+		for next_wall_cell: Vector2i in wall:
+			if wall_cell_set.has(next_wall_cell + Vector2i(0, 1)) \
+					and wall_cell_set.has(next_wall_cell + Vector2i(1, 0)) \
+					and wall_cell_set.has(next_wall_cell + Vector2i(1, 1)):
+				pool_cell_set[next_wall_cell] = true
+				pool_cell_set[next_wall_cell + Vector2i(0, 1)] = true
+				pool_cell_set[next_wall_cell + Vector2i(1, 0)] = true
+				pool_cell_set[next_wall_cell + Vector2i(1, 1)] = true
+		for pool_cell: Vector2i in pool_cell_set:
+			result.pools.append(pool_cell)
+	
+	# split walls
+	var wall_chokepoint_map: FastChokepointMap = get_wall_chokepoint_map()
+	if wall_chokepoint_map.get_subtree_roots().size() > 1:
+		var components: Array[Dictionary] = []
+		for subtree_root: Vector2i in wall_chokepoint_map.get_subtree_roots():
+			var special_count: int = wall_chokepoint_map.get_component_special_count(subtree_root)
+			components.append({"root": subtree_root, "special_count": special_count} as Dictionary[String, Variant])
+		components.sort_custom(func(a: Dictionary[String, Variant], b: Dictionary[String, Variant]) -> bool:
+			return a["special_count"] > b["special_count"])
+		var split_root_set: Dictionary[Vector2i, bool] = {}
+		for component_index in range(1, components.size()):
+			var component: Dictionary[String, Variant] = components[component_index]
+			if component["special_count"] > 0:
+				split_root_set[component["root"]] = true
+		if not split_root_set.is_empty():
+			for wall: Array[Vector2i] in get_walls():
+				if split_root_set.has(wall_chokepoint_map.get_subtree_root(wall.front())):
+					result.split_walls.append_array(wall)
+	
+	# unclued islands
+	for island: Array[Vector2i] in get_islands():
+		if get_liberties(island).size() == 0 and get_clue_for_group(island) == 0:
+			result.unclued_islands.append_array(island)
+	
+	# wrong size
+	for island: Array[Vector2i] in get_islands():
+		var island_cell: Vector2i = island.front()
+		var clue_value: int = get_clue_value_for_cell(island_cell)
+		if clue_value == 0 or clue_value == -1:
+			continue
+		
+		if clue_value < island.size():
+			# island is too large
+			result.wrong_size.append_array(island)
+			continue
+		
+		var chokepoint_map: ChokepointMap = get_per_clue_chokepoint_map().get_chokepoint_map(island_cell)
+		var island_max_size: int = chokepoint_map.get_component_cells(island_cell).size()
+		if clue_value > island_max_size:
+			# island is too small and can't grow
+			result.wrong_size.append_array(island)
+			continue
+	
+	return result
+
+
 func _build_global_reachability_map() -> GlobalReachabilityMap:
 	return GlobalReachabilityMap.new(self)
 
@@ -233,3 +307,16 @@ func _get_cached(cache_key: String, builder: Callable) -> Variant:
 	if not _cache.has(cache_key):
 		_cache[cache_key] = builder.call()
 	return _cache[cache_key]
+
+
+class ValidationResult:
+	var joined_islands: Array[Vector2i] = []
+	var pools: Array[Vector2i] = []
+	var split_walls: Array[Vector2i] = []
+	var unclued_islands: Array[Vector2i] = []
+	var wrong_size: Array[Vector2i] = []
+	var error_count: int:
+		get:
+			return joined_islands.size() \
+					+ pools.size() + split_walls.size() \
+					+ unclued_islands.size() + wrong_size.size()

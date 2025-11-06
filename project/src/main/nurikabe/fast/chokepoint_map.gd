@@ -4,6 +4,7 @@ class_name ChokepointMap
 ## Uses Tarjan's articulation-point algorithm. O(n) build.
 
 var cells: Array[Vector2i]
+
 var chokepoints_by_cell: Dictionary[Vector2i, bool] = {}
 
 ## Active neighbors for each cell (often called 'adj').
@@ -20,6 +21,8 @@ var _parent_by_cell: Dictionary[Vector2i, Vector2i] = {}
 
 ## Topmost ancestor of each cell in the DFS tree.
 var _subtree_cells_by_root: Dictionary[Vector2i, Array] = {}
+
+var _subtree_roots: Array[Vector2i] = []
 
 var _subtree_root_by_cell: Dictionary[Vector2i, Vector2i] = {}
 
@@ -52,6 +55,10 @@ func get_component_cells(cell: Vector2i) -> Array[Vector2i]:
 func get_component_special_count(cell: Vector2i) -> int:
 	var cell_root: Vector2i = get_subtree_root(cell)
 	return _subtree_special_count_by_cell[cell_root]
+
+
+func get_subtree_roots() -> Array[Vector2i]:
+	return _subtree_roots
 
 
 ## Returns the topmost ancestor of [param cell] in the DFS tree.
@@ -135,6 +142,7 @@ func _build() -> void:
 		if _discovery_time_by_cell.has(cell):
 			# already visited
 			continue
+		_subtree_roots.append(cell)
 		_perform_dfs(cell)
 
 
