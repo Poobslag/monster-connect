@@ -322,8 +322,10 @@ func deduce_wall_chokepoint(chokepoint: Vector2i) -> void:
 	for neighbor: Vector2i in board.get_neighbors(chokepoint):
 		if board.get_cell_string(neighbor) != CELL_WALL:
 			continue
-		var special_count: int = board.get_wall_chokepoint_map().get_component_special_count(neighbor)
-		var unchoked_special_count: int = board.get_wall_chokepoint_map().get_unchoked_special_count(chokepoint, neighbor)
+		var special_count: int = board.get_wall_chokepoint_map() \
+				.get_component_special_count(neighbor)
+		var unchoked_special_count: int = board.get_wall_chokepoint_map() \
+				.get_unchoked_special_count(chokepoint, neighbor)
 		var choked_special_count: int = special_count - unchoked_special_count
 		if choked_special_count > max_choked_special_count:
 			split_neighbor = neighbor
@@ -451,7 +453,8 @@ func enqueue_unreachable_squares() -> void:
 	for cell: Vector2i in board.cells:
 		if not _can_deduce(board, cell):
 			continue
-		if board.get_global_reachability_map().get_clue_reachability(cell) == GlobalReachabilityMap.ClueReachability.REACHABLE:
+		if board.get_global_reachability_map().get_clue_reachability(cell) \
+				== GlobalReachabilityMap.ClueReachability.REACHABLE:
 			continue
 		schedule_task(deduce_unreachable_square.bind(cell), 235)
 
