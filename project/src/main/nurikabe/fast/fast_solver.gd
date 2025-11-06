@@ -417,6 +417,8 @@ func enqueue_unreachable_squares() -> void:
 	for cell: Vector2i in board.cells:
 		if not _can_deduce(board, cell):
 			continue
+		if board.get_global_reachability_map().get_clue_reachability(cell) == GlobalReachabilityMap.ClueReachability.REACHABLE:
+			continue
 		schedule_task(deduce_unreachable_square.bind(cell), 235)
 
 

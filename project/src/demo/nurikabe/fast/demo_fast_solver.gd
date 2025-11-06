@@ -52,7 +52,7 @@ func solve() -> void:
 		_show_message("--------")
 	
 	var idle_steps: int = 0
-	while idle_steps < 2 * solver.board.cells.size() and not solver.board.is_filled() and changes.size() < 5:
+	while idle_steps < 100 and not solver.board.is_filled() and changes.size() < 5:
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
 		
 		if not solver.has_scheduled_tasks():
@@ -89,7 +89,7 @@ func performance_test() -> void:
 	var start_time: float = Time.get_ticks_usec()
 	
 	var idle_steps: int = 0
-	while idle_steps < 2 * solver.board.cells.size() and not solver.board.is_filled():
+	while idle_steps < 100 and not solver.board.is_filled():
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
 		
 		if not solver.has_scheduled_tasks():
