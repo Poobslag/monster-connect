@@ -26,11 +26,16 @@ var _subtree_root_by_cell: Dictionary[Vector2i, Vector2i] = {}
 ## Number of nodes in each cell's DFS subtree. Not required for Tarjan's algorithm, but used by [unchoked_cell_count].
 var _subtree_size_by_cell: Dictionary[Vector2i, int] = {}
 
+var _subtree_special_count_by_cell: Dictionary[Vector2i, int] = {}
+
 ## Global discovery counter incremented during DFS (often called 'time')
 var _discovery_time: int = 0
 
-func _init(init_cells: Array[Vector2i]) -> void:
+var _special_cell_filter: Callable
+
+func _init(init_cells: Array[Vector2i], init_special_cell_filter: Callable = Callable()) -> void:
 	cells = init_cells
+	_special_cell_filter = init_special_cell_filter
 	_build()
 
 
@@ -44,13 +49,30 @@ func get_component_cells(cell: Vector2i) -> Array[Vector2i]:
 	return _subtree_cells_by_root[cell_root]
 
 
+func get_component_special_count(cell: Vector2i) -> int:
+	var cell_root: Vector2i = get_subtree_root(cell)
+	return _subtree_special_count_by_cell[cell_root]
+
+
 ## Returns the topmost ancestor of [param cell] in the DFS tree.
 func get_subtree_root(cell: Vector2i) -> Vector2i:
 	return _subtree_root_by_cell[cell] if _subtree_root_by_cell.has(cell) else cell
 
 
+## Returns the number of special cells reachable from [param cell] if the specified [param chokepoint] were removed.
+func get_unchoked_special_count(chokepoint: Vector2i, cell: Vector2i) -> int:
+	return _internal_get_unchoked_cell_count(chokepoint, cell, _subtree_special_count_by_cell,
+			_special_cell_filter.call(chokepoint))
+
+
 ## Returns the number of cells reachable from [param cell] if the specified [param chokepoint] were removed.
 func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
+	return _internal_get_unchoked_cell_count(chokepoint, cell, _subtree_size_by_cell)
+
+
+func _internal_get_unchoked_cell_count(
+		chokepoint: Vector2i, cell: Vector2i, count_by_cell: Dictionary[Vector2i, int],
+		subtract_chokepoint: bool = true) -> int:
 	var result: int
 	
 	var chokepoint_root: Vector2i = get_subtree_root(chokepoint)
@@ -61,11 +83,11 @@ func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 		if cell_root == chokepoint_root:
 			# Cell shares a component with chokepoint.
 			# Return the size of the cell component - 1.
-			result = _subtree_size_by_cell[cell_root] - 1
+			result = count_by_cell[cell_root] - 1
 		else:
 			# Cell does not share a component with chokepoint.
 			# Return the size of the cell component.
-			result = _subtree_size_by_cell[cell_root]
+			result = count_by_cell[cell_root]
 	else:
 		var branch_root: Vector2i = _find_subtree_root_under_chokepoint(chokepoint, cell)
 		if _parent_by_cell.get(branch_root) == chokepoint:
@@ -73,7 +95,7 @@ func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 			if _lowest_index_by_cell[branch_root] >= _discovery_time_by_cell[chokepoint]:
 				# Cell is only connected to the root through the chokepoint.
 				# Return the size of the chokepoint subtree containing cell.
-				result = _subtree_size_by_cell[branch_root]
+				result = count_by_cell[branch_root]
 			else:
 				# Cell is connected to the root through a back reference.
 				# Return the size of the subtree excluding the chokepoint's subtrees and excluding the chokepoint
@@ -83,8 +105,8 @@ func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 					if _parent_by_cell.get(neighbor_cell) == chokepoint \
 							and _lowest_index_by_cell[neighbor_cell] >= _discovery_time_by_cell[chokepoint] \
 							and neighbor_cell != branch_root:
-						detached_sum += _subtree_size_by_cell[neighbor_cell]
-				result = _subtree_size_by_cell[cell_root] - detached_sum - 1
+						detached_sum += count_by_cell[neighbor_cell]
+				result = count_by_cell[cell_root] - detached_sum - (1 if subtract_chokepoint else 0)
 		else:
 			# Cell is not a descendant of the chokepoint.
 			# Return the size of the subtree excluding the chokepoint's subtrees and excluding the chokepoint itself.
@@ -92,8 +114,8 @@ func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 			for neighbor_cell: Vector2i in _neighbors_by_cell[chokepoint]:
 				if _parent_by_cell.get(neighbor_cell) == chokepoint \
 						and _lowest_index_by_cell[neighbor_cell] >= _discovery_time_by_cell[chokepoint]:
-					detached_sum += _subtree_size_by_cell[neighbor_cell]
-			result = _subtree_size_by_cell[cell_root] - detached_sum - 1
+					detached_sum += count_by_cell[neighbor_cell]
+			result = count_by_cell[cell_root] - detached_sum - (1 if subtract_chokepoint else 0)
 	return result
 
 
@@ -121,6 +143,7 @@ func _perform_dfs(cell: Vector2i) -> void:
 	_lowest_index_by_cell[cell] = _discovery_time
 	_discovery_time += 1
 	var children: int = 0
+	var subtree_special_count: int = 1 if _special_cell_filter and _special_cell_filter.call(cell) else 0
 	var subtree_size: int = 1
 	var subtree_root: Vector2i = get_subtree_root(cell)
 	if not _subtree_cells_by_root.has(subtree_root):
@@ -134,6 +157,7 @@ func _perform_dfs(cell: Vector2i) -> void:
 			_subtree_root_by_cell[neighbor_cell] = subtree_root
 			_perform_dfs(neighbor_cell)
 			subtree_size += _subtree_size_by_cell[neighbor_cell]
+			subtree_special_count += _subtree_special_count_by_cell[neighbor_cell]
 			_lowest_index_by_cell[cell] = min(_lowest_index_by_cell[cell], _lowest_index_by_cell[neighbor_cell])
 			if not _parent_by_cell.has(cell) and children > 1:
 				chokepoints_by_cell[cell] = true
@@ -143,6 +167,7 @@ func _perform_dfs(cell: Vector2i) -> void:
 			_lowest_index_by_cell[cell] = min(_lowest_index_by_cell[cell], _discovery_time_by_cell[neighbor_cell])
 	
 	_subtree_size_by_cell[cell] = subtree_size
+	_subtree_special_count_by_cell[cell] = subtree_special_count
 
 
 ## Returns the topmost ancestor of [param cell] whose parent is [param chokepoint].[br]

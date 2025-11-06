@@ -203,6 +203,18 @@ func test_enqueue_unreachable_squares_wall_bubble() -> void:
 	assert_deduction(solver.enqueue_unreachable_squares, expected)
 
 
+func test_enqueue_wall_chokepoints() -> void:
+	grid = [
+		" 3##  ",
+		"     3",
+		"####  ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 1), CELL_WALL, "wall_connector (1, 0)"),
+	]
+	assert_deduction(solver.enqueue_wall_chokepoints, expected)
+
+
 func test_enqueue_walls_pool_triplet_1() -> void:
 	grid = [
 		" 4    ",
