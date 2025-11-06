@@ -176,9 +176,10 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint)
 	if clue_cell == POS_NOT_FOUND:
 		return
+	var clue_value: int = int(board.cells[clue_cell])
 	var unchoked_cell_count: int = \
 			board.get_island_chokepoint_map().get_unchoked_cell_count(chokepoint, clue_cell)
-	if unchoked_cell_count < int(board.cells[clue_cell]):
+	if unchoked_cell_count < clue_value:
 		var liberties: Array[Vector2i] = board.get_liberties(board.get_island_for_cell(clue_cell))
 		if chokepoint in liberties:
 			deductions.add_deduction(chokepoint, CELL_ISLAND,
@@ -190,17 +191,30 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 
 func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
-	var result: Dictionary[Vector2i, String] = board.get_per_clue_chokepoint_map().choke_island(island_cell)
-	for choked_cell in result:
-		if not _can_deduce(board, choked_cell):
+	
+	var snug_cells: Dictionary[Vector2i, String] = \
+			board.get_per_clue_chokepoint_map().find_snug_cells(island_cell)
+	for snug_cell in snug_cells:
+		if not _can_deduce(board, snug_cell):
 			continue
-		if result[choked_cell] == CELL_ISLAND:
-			if choked_cell in board.get_liberties(island):
-				deductions.add_deduction(choked_cell, CELL_ISLAND, "island_expansion %s" % [island_cell])
-			else:
-				deductions.add_deduction(choked_cell, CELL_ISLAND, "island_chokepoint %s" % [island_cell])
+		if snug_cells[snug_cell] == CELL_ISLAND:
+			deductions.add_deduction(snug_cell, CELL_ISLAND, "island_snug %s" % [island_cell])
 		else:
-			deductions.add_deduction(choked_cell, CELL_WALL, "island_buffer %s" % [island_cell])
+			deductions.add_deduction(snug_cell, CELL_WALL, "island_buffer %s" % [island_cell])
+	
+	if snug_cells.is_empty():
+		var chokepoint_cells: Dictionary[Vector2i, String] = \
+				board.get_per_clue_chokepoint_map().find_chokepoint_cells(island_cell)
+		for chokepoint: Vector2i in chokepoint_cells:
+			if not _can_deduce(board, chokepoint):
+				continue
+			if chokepoint_cells[chokepoint] == CELL_ISLAND:
+				if chokepoint in board.get_liberties(island):
+					deductions.add_deduction(chokepoint, CELL_ISLAND, "island_expansion %s" % [island_cell])
+				else:
+					deductions.add_deduction(chokepoint, CELL_ISLAND, "island_chokepoint %s" % [island_cell])
+			else:
+				deductions.add_deduction(chokepoint, CELL_WALL, "island_buffer %s" % [island_cell])
 
 
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
