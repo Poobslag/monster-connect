@@ -52,11 +52,20 @@ func solve() -> void:
 		_show_message("--------")
 	
 	var idle_steps: int = 0
-	while changes.size() < 5 and idle_steps < 10:
+	while idle_steps < 2 * solver.board.cells.size() and not solver.board.is_filled() and changes.size() < 5:
+		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
+		
+		if not solver.has_scheduled_tasks():
+			solver.schedule_tasks()
+		if not solver.has_scheduled_tasks():
+			break
 		solver.step()
 		changes = solver.get_changes()
-		if solver.is_queue_empty():
+		
+		if old_filled_cell_count == solver.board.get_filled_cell_count():
 			idle_steps += 1
+		else:
+			idle_steps = 0
 	
 	if changes.is_empty():
 		_show_message("(no changes)")
@@ -80,9 +89,13 @@ func performance_test() -> void:
 	var start_time: float = Time.get_ticks_usec()
 	
 	var idle_steps: int = 0
-	while idle_steps < 200 and not solver.board.is_filled():
+	while idle_steps < 2 * solver.board.cells.size() and not solver.board.is_filled():
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
 		
+		if not solver.has_scheduled_tasks():
+			solver.schedule_tasks()
+		if not solver.has_scheduled_tasks():
+			break
 		solver.step()
 		solver.apply_changes()
 		
