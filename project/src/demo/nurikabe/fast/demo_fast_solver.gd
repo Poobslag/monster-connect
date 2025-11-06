@@ -80,7 +80,7 @@ func performance_test() -> void:
 	var start_time: float = Time.get_ticks_usec()
 	
 	var idle_steps: int = 0
-	while idle_steps < 100 and not solver.board.is_filled():
+	while idle_steps < 200 and not solver.board.is_filled():
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
 		
 		solver.step()
