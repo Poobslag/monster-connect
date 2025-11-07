@@ -373,7 +373,7 @@ func deduce_pool(wall_cell: Vector2i) -> void:
 			continue
 		var wall_mask: int = neighbor_mask(liberty, func(cell: Vector2i) -> bool:
 			return wall_cell_set.has(cell))
-		if wall_mask in [5, 6, 9, 10]:
+		if wall_mask in [5, 6, 7, 9, 10, 11, 13, 14]:
 			# Calculate the three pool cells: The two wall cells adjacent to the liberty, and the diagonal cell.
 			var pool: Array[Vector2i] = []
 			for neighbor_cell: Vector2i in board.get_neighbors(liberty):
