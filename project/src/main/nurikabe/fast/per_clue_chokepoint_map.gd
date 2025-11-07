@@ -64,10 +64,10 @@ func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String
 			# the chokepoint itself must be an island
 			result[chokepoint] = CELL_ISLAND
 		
-		for neighbor_cell: Vector2i in _board.get_neighbors(chokepoint):
+		for neighbor: Vector2i in _board.get_neighbors(chokepoint):
 			# buffer wall between this and other clued islands
-			if _needs_buffer(island_root, neighbor_cell):
-				result[neighbor_cell] = CELL_WALL
+			if _needs_buffer(island_root, neighbor):
+				result[neighbor] = CELL_WALL
 		
 		if _board.get_cell_string(chokepoint) == CELL_ISLAND and _board.get_clue_value_for_cell(chokepoint) == 0:
 			# buffer wall for any adjoining unclued islands
@@ -91,9 +91,9 @@ func find_snug_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String]:
 		for component_cell: Vector2i in component_cells:
 			if _board.get_cell_string(component_cell) == CELL_EMPTY:
 				result[component_cell] = CELL_ISLAND
-			for neighbor_cell: Vector2i in _board.get_neighbors(component_cell):
-				if _needs_buffer(island_root, neighbor_cell):
-					result[neighbor_cell] = CELL_WALL
+			for neighbor: Vector2i in _board.get_neighbors(component_cell):
+				if _needs_buffer(island_root, neighbor):
+					result[neighbor] = CELL_WALL
 	
 	return result
 

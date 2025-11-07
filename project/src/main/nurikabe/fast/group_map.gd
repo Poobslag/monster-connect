@@ -36,11 +36,11 @@ func _build() -> void:
 			groups_by_cell[cell] = group
 			roots_by_cell[cell] = group.front()
 			
-			for neighbor_cell: Vector2i in [
+			for neighbor: Vector2i in [
 				cell + Vector2i.UP, cell + Vector2i.DOWN,
 				cell + Vector2i.LEFT, cell + Vector2i.RIGHT]:
-				if neighbor_cell in unvisited:
-					queue.push_back(neighbor_cell)
-					unvisited.erase(neighbor_cell)
+				if neighbor in unvisited:
+					queue.push_back(neighbor)
+					unvisited.erase(neighbor)
 		
 		groups.append(group)

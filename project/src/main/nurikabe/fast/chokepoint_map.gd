@@ -108,20 +108,20 @@ func _internal_get_unchoked_cell_count(
 				# Return the size of the subtree excluding the chokepoint's subtrees and excluding the chokepoint
 				# itself.
 				var detached_sum := 0
-				for neighbor_cell: Vector2i in _neighbors_by_cell[chokepoint]:
-					if _parent_by_cell.get(neighbor_cell) == chokepoint \
-							and _lowest_index_by_cell[neighbor_cell] >= _discovery_time_by_cell[chokepoint] \
-							and neighbor_cell != branch_root:
-						detached_sum += count_by_cell[neighbor_cell]
+				for neighbor: Vector2i in _neighbors_by_cell[chokepoint]:
+					if _parent_by_cell.get(neighbor) == chokepoint \
+							and _lowest_index_by_cell[neighbor] >= _discovery_time_by_cell[chokepoint] \
+							and neighbor != branch_root:
+						detached_sum += count_by_cell[neighbor]
 				result = count_by_cell[cell_root] - detached_sum - (1 if subtract_chokepoint else 0)
 		else:
 			# Cell is not a descendant of the chokepoint.
 			# Return the size of the subtree excluding the chokepoint's subtrees and excluding the chokepoint itself.
 			var detached_sum := 0
-			for neighbor_cell: Vector2i in _neighbors_by_cell[chokepoint]:
-				if _parent_by_cell.get(neighbor_cell) == chokepoint \
-						and _lowest_index_by_cell[neighbor_cell] >= _discovery_time_by_cell[chokepoint]:
-					detached_sum += count_by_cell[neighbor_cell]
+			for neighbor: Vector2i in _neighbors_by_cell[chokepoint]:
+				if _parent_by_cell.get(neighbor) == chokepoint \
+						and _lowest_index_by_cell[neighbor] >= _discovery_time_by_cell[chokepoint]:
+					detached_sum += count_by_cell[neighbor]
 			result = count_by_cell[cell_root] - detached_sum - (1 if subtract_chokepoint else 0)
 	return result
 
@@ -131,11 +131,11 @@ func _build() -> void:
 	for cell: Vector2i in cells:
 		_neighbors_by_cell[cell] = [] as Array[Vector2i]
 	for cell: Vector2i in cells:
-		for neighbor_cell: Vector2i in [
+		for neighbor: Vector2i in [
 				cell + Vector2i.UP, cell + Vector2i.DOWN,
 				cell + Vector2i.LEFT, cell + Vector2i.RIGHT]:
-			if neighbor_cell in _neighbors_by_cell:
-				_neighbors_by_cell[cell].append(neighbor_cell)
+			if neighbor in _neighbors_by_cell:
+				_neighbors_by_cell[cell].append(neighbor)
 	
 	# run tarjan's algorithm
 	for cell: Vector2i in cells:
@@ -158,21 +158,21 @@ func _perform_dfs(cell: Vector2i) -> void:
 		_subtree_cells_by_root[subtree_root] = [] as Array[Vector2i]
 	_subtree_cells_by_root[subtree_root].append(cell)
 	
-	for neighbor_cell: Vector2i in _neighbors_by_cell[cell]:
-		if not _discovery_time_by_cell.has(neighbor_cell):
+	for neighbor: Vector2i in _neighbors_by_cell[cell]:
+		if not _discovery_time_by_cell.has(neighbor):
 			children += 1
-			_parent_by_cell[neighbor_cell] = cell
-			_subtree_root_by_cell[neighbor_cell] = subtree_root
-			_perform_dfs(neighbor_cell)
-			subtree_size += _subtree_size_by_cell[neighbor_cell]
-			subtree_special_count += _subtree_special_count_by_cell[neighbor_cell]
-			_lowest_index_by_cell[cell] = min(_lowest_index_by_cell[cell], _lowest_index_by_cell[neighbor_cell])
+			_parent_by_cell[neighbor] = cell
+			_subtree_root_by_cell[neighbor] = subtree_root
+			_perform_dfs(neighbor)
+			subtree_size += _subtree_size_by_cell[neighbor]
+			subtree_special_count += _subtree_special_count_by_cell[neighbor]
+			_lowest_index_by_cell[cell] = min(_lowest_index_by_cell[cell], _lowest_index_by_cell[neighbor])
 			if not _parent_by_cell.has(cell) and children > 1:
 				chokepoints_by_cell[cell] = true
-			if _parent_by_cell.has(cell) and _lowest_index_by_cell[neighbor_cell] >= _discovery_time_by_cell[cell]:
+			if _parent_by_cell.has(cell) and _lowest_index_by_cell[neighbor] >= _discovery_time_by_cell[cell]:
 				chokepoints_by_cell[cell] = true
-		elif neighbor_cell != _parent_by_cell.get(cell):
-			_lowest_index_by_cell[cell] = min(_lowest_index_by_cell[cell], _discovery_time_by_cell[neighbor_cell])
+		elif neighbor != _parent_by_cell.get(cell):
+			_lowest_index_by_cell[cell] = min(_lowest_index_by_cell[cell], _discovery_time_by_cell[neighbor])
 	
 	_subtree_size_by_cell[cell] = subtree_size
 	_subtree_special_count_by_cell[cell] = subtree_special_count

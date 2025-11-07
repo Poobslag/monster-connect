@@ -195,12 +195,12 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 	if not board.get_cell_string(clue_cell).is_valid_int():
 		return
 	
-	for neighbor_cell: Vector2i in board.get_neighbors(clue_cell):
-		if not _can_deduce(board, neighbor_cell):
+	for neighbor: Vector2i in board.get_neighbors(clue_cell):
+		if not _can_deduce(board, neighbor):
 			continue
-		var adjacent_clues: Array[Vector2i] = _find_adjacent_clues(neighbor_cell)
+		var adjacent_clues: Array[Vector2i] = _find_adjacent_clues(neighbor)
 		if adjacent_clues.size() >= 2:
-			add_deduction(neighbor_cell, CELL_WALL,
+			add_deduction(neighbor, CELL_WALL,
 				"adjacent_clues %s %s" % [adjacent_clues[0], adjacent_clues[1]])
 
 
@@ -292,10 +292,10 @@ func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
 	if not board.get_cell_string(clue_cell) == "1":
 		return
-	for neighbor_cell: Vector2i in board.get_neighbors(clue_cell):
-		if not _can_deduce(board, neighbor_cell):
+	for neighbor: Vector2i in board.get_neighbors(clue_cell):
+		if not _can_deduce(board, neighbor):
 			continue
-		add_deduction(neighbor_cell, CELL_WALL,
+		add_deduction(neighbor, CELL_WALL,
 			"island_of_one %s" % [clue_cell])
 
 
@@ -440,9 +440,9 @@ func deduce_pool(wall_cell: Vector2i) -> void:
 		if wall_mask in [5, 6, 7, 9, 10, 11, 13, 14]:
 			# Calculate the three pool cells: The two wall cells adjacent to the liberty, and the diagonal cell.
 			var pool: Array[Vector2i] = []
-			for neighbor_cell: Vector2i in board.get_neighbors(liberty):
-				if neighbor_cell in wall_cell_set:
-					pool.append(neighbor_cell)
+			for neighbor: Vector2i in board.get_neighbors(liberty):
+				if neighbor in wall_cell_set:
+					pool.append(neighbor)
 			pool.append(Vector2i(pool[1].x, pool[0].y) if pool[0].x == liberty.x else Vector2i(pool[0].x, pool[1].y))
 			pool.sort()
 			
@@ -518,18 +518,18 @@ func enqueue_island_battleground() -> void:
 	for cell: Vector2i in clued_island_neighbors_by_empty_cell:
 		if clued_island_neighbors_by_empty_cell[cell].size() != 1:
 			continue
-		for neighbor_cell: Vector2i in board.get_neighbors(cell):
-			if not clued_island_neighbors_by_empty_cell.has(neighbor_cell):
+		for neighbor: Vector2i in board.get_neighbors(cell):
+			if not clued_island_neighbors_by_empty_cell.has(neighbor):
 				continue
-			if clued_island_neighbors_by_empty_cell[neighbor_cell].size() != 1:
+			if clued_island_neighbors_by_empty_cell[neighbor].size() != 1:
 				continue
-			if clued_island_neighbors_by_empty_cell[neighbor_cell][0] == clued_island_neighbors_by_empty_cell[cell][0]:
+			if clued_island_neighbors_by_empty_cell[neighbor][0] == clued_island_neighbors_by_empty_cell[cell][0]:
 				continue
 			var clued_island: Vector2i = clued_island_neighbors_by_empty_cell[cell][0]
-			var neighbor_clued_island: Vector2i = clued_island_neighbors_by_empty_cell[neighbor_cell][0]
+			var neighbor_clued_island: Vector2i = clued_island_neighbors_by_empty_cell[neighbor][0]
 			var reason: String = "island_battleground %s %s" % [clued_island, neighbor_clued_island]
 			_bifurcation_engine.add_scenario(board,
-				{cell: CELL_ISLAND, neighbor_cell: CELL_WALL},
+				{cell: CELL_ISLAND, neighbor: CELL_WALL},
 				[FastDeduction.new(cell, CELL_WALL, reason)])
 	
 	if not has_scheduled_task(run_bifurcation_step):
@@ -649,18 +649,18 @@ func _can_deduce(target_board: FastBoard, cell: Vector2i) -> bool:
 
 func _find_adjacent_clues(cell: Vector2i) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
-	for neighbor_cell: Vector2i in board.get_neighbors(cell):
-		if board.get_cell_string(neighbor_cell).is_valid_int():
-			result.append(neighbor_cell)
+	for neighbor: Vector2i in board.get_neighbors(cell):
+		if board.get_cell_string(neighbor).is_valid_int():
+			result.append(neighbor)
 	return result
 
 
 func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 	var clued_neighbor_roots: Dictionary[Vector2i, bool] = {}
-	for neighbor_cell: Vector2i in board.get_neighbors(cell):
-		if board.get_clue_value_for_cell(neighbor_cell) == 0:
+	for neighbor: Vector2i in board.get_neighbors(cell):
+		if board.get_clue_value_for_cell(neighbor) == 0:
 			continue
-		var neighbor_root: Vector2i = board.get_island_root_for_cell(neighbor_cell)
+		var neighbor_root: Vector2i = board.get_island_root_for_cell(neighbor)
 		clued_neighbor_roots[neighbor_root] = true
 	return clued_neighbor_roots.keys()
 

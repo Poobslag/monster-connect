@@ -206,12 +206,12 @@ func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
 	for group_cell: Vector2i in group:
 		group_cell_set[group_cell] = true
 	for group_cell: Vector2i in group:
-		for neighbor_cell: Vector2i in get_neighbors(group_cell):
-			if neighbor_cell in group_cell_set:
+		for neighbor: Vector2i in get_neighbors(group_cell):
+			if neighbor in group_cell_set:
 				continue
-			if get_cell_string(neighbor_cell) != CELL_EMPTY:
+			if get_cell_string(neighbor) != CELL_EMPTY:
 				continue
-			liberty_cell_set[neighbor_cell] = true
+			liberty_cell_set[neighbor] = true
 	return liberty_cell_set.keys()
 
 
