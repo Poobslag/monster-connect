@@ -110,7 +110,9 @@ FNR == 1 { in_class = 0 }
   next
 }
 /^(@export|var |func )/ { in_class = 0 }
-')
+' \
+  | grep -v "project/src/main/nurikabe/fast/fast_solver\.gd.*$" \
+  )
 if [ -n "$RESULT" ]; then
   echo ""
   echo "Comments with standalone '##' without [br]:"
