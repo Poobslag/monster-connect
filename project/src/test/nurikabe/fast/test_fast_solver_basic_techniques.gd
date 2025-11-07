@@ -5,6 +5,7 @@ func test_enqueue_island_chokepoints_adjacent() -> void:
 		"   4  ",
 		"####  ",
 		"      ",
+		" 3    ",
 	]
 	var expected: Array[FastDeduction] = [
 		FastDeduction.new(Vector2i(2, 0), CELL_ISLAND, "island_expansion (1, 0)"),
@@ -23,6 +24,20 @@ func test_enqueue_island_chokepoints_distant() -> void:
 		FastDeduction.new(Vector2i(1, 1), CELL_WALL, "island_buffer (3, 1)"),
 		FastDeduction.new(Vector2i(1, 2), CELL_ISLAND, "island_chokepoint (3, 1)"),
 		FastDeduction.new(Vector2i(2, 2), CELL_ISLAND, "island_chokepoint (3, 1)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_dead_end() -> void:
+	grid = [
+		"    11 .  ",
+		"######    ",
+		" 7        ",
+		"          ",
+		"          ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 0), CELL_ISLAND, "pool_chokepoint (0, 0)"),
 	]
 	assert_deduction(solver.enqueue_island_chokepoints, expected)
 

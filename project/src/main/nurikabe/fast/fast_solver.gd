@@ -203,6 +203,44 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 		else:
 			add_deduction(chokepoint, CELL_ISLAND,
 				"island_chokepoint %s" % [clue_cell])
+	
+	# Check for two empty cells leading into a dead end, which create a pool.
+	if _can_deduce(board, chokepoint):
+		for dir: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+			if _is_pool_chokepoint(chokepoint, dir):
+				add_deduction(chokepoint, CELL_ISLAND, "pool_chokepoint %s" % [chokepoint + dir])
+
+
+## Returns true if converting the chokepoint to a wall would enclose a 2x2 pool.[br]
+## [codeblock lang=text]
+## +------
+## | 0 2
+## | c n 4
+## | 1 3
+##
+## [0,1]: Cells flanking the chokepoint (diagonals before the corridor)
+## [2,3,4]: Cells forming the dead-end pocket (forward and its sides)
+## c: Island chokepoint
+## n: Neighbor
+## [/codeblock]
+## If the dead-end pocket ([2,3,4]) is fully blocked, and one diagonal pair ([0,2] or [1,3]) are walls,
+## then turning the chokepoint into a wall would create a 2x2 pool.
+func _is_pool_chokepoint(chokepoint: Vector2i, dir: Vector2i) -> bool:
+	if board.get_cell_string(chokepoint) != CELL_EMPTY:
+		return false
+	if board.get_cell_string(chokepoint + dir) != CELL_EMPTY:
+		return false
+	
+	var solid: Array[bool] = []
+	var wall: Array[bool] = []
+	for offset: Vector2i in [
+			Vector2i(-dir.y, dir.x), Vector2i(dir.y, -dir.x),
+			dir + Vector2i(-dir.y, dir.x), dir + Vector2i(dir.y, -dir.x), dir + dir]:
+		solid.append(board.get_cell_string(chokepoint + offset) in [CELL_WALL, CELL_INVALID])
+		wall.append(board.get_cell_string(chokepoint + offset) == CELL_WALL)
+	
+	return (solid[2] and solid[3] and solid[4]) \
+			and (wall[0] and wall[2] or wall[1] and wall[3])
 
 
 func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
