@@ -17,6 +17,7 @@ var _task_history: Dictionary[String, Dictionary] = {
 }
 var _task_queue: Array[Dictionary] = [
 ]
+var _bifurcation_engine: BifurcationEngine = BifurcationEngine.new()
 
 func add_deduction(pos: Vector2i, value: String, reason: String) -> void:
 	deductions.add_deduction(pos, value, reason)
@@ -40,6 +41,7 @@ func apply_changes() -> void:
 
 func clear() -> void:
 	deductions.clear()
+	_bifurcation_engine.clear()
 	_change_history.clear()
 	_task_history.clear()
 	_task_queue.clear()
@@ -101,6 +103,22 @@ func schedule_tasks() -> void:
 		schedule_task(enqueue_island_chokepoints, 130)
 	elif get_last_run(enqueue_island_chokepoints) < board.get_filled_cell_count():
 		schedule_task(enqueue_island_chokepoints, 30)
+	
+	if is_queue_empty():
+		if has_scheduled_task(enqueue_island_battleground):
+			pass
+		elif get_last_run(enqueue_island_battleground) < board.get_filled_cell_count():
+			schedule_task(enqueue_island_battleground, 20)
+		
+		if has_scheduled_task(enqueue_wall_strangle):
+			pass
+		elif get_last_run(enqueue_wall_strangle) < board.get_filled_cell_count():
+			schedule_task(enqueue_wall_strangle, 20)
+		
+		if has_scheduled_task(enqueue_island_strangle):
+			pass
+		elif get_last_run(enqueue_island_strangle) < board.get_filled_cell_count():
+			schedule_task(enqueue_island_strangle, 20)
 
 
 func get_last_run(callable: Callable) -> int:
@@ -485,6 +503,93 @@ func enqueue_islands() -> void:
 			schedule_task(deduce_clued_island.bind(island.front()), 250)
 
 
+func enqueue_island_battleground() -> void:
+	var clued_island_neighbors_by_empty_cell: Dictionary[Vector2i, Array] = {}
+	var islands: Array[Array] = board.get_islands()
+	for island: Array[Vector2i] in islands:
+		if board.get_clue_for_group(island) < 1:
+			# unclued/invalid group
+			continue
+		for liberty: Vector2i in board.get_liberties(island):
+			if not clued_island_neighbors_by_empty_cell.has(liberty):
+				clued_island_neighbors_by_empty_cell[liberty] = []
+			clued_island_neighbors_by_empty_cell[liberty].append(island.front())
+	
+	for cell: Vector2i in clued_island_neighbors_by_empty_cell:
+		if clued_island_neighbors_by_empty_cell[cell].size() != 1:
+			continue
+		for neighbor_cell: Vector2i in board.get_neighbors(cell):
+			if not clued_island_neighbors_by_empty_cell.has(neighbor_cell):
+				continue
+			if clued_island_neighbors_by_empty_cell[neighbor_cell].size() != 1:
+				continue
+			if clued_island_neighbors_by_empty_cell[neighbor_cell][0] == clued_island_neighbors_by_empty_cell[cell][0]:
+				continue
+			var clued_island: Vector2i = clued_island_neighbors_by_empty_cell[cell][0]
+			var neighbor_clued_island: Vector2i = clued_island_neighbors_by_empty_cell[neighbor_cell][0]
+			var reason: String = "island_battleground %s %s" % [clued_island, neighbor_clued_island]
+			_bifurcation_engine.add_scenario(board,
+				{cell: CELL_ISLAND, neighbor_cell: CELL_WALL},
+				[FastDeduction.new(cell, CELL_WALL, reason)])
+	
+	if not has_scheduled_task(run_bifurcation_step):
+		schedule_task(run_bifurcation_step, 10)
+
+
+func enqueue_island_strangle() -> void:
+	for island: Array[Vector2i] in board.get_islands():
+		var clue_value: int = board.get_clue_for_group(island)
+		if island.size() != clue_value - 1:
+			continue
+		var liberties: Array[Vector2i] = board.get_liberties(island)
+		for liberty: Vector2i in liberties:
+			if not _can_deduce(board, liberty):
+				continue
+			
+			var assumptions: Dictionary[Vector2i, String] = {}
+			assumptions[liberty] = CELL_ISLAND
+			for new_wall_cell: Vector2i in board.get_neighbors(liberty):
+				if not _can_deduce(board, new_wall_cell):
+					continue
+				assumptions[new_wall_cell] = CELL_WALL
+			for other_liberty: Vector2i in liberties:
+				if other_liberty == liberty:
+					continue
+				if not _can_deduce(board, other_liberty):
+					continue
+				assumptions[other_liberty] = CELL_WALL
+			
+			_bifurcation_engine.add_scenario(board,
+				assumptions,
+				[FastDeduction.new(liberty, CELL_WALL, "island_strangle %s" % [island.front()])]
+			)
+	
+	if not has_scheduled_task(run_bifurcation_step):
+		schedule_task(run_bifurcation_step, 10)
+
+
+func enqueue_wall_strangle() -> void:
+	var walls: Array[Array] = board.get_walls()
+	if walls.size() < 2:
+		# The wall strangle deduction requires two walls.
+		return
+	
+	for wall: Array[Vector2i] in walls:
+		var liberties: Array[Vector2i] = board.get_liberties(wall)
+		if liberties.size() == 2:
+			_bifurcation_engine.add_scenario(board,
+				{liberties[0]: CELL_ISLAND, liberties[1]: CELL_WALL},
+				[FastDeduction.new(liberties[0], CELL_WALL, "wall_strangle %s" % [wall.front()])]
+			)
+			_bifurcation_engine.add_scenario(board,
+				{liberties[1]: CELL_ISLAND, liberties[0]: CELL_WALL},
+				[FastDeduction.new(liberties[1], CELL_WALL, "wall_strangle %s" % [wall.front()])]
+			)
+	
+	if not has_scheduled_task(run_bifurcation_step):
+		schedule_task(run_bifurcation_step, 10)
+
+
 func enqueue_island_dividers() -> void:
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
@@ -522,6 +627,20 @@ func enqueue_unreachable_squares() -> void:
 				== GlobalReachabilityMap.ClueReachability.REACHABLE:
 			continue
 		schedule_task(deduce_unreachable_square.bind(cell), 235)
+
+
+func run_bifurcation_step() -> void:
+	if verbose:
+		print("> bifurcating: %s scenarios" % [_bifurcation_engine.get_scenario_count()])
+	_bifurcation_engine.step()
+	if _bifurcation_engine.has_contradictions():
+		for deduction: FastDeduction in _bifurcation_engine.get_confirmed_deductions():
+			if not _can_deduce(board, deduction.pos):
+				continue
+			add_deduction(deduction.pos, deduction.value, deduction.reason)
+		_bifurcation_engine.clear()
+	elif not _bifurcation_engine.is_queue_empty():
+		schedule_task(run_bifurcation_step, 10)
 
 
 func _can_deduce(target_board: FastBoard, cell: Vector2i) -> bool:
