@@ -239,6 +239,18 @@ func test_enqueue_walls_pool_triplet_1() -> void:
 	assert_deduction(solver.enqueue_walls, expected)
 
 
+func test_pool_triplets_2() -> void:
+	grid = [
+		" 3    ",
+		"##  ##",
+		"######",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 1), CELL_ISLAND, "pool_triplet (0, 1) (0, 2) (1, 2)"),
+	]
+	assert_deduction(solver.enqueue_walls, expected)
+
+
 func test_enqueue_walls_pool_triplets_invalid() -> void:
 	grid = [
 		" 3#### 3",
