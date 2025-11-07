@@ -4,6 +4,7 @@ extends Node
 ## 	[kbd]Q[/kbd]: Solve one step.
 ## 	[kbd]W[/kbd]: Performance test a full solution.
 ## 	[kbd]R[/kbd]: Reset the board.
+## 	[kbd]Shift + P[/kbd]: Print task queue to console.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 
 @export_file("*.txt") var puzzle_path: String:
@@ -22,11 +23,14 @@ var solver: FastSolver = FastSolver.new()
 func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
 		KEY_Q:
-			solve()
+			step()
 		KEY_W:
 			performance_test()
 		KEY_P:
-			print_grid_string()
+			if Input.is_key_pressed(KEY_SHIFT):
+				solver.print_queue()
+			else:
+				print_grid_string()
 		KEY_R:
 			%GameBoard.reset()
 			solver.board = %GameBoard.to_fast_board()
@@ -42,8 +46,10 @@ func print_grid_string() -> void:
 	%GameBoard.to_model().print_cells()
 
 
-func solve() -> void:
+func step() -> void:
 	if solver.board.is_filled():
+		_show_message("--------")
+		_show_message("(no changes)")
 		return
 	
 	var changes: Array[Dictionary] = []
