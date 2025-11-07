@@ -11,6 +11,13 @@ var cells: Dictionary[Vector2i, String]
 
 var _cache: Dictionary[String, Variant] = {}
 
+func duplicate() -> FastBoard:
+	var copy: FastBoard = FastBoard.new()
+	copy.cells = cells.duplicate()
+	copy._cache = _cache.duplicate()
+	return copy
+
+
 func from_game_board(game_board: NurikabeGameBoard) -> void:
 	for cell_pos in game_board.get_used_cells():
 		set_cell_string(cell_pos, game_board.get_cell_string(cell_pos))
@@ -172,6 +179,53 @@ func print_cells() -> void:
 
 
 func validate() -> ValidationResult:
+	return _get_cached(
+		"validation_result",
+		_build_validation_result)
+
+
+func _build_global_reachability_map() -> GlobalReachabilityMap:
+	return GlobalReachabilityMap.new(self)
+
+
+func _build_clue_value(group: Array[Vector2i]) -> int:
+	var result: int = 0
+	for cell: Vector2i in group:
+		if cells[cell].is_valid_int():
+			if result > 0:
+				# too many clues
+				result = -1
+				break
+			result = cells[cell].to_int()
+	return result
+
+
+func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
+	var group_cell_set: Dictionary[Vector2i, bool] = {}
+	var liberty_cell_set: Dictionary[Vector2i, bool] = {}
+	for group_cell: Vector2i in group:
+		group_cell_set[group_cell] = true
+	for group_cell: Vector2i in group:
+		for neighbor_cell: Vector2i in get_neighbors(group_cell):
+			if neighbor_cell in group_cell_set:
+				continue
+			if get_cell_string(neighbor_cell) != CELL_EMPTY:
+				continue
+			liberty_cell_set[neighbor_cell] = true
+	return liberty_cell_set.keys()
+
+
+func _build_island_group_map() -> FastGroupMap:
+	return FastGroupMap.new(self, func(value: String) -> bool:
+		return value.is_valid_int() or value == CELL_ISLAND)
+
+
+func _build_island_chokepoint_map() -> FastChokepointMap:
+	return FastChokepointMap.new(self, func(value: String) -> bool:
+		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+
+
+func _build_validation_result() -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
 	
 	# joined islands
@@ -243,47 +297,6 @@ func validate() -> ValidationResult:
 			continue
 	
 	return result
-
-
-func _build_global_reachability_map() -> GlobalReachabilityMap:
-	return GlobalReachabilityMap.new(self)
-
-
-func _build_clue_value(group: Array[Vector2i]) -> int:
-	var result: int = 0
-	for cell: Vector2i in group:
-		if cells[cell].is_valid_int():
-			if result > 0:
-				# too many clues
-				result = -1
-				break
-			result = cells[cell].to_int()
-	return result
-
-
-func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
-	var group_cell_set: Dictionary[Vector2i, bool] = {}
-	var liberty_cell_set: Dictionary[Vector2i, bool] = {}
-	for group_cell: Vector2i in group:
-		group_cell_set[group_cell] = true
-	for group_cell: Vector2i in group:
-		for neighbor_cell: Vector2i in get_neighbors(group_cell):
-			if neighbor_cell in group_cell_set:
-				continue
-			if get_cell_string(neighbor_cell) != CELL_EMPTY:
-				continue
-			liberty_cell_set[neighbor_cell] = true
-	return liberty_cell_set.keys()
-
-
-func _build_island_group_map() -> FastGroupMap:
-	return FastGroupMap.new(self, func(value: String) -> bool:
-		return value.is_valid_int() or value == CELL_ISLAND)
-
-
-func _build_island_chokepoint_map() -> FastChokepointMap:
-	return FastChokepointMap.new(self, func(value: String) -> bool:
-		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
 
 
 func _build_wall_chokepoint_map() -> FastChokepointMap:
