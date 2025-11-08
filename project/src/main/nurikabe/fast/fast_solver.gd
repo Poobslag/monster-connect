@@ -11,6 +11,7 @@ var verbose: bool = false
 
 var deductions: DeductionBatch = DeductionBatch.new()
 var board: FastBoard
+var metrics: Dictionary[String, Variant] = {}
 
 var _change_history: Array[Dictionary] = []
 var _task_history: Dictionary[String, Dictionary] = {
@@ -41,6 +42,7 @@ func apply_changes() -> void:
 
 func clear() -> void:
 	deductions.clear()
+	metrics.clear()
 	_bifurcation_engine.clear()
 	_change_history.clear()
 	_task_history.clear()
@@ -55,7 +57,7 @@ func get_changes() -> Array[Dictionary]:
 	return deductions.get_changes()
 
 
-func schedule_tasks() -> void:
+func schedule_tasks(allow_bifurcation: bool = true) -> void:
 	if get_last_run(enqueue_islands_of_one) == -1:
 		schedule_task(enqueue_islands_of_one, 1000)
 	
@@ -104,7 +106,9 @@ func schedule_tasks() -> void:
 	elif get_last_run(enqueue_island_chokepoints) < board.get_filled_cell_count():
 		schedule_task(enqueue_island_chokepoints, 30)
 	
-	if is_queue_empty():
+	if is_queue_empty() and allow_bifurcation:
+		metrics["bifurcation_start_time"] = Time.get_ticks_usec()
+		
 		if has_scheduled_task(enqueue_island_battleground):
 			pass
 		elif get_last_run(enqueue_island_battleground) < board.get_filled_cell_count():
@@ -119,6 +123,10 @@ func schedule_tasks() -> void:
 			pass
 		elif get_last_run(enqueue_island_strangle) < board.get_filled_cell_count():
 			schedule_task(enqueue_island_strangle, 20)
+		
+		if not metrics.has("bifurcation_stops"):
+			metrics["bifurcation_stops"] = 0
+		metrics["bifurcation_stops"] += 1
 
 
 func get_last_run(callable: Callable) -> int:
@@ -184,7 +192,7 @@ func run_next_task() -> void:
 	
 	var next_task: Dictionary[String, Variant] = _task_queue.pop_front()
 	if verbose:
-		print("(%s) run %s" % [board.get_filled_cell_count(), next_task["key"]])
+		print("(%s;%s) run %s" % [board.get_filled_cell_count(), Time.get_ticks_msec(), next_task["key"]])
 	_task_history[next_task["key"]] = {
 		"last_run": board.get_filled_cell_count()
 	} as Dictionary[String, Variant]
@@ -528,7 +536,7 @@ func enqueue_island_battleground() -> void:
 			var clued_island: Vector2i = clued_island_neighbors_by_empty_cell[cell][0]
 			var neighbor_clued_island: Vector2i = clued_island_neighbors_by_empty_cell[neighbor][0]
 			var reason: String = "island_battleground %s %s" % [clued_island, neighbor_clued_island]
-			_bifurcation_engine.add_scenario(board,
+			_add_bifurcation_scenario(
 				{cell: CELL_ISLAND, neighbor: CELL_WALL},
 				[FastDeduction.new(cell, CELL_WALL, reason)])
 	
@@ -559,7 +567,7 @@ func enqueue_island_strangle() -> void:
 					continue
 				assumptions[other_liberty] = CELL_WALL
 			
-			_bifurcation_engine.add_scenario(board,
+			_add_bifurcation_scenario(
 				assumptions,
 				[FastDeduction.new(liberty, CELL_WALL, "island_strangle %s" % [island.front()])]
 			)
@@ -577,11 +585,11 @@ func enqueue_wall_strangle() -> void:
 	for wall: Array[Vector2i] in walls:
 		var liberties: Array[Vector2i] = board.get_liberties(wall)
 		if liberties.size() == 2:
-			_bifurcation_engine.add_scenario(board,
+			_add_bifurcation_scenario(
 				{liberties[0]: CELL_ISLAND, liberties[1]: CELL_WALL},
 				[FastDeduction.new(liberties[0], CELL_WALL, "wall_strangle %s" % [wall.front()])]
 			)
-			_bifurcation_engine.add_scenario(board,
+			_add_bifurcation_scenario(
 				{liberties[1]: CELL_ISLAND, liberties[0]: CELL_WALL},
 				[FastDeduction.new(liberties[1], CELL_WALL, "wall_strangle %s" % [wall.front()])]
 			)
@@ -641,6 +649,22 @@ func run_bifurcation_step() -> void:
 		_bifurcation_engine.clear()
 	elif not _bifurcation_engine.is_queue_empty():
 		schedule_task(run_bifurcation_step, 10)
+	
+	if _bifurcation_engine.is_queue_empty():
+		var bifurcation_duration: int = (Time.get_ticks_usec() - metrics["bifurcation_start_time"])
+		metrics.erase("bifurcation_start_time")
+		
+		if not metrics.has("bifurcation_duration"):
+			metrics["bifurcation_duration"] = 0.0
+		metrics["bifurcation_duration"] += bifurcation_duration / 1000.0
+
+
+func _add_bifurcation_scenario(assumptions: Dictionary[Vector2i, String],
+		bifurcation_deductions: Array[FastDeduction]) -> void:
+	if not metrics.has("bifurcation_scenarios"):
+		metrics["bifurcation_scenarios"] = 0
+	metrics["bifurcation_scenarios"] += 1
+	_bifurcation_engine.add_scenario(board, assumptions, bifurcation_deductions)
 
 
 func _can_deduce(target_board: FastBoard, cell: Vector2i) -> bool:
