@@ -3,6 +3,7 @@ extends Node
 ## [b]Keys:[/b][br]
 ## 	[kbd]Q[/kbd]: Solve one step.
 ## 	[kbd]W[/kbd]: Performance test a full solution.
+## 	[kbd]E[/kbd]: Solve until bifurcation is necessary.
 ## 	[kbd]R[/kbd]: Reset the board.
 ## 	[kbd]Shift + P[/kbd]: Print task queue to console.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
@@ -26,6 +27,8 @@ func _input(event: InputEvent) -> void:
 			step()
 		KEY_W:
 			performance_test()
+		KEY_E:
+			solve_until_bifurcation()
 		KEY_P:
 			if Input.is_key_pressed(KEY_SHIFT):
 				solver.print_queue()
@@ -58,7 +61,7 @@ func step() -> void:
 		_show_message("--------")
 	
 	var idle_steps: int = 0
-	while idle_steps < 100 and not solver.board.is_filled() and changes.size() < 5:
+	while idle_steps < 100 and not solver.board.is_filled() and changes.size() < 1:
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
 		
 		if not solver.has_scheduled_tasks():
@@ -89,13 +92,46 @@ func step() -> void:
 		%GameBoard.set_cell_strings(changes)
 
 
+func solve_until_bifurcation() -> void:
+	var idle_steps: int = 0
+	while idle_steps < 500 and not solver.board.is_filled():
+		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
+		
+		if not solver.has_scheduled_tasks():
+			solver.schedule_tasks(false)
+		if not solver.has_scheduled_tasks():
+			break
+		solver.step()
+		solver.apply_changes()
+		
+		if old_filled_cell_count == solver.board.get_filled_cell_count():
+			idle_steps += 1
+		else:
+			idle_steps = 0
+	
+	for cell: Vector2i in solver.board.cells:
+		%GameBoard.set_cell_string(cell, solver.board.get_cell_string(cell))
+	
+	if not %MessageLabel.text.is_empty():
+		_show_message("--------")
+	if solver.board.is_filled():
+		_show_message("bifurcation: stops=%s, scenarios=%s" % [
+			solver.metrics.get("bifurcation_stops"),
+			solver.metrics.get("bifurcation_scenarios"),
+			])
+	else:
+		_show_message("bifurcation required: (%s)" % [
+			solver.board.get_filled_cell_count()
+			])
+
+
 func performance_test() -> void:
 	performance_data.clear()
 	
 	var start_time: float = Time.get_ticks_usec()
 	
 	var idle_steps: int = 0
-	while idle_steps < 100 and not solver.board.is_filled():
+	while idle_steps < 500 and not solver.board.is_filled():
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
 		
 		if not solver.has_scheduled_tasks():
@@ -113,6 +149,11 @@ func performance_test() -> void:
 	if not %MessageLabel.text.is_empty():
 		_show_message("--------")
 	_show_message("%.3f msec" % [(Time.get_ticks_usec() - start_time) / 1000.0])
+	_show_message("bifurcation: stops=%s, scenarios=%s, duration=%.3f" % [
+		solver.metrics.get("bifurcation_stops"),
+		solver.metrics.get("bifurcation_scenarios"),
+		solver.metrics.get("bifurcation_duration"),
+		])
 	
 	for cell: Vector2i in solver.board.cells:
 		%GameBoard.set_cell_string(cell, solver.board.get_cell_string(cell))
