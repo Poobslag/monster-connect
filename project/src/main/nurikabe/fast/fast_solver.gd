@@ -650,7 +650,7 @@ func run_bifurcation_step() -> void:
 	elif not _bifurcation_engine.is_queue_empty():
 		schedule_task(run_bifurcation_step, 10)
 	
-	if _bifurcation_engine.is_queue_empty():
+	if _bifurcation_engine.is_queue_empty() and metrics.has("bifurcation_start_time"):
 		var bifurcation_duration: int = (Time.get_ticks_usec() - metrics["bifurcation_start_time"])
 		metrics.erase("bifurcation_start_time")
 		
