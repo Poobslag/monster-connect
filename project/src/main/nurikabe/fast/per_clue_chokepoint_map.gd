@@ -133,7 +133,8 @@ func _init_chokepoint_map(island_cell: Vector2i) -> void:
 				continue
 			
 			reach_score_by_cell[neighbor] = reach_score_by_cell[cell] - 1
-			queue.append(neighbor)
+			if reach_score_by_cell[neighbor] > 1:
+				queue.append(neighbor)
 	
 	_chokepoint_map_by_clue[island.front()] = ChokepointMap.new(reach_score_by_cell.keys())
 
