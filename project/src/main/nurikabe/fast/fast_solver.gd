@@ -277,6 +277,9 @@ func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
 	
 	if deductions.size() == old_deductions_size:
 		deduce_clue_chokepoint_loose(island_cell)
+	
+	if deductions.size() == old_deductions_size:
+		deduce_clue_chokepoint_wall_weaver(island_cell)
 
 
 func deduce_clue_chokepoint_snug(island_cell: Vector2i) -> void:
@@ -308,6 +311,35 @@ func deduce_clue_chokepoint_loose(island_cell: Vector2i) -> void:
 				add_deduction(chokepoint, CELL_ISLAND, "island_chokepoint %s" % [island_cell])
 		else:
 			add_deduction(chokepoint, CELL_WALL, "island_buffer %s" % [island_cell])
+
+
+func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
+	var clue_value: int = board.get_clue_value_for_cell(island_cell)
+	var wall_exclusion_map: GroupMap = board.get_per_clue_chokepoint_map().get_wall_exclusion_map(island_cell)
+	var component_cell_count: int = board.get_per_clue_chokepoint_map().get_component_cell_count(island_cell)
+	if wall_exclusion_map.groups.size() != 1 + component_cell_count - clue_value:
+		return
+	
+	var connectors_by_wall: Dictionary[Vector2i, Array]
+	for cell: Vector2i in board.get_per_clue_chokepoint_map().get_component_cells(island_cell):
+		var wall_roots: Dictionary[Vector2i, bool] = {}
+		for neighbor: Vector2i in board.get_neighbors(cell):
+			if not wall_exclusion_map.roots_by_cell.has(neighbor):
+				continue
+			wall_roots[wall_exclusion_map.roots_by_cell.get(neighbor)] = true
+		if wall_roots.size() >= 2:
+			for wall_root: Vector2i in wall_roots:
+				if not connectors_by_wall.has(wall_root):
+					connectors_by_wall[wall_root] = [] as Array[Vector2i]
+				connectors_by_wall[wall_root].append(cell)
+	
+	for wall_root: Vector2i in connectors_by_wall:
+		if connectors_by_wall[wall_root].size() > 1:
+			continue
+		var connector: Vector2i = connectors_by_wall[wall_root].front()
+		if not _can_deduce(board, connector):
+			continue
+		deductions.add_deduction(connector, CELL_WALL, "wall_weaver %s" % [island_cell])
 
 
 func deduce_long_island() -> void:

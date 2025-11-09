@@ -98,6 +98,25 @@ func get_component_cells(island_cell: Vector2i) -> Array[Vector2i]:
 	return get_chokepoint_map(island_cell).get_component_cells(island_cell)
 
 
+## Builds a GroupMap of all wall regions that would exist if this clue's entire reachable island area were filled
+## in.[br]
+## [br]
+## In effect, this "excludes" the clue's component cells by treating them as solid islands, and groups every remaining
+## wall or unreachable empty cell into contiguous wall components.[br]
+## [br]
+## Used to detect whether filling the island could create a split wall.
+func get_wall_exclusion_map(island_cell: Vector2i) -> GroupMap:
+	var component_cell_set: Dictionary[Vector2i, bool] = {}
+	for component_cell in get_component_cells(island_cell):
+		component_cell_set[component_cell] = true
+	var cells: Array[Vector2i] = []
+	for cell: Vector2i in _board.cells:
+		var value: String = _board.get_cell_string(cell)
+		if value == CELL_WALL or (value == CELL_EMPTY and not cell in component_cell_set):
+			cells.append(cell)
+	return GroupMap.new(cells)
+
+
 func _has_chokepoint_map(island_cell: Vector2i) -> bool:
 	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
 	return _chokepoint_map_by_clue.has(island_root)

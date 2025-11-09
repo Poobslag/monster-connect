@@ -1,5 +1,34 @@
 extends TestFastSolver
 
+func test_enqueue_island_chokepoints_wall_weaver_1() -> void:
+	grid = [
+		"#### 4 .  ",
+		" 7####    ",
+		" .   .  ##",
+		"      ## 1",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(3, 2), CELL_WALL, "wall_weaver (0, 1)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_wall_weaver_2() -> void:
+	grid = [
+		"## 6    ##",
+		"##      ##",
+		"##    ## 4",
+		" 1##     .",
+		"##   3## .",
+		"          ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 2), CELL_WALL, "wall_weaver (1, 0)"),
+		FastDeduction.new(Vector2i(3, 1), CELL_WALL, "wall_weaver (1, 0)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
 func test_enqueue_island_chokepoints_adjacent() -> void:
 	grid = [
 		"   4  ",
