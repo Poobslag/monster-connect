@@ -322,6 +322,8 @@ func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
 	
 	var connectors_by_wall: Dictionary[Vector2i, Array]
 	for cell: Vector2i in board.get_per_clue_chokepoint_map().get_component_cells(island_cell):
+		if not board.get_cell_string(cell) == CELL_EMPTY:
+			continue
 		var wall_roots: Dictionary[Vector2i, bool] = {}
 		for neighbor: Vector2i in board.get_neighbors(cell):
 			if not wall_exclusion_map.roots_by_cell.has(neighbor):

@@ -29,6 +29,23 @@ func test_enqueue_island_chokepoints_wall_weaver_2() -> void:
 	assert_deduction(solver.enqueue_island_chokepoints, expected)
 
 
+func test_enqueue_island_chokepoints_wall_weaver_3() -> void:
+	grid = [
+		"###### . . . .",
+		"## 2## .#### .",
+		"## .####10## 7",
+		" 1##     .####",
+		"##        ## 3",
+		"## .         .",
+		"############  ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 4), CELL_WALL, "wall_weaver (4, 2)"),
+		FastDeduction.new(Vector2i(2, 3), CELL_WALL, "wall_weaver (4, 2)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
 func test_enqueue_island_chokepoints_adjacent() -> void:
 	grid = [
 		"   4  ",
