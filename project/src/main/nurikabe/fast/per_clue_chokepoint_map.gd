@@ -7,6 +7,8 @@ const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
 var _board: FastBoard
 
+var _reachable_clues_by_cell: Dictionary[Vector2i, Dictionary] = {}
+
 var _adjacent_clues_by_cell: Dictionary[Vector2i, int] = {}
 var _chokepoint_map_by_clue: Dictionary[Vector2i, ChokepointMap] = {}
 var _claimed_by_clue: Dictionary[Vector2i, Vector2i] = {}
@@ -45,6 +47,16 @@ func get_chokepoint_map(island_cell: Vector2i) -> ChokepointMap:
 		_init_chokepoint_map(island_cell)
 	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
 	return _chokepoint_map_by_clue.get(island_root)
+
+
+## Returns a mapping from cells to clues which can reach them.[br]
+## [br]
+## Note: This requires a chokepoint map for every clue in the puzzle, making it O(n^2) if those chokepoint maps have
+## not been built.
+func get_reachable_clues_by_cell() -> Dictionary[Vector2i, Dictionary]:
+	if _reachable_clues_by_cell.is_empty():
+		_init_reachable_clues_by_cell()
+	return _reachable_clues_by_cell
 
 
 ## If there are any chokepoints which would prevent the island from being completed, this method returns the cell
@@ -137,6 +149,20 @@ func _init_chokepoint_map(island_cell: Vector2i) -> void:
 				queue.append(neighbor)
 	
 	_chokepoint_map_by_clue[island.front()] = ChokepointMap.new(reach_score_by_cell.keys())
+
+
+func _init_reachable_clues_by_cell() -> void:
+	for island: Array[Vector2i] in _board.get_islands():
+		if _board.get_liberties(island).is_empty():
+			continue
+		if _board.get_clue_for_group(island) < 1:
+			continue
+		
+		var chokepoint_map: ChokepointMap = get_chokepoint_map(island.front())
+		for cell: Vector2i in chokepoint_map.cells:
+			if not _reachable_clues_by_cell.has(cell):
+				_reachable_clues_by_cell[cell] = {} as Dictionary[Vector2i, bool]
+			_reachable_clues_by_cell[cell][island.front()] = true
 
 
 func _needs_buffer(island_root: Vector2i, cell: Vector2i) -> bool:

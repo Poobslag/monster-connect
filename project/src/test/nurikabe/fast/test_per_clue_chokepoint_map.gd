@@ -64,6 +64,20 @@ func test_snug_cells() -> void:
 	})
 
 
+func test_get_reachable_clues_by_cell() -> void:
+	grid = [
+		"    ####",
+		" 2  ## .",
+		"       .",
+		"        ",
+		" 6      ",
+		"       5",
+	]
+	var pccm: PerClueChokepointMap = init_per_clue_chokepoint_map()
+	var reachable_clues_by_cell: Dictionary[Vector2i, Dictionary] = pccm.get_reachable_clues_by_cell()
+	assert_eq([Vector2i(3, 5)], reachable_clues_by_cell.get(Vector2i(3, 1), {} as Dictionary[Vector2i, bool]).keys())
+
+
 func assert_chokepoint_cells(island_cell: Vector2i, expected: Dictionary[Vector2i, String]) -> void:
 	var pccm: PerClueChokepointMap = init_per_clue_chokepoint_map()
 	var actual: Dictionary[Vector2i, String] = pccm.find_chokepoint_cells(island_cell)
