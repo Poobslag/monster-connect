@@ -76,8 +76,10 @@ cursorable_rect = Rect2(0, 0, 2560, 2560)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+focus_mode = 2
 theme_override_fonts/normal_font = ExtResource("3_8djyv")
 theme_override_font_sizes/normal_font_size = 32
 scroll_following = true
+selection_enabled = true
 
 [editable path="HBoxContainer/GameBoardHolder/GameBoard"]
