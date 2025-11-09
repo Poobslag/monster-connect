@@ -297,6 +297,45 @@ func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
 				add_deduction(chokepoint, CELL_WALL, "island_buffer %s" % [island_cell])
 
 
+func deduce_long_island() -> void:
+	var reachable_clues_by_cell: Dictionary[Vector2i, Dictionary] \
+			= board.get_per_clue_chokepoint_map().get_reachable_clues_by_cell()
+	for cell: Vector2i in reachable_clues_by_cell:
+		if reachable_clues_by_cell[cell].size() > 1:
+			continue
+		if board.get_cell_string(cell) != CELL_ISLAND:
+			continue
+		var clued_island_cell: Vector2i = reachable_clues_by_cell[cell].keys().front()
+		var clued_island: Array[Vector2i] = board.get_island_for_cell(clued_island_cell)
+		var clue_value: int = board.get_clue_for_group(clued_island)
+		
+		var closest_clued_island_cell_dist: int = 999999
+		var closest_clued_island_cell: Vector2i
+		for next_clued_island_cell: Vector2i in clued_island:
+			var next_clued_island_cell_dist: int = abs(cell.x - next_clued_island_cell.x) \
+					+ abs(cell.y - next_clued_island_cell.y)
+			if next_clued_island_cell_dist < closest_clued_island_cell_dist:
+				closest_clued_island_cell = next_clued_island_cell
+				closest_clued_island_cell_dist = next_clued_island_cell_dist
+		
+		if (closest_clued_island_cell.x != cell.x and closest_clued_island_cell.y != cell.y):
+			# closest cell is not in a straight vertical/horizontal line
+			continue
+		
+		if closest_clued_island_cell_dist < (clue_value - clued_island.size() - 1):
+			# closest cell is too close; clue has some "wiggle room"
+			continue
+		
+		var cell_step: Vector2i = Vector2i(\
+				sign(cell.x - closest_clued_island_cell.x),
+				sign(cell.y - closest_clued_island_cell.y))
+		for i in closest_clued_island_cell_dist:
+			var deduction_cell: Vector2i = closest_clued_island_cell + i * cell_step
+			if not _can_deduce(board, deduction_cell):
+				continue
+			add_deduction(deduction_cell, CELL_ISLAND, "long_island %s" % [clued_island_cell])
+
+
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
 	if not board.get_cell_string(clue_cell) == "1":
 		return
@@ -484,6 +523,8 @@ func enqueue_island_chokepoints() -> void:
 		if board.get_liberties(island).is_empty():
 			continue
 		schedule_task(deduce_clue_chokepoint.bind(island.front()), 225)
+	
+	schedule_task(deduce_long_island, 224)
 
 
 func enqueue_wall_chokepoints() -> void:

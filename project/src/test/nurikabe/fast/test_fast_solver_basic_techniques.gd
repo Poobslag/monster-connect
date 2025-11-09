@@ -76,6 +76,114 @@ func test_enqueue_island_chokepoints_snug() -> void:
 	assert_deduction(solver.enqueue_island_chokepoints, expected)
 
 
+func test_enqueue_island_chokepoints_long() -> void:
+	grid = [
+		"    ####",
+		" 2  ## .",
+		"       .",
+		"        ",
+		" 6      ",
+		"       5",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(3, 3), CELL_ISLAND, "long_island (3, 5)"),
+		FastDeduction.new(Vector2i(3, 4), CELL_ISLAND, "long_island (3, 5)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_long_2() -> void:
+	grid = [
+		"    ####",
+		" 2  ## .",
+		"       .",
+		"        ",
+		" 5      ",
+		"       .",
+		"     7 .",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(3, 3), CELL_ISLAND, "long_island (3, 5)"),
+		FastDeduction.new(Vector2i(3, 4), CELL_ISLAND, "long_island (3, 5)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_long_3() -> void:
+	grid = [
+		"  ##  ",
+		"   .  ",
+		"      ",
+		"      ",
+		"      ",
+		"      ",
+		"      ",
+		"   7  ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 2), CELL_ISLAND, "long_island (1, 7)"),
+		FastDeduction.new(Vector2i(1, 3), CELL_ISLAND, "long_island (1, 7)"),
+		FastDeduction.new(Vector2i(1, 4), CELL_ISLAND, "long_island (1, 7)"),
+		FastDeduction.new(Vector2i(1, 5), CELL_ISLAND, "long_island (1, 7)"),
+		FastDeduction.new(Vector2i(1, 6), CELL_ISLAND, "long_island (1, 7)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_long_4() -> void:
+	grid = [
+		"  ##  ",
+		"   .  ",
+		"      ",
+		"      ",
+		"      ",
+		"      ",
+		"      ",
+		"   8  ",
+	]
+	var expected: Array[FastDeduction] = [
+		FastDeduction.new(Vector2i(1, 2), CELL_ISLAND, "long_island (1, 7)"),
+		FastDeduction.new(Vector2i(1, 3), CELL_ISLAND, "long_island (1, 7)"),
+		FastDeduction.new(Vector2i(1, 4), CELL_ISLAND, "long_island (1, 7)"),
+		FastDeduction.new(Vector2i(1, 5), CELL_ISLAND, "long_island (1, 7)"),
+		FastDeduction.new(Vector2i(1, 6), CELL_ISLAND, "long_island (1, 7)"),
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_long_invalid_too_short() -> void:
+	# the long island deduction can't apply to clues which are too close; they could swerve
+	grid = [
+		"  ##  ",
+		"   .  ",
+		"      ",
+		"      ",
+		"      ",
+		"      ",
+		"      ",
+		"   9  ",
+	]
+	var expected: Array[FastDeduction] = [
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_long_invalid_bendy() -> void:
+	# the long island deduction can't apply to diagonal clues
+	grid = [
+		"    ####",
+		" 2  ## .",
+		"       .",
+		"        ",
+		" 7      ",
+		"       .",
+		"     5 .",
+	]
+	var expected: Array[FastDeduction] = [
+	]
+	assert_deduction(solver.enqueue_island_chokepoints, expected)
+
+
 func test_enqueue_island_dividers() -> void:
 	grid = [
 		" .   3",
