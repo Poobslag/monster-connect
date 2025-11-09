@@ -48,7 +48,7 @@ func test_chokepoint_cells_clueless_island() -> void:
 	})
 
 
-func test_snug_cells() -> void:
+func test_component_cells() -> void:
 	grid = [
 		" . .  ",
 		" 5##  ",
@@ -56,12 +56,11 @@ func test_snug_cells() -> void:
 		"    ##",
 		"   . 5",
 	]
-	assert_snug_cells(Vector2i(2, 4), {
-		Vector2i(0, 2): CELL_WALL,
-		Vector2i(0, 3): CELL_ISLAND,
-		Vector2i(0, 4): CELL_ISLAND,
-		Vector2i(1, 3): CELL_ISLAND,
-	})
+	assert_component_cells(Vector2i(2, 4), [
+		Vector2i(0, 3), Vector2i(0, 4),
+		Vector2i(1, 3), Vector2i(1, 4),
+		Vector2i(2, 4),
+	])
 
 
 func test_get_reachable_clues_by_cell() -> void:
@@ -84,9 +83,11 @@ func assert_chokepoint_cells(island_cell: Vector2i, expected: Dictionary[Vector2
 	assert_eq(actual, expected)
 
 
-func assert_snug_cells(island_cell: Vector2i, expected: Dictionary[Vector2i, String]) -> void:
+func assert_component_cells(island_cell: Vector2i, expected: Array[Vector2i]) -> void:
 	var pccm: PerClueChokepointMap = init_per_clue_chokepoint_map()
-	var actual: Dictionary[Vector2i, String] = pccm.find_snug_cells(island_cell)
+	var actual: Array[Vector2i] = pccm.get_component_cells(island_cell)
+	actual.sort()
+	expected.sort()
 	assert_eq(actual, expected)
 
 

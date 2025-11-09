@@ -18,3 +18,7 @@ func get_changes() -> Array[Dictionary]:
 func clear() -> void:
 	deductions.clear()
 	cells.clear()
+
+
+func size() -> int:
+	return deductions.size()
