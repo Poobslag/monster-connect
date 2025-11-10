@@ -188,14 +188,8 @@ func get_global_cursorable_rect() -> Rect2:
 	return %CursorableArea.get_global_transform() * %CursorableArea.cursorable_rect
 
 
-func to_model() -> NurikabeBoardModel:
-	var model: NurikabeBoardModel = NurikabeBoardModel.new()
-	model.from_game_board(self)
-	return model
-
-
-func to_fast_board() -> FastBoard:
-	var board: FastBoard = FastBoard.new()
+func to_solver_board() -> SolverBoard:
+	var board: SolverBoard = SolverBoard.new()
 	board.from_game_board(self)
 	return board
 
@@ -322,10 +316,11 @@ func _show_win_screen() -> void:
 
 
 func _on_validate_timer_timeout() -> void:
-	var model: NurikabeBoardModel = to_model()
-	var result: NurikabeBoardModel.ValidationResult = model.validate()
+	var model: SolverBoard = to_solver_board()
+	var result: SolverBoard.ValidationResult = model.validate()
+	var result_strict: SolverBoard.ValidationResult = model.validate_strict()
 	
-	if result.error_count == 0:
+	if result_strict.error_count == 0:
 		_show_win_screen()
 	
 	# update lowlight cells if the player isn't finished
@@ -333,9 +328,9 @@ func _on_validate_timer_timeout() -> void:
 	for cell: Vector2i in model.cells:
 		if model.get_cell_string(cell).is_valid_int() or model.get_cell_string(cell) in [CELL_EMPTY, CELL_ISLAND]:
 			new_lowlight_cells[cell] = true
-	for joined_island_cell: Vector2i in result.joined_islands:
+	for joined_island_cell: Vector2i in result_strict.joined_islands:
 		new_lowlight_cells.erase(joined_island_cell)
-	for wrong_size_cell: Vector2i in result.wrong_size:
+	for wrong_size_cell: Vector2i in result_strict.wrong_size:
 		new_lowlight_cells.erase(wrong_size_cell)
 	lowlight_cells = new_lowlight_cells
 	
@@ -344,13 +339,13 @@ func _on_validate_timer_timeout() -> void:
 	var new_error_cells: Dictionary[Vector2i, bool] = {}
 	for pool_cell: Vector2i in result.pools:
 		new_error_cells[pool_cell] = true
-	for joined_island_cell: Vector2i in result.joined_islands_unfixable:
+	for joined_island_cell: Vector2i in result.joined_islands:
 		new_error_cells[joined_island_cell] = true
 	for unclued_island_cell: Vector2i in result.unclued_islands:
 		new_error_cells[unclued_island_cell] = true
-	for wrong_size_cell: Vector2i in result.wrong_size_unfixable:
+	for wrong_size_cell: Vector2i in result.wrong_size:
 		new_error_cells[wrong_size_cell] = true
-	for split_wall_cell in result.split_walls_unfixable:
+	for split_wall_cell in result.split_walls:
 		new_error_cells[split_wall_cell] = true
 	error_cells = new_error_cells
 	
