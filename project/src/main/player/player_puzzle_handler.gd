@@ -84,7 +84,7 @@ func _handle_lmb_press() -> void:
 			_last_set_cell_value = CELL_WALL
 			_input_sfx = "drop_wall_press"
 	if current_cell_string.is_valid_int():
-		var changes: Array[Dictionary] = game_board.to_model().surround_island(cell)
+		var changes: Array[Dictionary] = game_board.to_fast_board().surround_island(cell)
 		if changes:
 			game_board.set_cell_strings(changes, player.id)
 			var cell_positions: Array[Vector2i] = []

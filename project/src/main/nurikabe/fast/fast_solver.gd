@@ -316,7 +316,7 @@ func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
 
 func deduce_clue_chokepoint_snug(island_cell: Vector2i) -> void:
 	var island_root: Vector2i = board.get_island_root_for_cell(island_cell)
-	var clue_value: int = board.get_clue_value_for_cell(island_cell)
+	var clue_value: int = board.get_clue_for_island_cell(island_cell)
 	if board.get_per_clue_chokepoint_map().get_component_cell_count(island_cell) != clue_value:
 		return
 	
@@ -346,7 +346,7 @@ func deduce_clue_chokepoint_loose(island_cell: Vector2i) -> void:
 
 
 func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
-	var clue_value: int = board.get_clue_value_for_cell(island_cell)
+	var clue_value: int = board.get_clue_for_island_cell(island_cell)
 	var wall_exclusion_map: GroupMap = board.get_per_clue_chokepoint_map().get_wall_exclusion_map(island_cell)
 	var component_cell_count: int = board.get_per_clue_chokepoint_map().get_component_cell_count(island_cell)
 	if wall_exclusion_map.groups.size() != 1 + component_cell_count - clue_value:
@@ -386,7 +386,7 @@ func deduce_long_island() -> void:
 			continue
 		var clued_island_cell: Vector2i = reachable_clues_by_cell[cell].keys().front()
 		var clued_island: Array[Vector2i] = board.get_island_for_cell(clued_island_cell)
-		var clue_value: int = board.get_clue_for_group(clued_island)
+		var clue_value: int = board.get_clue_for_island(clued_island)
 		
 		var closest_clued_island_cell_dist: int = 999999
 		var closest_clued_island_cell: Vector2i
@@ -427,7 +427,7 @@ func deduce_island_of_one(clue_cell: Vector2i) -> void:
 
 func deduce_clued_island(island_cell: Vector2i) -> void:
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
-	var clue_value: int = board.get_clue_for_group(island)
+	var clue_value: int = board.get_clue_for_island(island)
 	if clue_value < 1:
 		# unclued/invalid group
 		return
@@ -471,7 +471,7 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 
 func deduce_unclued_island(island_cell: Vector2i) -> void:
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
-	var clue_value: int = board.get_clue_for_group(island)
+	var clue_value: int = board.get_clue_for_island(island)
 	if clue_value != 0:
 		# clued/invalid group
 		return
@@ -619,7 +619,7 @@ func enqueue_islands() -> void:
 	for island: Array[Vector2i] in islands:
 		if board.get_liberties(island).is_empty():
 			continue
-		var clue_value: int = board.get_clue_for_group(island)
+		var clue_value: int = board.get_clue_for_island(island)
 		if clue_value == -1:
 			# invalid island
 			continue
@@ -635,7 +635,7 @@ func enqueue_island_battleground() -> void:
 	var clued_island_neighbors_by_empty_cell: Dictionary[Vector2i, Array] = {}
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
-		if board.get_clue_for_group(island) < 1:
+		if board.get_clue_for_island(island) < 1:
 			# unclued/invalid group
 			continue
 		for liberty: Vector2i in board.get_liberties(island):
@@ -666,7 +666,7 @@ func enqueue_island_battleground() -> void:
 
 func enqueue_island_strangle() -> void:
 	for island: Array[Vector2i] in board.get_islands():
-		var clue_value: int = board.get_clue_for_group(island)
+		var clue_value: int = board.get_clue_for_island(island)
 		if island.size() != clue_value - 1:
 			continue
 		var liberties: Array[Vector2i] = board.get_liberties(island)
@@ -721,7 +721,7 @@ func enqueue_wall_strangle() -> void:
 func enqueue_island_dividers() -> void:
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
-		var clue_value: int = board.get_clue_for_group(island)
+		var clue_value: int = board.get_clue_for_island(island)
 		if clue_value < 1:
 			# unclued/invalid island
 			continue
@@ -802,7 +802,7 @@ func _find_adjacent_clues(cell: Vector2i) -> Array[Vector2i]:
 func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 	var clued_neighbor_roots: Dictionary[Vector2i, bool] = {}
 	for neighbor: Vector2i in board.get_neighbors(cell):
-		if board.get_clue_value_for_cell(neighbor) == 0:
+		if board.get_clue_for_island_cell(neighbor) == 0:
 			continue
 		var neighbor_root: Vector2i = board.get_island_root_for_cell(neighbor)
 		clued_neighbor_roots[neighbor_root] = true
@@ -836,9 +836,9 @@ func _react_to_changes(changes: Array[Dictionary]) -> void:
 		var island: Array[Vector2i] = board.get_island_for_cell(island_root)
 		if board.get_liberties(island).is_empty():
 			continue
-		if board.get_clue_for_group(island) >= 1:
+		if board.get_clue_for_island(island) >= 1:
 			schedule_task(deduce_clued_island.bind(island_root), 350)
-		if board.get_clue_for_group(island) == 0:
+		if board.get_clue_for_island(island) == 0:
 			schedule_task(deduce_unclued_island.bind(island_root), 350)
 
 
