@@ -46,7 +46,7 @@ func _ready() -> void:
 
 
 func print_grid_string() -> void:
-	%GameBoard.to_model().print_cells()
+	%GameBoard.to_fast_board().print_cells()
 
 
 func step() -> void:

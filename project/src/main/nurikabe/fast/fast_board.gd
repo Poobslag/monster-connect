@@ -30,15 +30,15 @@ func get_cell_string(cell_pos: Vector2i) -> String:
 ## Returns the clue value for the specified group of cells.[br]
 ## [br]
 ## If zero clues are present, returns 0. If multiple clues are present, returns -1.
-func get_clue_for_group(group: Array[Vector2i]) -> int:
+func get_clue_for_island(group: Array[Vector2i]) -> int:
 	return _get_cached(
-		"clue_for_group %s" % ["-" if group.is_empty() else str(group[0])],
+		"clue_for_island %s" % ["-" if group.is_empty() else str(group[0])],
 		_build_clue_value.bind(group))
 
 
-func get_clue_value_for_cell(cell: Vector2i) -> int:
+func get_clue_for_island_cell(cell: Vector2i) -> int:
 	var group: Array[Vector2i] = get_island_group_map().groups_by_cell.get(cell, [] as Array[Vector2i])
-	return get_clue_for_group(group) if group else 0
+	return get_clue_for_island(group) if group else 0
 
 
 func get_filled_cell_count() -> int:
@@ -48,6 +48,10 @@ func get_filled_cell_count() -> int:
 			if cells[cell] != CELL_EMPTY:
 				result += 1
 		return result)
+
+
+func get_flooded_board() -> FastBoard:
+	return _get_cached("get_flooded_board", _build_flooded_board)
 
 
 func is_filled() -> bool:
@@ -178,10 +182,37 @@ func print_cells() -> void:
 		print(line)
 
 
+func surround_island(cell: Vector2i) -> Array[Dictionary]:
+	var changes: Array[Dictionary] = []
+	var island: Array[Vector2i] = get_island_for_cell(cell)
+	if island.is_empty() or get_clue_for_island(island) != island.size():
+		return changes
+	
+	var liberties: Array[Vector2i] = get_liberties(island)
+	for liberty: Vector2i in liberties:
+		if get_cell_string(liberty) == CELL_EMPTY:
+			changes.append({"pos": liberty, "value": CELL_WALL})
+	
+	return changes
+
 func validate() -> ValidationResult:
 	return _get_cached(
 		"validation_result",
 		_build_validation_result)
+
+
+func validate_strict() -> ValidationResult:
+	return _get_cached(
+		"strict_validation_result",
+		_build_strict_validation_result)
+
+
+func _build_flooded_board() -> FastBoard:
+	var flooded_board: FastBoard = duplicate()
+	for cell: Vector2i in flooded_board.cells:
+		if flooded_board.get_cell_string(cell) == CELL_EMPTY:
+			flooded_board.set_cell_string(cell, CELL_ISLAND)
+	return flooded_board
 
 
 func _build_global_reachability_map() -> GlobalReachabilityMap:
@@ -225,12 +256,16 @@ func _build_island_chokepoint_map() -> FastChokepointMap:
 		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
 
 
+func _build_strict_validation_result() -> ValidationResult:
+	return get_flooded_board().validate()
+
+
 func _build_validation_result() -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
 	
 	# joined islands
 	for island: Array[Vector2i] in get_islands():
-		if get_clue_for_group(island) == -1:
+		if get_clue_for_island(island) == -1:
 			for cell: Vector2i in island:
 				result.joined_islands.append(cell)
 	
@@ -274,13 +309,13 @@ func _build_validation_result() -> ValidationResult:
 	
 	# unclued islands
 	for island: Array[Vector2i] in get_islands():
-		if get_liberties(island).size() == 0 and get_clue_for_group(island) == 0:
+		if get_liberties(island).size() == 0 and get_clue_for_island(island) == 0:
 			result.unclued_islands.append_array(island)
 	
 	# wrong size
 	for island: Array[Vector2i] in get_islands():
 		var island_cell: Vector2i = island.front()
-		var clue_value: int = get_clue_value_for_cell(island_cell)
+		var clue_value: int = get_clue_for_island_cell(island_cell)
 		if clue_value == 0 or clue_value == -1:
 			continue
 		

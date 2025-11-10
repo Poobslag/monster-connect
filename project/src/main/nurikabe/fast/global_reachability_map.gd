@@ -50,13 +50,13 @@ func _build() -> void:
 	var visitable: Dictionary[Vector2i, bool] = {}
 	for cell: Vector2i in _board.cells:
 		if _board.get_cell_string(cell) in [CELL_ISLAND, CELL_EMPTY] \
-				and _board.get_clue_value_for_cell(cell) == 0:
+				and _board.get_clue_for_island_cell(cell) == 0:
 			visitable[cell] = true
 	
 	# seed queue from islands
 	var queue: Array[Vector2i] = []
 	for island: Array[Vector2i] in islands:
-		var clue_value: int = _board.get_clue_for_group(island)
+		var clue_value: int = _board.get_clue_for_island(island)
 		if clue_value == 0:
 			continue
 		var reachability: int = clue_value - island.size()
