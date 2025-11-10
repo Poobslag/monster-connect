@@ -150,9 +150,9 @@ func performance_test() -> void:
 		_show_message("--------")
 	_show_message("%.3f msec" % [(Time.get_ticks_usec() - start_time) / 1000.0])
 	_show_message("bifurcation: stops=%s, scenarios=%s, duration=%.3f" % [
-		solver.metrics.get("bifurcation_stops"),
-		solver.metrics.get("bifurcation_scenarios"),
-		solver.metrics.get("bifurcation_duration"),
+		solver.metrics.get("bifurcation_stops", 0),
+		solver.metrics.get("bifurcation_scenarios", 0),
+		solver.metrics.get("bifurcation_duration", 0),
 		])
 	
 	for cell: Vector2i in solver.board.cells:
