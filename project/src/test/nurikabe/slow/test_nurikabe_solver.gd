@@ -7,7 +7,7 @@ const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
-const UNKNOWN_REASON: NurikabeSolver.Reason = NurikabeSolver.UNKNOWN_REASON
+const UNKNOWN: NurikabeSolver.Reason = NurikabeSolver.UNKNOWN
 
 ## Starting techniques
 const ISLAND_OF_ONE: NurikabeSolver.Reason = NurikabeSolver.ISLAND_OF_ONE

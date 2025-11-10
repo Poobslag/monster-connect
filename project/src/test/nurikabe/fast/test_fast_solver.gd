@@ -14,12 +14,11 @@ func before_each() -> void:
 	solver.clear()
 
 
-func assert_deduction(callable: Callable, expected: Array[FastDeduction]) -> void:
+func assert_deductions(callable: Callable, expected_str_array: Array[String]) -> void:
 	solver.board = FastTestUtils.init_board(grid)
 	callable.call()
 	solver.run_all_tasks()
 	var actual_str_array: Array[String] = deductions_to_strings(solver.deductions.deductions)
-	var expected_str_array: Array[String] = deductions_to_strings(expected)
 	assert_eq(str(actual_str_array), str(expected_str_array))
 
 

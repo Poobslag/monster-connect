@@ -12,10 +12,10 @@ func test_enqueue_island_battleground_invalid_board() -> void:
 		" .##   4  ####",
 		"##      ## 1##",
 	]
-	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(4, 6), CELL_WALL, "island_battleground (3, 6) (5, 5)"),
+	var expected: Array[String] = [
+		"(4, 6)->## island_battleground (3, 6) (5, 5)",
 	]
-	assert_deduction(solver.enqueue_island_battleground, expected)
+	assert_deductions(solver.enqueue_island_battleground, expected)
 
 
 func test_enqueue_island_battleground() -> void:
@@ -29,10 +29,10 @@ func test_enqueue_island_battleground() -> void:
 		" 1##   4  ####",
 		"##      ## 1##",
 	]
-	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(4, 6), CELL_WALL, "island_battleground (3, 6) (5, 5)"),
+	var expected: Array[String] = [
+		"(4, 6)->## island_battleground (3, 6) (5, 5)",
 	]
-	assert_deduction(solver.enqueue_island_battleground, expected)
+	assert_deductions(solver.enqueue_island_battleground, expected)
 
 
 func test_enqueue_island_battleground_unclued() -> void:
@@ -43,9 +43,9 @@ func test_enqueue_island_battleground_unclued() -> void:
 		" .  ",
 		" 7##",
 	]
-	var expected: Array[FastDeduction] = [
+	var expected: Array[String] = [
 	]
-	assert_deduction(solver.enqueue_island_battleground, expected)
+	assert_deductions(solver.enqueue_island_battleground, expected)
 
 
 func test_enqueue_wall_strangle() -> void:
@@ -57,10 +57,10 @@ func test_enqueue_wall_strangle() -> void:
 		"            ",
 		"            ",
 	]
-	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(3, 1), CELL_WALL, "wall_strangle (1, 1)"),
+	var expected: Array[String] = [
+		"(3, 1)->## wall_strangle (1, 1)",
 	]
-	assert_deduction(solver.enqueue_wall_strangle, expected)
+	assert_deductions(solver.enqueue_wall_strangle, expected)
 
 
 func test_enqueue_wall_strangle_one_wall() -> void:
@@ -68,9 +68,9 @@ func test_enqueue_wall_strangle_one_wall() -> void:
 		" 6 . . .",
 		"  ####  ",
 	]
-	var expected: Array[FastDeduction] = [
+	var expected: Array[String] = [
 	]
-	assert_deduction(solver.enqueue_wall_strangle, expected)
+	assert_deductions(solver.enqueue_wall_strangle, expected)
 
 
 func test_enqueue_island_strangle() -> void:
@@ -79,10 +79,10 @@ func test_enqueue_island_strangle() -> void:
 		" .          ",
 		"     . 4 .  ",
 	]
-	var expected: Array[FastDeduction] = [
-		FastDeduction.new(Vector2i(1, 2), CELL_WALL, "island_strangle (2, 2)"),
-		FastDeduction.new(Vector2i(2, 1), CELL_WALL, "island_strangle (2, 2)"),
-		FastDeduction.new(Vector2i(3, 1), CELL_WALL, "island_strangle (2, 2)"),
-		FastDeduction.new(Vector2i(4, 1), CELL_WALL, "island_strangle (2, 2)"),
+	var expected: Array[String] = [
+		"(1, 2)->## island_strangle (2, 2)",
+		"(2, 1)->## island_strangle (2, 2)",
+		"(3, 1)->## island_strangle (2, 2)",
+		"(4, 1)->## island_strangle (2, 2)",
 	]
-	assert_deduction(solver.enqueue_island_strangle, expected)
+	assert_deductions(solver.enqueue_island_strangle, expected)

@@ -86,7 +86,7 @@ func step() -> void:
 				push_error("Illegal change: %s == %s" % [cell_pos, solver.board.get_cell_string(cell_pos)])
 		
 		for deduction: FastDeduction in solver.deductions.deductions:
-			_show_message("%s: %s" % [deduction.pos, deduction.reason])
+			_show_message(str(deduction))
 		
 		solver.apply_changes()
 		%GameBoard.set_cell_strings(changes)

@@ -7,6 +7,36 @@ const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
+const UNKNOWN_REASON: FastDeduction.Reason = FastDeduction.Reason.UNKNOWN
+
+## starting techniques
+const ISLAND_OF_ONE: FastDeduction.Reason = FastDeduction.Reason.ISLAND_OF_ONE
+const ADJACENT_CLUES: FastDeduction.Reason = FastDeduction.Reason.ADJACENT_CLUES
+
+## basic techniques
+const CORNER_ISLAND: FastDeduction.Reason = FastDeduction.Reason.CORNER_ISLAND
+const ISLAND_BUFFER: FastDeduction.Reason = FastDeduction.Reason.ISLAND_BUFFER
+const ISLAND_CHOKEPOINT: FastDeduction.Reason = FastDeduction.Reason.ISLAND_CHOKEPOINT
+const ISLAND_CONNECTOR: FastDeduction.Reason = FastDeduction.Reason.ISLAND_CONNECTOR
+const ISLAND_DIVIDER: FastDeduction.Reason = FastDeduction.Reason.ISLAND_DIVIDER
+const ISLAND_EXPANSION: FastDeduction.Reason = FastDeduction.Reason.ISLAND_EXPANSION
+const ISLAND_MOAT: FastDeduction.Reason = FastDeduction.Reason.ISLAND_MOAT
+const ISLAND_SNUG: FastDeduction.Reason = FastDeduction.Reason.ISLAND_SNUG
+const LONG_ISLAND: FastDeduction.Reason = FastDeduction.Reason.LONG_ISLAND
+const POOL_CHOKEPOINT: FastDeduction.Reason = FastDeduction.Reason.POOL_CHOKEPOINT
+const POOL_TRIPLET: FastDeduction.Reason = FastDeduction.Reason.POOL_TRIPLET
+const UNREACHABLE_CELL: FastDeduction.Reason = FastDeduction.Reason.UNREACHABLE_CELL
+const WALL_BUBBLE: FastDeduction.Reason = FastDeduction.Reason.WALL_BUBBLE
+const WALL_CONNECTOR: FastDeduction.Reason = FastDeduction.Reason.WALL_CONNECTOR
+const WALL_EXPANSION: FastDeduction.Reason = FastDeduction.Reason.WALL_EXPANSION
+const WALL_WEAVER: FastDeduction.Reason = FastDeduction.Reason.WALL_WEAVER
+
+## advanced techniques
+const ASSUMPTION: FastDeduction.Reason = FastDeduction.Reason.ASSUMPTION
+const ISLAND_BATTLEGROUND: FastDeduction.Reason = FastDeduction.Reason.ISLAND_BATTLEGROUND
+const ISLAND_STRANGLE: FastDeduction.Reason = FastDeduction.Reason.ISLAND_STRANGLE
+const WALL_STRANGLE: FastDeduction.Reason = FastDeduction.Reason.WALL_STRANGLE
+
 var verbose: bool = false
 
 var deductions: DeductionBatch = DeductionBatch.new()
@@ -20,8 +50,10 @@ var _task_queue: Array[Dictionary] = [
 ]
 var _bifurcation_engine: BifurcationEngine = BifurcationEngine.new()
 
-func add_deduction(pos: Vector2i, value: String, reason: String) -> void:
-	deductions.add_deduction(pos, value, reason)
+func add_deduction(pos: Vector2i, value: String,
+		reason: FastDeduction.Reason = UNKNOWN_REASON,
+		reason_cells: Array[Vector2i] = []) -> void:
+	deductions.add_deduction(pos, value, reason, reason_cells)
 
 
 func apply_changes() -> void:
@@ -209,7 +241,7 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 		var adjacent_clues: Array[Vector2i] = _find_adjacent_clues(neighbor)
 		if adjacent_clues.size() >= 2:
 			add_deduction(neighbor, CELL_WALL,
-				"adjacent_clues %s %s" % [adjacent_clues[0], adjacent_clues[1]])
+				ADJACENT_CLUES, [adjacent_clues[0], adjacent_clues[1]] as Array[Vector2i])
 
 
 func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
@@ -225,16 +257,16 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 		var liberties: Array[Vector2i] = board.get_liberties(board.get_island_for_cell(clue_cell))
 		if chokepoint in liberties:
 			add_deduction(chokepoint, CELL_ISLAND,
-				"island_expansion %s" % [clue_cell])
+				ISLAND_EXPANSION, [clue_cell])
 		else:
 			add_deduction(chokepoint, CELL_ISLAND,
-				"island_chokepoint %s" % [clue_cell])
+				ISLAND_CHOKEPOINT, [clue_cell])
 	
 	# Check for two empty cells leading into a dead end, which create a pool.
 	if _can_deduce(board, chokepoint):
 		for dir: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
 			if _is_pool_chokepoint(chokepoint, dir):
-				add_deduction(chokepoint, CELL_ISLAND, "pool_chokepoint %s" % [chokepoint + dir])
+				add_deduction(chokepoint, CELL_ISLAND, POOL_CHOKEPOINT, [chokepoint + dir])
 
 
 ## Returns true if converting the chokepoint to a wall would enclose a 2x2 pool.[br]
@@ -291,10 +323,10 @@ func deduce_clue_chokepoint_snug(island_cell: Vector2i) -> void:
 	var component_cells: Array[Vector2i] = board.get_per_clue_chokepoint_map().get_component_cells(island_cell)
 	for component_cell: Vector2i in component_cells:
 		if board.get_cell_string(component_cell) == CELL_EMPTY:
-			add_deduction(component_cell, CELL_ISLAND, "island_snug %s" % [island_cell])
+			add_deduction(component_cell, CELL_ISLAND, ISLAND_SNUG, [island_cell])
 		for neighbor: Vector2i in board.get_neighbors(component_cell):
 			if board.get_per_clue_chokepoint_map().needs_buffer(island_root, neighbor):
-				add_deduction(neighbor, CELL_WALL, "island_buffer %s" % [island_cell])
+				add_deduction(neighbor, CELL_WALL, ISLAND_BUFFER, [island_cell])
 
 
 func deduce_clue_chokepoint_loose(island_cell: Vector2i) -> void:
@@ -306,11 +338,11 @@ func deduce_clue_chokepoint_loose(island_cell: Vector2i) -> void:
 			continue
 		if chokepoint_cells[chokepoint] == CELL_ISLAND:
 			if chokepoint in board.get_liberties(island):
-				add_deduction(chokepoint, CELL_ISLAND, "island_expansion %s" % [island_cell])
+				add_deduction(chokepoint, CELL_ISLAND, ISLAND_EXPANSION, [island_cell])
 			else:
-				add_deduction(chokepoint, CELL_ISLAND, "island_chokepoint %s" % [island_cell])
+				add_deduction(chokepoint, CELL_ISLAND, ISLAND_CHOKEPOINT, [island_cell])
 		else:
-			add_deduction(chokepoint, CELL_WALL, "island_buffer %s" % [island_cell])
+			add_deduction(chokepoint, CELL_WALL, ISLAND_BUFFER, [island_cell])
 
 
 func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
@@ -341,7 +373,7 @@ func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
 		var connector: Vector2i = connectors_by_wall[wall_root].front()
 		if not _can_deduce(board, connector):
 			continue
-		deductions.add_deduction(connector, CELL_WALL, "wall_weaver %s" % [island_cell])
+		deductions.add_deduction(connector, CELL_WALL, WALL_WEAVER, [island_cell])
 
 
 func deduce_long_island() -> void:
@@ -380,7 +412,7 @@ func deduce_long_island() -> void:
 			var deduction_cell: Vector2i = closest_clued_island_cell + i * cell_step
 			if not _can_deduce(board, deduction_cell):
 				continue
-			add_deduction(deduction_cell, CELL_ISLAND, "long_island %s" % [clued_island_cell])
+			add_deduction(deduction_cell, CELL_ISLAND, LONG_ISLAND, [clued_island_cell])
 
 
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
@@ -390,7 +422,7 @@ func deduce_island_of_one(clue_cell: Vector2i) -> void:
 		if not _can_deduce(board, neighbor):
 			continue
 		add_deduction(neighbor, CELL_WALL,
-			"island_of_one %s" % [clue_cell])
+			ISLAND_OF_ONE, [clue_cell])
 
 
 func deduce_clued_island(island_cell: Vector2i) -> void:
@@ -408,22 +440,22 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 		for liberty: Vector2i in liberties:
 			if not _can_deduce(board, liberty):
 				continue
-			add_deduction(liberty, CELL_WALL, "island_moat %s" % [island[0]])
+			add_deduction(liberty, CELL_WALL, ISLAND_MOAT, [island[0]])
 	elif liberties.size() == 1 and clue_value == island.size() + 1:
 		if _can_deduce(board, liberties[0]):
-			add_deduction(liberties[0], CELL_ISLAND, "island_expansion %s" % [island[0]])
+			add_deduction(liberties[0], CELL_ISLAND, ISLAND_EXPANSION, [island[0]])
 		for new_wall_cell: Vector2i in board.get_neighbors(liberties[0]):
 			if _can_deduce(board, new_wall_cell):
-				add_deduction(new_wall_cell, CELL_WALL, "island_moat %s" % [island[0]])
+				add_deduction(new_wall_cell, CELL_WALL, ISLAND_MOAT, [island[0]])
 	elif liberties.size() == 1 and clue_value > island.size():
 		if _can_deduce(board, liberties[0]):
-			add_deduction(liberties[0], CELL_ISLAND, "island_expansion %s" % [island[0]])
+			add_deduction(liberties[0], CELL_ISLAND, ISLAND_EXPANSION, [island[0]])
 	else:
 		var component_cell_count: int = board.get_island_chokepoint_map().get_component_cell_count(island_cell)
 		if component_cell_count == clue_value:
 			for deduction_cell: Vector2i in board.get_island_chokepoint_map().get_component_cells(island_cell):
 				if _can_deduce(board, deduction_cell):
-					add_deduction(deduction_cell, CELL_ISLAND, "island_snug %s" % [island_cell])
+					add_deduction(deduction_cell, CELL_ISLAND, ISLAND_SNUG, [island_cell])
 		
 		if liberties.size() == 2 and clue_value == island.size() + 1:
 			# If there are two liberties, and the liberties are diagonal, any blank squares connecting those liberties
@@ -434,7 +466,7 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 			for liberty_connector: Vector2i in liberty_connectors:
 				if not _can_deduce(board, liberty_connector):
 					continue
-				add_deduction(liberty_connector, CELL_WALL, "corner_island %s" % [island_cell])
+				add_deduction(liberty_connector, CELL_WALL, CORNER_ISLAND, [island_cell])
 
 
 func deduce_unclued_island(island_cell: Vector2i) -> void:
@@ -445,7 +477,7 @@ func deduce_unclued_island(island_cell: Vector2i) -> void:
 		return
 	var liberties: Array[Vector2i] = board.get_liberties(island)
 	if liberties.size() == 1:
-		add_deduction(liberties[0], CELL_ISLAND, "island_connector %s" % [island[0]])
+		add_deduction(liberties[0], CELL_ISLAND, ISLAND_CONNECTOR, [island[0]])
 
 
 func deduce_island_divider(island_cell: Vector2i) -> void:
@@ -455,8 +487,8 @@ func deduce_island_divider(island_cell: Vector2i) -> void:
 			continue
 		var clued_neighbor_roots: Array[Vector2i] = _find_clued_neighbor_roots(liberty)
 		if clued_neighbor_roots.size() >= 2:
-			add_deduction(liberty, CELL_WALL, "island_divider %s %s"
-					% [clued_neighbor_roots[0], clued_neighbor_roots[1]])
+			add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER,
+					[clued_neighbor_roots[0], clued_neighbor_roots[1]])
 
 
 func deduce_unreachable_square(cell: Vector2i) -> void:
@@ -465,16 +497,16 @@ func deduce_unreachable_square(cell: Vector2i) -> void:
 	
 	match board.get_global_reachability_map().get_clue_reachability(cell):
 		GlobalReachabilityMap.ClueReachability.UNREACHABLE:
-			add_deduction(cell, CELL_WALL, "unreachable_square %s"
-					% [board.get_global_reachability_map().get_nearest_clue_cell(cell)])
+			add_deduction(cell, CELL_WALL, UNREACHABLE_CELL,
+					[board.get_global_reachability_map().get_nearest_clue_cell(cell)])
 		
 		GlobalReachabilityMap.ClueReachability.IMPOSSIBLE:
-			add_deduction(cell, CELL_WALL, "wall_bubble")
+			add_deduction(cell, CELL_WALL, WALL_BUBBLE)
 		
 		GlobalReachabilityMap.ClueReachability.CONFLICT:
 			var clued_neighbor_roots: Array[Vector2i] = _find_clued_neighbor_roots(cell)
-			add_deduction(cell, CELL_WALL, "island_divider %s %s"
-					% [clued_neighbor_roots[0], clued_neighbor_roots[1]])
+			add_deduction(cell, CELL_WALL, ISLAND_DIVIDER,
+					[clued_neighbor_roots[0], clued_neighbor_roots[1]])
 
 
 func deduce_wall(wall_cell: Vector2i) -> void:
@@ -502,7 +534,7 @@ func deduce_wall_chokepoint(chokepoint: Vector2i) -> void:
 			break
 	
 	if split_neighbor != POS_NOT_FOUND:
-		add_deduction(chokepoint, CELL_WALL, "wall_connector %s" % [split_neighbor])
+		add_deduction(chokepoint, CELL_WALL, WALL_CONNECTOR, [split_neighbor])
 
 
 func deduce_wall_expansion(wall_cell: Vector2i) -> void:
@@ -512,7 +544,7 @@ func deduce_wall_expansion(wall_cell: Vector2i) -> void:
 		return
 	
 	if liberties.size() == 1:
-		add_deduction(liberties[0], CELL_WALL, "wall_expansion %s" % [wall_cell])
+		add_deduction(liberties[0], CELL_WALL, WALL_EXPANSION, [wall_cell])
 
 
 func deduce_pool(wall_cell: Vector2i) -> void:
@@ -540,7 +572,7 @@ func deduce_pool(wall_cell: Vector2i) -> void:
 			pool.append(Vector2i(pool[1].x, pool[0].y) if pool[0].x == liberty.x else Vector2i(pool[0].x, pool[1].y))
 			pool.sort()
 			
-			add_deduction(liberty, CELL_ISLAND, "pool_triplet %s %s %s" % [pool[0], pool[1], pool[2]])
+			add_deduction(liberty, CELL_ISLAND, POOL_TRIPLET, [pool[0], pool[1], pool[2]])
 
 
 func neighbor_mask(cell: Vector2i, callable: Callable) -> int:
@@ -623,10 +655,10 @@ func enqueue_island_battleground() -> void:
 				continue
 			var clued_island: Vector2i = clued_island_neighbors_by_empty_cell[cell][0]
 			var neighbor_clued_island: Vector2i = clued_island_neighbors_by_empty_cell[neighbor][0]
-			var reason: String = "island_battleground %s %s" % [clued_island, neighbor_clued_island]
 			_add_bifurcation_scenario(
 				{cell: CELL_ISLAND, neighbor: CELL_WALL},
-				[FastDeduction.new(cell, CELL_WALL, reason)])
+				[FastDeduction.new(cell, CELL_WALL,
+						ISLAND_BATTLEGROUND, [clued_island, neighbor_clued_island])])
 	
 	if not has_scheduled_task(run_bifurcation_step):
 		schedule_task(run_bifurcation_step, 10)
@@ -657,7 +689,7 @@ func enqueue_island_strangle() -> void:
 			
 			_add_bifurcation_scenario(
 				assumptions,
-				[FastDeduction.new(liberty, CELL_WALL, "island_strangle %s" % [island.front()])]
+				[FastDeduction.new(liberty, CELL_WALL, ISLAND_STRANGLE, [island.front()])]
 			)
 	
 	if not has_scheduled_task(run_bifurcation_step):
@@ -675,11 +707,11 @@ func enqueue_wall_strangle() -> void:
 		if liberties.size() == 2:
 			_add_bifurcation_scenario(
 				{liberties[0]: CELL_ISLAND, liberties[1]: CELL_WALL},
-				[FastDeduction.new(liberties[0], CELL_WALL, "wall_strangle %s" % [wall.front()])]
+				[FastDeduction.new(liberties[0], CELL_WALL, WALL_STRANGLE, [wall.front()])]
 			)
 			_add_bifurcation_scenario(
 				{liberties[1]: CELL_ISLAND, liberties[0]: CELL_WALL},
-				[FastDeduction.new(liberties[1], CELL_WALL, "wall_strangle %s" % [wall.front()])]
+				[FastDeduction.new(liberties[1], CELL_WALL, WALL_STRANGLE, [wall.front()])]
 			)
 	
 	if not has_scheduled_task(run_bifurcation_step):
@@ -733,7 +765,7 @@ func run_bifurcation_step() -> void:
 		for deduction: FastDeduction in _bifurcation_engine.get_confirmed_deductions():
 			if not _can_deduce(board, deduction.pos):
 				continue
-			add_deduction(deduction.pos, deduction.value, deduction.reason)
+			add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
 		_bifurcation_engine.clear()
 	elif not _bifurcation_engine.is_queue_empty():
 		schedule_task(run_bifurcation_step, 10)

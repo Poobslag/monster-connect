@@ -1,7 +1,7 @@
 class_name NurikabeSolver
 
 enum Reason {
-	UNKNOWN_REASON,
+	UNKNOWN,
 	
 	# starting techniques
 	ISLAND_OF_ONE, # surround single-square island with walls
@@ -45,7 +45,7 @@ const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: String = NurikabeUtils.CELL_WALL
 
-const UNKNOWN_REASON: Reason = Reason.UNKNOWN_REASON
+const UNKNOWN: Reason = Reason.UNKNOWN
 
 ## Starting techniques
 const ISLAND_OF_ONE: Reason = Reason.ISLAND_OF_ONE
