@@ -20,7 +20,7 @@ func _build() -> void:
 	_initial_validation_result = board.validate()
 	solver.board = board.duplicate()
 	for assumption_cell in assumptions:
-		solver.add_deduction(assumption_cell, assumptions[assumption_cell], "bifurcation")
+		solver.add_deduction(assumption_cell, assumptions[assumption_cell], FastDeduction.Reason.ASSUMPTION)
 	solver.apply_changes()
 	_last_validation_result = solver.board.validate()
 

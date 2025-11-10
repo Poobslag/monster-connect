@@ -3,8 +3,10 @@ class_name DeductionBatch
 var deductions: Array[FastDeduction] = []
 var cells: Dictionary[Vector2i, bool]
 
-func add_deduction(pos: Vector2i, value: String, reason: String) -> void:
-	deductions.append(FastDeduction.new(pos, value, reason))
+func add_deduction(pos: Vector2i, value: String,
+		reason: FastDeduction.Reason = FastDeduction.Reason.UNKNOWN,
+		reason_cells: Array[Vector2i] = []) -> void:
+	deductions.append(FastDeduction.new(pos, value, reason, reason_cells))
 	cells[pos] = true
 
 
