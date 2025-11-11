@@ -420,11 +420,23 @@ func test_pool_triplets_2() -> void:
 	assert_deductions(solver.enqueue_walls, expected)
 
 
-func test_enqueue_walls_pool_triplets_invalid() -> void:
+func test_enqueue_walls_pool_triplets_invalid_1() -> void:
 	grid = [
 		" 3#### 3",
 		"        ",
 		"  ####  ",
+	]
+	var expected: Array[String] = [
+	]
+	assert_deductions(solver.enqueue_walls, expected)
+
+
+func test_enqueue_walls_pool_triplets_invalid_2() -> void:
+	grid = [
+		"##########",
+		"## 1## 1##",
+		"####  ####",
+		"          ",
 	]
 	var expected: Array[String] = [
 	]
