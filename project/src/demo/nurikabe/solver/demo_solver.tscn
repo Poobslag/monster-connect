@@ -114,4 +114,10 @@ theme_override_font_sizes/normal_font_size = 32
 scroll_following = true
 selection_enabled = true
 
+[node name="PerformanceSuiteTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.25
+
+[connection signal="timeout" from="PerformanceSuiteTimer" to="." method="_on_performance_suite_timer_timeout"]
+
 [editable path="HBoxContainer/GameBoardHolder/GameBoard"]
