@@ -16,9 +16,9 @@ enum Reason {
 	ISLAND_EXPANSION, # expand an island to a cell needed to fulfill its clue
 	ISLAND_MOAT, # seal a completed island with walls
 	ISLAND_SNUG, # fill an island when its reachable space matches its clue
-	LONG_ISLAND, # extend a stretched island along its only viable axis
 	POOL_CHOKEPOINT, # add an island to avoid isolating or trapping a small wall region
 	POOL_TRIPLET, # add an island to avoid a 2x2 wall area
+	UNCLUED_LIFELINE, # extend an unclued island towards the only connectable clue
 	UNREACHABLE_CELL, # add a wall where no clue can reach
 	WALL_BUBBLE, # wall in a cell surrounded by walls
 	WALL_CONNECTOR, # connect two walls through a chokepoint
