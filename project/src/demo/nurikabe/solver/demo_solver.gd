@@ -1,6 +1,7 @@
 @tool
 extends Node
 ## [b]Keys:[/b][br]
+## 	[kbd][1-0][/kbd]: Load puzzle #61-70.
 ## 	[kbd]Q[/kbd]: Solve one step.
 ## 	[kbd]W[/kbd]: Performance test a full solution.
 ## 	[kbd]Shift + W[/kbd]: Performance test puzzles #61-70.
@@ -19,6 +20,19 @@ const CELL_INVALID := "!"
 const CELL_ISLAND := "."
 const CELL_WALL := "##"
 
+const PUZZLE_PATHS: Array[String] = [
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_061.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_062.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_063.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_064.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_065.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_066.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_067.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_068.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_069.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_070.txt",
+]
+
 var performance_data: Dictionary[String, Variant] = {}
 var solver: Solver = Solver.new()
 
@@ -26,24 +40,16 @@ var performance_suite_queue: Array[String] = []
 
 func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
+		KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9:
+			var puzzle_index: int = wrapi(Utils.key_num(event) - 1, 0, PUZZLE_PATHS.size())
+			load_puzzle(PUZZLE_PATHS[puzzle_index])
 		KEY_Q:
 			step()
 			%GameBoard.validate()
 		KEY_W:
 			performance_data.clear()
 			if Input.is_key_pressed(KEY_SHIFT):
-				performance_suite_queue = [
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_061.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_062.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_063.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_064.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_065.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_066.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_067.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_068.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_069.txt",
-					"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_070.txt",
-				]
+				performance_suite_queue = PUZZLE_PATHS.duplicate()
 				if not %MessageLabel.text.is_empty():
 					_show_message("--------")
 				_show_message("performance suite start (%s)" % [performance_suite_queue.size()])
@@ -83,13 +89,12 @@ func step() -> void:
 		_show_message("(no changes)")
 		return
 	
-	var changes: Array[Dictionary] = []
-	
 	if not %MessageLabel.text.is_empty():
 		_show_message("--------")
 	
-	keep_stepping(100, 1)
+	keep_stepping(100, 1, false)
 	
+	var changes: Array[Dictionary] = solver.get_changes()
 	if changes.is_empty():
 		_show_message("(no changes)")
 	
@@ -128,7 +133,7 @@ func solve_until_bifurcation() -> void:
 			])
 
 
-func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999) -> void:
+func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, apply_changes: bool = true) -> void:
 	var idle_steps: int = 0
 	while idle_steps < idle_step_threshold and solver.deductions.size() < deduction_threshold:
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
@@ -139,11 +144,18 @@ func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999) 
 		if not solver.has_scheduled_tasks():
 			break
 		solver.step()
-		solver.apply_changes()
+		if apply_changes:
+			solver.apply_changes()
 		if old_filled_cell_count == solver.board.get_filled_cell_count():
 			idle_steps += 1
 		else:
 			idle_steps = 0
+
+
+func load_puzzle(new_puzzle_path: String) -> void:
+	puzzle_path = new_puzzle_path
+	solver.board = %GameBoard.to_solver_board()
+	solver.clear()
 
 
 func performance_test() -> void:
@@ -202,9 +214,7 @@ func _on_performance_suite_timer_timeout() -> void:
 		return
 	
 	var next_path: String = performance_suite_queue.pop_front()
-	puzzle_path = next_path
-	solver.board = %GameBoard.to_solver_board()
-	solver.clear()
+	load_puzzle(next_path)
 	
 	var start_time: int = Time.get_ticks_usec()
 	keep_stepping(500)
