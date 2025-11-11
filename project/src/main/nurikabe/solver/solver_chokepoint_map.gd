@@ -14,7 +14,8 @@ var _cell_filter: Callable
 var _special_cell_filter: Callable
 var _chokepoint_map: ChokepointMap
 
-func _init(init_board: SolverBoard, init_cell_filter: Callable, init_special_cell_filter: Callable = Callable()) -> void:
+func _init(init_board: SolverBoard, init_cell_filter: Callable, \
+		init_special_cell_filter: Callable = Callable()) -> void:
 	_board = init_board
 	_cell_filter = init_cell_filter
 	_special_cell_filter = init_special_cell_filter

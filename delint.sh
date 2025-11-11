@@ -111,7 +111,7 @@ FNR == 1 { in_class = 0 }
 }
 /^(@export|var |func )/ { in_class = 0 }
 ' \
-  | grep -v "project/src/main/nurikabe/fast/fast_solver\.gd.*$" \
+  | grep -v "project/src/main/nurikabe/solver/solver\.gd.*$" \
   )
 if [ -n "$RESULT" ]; then
   echo ""

@@ -210,7 +210,10 @@ func test_wrong_size() -> void:
 		"## . .",
 		"######",
 	]
-	assert_invalid_strict({"wrong_size": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0), Vector2i(2, 1)]})
+	assert_invalid_strict({"wrong_size": [
+			Vector2i(0, 0),
+			Vector2i(1, 0), Vector2i(1, 1),
+			Vector2i(2, 0), Vector2i(2, 1)]})
 
 
 func assert_valid() -> void:
