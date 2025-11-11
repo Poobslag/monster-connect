@@ -561,27 +561,16 @@ func deduce_pool(wall_cell: Vector2i) -> void:
 	for liberty: Vector2i in liberties:
 		if not _can_deduce(board, liberty):
 			continue
-		var wall_mask: int = neighbor_mask(liberty, func(cell: Vector2i) -> bool:
-			return wall_cell_set.has(cell))
-		if wall_mask in [5, 6, 7, 9, 10, 11, 13, 14]:
-			# Calculate the three pool cells: The two wall cells adjacent to the liberty, and the diagonal cell.
-			var pool: Array[Vector2i] = []
-			for neighbor: Vector2i in board.get_neighbors(liberty):
-				if neighbor in wall_cell_set:
-					pool.append(neighbor)
-			pool.append(Vector2i(pool[1].x, pool[0].y) if pool[0].x == liberty.x else Vector2i(pool[0].x, pool[1].y))
-			pool.sort()
-			
-			add_deduction(liberty, CELL_ISLAND, POOL_TRIPLET, [pool[0], pool[1], pool[2]])
-
-
-func neighbor_mask(cell: Vector2i, callable: Callable) -> int:
-	var result: int = 0
-	result |= 1 if callable.call(cell + Vector2i.UP) else 0
-	result |= 2 if callable.call(cell + Vector2i.DOWN) else 0
-	result |= 4 if callable.call(cell + Vector2i.LEFT) else 0
-	result |= 8 if callable.call(cell + Vector2i.RIGHT) else 0
-	return result
+		for pool_dir: Vector2i in [Vector2i(-1, -1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(1, 1)]:
+			var pool_triplet_cells: Array[Vector2i] =  [
+				liberty + pool_dir,
+				liberty + Vector2i(pool_dir.x, 0),
+				liberty + Vector2i(0, pool_dir.y)]
+			if pool_triplet_cells.all(func(pool_triplet_cell: Vector2i) -> bool:
+					return board.get_cell_string(pool_triplet_cell) == CELL_WALL):
+				pool_triplet_cells.sort()
+				add_deduction(liberty, CELL_ISLAND, POOL_TRIPLET, pool_triplet_cells)
+				break
 
 
 func enqueue_adjacent_clues() -> void:
