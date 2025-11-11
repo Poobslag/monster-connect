@@ -25,10 +25,13 @@ func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
 		KEY_Q:
 			step()
+			%GameBoard.validate()
 		KEY_W:
 			performance_test()
+			%GameBoard.validate()
 		KEY_E:
 			solve_until_bifurcation()
+			%GameBoard.validate()
 		KEY_P:
 			if Input.is_key_pressed(KEY_SHIFT):
 				solver.print_queue()
