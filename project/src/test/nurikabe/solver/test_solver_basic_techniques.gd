@@ -242,6 +242,29 @@ func test_enqueue_island_dividers() -> void:
 	assert_deductions(solver.enqueue_island_dividers, expected)
 
 
+func test_enqueue_unclued_island_dividers() -> void:
+	grid = [
+		" .   .",
+		" 3    ",
+		"     3",
+	]
+	var expected: Array[String] = [
+		"(1, 0)->## island_divider (0, 0) (2, 0)",
+	]
+	assert_deductions(solver.enqueue_island_dividers, expected)
+
+
+func test_enqueue_unclued_island_dividers_invalid() -> void:
+	grid = [
+		"      ",
+		"     .",
+		"   . 6",
+	]
+	var expected: Array[String] = [
+	]
+	assert_deductions(solver.enqueue_island_dividers, expected)
+
+
 func test_enqueue_islands_corner_island() -> void:
 	# The cell at (1, 1) can't be an island or it would block the 2 island from growing.
 	grid = [

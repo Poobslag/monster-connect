@@ -482,13 +482,30 @@ func deduce_unclued_island(island_cell: Vector2i) -> void:
 
 func deduce_island_divider(island_cell: Vector2i) -> void:
 	var liberties: Array[Vector2i] = board.get_liberties(board.get_island_for_cell(island_cell))
+	var clue_value: int = board.get_clue_for_island_cell(island_cell)
 	for liberty: Vector2i in liberties:
 		if not _can_deduce(board, liberty):
 			continue
-		var clued_neighbor_roots: Array[Vector2i] = _find_clued_neighbor_roots(liberty)
-		if clued_neighbor_roots.size() >= 2:
-			add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER,
-					[clued_neighbor_roots[0], clued_neighbor_roots[1]])
+		
+		var visited_island_roots: Dictionary[Vector2i, bool] = {}
+		var total_joined_size: int = 1
+		var total_clues: int = 0
+		
+		for neighbor: Vector2i in board.get_neighbors(liberty):
+			var neighbor_island: Array[Vector2i] = board.get_island_for_cell(neighbor)
+			if neighbor_island.is_empty() or visited_island_roots.has(neighbor_island.front()):
+				continue
+			
+			var neighbor_clue_value: int = board.get_clue_for_island(neighbor_island)
+			total_joined_size += neighbor_island.size()
+			if neighbor_clue_value >= 1:
+				total_clues += 1
+			
+			if total_clues > 1 or total_joined_size > clue_value:
+				add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER,
+						[island_cell, neighbor])
+				break
+			visited_island_roots[neighbor_island.front()] = true
 
 
 func deduce_unreachable_square(cell: Vector2i) -> void:
