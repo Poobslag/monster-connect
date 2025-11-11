@@ -1,3 +1,4 @@
+// puzzle 71 from nikoli's book "nurikabe 1"
              6       1      
    9                   3    
                      2      

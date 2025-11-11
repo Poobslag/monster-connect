@@ -1,0 +1,19 @@
+// puzzle 62 from nikoli's book "nurikabe 1"
+                    
+     4              
+                    
+         2          
+       3         6  
+ 5                  
+                    
+     5         7    
+                   4
+         4          
+                   3
+             8      
+           2     2  
+                    
+     4              
+11     7       4    
+                    
+                 4  
