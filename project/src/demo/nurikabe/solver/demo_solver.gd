@@ -104,8 +104,11 @@ func step() -> void:
 			if solver.board.get_cell_string(cell_pos) != CELL_EMPTY:
 				push_error("Illegal change: %s == %s" % [cell_pos, solver.board.get_cell_string(cell_pos)])
 		
-		for deduction: Deduction in solver.deductions.deductions:
-			_show_message(str(deduction))
+		for deduction_index in solver.deductions.deductions.size():
+			var shown_index: int = solver.board.get_filled_cell_count() \
+					- solver.deductions.deductions.size() + deduction_index
+			var deduction: Deduction = solver.deductions.deductions[deduction_index]
+			_show_message("%s %s" % [shown_index, str(deduction)])
 		
 		solver.apply_changes()
 		%GameBoard.set_cell_strings(changes)
@@ -117,7 +120,7 @@ func copy_board_from_solver() -> void:
 
 
 func solve_until_bifurcation() -> void:
-	keep_stepping(500)
+	keep_stepping(500, 999999, true, false)
 	copy_board_from_solver()
 	
 	if not %MessageLabel.text.is_empty():
@@ -133,14 +136,14 @@ func solve_until_bifurcation() -> void:
 			])
 
 
-func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, apply_changes: bool = true) -> void:
+func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, apply_changes: bool = true, allow_bifurcation: bool = true) -> void:
 	var idle_steps: int = 0
 	while idle_steps < idle_step_threshold and solver.deductions.size() < deduction_threshold:
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
 		if solver.board.is_filled():
 			break
 		if not solver.has_scheduled_tasks():
-			solver.schedule_tasks()
+			solver.schedule_tasks(allow_bifurcation)
 		if not solver.has_scheduled_tasks():
 			break
 		solver.step()

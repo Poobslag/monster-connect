@@ -36,6 +36,9 @@ func get_clue_for_island(group: Array[Vector2i]) -> int:
 		_build_clue_value.bind(group))
 
 
+## Returns the clue value for the specified group of cells.[br]
+## [br]
+## If zero clues are present, returns 0. If multiple clues are present, returns -1.
 func get_clue_for_island_cell(cell: Vector2i) -> int:
 	var group: Array[Vector2i] = get_island_group_map().groups_by_cell.get(cell, [] as Array[Vector2i])
 	return get_clue_for_island(group) if group else 0

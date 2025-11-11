@@ -107,6 +107,7 @@ func global_to_map(global_point: Vector2) -> Vector2i:
 
 func import_grid() -> void:
 	%TileMapGround.clear()
+	%TileMapIsland.clear()
 	%TileMapClue.clear()
 	%TileMapError.clear()
 	%TileMapWall.clear()
