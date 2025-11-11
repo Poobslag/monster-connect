@@ -66,6 +66,7 @@ zoom = Vector2(1.6, 1.6)
 unique_name_in_owner = true
 visible = false
 
+[connection signal="puzzle_finished" from="GameBoard" to="ResultsOverlay" method="_on_game_board_puzzle_finished"]
 [connection signal="next_level_button_pressed" from="ResultsOverlay" to="GameBoard" method="_on_results_overlay_next_level_button_pressed"]
 
 [editable path="GameBoard"]

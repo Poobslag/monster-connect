@@ -2,6 +2,8 @@
 class_name NurikabeGameBoard
 extends Control
 
+signal puzzle_finished
+
 const MAX_UNDO: int = 200
 
 const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
@@ -305,18 +307,13 @@ func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: 
 			_redo_stack.remove_at(i)
 
 
-func _show_win_screen() -> void:
-	SoundManager.play_sfx("win")
-	%ResultsOverlay.show_results()
-
-
 func _on_validate_timer_timeout() -> void:
 	var model: SolverBoard = to_solver_board()
 	var result: SolverBoard.ValidationResult = model.validate()
 	var result_strict: SolverBoard.ValidationResult = model.validate_strict()
 	
 	if result_strict.error_count == 0:
-		_show_win_screen()
+		puzzle_finished.emit()
 	
 	# update lowlight cells if the player isn't finished
 	var new_lowlight_cells: Dictionary[Vector2i, bool] = {}
