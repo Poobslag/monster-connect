@@ -63,12 +63,7 @@ func get_half_cells(player_id: int) -> Array[Vector2i]:
 
 
 func has_half_cells(player_id: int) -> bool:
-	var result: bool = false
-	for cell: Vector2i in half_cells:
-		if half_cells[cell] == player_id:
-			result = true
-			break
-	return result
+	return half_cells.values().has(player_id)
 
 
 func refresh_cells() -> void:
