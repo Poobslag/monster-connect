@@ -122,7 +122,7 @@ func test_enqueue_island_chokepoints_snug() -> void:
 	assert_deductions(solver.enqueue_island_chokepoints, expected)
 
 
-func test_enqueue_island_chokepoints_long() -> void:
+func test_enqueue_island_chokepoints_lifeline() -> void:
 	grid = [
 		"    ####",
 		" 2  ## .",
@@ -132,13 +132,13 @@ func test_enqueue_island_chokepoints_long() -> void:
 		"       5",
 	]
 	var expected: Array[String] = [
-		"(3, 3)->. long_island (3, 5)",
-		"(3, 4)->. long_island (3, 5)",
+		"(3, 3)->. unclued_lifeline (3, 5)",
+		"(3, 4)->. unclued_lifeline (3, 5)",
 	]
 	assert_deductions(solver.enqueue_island_chokepoints, expected)
 
 
-func test_enqueue_island_chokepoints_long_2() -> void:
+func test_enqueue_island_chokepoints_lifeline_2() -> void:
 	grid = [
 		"    ####",
 		" 2  ## .",
@@ -149,13 +149,13 @@ func test_enqueue_island_chokepoints_long_2() -> void:
 		"     7 .",
 	]
 	var expected: Array[String] = [
-		"(3, 3)->. long_island (3, 5)",
-		"(3, 4)->. long_island (3, 5)",
+		"(3, 3)->. unclued_lifeline (3, 5)",
+		"(3, 4)->. unclued_lifeline (3, 5)",
 	]
 	assert_deductions(solver.enqueue_island_chokepoints, expected)
 
 
-func test_enqueue_island_chokepoints_long_3() -> void:
+func test_enqueue_island_chokepoints_lifeline_3() -> void:
 	grid = [
 		"  ##  ",
 		"   .  ",
@@ -167,16 +167,16 @@ func test_enqueue_island_chokepoints_long_3() -> void:
 		"   7  ",
 	]
 	var expected: Array[String] = [
-		"(1, 2)->. long_island (1, 7)",
-		"(1, 3)->. long_island (1, 7)",
-		"(1, 4)->. long_island (1, 7)",
-		"(1, 5)->. long_island (1, 7)",
-		"(1, 6)->. long_island (1, 7)",
+		"(1, 2)->. unclued_lifeline (1, 7)",
+		"(1, 3)->. unclued_lifeline (1, 7)",
+		"(1, 4)->. unclued_lifeline (1, 7)",
+		"(1, 5)->. unclued_lifeline (1, 7)",
+		"(1, 6)->. unclued_lifeline (1, 7)",
 	]
 	assert_deductions(solver.enqueue_island_chokepoints, expected)
 
 
-func test_enqueue_island_chokepoints_long_4() -> void:
+func test_enqueue_island_chokepoints_lifeline_4() -> void:
 	grid = [
 		"  ##  ",
 		"   .  ",
@@ -188,17 +188,50 @@ func test_enqueue_island_chokepoints_long_4() -> void:
 		"   8  ",
 	]
 	var expected: Array[String] = [
-		"(1, 2)->. long_island (1, 7)",
-		"(1, 3)->. long_island (1, 7)",
-		"(1, 4)->. long_island (1, 7)",
-		"(1, 5)->. long_island (1, 7)",
-		"(1, 6)->. long_island (1, 7)",
+		"(1, 2)->. unclued_lifeline (1, 7)",
+		"(1, 3)->. unclued_lifeline (1, 7)",
+		"(1, 4)->. unclued_lifeline (1, 7)",
+		"(1, 5)->. unclued_lifeline (1, 7)",
+		"(1, 6)->. unclued_lifeline (1, 7)",
 	]
 	assert_deductions(solver.enqueue_island_chokepoints, expected)
 
 
-func test_enqueue_island_chokepoints_long_invalid_too_short() -> void:
-	# the long island deduction can't apply to clues which are too close; they could swerve
+func test_enqueue_island_chokepoints_lifeline_5() -> void:
+	grid = [
+		"############",
+		"## .## 6    ",
+		"## 2##      ",
+		"####        ",
+		" .## 6     .",
+		" .######## .",
+		" . 6 . .## .",
+	]
+	var expected: Array[String] = [
+		"(3, 4)->. unclued_lifeline (2, 4)",
+		"(4, 4)->. unclued_lifeline (2, 4)",
+	]
+	assert_deductions(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_lifeline_6() -> void:
+	grid = [
+		"####     4",
+		"## .      ",
+		"## .      ",
+		"## 8     .",
+		"######## .",
+		" 2 .  ## .",
+	]
+	var expected: Array[String] = [
+		"(2, 3)->. unclued_lifeline (1, 1)",
+		"(3, 3)->. unclued_lifeline (1, 1)",
+	]
+	assert_deductions(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_lifeline_invalid_too_short() -> void:
+	# the unclued lifeline deduction can't apply to clues which are too close; they could swerve
 	grid = [
 		"  ##  ",
 		"   .  ",
@@ -214,8 +247,8 @@ func test_enqueue_island_chokepoints_long_invalid_too_short() -> void:
 	assert_deductions(solver.enqueue_island_chokepoints, expected)
 
 
-func test_enqueue_island_chokepoints_long_invalid_bendy() -> void:
-	# the long island deduction can't apply to diagonal clues
+func test_enqueue_island_chokepoints_lifeline_invalid_bendy() -> void:
+	# the unclued lifeline deduction can't apply to diagonal clues
 	grid = [
 		"    ####",
 		" 2  ## .",

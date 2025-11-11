@@ -77,6 +77,21 @@ func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 	return _internal_get_unchoked_cell_count(chokepoint, cell, _subtree_size_by_cell)
 
 
+func get_distance_map(start_cells: Array[Vector2i]) -> Dictionary[Vector2i, int]:
+	var distance_by_cell: Dictionary[Vector2i, int] = {}
+	var queue: Array[Vector2i] = start_cells.duplicate()
+	for cell: Vector2i in start_cells:
+		distance_by_cell[cell] = 0
+	while not queue.is_empty():
+		var next_cell: Vector2i = queue.pop_front()
+		for neighbor: Vector2i in _neighbors_by_cell.get(next_cell):
+			if distance_by_cell.has(neighbor):
+				continue
+			distance_by_cell[neighbor] = distance_by_cell[next_cell] + 1
+			queue.append(neighbor)
+	return distance_by_cell
+
+
 func _internal_get_unchoked_cell_count(
 		chokepoint: Vector2i, cell: Vector2i, count_by_cell: Dictionary[Vector2i, int],
 		subtract_chokepoint: bool = true) -> int:

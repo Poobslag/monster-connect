@@ -22,9 +22,9 @@ const ISLAND_DIVIDER: Deduction.Reason = Deduction.Reason.ISLAND_DIVIDER
 const ISLAND_EXPANSION: Deduction.Reason = Deduction.Reason.ISLAND_EXPANSION
 const ISLAND_MOAT: Deduction.Reason = Deduction.Reason.ISLAND_MOAT
 const ISLAND_SNUG: Deduction.Reason = Deduction.Reason.ISLAND_SNUG
-const LONG_ISLAND: Deduction.Reason = Deduction.Reason.LONG_ISLAND
 const POOL_CHOKEPOINT: Deduction.Reason = Deduction.Reason.POOL_CHOKEPOINT
 const POOL_TRIPLET: Deduction.Reason = Deduction.Reason.POOL_TRIPLET
+const UNCLUED_LIFELINE: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE
 const UNREACHABLE_CELL: Deduction.Reason = Deduction.Reason.UNREACHABLE_CELL
 const WALL_BUBBLE: Deduction.Reason = Deduction.Reason.WALL_BUBBLE
 const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR
@@ -376,43 +376,54 @@ func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
 		deductions.add_deduction(connector, CELL_WALL, WALL_WEAVER, [island_cell])
 
 
-func deduce_long_island() -> void:
+func deduce_unclued_lifeline() -> void:
+	var exclusive_clues_by_unclued: Dictionary[Vector2i, Vector2i] = {}
+	
 	var reachable_clues_by_cell: Dictionary[Vector2i, Dictionary] \
 			= board.get_per_clue_chokepoint_map().get_reachable_clues_by_cell()
-	for cell: Vector2i in reachable_clues_by_cell:
-		if reachable_clues_by_cell[cell].size() > 1:
+	for unclued_cell: Vector2i in reachable_clues_by_cell:
+		if reachable_clues_by_cell[unclued_cell].size() > 1:
 			continue
-		if board.get_cell_string(cell) != CELL_ISLAND:
+		if board.get_cell_string(unclued_cell) != CELL_ISLAND:
 			continue
-		var clued_island_cell: Vector2i = reachable_clues_by_cell[cell].keys().front()
-		var clued_island: Array[Vector2i] = board.get_island_for_cell(clued_island_cell)
-		var clue_value: int = board.get_clue_for_island(clued_island)
-		
-		var closest_clued_island_cell_dist: int = 999999
-		var closest_clued_island_cell: Vector2i
-		for next_clued_island_cell: Vector2i in clued_island:
-			var next_clued_island_cell_dist: int = abs(cell.x - next_clued_island_cell.x) \
-					+ abs(cell.y - next_clued_island_cell.y)
-			if next_clued_island_cell_dist < closest_clued_island_cell_dist:
-				closest_clued_island_cell = next_clued_island_cell
-				closest_clued_island_cell_dist = next_clued_island_cell_dist
-		
-		if (closest_clued_island_cell.x != cell.x and closest_clued_island_cell.y != cell.y):
-			# closest cell is not in a straight vertical/horizontal line
+		if board.get_clue_for_island_cell(unclued_cell) != 0:
 			continue
+		exclusive_clues_by_unclued[board.get_island_for_cell(unclued_cell).front()] \
+				= reachable_clues_by_cell[unclued_cell].keys().front()
+	
+	for unclued_root: Vector2i in exclusive_clues_by_unclued:
+		var unclued: Array[Vector2i] = board.get_island_for_cell(unclued_root)
 		
-		if closest_clued_island_cell_dist < (clue_value - clued_island.size() - 1):
-			# closest cell is too close; clue has some "wiggle room"
-			continue
+		var clue_root: Vector2i = exclusive_clues_by_unclued[unclued_root]
+		var clue: Array[Vector2i] = board.get_island_for_cell(clue_root)
+		var clue_value: int = board.get_clue_for_island(clue)
 		
-		var cell_step: Vector2i = Vector2i(\
-				sign(cell.x - closest_clued_island_cell.x),
-				sign(cell.y - closest_clued_island_cell.y))
-		for i in closest_clued_island_cell_dist:
-			var deduction_cell: Vector2i = closest_clued_island_cell + i * cell_step
-			if not _can_deduce(board, deduction_cell):
+		# calculate the minimum distance to the clued and unclued cells
+		var unclued_distance_map: Dictionary[Vector2i, int] \
+				= board.get_per_clue_chokepoint_map().get_distance_map(clue_root, unclued)
+		var clued_island_distance_map: Dictionary[Vector2i, int] \
+				= board.get_per_clue_chokepoint_map().get_distance_map(clue_root, clue)
+		
+		# calculate the cells capable of connecting the clued and unclued cells
+		var corridor_cells: Array[Vector2i] = []
+		var budget: int = clue_value - unclued.size() - clue.size() + 1
+		for reachable_cell: Vector2i in \
+				board.get_per_clue_chokepoint_map().get_component_cells(clue_root):
+			var clue_distance: int = clued_island_distance_map[reachable_cell]
+			var unclued_distance: int = unclued_distance_map[reachable_cell]
+			if clue_distance == 0 or unclued_distance == 0 or clue_distance + unclued_distance <= budget:
+				corridor_cells.append(reachable_cell)
+		
+		# calculate any corridor chokepoints which would separate the clued and unclued cells
+		var chokepoint_map: ChokepointMap = ChokepointMap.new(corridor_cells, func(cell: Vector2i) -> bool:
+			return cell in unclued)
+		for chokepoint: Vector2i in chokepoint_map.chokepoints_by_cell.keys():
+			if not _can_deduce(board, chokepoint):
 				continue
-			add_deduction(deduction_cell, CELL_ISLAND, LONG_ISLAND, [clued_island_cell])
+			var unchoked_special_count: int = \
+					chokepoint_map.get_unchoked_special_count(chokepoint, clue_root)
+			if unchoked_special_count < unclued.size():
+				add_deduction(chokepoint, CELL_ISLAND, UNCLUED_LIFELINE, [clue_root])
 
 
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
@@ -609,7 +620,7 @@ func enqueue_island_chokepoints() -> void:
 			continue
 		schedule_task(deduce_clue_chokepoint.bind(island.front()), 225)
 	
-	schedule_task(deduce_long_island, 224)
+	schedule_task(deduce_unclued_lifeline, 224)
 
 
 func enqueue_wall_chokepoints() -> void:

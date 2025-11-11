@@ -42,6 +42,10 @@ func _init(init_board: SolverBoard) -> void:
 				_visitable.erase(liberty)
 
 
+func get_distance_map(island_cell: Vector2i, start_cells: Array[Vector2i]) -> Dictionary[Vector2i, int]:
+	return get_chokepoint_map(island_cell).get_distance_map(start_cells)
+
+
 func get_chokepoint_map(island_cell: Vector2i) -> ChokepointMap:
 	if not _has_chokepoint_map(island_cell):
 		_init_chokepoint_map(island_cell)
