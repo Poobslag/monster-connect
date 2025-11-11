@@ -23,12 +23,8 @@ func step() -> void:
 
 
 func is_queue_empty() -> bool:
-	var result: bool = true
-	for scenario_key: String in _scenarios_by_key:
-		var scenario: BifurcationScenario = _scenarios_by_key[scenario_key]
-		if not scenario.is_queue_empty():
-			result = false
-	return result
+	return _scenarios_by_key.values().all(func(scenario: BifurcationScenario) -> bool:
+		return scenario.is_queue_empty())
 
 
 func get_scenario_count() -> int:
@@ -36,12 +32,8 @@ func get_scenario_count() -> int:
 
 
 func has_contradictions() -> bool:
-	var result: bool = false
-	for scenario_key: String in _scenarios_by_key:
-		var scenario: BifurcationScenario = _scenarios_by_key[scenario_key]
-		if scenario.has_new_contradictions():
-			result = true
-	return result
+	return _scenarios_by_key.values().any(func(scenario: BifurcationScenario) -> bool:
+		return scenario.has_new_contradictions())
 
 
 func get_confirmed_deductions() -> Array[Deduction]:
