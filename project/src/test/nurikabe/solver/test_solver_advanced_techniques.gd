@@ -86,3 +86,17 @@ func test_enqueue_island_strangle() -> void:
 		"(4, 1)->## island_strangle (2, 2)",
 	]
 	assert_deductions(solver.enqueue_island_strangle, expected)
+
+
+func test_enqueue_island_release() -> void:
+	grid = [
+		"      ",
+		" 6    ",
+		"##    ",
+		"      ",
+		" 6    ",
+	]
+	var expected: Array[String] = [
+		"(1, 1)->. island_release (0, 1)",
+	]
+	assert_deductions(solver.enqueue_island_release, expected)
