@@ -35,6 +35,7 @@ const WALL_WEAVER: Deduction.Reason = Deduction.Reason.WALL_WEAVER
 ## advanced techniques
 const ASSUMPTION: Deduction.Reason = Deduction.Reason.ASSUMPTION
 const ISLAND_BATTLEGROUND: Deduction.Reason = Deduction.Reason.ISLAND_BATTLEGROUND
+const ISLAND_RELEASE: Deduction.Reason = Deduction.Reason.ISLAND_RELEASE
 const ISLAND_STRANGLE: Deduction.Reason = Deduction.Reason.ISLAND_STRANGLE
 const WALL_STRANGLE: Deduction.Reason = Deduction.Reason.WALL_STRANGLE
 
@@ -151,6 +152,11 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 			pass
 		elif get_last_run(enqueue_wall_strangle) < board.get_filled_cell_count():
 			schedule_task(enqueue_wall_strangle, 20)
+		
+		if has_scheduled_task(enqueue_island_release):
+			pass
+		elif get_last_run(enqueue_island_release) < board.get_filled_cell_count():
+			schedule_task(enqueue_island_release, 20)
 		
 		if has_scheduled_task(enqueue_island_strangle):
 			pass
@@ -704,6 +710,33 @@ func enqueue_island_battleground() -> void:
 				{cell: CELL_ISLAND, neighbor: CELL_WALL},
 				[Deduction.new(cell, CELL_WALL,
 						ISLAND_BATTLEGROUND, [clued_island, neighbor_clued_island])])
+	
+	if not has_scheduled_task(run_bifurcation_step):
+		schedule_task(run_bifurcation_step, 10)
+
+
+func enqueue_island_release() -> void:
+	for island: Array[Vector2i] in board.get_islands():
+		if board.get_liberties(island).size() != 2:
+			continue
+		var liberties: Array[Vector2i] = board.get_liberties(island)
+		for liberty: Vector2i in liberties:
+			if not _can_deduce(board, liberty):
+				continue
+			
+			var assumptions: Dictionary[Vector2i, String] = {}
+			assumptions[liberty] = CELL_WALL
+			for other_liberty: Vector2i in liberties:
+				if other_liberty == liberty:
+					continue
+				if not _can_deduce(board, other_liberty):
+					continue
+				assumptions[other_liberty] = CELL_ISLAND
+			
+			_add_bifurcation_scenario(
+				assumptions,
+				[Deduction.new(liberty, CELL_ISLAND, ISLAND_RELEASE, [island.front()])]
+			)
 	
 	if not has_scheduled_task(run_bifurcation_step):
 		schedule_task(run_bifurcation_step, 10)

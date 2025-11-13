@@ -29,6 +29,7 @@ enum Reason {
 	# advanced techniques
 	ASSUMPTION, # unproven assumption made when bifurcating
 	ISLAND_BATTLEGROUND, # bifurcate two clues with adjacent liberties
+	ISLAND_RELEASE, # bifurcate options for walling in an island
 	ISLAND_STRANGLE, # bifurcate options for completing an island, walling off impossible ones
 	WALL_STRANGLE, # bifurcate options where extending an island would create a split wall
 }
