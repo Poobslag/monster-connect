@@ -136,7 +136,8 @@ func solve_until_bifurcation() -> void:
 			])
 
 
-func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, apply_changes: bool = true, allow_bifurcation: bool = true) -> void:
+func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, \
+		apply_changes: bool = true, allow_bifurcation: bool = true) -> void:
 	var idle_steps: int = 0
 	while idle_steps < idle_step_threshold and solver.deductions.size() < deduction_threshold:
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
