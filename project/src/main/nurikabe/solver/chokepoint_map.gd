@@ -92,6 +92,19 @@ func get_distance_map(start_cells: Array[Vector2i]) -> Dictionary[Vector2i, int]
 	return distance_by_cell
 
 
+## Returns the topmost ancestor of [param cell] whose parent is [param chokepoint].[br]
+## [br]
+## If cell is not a descendant of chokepoint, returns the DFS root of its component.
+func get_subtree_root_under_chokepoint(chokepoint: Vector2i, cell: Vector2i) -> Vector2i:
+	var curr: Vector2i = cell
+	while _parent_by_cell.has(curr):
+		var next: Vector2i = _parent_by_cell[curr]
+		if next == chokepoint:
+			break
+		curr = next
+	return curr
+
+
 func _internal_get_unchoked_cell_count(
 		chokepoint: Vector2i, cell: Vector2i, count_by_cell: Dictionary[Vector2i, int],
 		subtract_chokepoint: bool = true) -> int:
@@ -111,7 +124,7 @@ func _internal_get_unchoked_cell_count(
 			# Return the size of the cell component.
 			result = count_by_cell[cell_root]
 	else:
-		var branch_root: Vector2i = _find_subtree_root_under_chokepoint(chokepoint, cell)
+		var branch_root: Vector2i = get_subtree_root_under_chokepoint(chokepoint, cell)
 		if _parent_by_cell.get(branch_root) == chokepoint:
 			# Cell is a descendant of the chokepoint.
 			if _lowest_index_by_cell[branch_root] >= _discovery_time_by_cell[chokepoint]:
@@ -191,16 +204,3 @@ func _perform_dfs(cell: Vector2i) -> void:
 	
 	_subtree_size_by_cell[cell] = subtree_size
 	_subtree_special_count_by_cell[cell] = subtree_special_count
-
-
-## Returns the topmost ancestor of [param cell] whose parent is [param chokepoint].[br]
-## [br]
-## If cell is not a descendant of chokepoint, returns the DFS root of its component.
-func _find_subtree_root_under_chokepoint(chokepoint: Vector2i, cell: Vector2i) -> Vector2i:
-	var curr: Vector2i = cell
-	while _parent_by_cell.has(curr):
-		var next: Vector2i = _parent_by_cell[curr]
-		if next == chokepoint:
-			break
-		curr = next
-	return curr

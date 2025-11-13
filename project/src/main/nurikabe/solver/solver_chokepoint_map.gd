@@ -51,6 +51,12 @@ func get_subtree_root(cell: Vector2i) -> Vector2i:
 	return _chokepoint_map.get_subtree_root(cell)
 
 
+func get_subtree_root_under_chokepoint(chokepoint: Vector2i, cell: Vector2i) -> Vector2i:
+	if _chokepoint_map == null:
+		_build_chokepoint_map()
+	return _chokepoint_map.get_subtree_root_under_chokepoint(chokepoint, cell)
+
+
 func get_unchoked_cell_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 	if _chokepoint_map == null:
 		_build_chokepoint_map()
@@ -66,6 +72,6 @@ func get_unchoked_special_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 func _build_chokepoint_map() -> void:
 	var cells: Array[Vector2i] = []
 	for cell: Vector2i in _board.cells:
-		if _cell_filter.call(_board.get_cell_string(cell)):
+		if _cell_filter.call(cell):
 			cells.append(cell)
 	_chokepoint_map = ChokepointMap.new(cells, _special_cell_filter)
