@@ -255,8 +255,12 @@ func _build_island_group_map() -> SolverGroupMap:
 
 
 func _build_island_chokepoint_map() -> SolverChokepointMap:
-	return SolverChokepointMap.new(self, func(value: String) -> bool:
-		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+	return SolverChokepointMap.new(self,
+		func(cell: Vector2i) -> bool:
+			var value: String = get_cell_string(cell)
+			return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND],
+		func(cell: Vector2i) -> bool:
+			return get_cell_string(cell).is_valid_int())
 
 
 func _build_strict_validation_result() -> ValidationResult:
@@ -339,7 +343,8 @@ func _build_validation_result() -> ValidationResult:
 
 func _build_wall_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
-		func(value: String) -> bool:
+		func(cell: Vector2i) -> bool:
+			var value: String = get_cell_string(cell)
 			return value in [CELL_EMPTY, CELL_WALL],
 		func(cell: Vector2i) -> bool:
 			return get_cell_string(cell) == CELL_WALL)

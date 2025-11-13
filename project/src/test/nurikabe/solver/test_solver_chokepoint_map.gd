@@ -142,14 +142,17 @@ func test_special_cell_count_1() -> void:
 
 func _build_island_chokepoint_map() -> SolverChokepointMap:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
-	return SolverChokepointMap.new(board, func(value: String) -> bool:
-		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+	return SolverChokepointMap.new(board,
+		func(cell: Vector2i) -> bool:
+			var value: String = board.get_cell_string(cell)
+			return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
 
 
 func _build_wall_chokepoint_map() -> SolverChokepointMap:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
 	return SolverChokepointMap.new(board,
-		func(value: String) -> bool:
+		func(cell: Vector2i) -> bool:
+			var value: String = board.get_cell_string(cell)
 			return value in [CELL_EMPTY, CELL_WALL],
 		func(cell: Vector2i) -> bool:
 			return board.get_cell_string(cell) == CELL_WALL)
