@@ -3,6 +3,7 @@ extends Node
 ## [b]Keys:[/b][br]
 ## 	[kbd][1-0][/kbd]: Load puzzle #61-70.
 ## 	[kbd]Q[/kbd]: Solve one step.
+## 	[kbd]Shift + Q[/kbd]: Solve five steps.
 ## 	[kbd]W[/kbd]: Performance test a full solution.
 ## 	[kbd]Shift + W[/kbd]: Performance test puzzles #61-70.
 ## 	[kbd]E[/kbd]: Solve until bifurcation is necessary.
@@ -44,7 +45,11 @@ func _input(event: InputEvent) -> void:
 			var puzzle_index: int = wrapi(Utils.key_num(event) - 1, 0, PUZZLE_PATHS.size())
 			load_puzzle(PUZZLE_PATHS[puzzle_index])
 		KEY_Q:
-			step()
+			if Input.is_key_pressed(KEY_SHIFT):
+				for i in range(5):
+					step()
+			else:
+				step()
 			%GameBoard.validate()
 		KEY_W:
 			performance_data.clear()
