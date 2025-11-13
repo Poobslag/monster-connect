@@ -375,6 +375,34 @@ func test_enqueue_islands_island_snug() -> void:
 	assert_deductions(solver.enqueue_islands, expected)
 
 
+func test_enqueue_islands_corner_buffer_1() -> void:
+	grid = [
+		"            ",
+		"    ########",
+		"15  ## 6 . .",
+		"          ##",
+		"         . .",
+	]
+	var expected: Array[String] = [
+		"(3, 3)->## corner_buffer (3, 2) (4, 4)",
+	]
+	assert_deductions(solver.enqueue_islands, expected)
+
+
+func test_enqueue_islands_corner_buffer_2() -> void:
+	grid = [
+		"            ",
+		"    ########",
+		"15  ## . . .",
+		"          ##",
+		"         . 6",
+	]
+	var expected: Array[String] = [
+		"(3, 3)->## corner_buffer (3, 2) (4, 4)",
+	]
+	assert_deductions(solver.enqueue_islands, expected)
+
+
 func test_enqueue_unreachable_squares_1() -> void:
 	grid = [
 		" 4    ",

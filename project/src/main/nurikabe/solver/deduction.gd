@@ -8,6 +8,7 @@ enum Reason {
 	ADJACENT_CLUES, # wall off a liberty shared between two clues
 	
 	# basic techniques
+	CORNER_BUFFER, # add a wall diagonally to separate an island from another island with only two liberties
 	CORNER_ISLAND, # add a wall diagonally from an island with only two liberties
 	ISLAND_BUFFER, # add a wall to preserve space for an island to grow
 	ISLAND_CHOKEPOINT, # expand an island through a narrow passage
