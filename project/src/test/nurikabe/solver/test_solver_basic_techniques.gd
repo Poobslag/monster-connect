@@ -107,8 +107,8 @@ func test_enqueue_island_chokepoints_false_positive() -> void:
 
 func test_enqueue_island_chokepoints_snug() -> void:
 	grid = [
-		" . .  ",
-		" 5##  ",
+		" .    ",
+		" 5    ",
 		"  ####",
 		"    ##",
 		"   . 5",
@@ -470,12 +470,49 @@ func test_enqueue_unreachable_squares_wall_bubble() -> void:
 
 func test_enqueue_wall_chokepoints() -> void:
 	grid = [
-		" 3##  ",
-		"     3",
-		"####  ",
+		"   3##  ",
+		"       3",
+		"  ####  ",
 	]
 	var expected: Array[String] = [
-		"(1, 1)->## wall_connector (1, 0)",
+		"(2, 1)->## wall_connector (2, 0)",
+	]
+	assert_deductions(solver.enqueue_wall_chokepoints, expected)
+
+
+func test_enqueue_wall_chokepoints_border_hug() -> void:
+	grid = [
+		"########",
+		"     .##",
+		"     . 7",
+		"      ##",
+		"####    ",
+		" 1##    ",
+	]
+	var expected: Array[String] = [
+		"(0, 1)->## border_hug (0, 0)",
+	]
+	assert_deductions(solver.enqueue_wall_chokepoints, expected)
+
+
+func test_enqueue_wall_chokepoints_border_hug_invalid_1() -> void:
+	grid = [
+		"   6    ## 1",
+		"        ####",
+		"##    ## . 2",
+	]
+	var expected: Array[String] = [
+	]
+	assert_deductions(solver.enqueue_wall_chokepoints, expected)
+
+
+func test_enqueue_wall_chokepoints_border_hug_invalid_2() -> void:
+	grid = [
+		"          ## 1",
+		"     8    ####",
+		"##      ## . 2",
+	]
+	var expected: Array[String] = [
 	]
 	assert_deductions(solver.enqueue_wall_chokepoints, expected)
 

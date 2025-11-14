@@ -25,6 +25,7 @@ enum Reason {
 	WALL_CONNECTOR, # connect two walls through a chokepoint
 	WALL_EXPANSION, # expand a wall in the only possible direction
 	WALL_WEAVER, # finish an island in a way which preserves wall connectivity
+	BORDER_HUG,
 	
 	# advanced techniques
 	ASSUMPTION, # unproven assumption made when bifurcating
