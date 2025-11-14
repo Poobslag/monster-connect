@@ -144,15 +144,15 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 	if is_queue_empty() and allow_bifurcation:
 		metrics["bifurcation_start_time"] = Time.get_ticks_usec()
 		
-		if has_scheduled_task(enqueue_island_battleground):
-			pass
-		elif get_last_run(enqueue_island_battleground) < board.get_filled_cell_count():
-			schedule_task(enqueue_island_battleground, 20)
-		
 		if has_scheduled_task(enqueue_wall_strangle):
 			pass
 		elif get_last_run(enqueue_wall_strangle) < board.get_filled_cell_count():
 			schedule_task(enqueue_wall_strangle, 20)
+		
+		if has_scheduled_task(enqueue_island_battleground):
+			pass
+		elif get_last_run(enqueue_island_battleground) < board.get_filled_cell_count():
+			schedule_task(enqueue_island_battleground, 20)
 		
 		if has_scheduled_task(enqueue_island_release):
 			pass
@@ -299,9 +299,55 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 	
 	# Check for two empty cells leading into a dead end, which create a pool.
 	if _can_deduce(board, chokepoint):
+		var old_deductions_size: int = deductions.size()
 		for dir: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
-			if _is_pool_chokepoint(chokepoint, dir):
-				add_deduction(chokepoint, CELL_ISLAND, POOL_CHOKEPOINT, [chokepoint + dir])
+			deduce_tiny_pool_chokepoint(chokepoint, dir)
+			if deductions.size() > old_deductions_size:
+				break
+	
+	if _can_deduce(board, chokepoint):
+		var split_neighbor_set: Dictionary[Vector2i, bool] = {}
+		var split_root_set: Dictionary[Vector2i, bool] = {}
+		for neighbor: Vector2i in board.get_neighbors(chokepoint):
+			if board.get_cell_string(neighbor) != CELL_EMPTY:
+				continue
+			var island_chokepoint_map: SolverChokepointMap = board.get_island_chokepoint_map()
+			var split_root: Vector2i = island_chokepoint_map.get_subtree_root_under_chokepoint(chokepoint, neighbor)
+			if split_root_set.has(split_root):
+				continue
+			split_root_set[split_root] = true
+			split_neighbor_set[neighbor] = true
+		
+		for neighbor: Vector2i in split_neighbor_set:
+			var unchoked_special_count: int = board.get_island_chokepoint_map() \
+					.get_unchoked_special_count(chokepoint, neighbor)
+			if unchoked_special_count > 0:
+				continue
+			var wall_cell_set: Dictionary[Vector2i, bool] = {chokepoint: true}
+			board.perform_bfs(neighbor, func(cell: Vector2i) -> bool:
+				if board.get_cell_string(cell) in [CELL_WALL, CELL_INVALID] or cell == chokepoint:
+					return false
+				wall_cell_set[cell] = true
+				return true)
+			
+			var pool_cell_set: Dictionary[Vector2i, bool] = {}
+			for wall_cell: Vector2i in wall_cell_set:
+				for pool_dir: Vector2i in [Vector2i(-1, -1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(1, 1)]:
+					var pool_triplet_cells: Array[Vector2i] =  [
+						wall_cell + pool_dir,
+						wall_cell + Vector2i(pool_dir.x, 0),
+						wall_cell + Vector2i(0, pool_dir.y)]
+					if pool_triplet_cells.all(func(pool_triplet_cell: Vector2i) -> bool:
+							return board.get_cell_string(pool_triplet_cell) == CELL_WALL \
+								or pool_triplet_cell in wall_cell_set):
+						for pool_triplet_cell: Vector2i in pool_triplet_cells:
+							pool_cell_set[pool_triplet_cell] = true
+						pool_cell_set[wall_cell] = true
+			
+			if not pool_cell_set.is_empty():
+				var pool_cells: Array[Vector2i] = pool_cell_set.keys()
+				pool_cells.sort()
+				add_deduction(chokepoint, CELL_ISLAND, POOL_CHOKEPOINT, pool_cells)
 
 
 ## Returns true if converting the chokepoint to a wall would enclose a 2x2 pool.[br]
@@ -318,22 +364,31 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 ## [/codeblock]
 ## If the dead-end pocket ([2,3,4]) is fully blocked, and one diagonal pair ([0,2] or [1,3]) are walls,
 ## then turning the chokepoint into a wall would create a 2x2 pool.
-func _is_pool_chokepoint(chokepoint: Vector2i, dir: Vector2i) -> bool:
+func deduce_tiny_pool_chokepoint(chokepoint: Vector2i, dir: Vector2i) -> void:
 	if board.get_cell_string(chokepoint) != CELL_EMPTY:
-		return false
+		return
 	if board.get_cell_string(chokepoint + dir) != CELL_EMPTY:
-		return false
+		return
 	
+	var magic_cells: Array[Vector2i] = [
+		chokepoint + Vector2i(-dir.y, dir.x), chokepoint + Vector2i(dir.y, -dir.x),
+		chokepoint + dir + Vector2i(-dir.y, dir.x), chokepoint + dir + Vector2i(dir.y, -dir.x),
+		chokepoint + dir + dir]
 	var solid: Array[bool] = []
 	var wall: Array[bool] = []
-	for offset: Vector2i in [
-			Vector2i(-dir.y, dir.x), Vector2i(dir.y, -dir.x),
-			dir + Vector2i(-dir.y, dir.x), dir + Vector2i(dir.y, -dir.x), dir + dir]:
-		solid.append(board.get_cell_string(chokepoint + offset) in [CELL_WALL, CELL_INVALID])
-		wall.append(board.get_cell_string(chokepoint + offset) == CELL_WALL)
+	for magic_cell in magic_cells:
+		solid.append(board.get_cell_string(magic_cell) in [CELL_WALL, CELL_INVALID])
+		wall.append(board.get_cell_string(magic_cell) == CELL_WALL)
 	
-	return (solid[2] and solid[3] and solid[4]) \
-			and (wall[0] and wall[2] or wall[1] and wall[3])
+	if (solid[2] and solid[3] and solid[4]) \
+			and (wall[0] and wall[2] or wall[1] and wall[3]):
+		var pool_cells: Array[Vector2i] = [chokepoint, chokepoint + dir]
+		if wall[0] and wall[2]:
+			pool_cells.append_array([magic_cells[0], magic_cells[2]])
+		if wall[1] and wall[3]:
+			pool_cells.append_array([magic_cells[1], magic_cells[3]])
+		pool_cells.sort()
+		add_deduction(chokepoint, CELL_ISLAND, POOL_CHOKEPOINT, pool_cells)
 
 
 func deduce_clue_chokepoint(island_cell: Vector2i) -> void:

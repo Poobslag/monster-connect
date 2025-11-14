@@ -11,6 +11,21 @@ var cells: Dictionary[Vector2i, String]
 
 var _cache: Dictionary[String, Variant] = {}
 
+
+func perform_bfs(start_cell: Vector2i, filter: Callable) -> void:
+	var visited: Dictionary[Vector2i, bool] = {start_cell: true}
+	var queue: Array[Vector2i] = [start_cell]
+	while not queue.is_empty():
+		var next_cell: Vector2i = queue.pop_front()
+		if not filter.call(next_cell):
+			continue
+		for neighbor: Vector2i in get_neighbors(next_cell):
+			if visited.has(neighbor):
+				continue
+			visited[neighbor] = true
+			queue.append(neighbor)
+
+
 func duplicate() -> SolverBoard:
 	var copy: SolverBoard = SolverBoard.new()
 	copy.cells = cells.duplicate()

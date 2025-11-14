@@ -83,7 +83,24 @@ func test_enqueue_island_chokepoints_dead_end() -> void:
 		"          ",
 	]
 	var expected: Array[String] = [
-		"(1, 0)->. pool_chokepoint (0, 0)",
+		"(1, 0)->. pool_chokepoint (0, 0) (0, 1) (1, 0) (1, 1)",
+	]
+	assert_deductions(solver.enqueue_island_chokepoints, expected)
+
+
+func test_enqueue_island_chokepoints_big_dead_end() -> void:
+	grid = [
+		" 2  ##   3    ",
+		"  ## 1##     3",
+		"## 1##        ",
+		"  ## 1##      ",
+		"    ##     9  ",
+		"              ",
+	]
+	var expected: Array[String] = [
+		"(1, 5)->. pool_chokepoint (0, 3) (0, 4) (0, 5) (1, 3) (1, 4) (1, 5)",
+		"(2, 5)->. pool_chokepoint (0, 3) (0, 4) (0, 5) (1, 3) (1, 4) (1, 5) (2, 4) (2, 5)",
+		"(3, 5)->. pool_chokepoint (0, 3) (0, 4) (0, 5) (1, 3) (1, 4) (1, 5) (2, 4) (2, 5)",
 	]
 	assert_deductions(solver.enqueue_island_chokepoints, expected)
 
