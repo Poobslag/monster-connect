@@ -18,7 +18,7 @@ func step() -> void:
 	for scenario_key: String in _scenarios_by_key.keys():
 		var scenario: BifurcationScenario = _scenarios_by_key[scenario_key]
 		scenario.step()
-		if scenario.is_queue_empty():
+		if scenario.is_queue_empty() and not _scenarios_by_key[scenario_key].has_new_contradictions():
 			_scenarios_by_key.erase(scenario_key)
 
 
