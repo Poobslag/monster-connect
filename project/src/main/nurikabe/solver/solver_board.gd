@@ -100,6 +100,12 @@ func set_cell_string(cell_pos: Vector2i, value: String) -> void:
 	cells[cell_pos] = value
 
 
+func get_flooded_island_group_map() -> SolverGroupMap:
+	return _get_cached(
+		"flooded_island_group_map",
+		_build_flooded_island_group_map)
+
+
 func get_islands() -> Array[Array]:
 	return get_island_group_map().groups
 
@@ -204,6 +210,12 @@ func validate() -> ValidationResult:
 		_build_validation_result)
 
 
+func validate_simple() -> ValidationResult:
+	return _get_cached(
+		"simple_validation_result",
+		_build_simple_validation_result)
+
+
 func validate_strict() -> ValidationResult:
 	return _get_cached(
 		"strict_validation_result",
@@ -254,6 +266,11 @@ func _build_island_group_map() -> SolverGroupMap:
 		return value.is_valid_int() or value == CELL_ISLAND)
 
 
+func _build_flooded_island_group_map() -> SolverGroupMap:
+	return SolverGroupMap.new(self, func(value: String) -> bool:
+		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+
+
 func _build_island_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
@@ -263,11 +280,15 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 			return get_cell_string(cell).is_valid_int())
 
 
+func _build_simple_validation_result() -> ValidationResult:
+	return _build_validation_result(true)
+
+
 func _build_strict_validation_result() -> ValidationResult:
 	return get_flooded_board().validate()
 
 
-func _build_validation_result() -> ValidationResult:
+func _build_validation_result(simple_reach_checks: bool = false) -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
 	
 	# joined islands
@@ -331,12 +352,20 @@ func _build_validation_result() -> ValidationResult:
 			result.wrong_size.append_array(island)
 			continue
 		
-		var chokepoint_map: ChokepointMap = get_per_clue_chokepoint_map().get_chokepoint_map(island_cell)
-		var island_max_size: int = chokepoint_map.get_component_cells(island_cell).size()
-		if clue_value > island_max_size:
-			# island is too small and can't grow
-			result.wrong_size.append_array(island)
-			continue
+		if simple_reach_checks:
+			var group_map: SolverGroupMap = get_flooded_island_group_map()
+			var flooded_island_group: Array[Vector2i] = group_map.groups_by_cell.get(island_cell, [] as Array[Vector2i])
+			if clue_value > flooded_island_group.size():
+				# island is too small and can't grow
+				result.wrong_size.append_array(island)
+				continue
+		else:
+			var chokepoint_map: ChokepointMap = get_per_clue_chokepoint_map().get_chokepoint_map(island_cell)
+			var island_max_size: int = chokepoint_map.get_component_cells(island_cell).size()
+			if clue_value > island_max_size:
+				# island is too small and can't grow
+				result.wrong_size.append_array(island)
+				continue
 	
 	return result
 
