@@ -39,7 +39,6 @@ func _init(init_board: SolverBoard) -> void:
 			else:
 				_adjacent_clues_by_cell[liberty] = 1
 				_claimed_by_clue[liberty] = island.front()
-				_visitable.erase(liberty)
 
 
 func get_distance_map(island_cell: Vector2i, start_cells: Array[Vector2i]) -> Dictionary[Vector2i, int]:
@@ -136,11 +135,11 @@ func _init_chokepoint_map(island_cell: Vector2i) -> void:
 	for other_island_cell: Vector2i in island:
 		reach_score_by_cell[other_island_cell] = reachability + 1
 	for liberty: Vector2i in _board.get_liberties(island):
-		if reach_score_by_cell.has(liberty):
-			# cell is adjacent to two or more islands, so no islands can reach it
-			reach_score_by_cell[liberty] = 0
-			_adjacent_clues_by_cell[liberty] += 1
+		if not _visitable.has(liberty):
 			continue
+		if _claimed_by_clue.has(liberty) \
+			and _claimed_by_clue[liberty] != island.front():
+				continue
 		reach_score_by_cell[liberty] = reachability
 		queue.append(liberty)
 	
@@ -151,6 +150,9 @@ func _init_chokepoint_map(island_cell: Vector2i) -> void:
 		for neighbor: Vector2i in _board.get_neighbors(cell):
 			if not _visitable.has(neighbor):
 				continue
+			if _claimed_by_clue.has(neighbor) \
+				and _claimed_by_clue[neighbor] != island.front():
+					continue
 			if reach_score_by_cell.has(neighbor):
 				# already visited
 				continue
