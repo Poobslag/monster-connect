@@ -335,6 +335,9 @@ func test_enqueue_islands_island_expansion_1() -> void:
 	]
 	var expected: Array[String] = [
 		"(1, 0)->. island_expansion (0, 0)",
+		"(2, 0)->. island_expansion (0, 0)",
+		"(2, 1)->. island_expansion (0, 0)",
+		"(2, 2)->## island_moat (0, 0)",
 	]
 	assert_deductions(solver.enqueue_islands, expected)
 

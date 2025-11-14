@@ -273,7 +273,7 @@ func deduce_border_wall(border_wall_cell: Vector2i) -> void:
 		border_scenarios.append(BorderScenario.new(board, border_wall_cell, liberties[0], liberties[1]))
 	
 	for border_scenario: BorderScenario in border_scenarios:
-		border_scenario.step_repeatedly()
+		border_scenario.fill()
 		if border_scenario.has_new_contradictions():
 			for deduction: Deduction in border_scenario.deductions:
 				add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
@@ -547,17 +547,20 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 			add_deduction(liberty, CELL_WALL, ISLAND_MOAT, [island[0]])
 	
 	if deductions.size() == old_deductions_size \
-			and liberties.size() == 1 and clue_value == island.size() + 1:
-		if _can_deduce(board, liberties[0]):
-			add_deduction(liberties[0], CELL_ISLAND, ISLAND_EXPANSION, [island[0]])
-		for new_wall_cell: Vector2i in board.get_neighbors(liberties[0]):
-			if _can_deduce(board, new_wall_cell):
-				add_deduction(new_wall_cell, CELL_WALL, ISLAND_MOAT, [island[0]])
-	
-	if deductions.size() == old_deductions_size \
 			and liberties.size() == 1 and clue_value > island.size():
-		if _can_deduce(board, liberties[0]):
-			add_deduction(liberties[0], CELL_ISLAND, ISLAND_EXPANSION, [island[0]])
+		var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
+		squeeze_fill.skip_cells(island)
+		squeeze_fill.push_change(liberties[0], CELL_ISLAND)
+		squeeze_fill.fill(clue_value - island.size() - 1)
+		for new_island_cell: Vector2i in squeeze_fill.changes:
+			if _can_deduce(board, new_island_cell):
+				add_deduction(new_island_cell, CELL_ISLAND, ISLAND_EXPANSION, [island[0]])
+		
+		if squeeze_fill.changes.size() == clue_value - island.size():
+			for new_island_cell: Vector2i in squeeze_fill.changes:
+				for new_island_neighbor: Vector2i in board.get_neighbors(new_island_cell):
+					if _can_deduce(board, new_island_neighbor):
+						add_deduction(new_island_neighbor, CELL_WALL, ISLAND_MOAT, [island[0]])
 	
 	if deductions.size() == old_deductions_size:
 		var component_cell_count: int = board.get_island_chokepoint_map().get_component_cell_count(island_cell)
@@ -618,7 +621,12 @@ func deduce_unclued_island(island_cell: Vector2i) -> void:
 		return
 	var liberties: Array[Vector2i] = board.get_liberties(island)
 	if liberties.size() == 1:
-		add_deduction(liberties[0], CELL_ISLAND, ISLAND_CONNECTOR, [island[0]])
+		var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
+		squeeze_fill.skip_cells(island)
+		squeeze_fill.push_change(liberties[0], CELL_ISLAND)
+		squeeze_fill.fill()
+		for change: Vector2i in squeeze_fill.changes:
+			add_deduction(change, CELL_ISLAND, ISLAND_CONNECTOR, [island[0]])
 	if liberties.size() == 2:
 		deduce_corner_buffer(island_cell)
 
@@ -689,7 +697,12 @@ func deduce_wall_expansion(wall_cell: Vector2i) -> void:
 		return
 	
 	if liberties.size() == 1:
-		add_deduction(liberties[0], CELL_WALL, WALL_EXPANSION, [wall_cell])
+		var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
+		squeeze_fill.skip_cells(wall)
+		squeeze_fill.push_change(liberties[0], CELL_WALL)
+		squeeze_fill.fill()
+		for change in squeeze_fill.changes:
+			add_deduction(change, CELL_WALL, WALL_EXPANSION, [wall_cell])
 
 
 func deduce_pool(wall_cell: Vector2i) -> void:
@@ -1058,68 +1071,30 @@ class BorderScenario:
 	
 	var _border_wall_cell: Vector2i
 	var _board: SolverBoard
-	var _changes: Dictionary[Vector2i, String] = {}
-	var _queue: Array[Vector2i] = []
-	var _visited: Dictionary[Vector2i, bool] = {}
+	var _squeeze_fill: SqueezeFill
 	
 	func _init(init_board: SolverBoard, init_border_wall_cell: Vector2i,
 			init_wall_assumption: Vector2i, init_island_assumption: Vector2i) -> void:
 		_board = init_board
 		_border_wall_cell = init_border_wall_cell
 		
-		for wall: Vector2i in _board.get_wall_for_cell(_border_wall_cell):
-			_visited[wall] = true
-		
-		_push_change(init_wall_assumption, CELL_WALL)
-		_push_change(init_island_assumption, CELL_ISLAND)
+		_squeeze_fill = SqueezeFill.new(init_board)
+		_squeeze_fill.skip_cells(_board.get_wall_for_cell(_border_wall_cell))
+		_squeeze_fill.push_change(init_wall_assumption, CELL_WALL)
+		_squeeze_fill.push_change(init_island_assumption, CELL_ISLAND)
 		
 		deductions = [Deduction.new(init_island_assumption, CELL_WALL, BORDER_HUG, [init_border_wall_cell])]
 	
 	
-	func step_repeatedly() -> void:
-		while not _queue.is_empty():
-			var next_cell: Vector2i = _queue.pop_front()
-			var next_cell_value: String = get_cell_string(next_cell)
-			
-			var neighbor_match_cells: Array[Vector2i] = []
-			var neighbor_empty_cells: Array[Vector2i] = []
-			for neighbor: Vector2i in _board.get_neighbors(next_cell):
-				var neighbor_value: String = get_cell_string(neighbor)
-				if neighbor_value == next_cell_value:
-					neighbor_match_cells.append(neighbor)
-				elif neighbor_value == CELL_EMPTY:
-					neighbor_empty_cells.append(neighbor)
-			
-			var unvisited_neighbor_match: bool = false
-			for neighbor_match_cell: Vector2i in neighbor_match_cells:
-				if not _visited.has(neighbor_match_cell):
-					unvisited_neighbor_match = true
-					break
-			
-			if not unvisited_neighbor_match and neighbor_empty_cells.size() == 1:
-				_push_change(neighbor_empty_cells[0], next_cell_value)
+	func fill() -> void:
+		_squeeze_fill.fill()
 	
 	
 	func has_new_contradictions() -> bool:
 		var new_board: SolverBoard = _board.duplicate()
-		for change_cell: Vector2i in _changes:
-			new_board.set_cell_string(change_cell, _changes[change_cell])
+		for change_cell: Vector2i in _squeeze_fill.changes:
+			new_board.set_cell_string(change_cell, _squeeze_fill.changes[change_cell])
 		var init_validation_result: SolverBoard.ValidationResult = _board.validate()
 		var validation_result: SolverBoard.ValidationResult = new_board.validate()
 		
 		return validation_result.error_count > init_validation_result.error_count
-	
-	
-	func get_cell_string(cell: Vector2i) -> String:
-		var cell_string: String
-		if _changes.has(cell):
-			cell_string = _changes[cell]
-		else:
-			cell_string = _board.get_cell_string(cell)
-		return cell_string
-	
-	
-	func _push_change(cell: Vector2i, value: String) -> void:
-		_changes[cell] = value
-		_visited[cell] = true
-		_queue.push_back(cell)
