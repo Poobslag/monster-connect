@@ -63,6 +63,34 @@ func test_component_cells() -> void:
 	])
 
 
+func test_component_cells_neighbors() -> void:
+	grid = [
+		" . .  ",
+		" 5##  ",
+		"  ####",
+		" 5 .##",
+		" .    ",
+	]
+	assert_component_cells(Vector2i(0, 3), [
+		Vector2i(0, 3), Vector2i(0, 4),
+		Vector2i(1, 3), Vector2i(1, 4),
+		Vector2i(2, 4),
+	])
+
+
+func test_component_cells_neighbors_2() -> void:
+	grid = [
+		"##########",
+		" 3## . 4##",
+		" .   .####",
+		"       2  ",
+	]
+	assert_component_cells(Vector2i(2, 1), [
+		Vector2i(2, 1), Vector2i(2, 2),
+		Vector2i(3, 1),
+	])
+
+
 func test_get_reachable_clues_by_cell() -> void:
 	grid = [
 		"    ####",
