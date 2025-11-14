@@ -354,7 +354,8 @@ func _build_validation_result(simple_reach_checks: bool = false) -> ValidationRe
 		
 		if simple_reach_checks:
 			var group_map: SolverGroupMap = get_flooded_island_group_map()
-			var flooded_island_group: Array[Vector2i] = group_map.groups_by_cell.get(island_cell, [] as Array[Vector2i])
+			var flooded_island_group: Array[Vector2i] \
+					= group_map.groups_by_cell.get(island_cell, [] as Array[Vector2i])
 			if clue_value > flooded_island_group.size():
 				# island is too small and can't grow
 				result.wrong_size.append_array(island)

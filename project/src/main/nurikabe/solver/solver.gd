@@ -31,6 +31,7 @@ const WALL_BUBBLE: Deduction.Reason = Deduction.Reason.WALL_BUBBLE
 const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR
 const WALL_EXPANSION: Deduction.Reason = Deduction.Reason.WALL_EXPANSION
 const WALL_WEAVER: Deduction.Reason = Deduction.Reason.WALL_WEAVER
+const BORDER_HUG: Deduction.Reason = Deduction.Reason.BORDER_HUG
 
 ## advanced techniques
 const ASSUMPTION: Deduction.Reason = Deduction.Reason.ASSUMPTION
@@ -249,6 +250,33 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 		if adjacent_clues.size() >= 2:
 			add_deduction(neighbor, CELL_WALL,
 				ADJACENT_CLUES, [adjacent_clues[0], adjacent_clues[1]] as Array[Vector2i])
+
+
+## There are two common border wall scenarios:[br]
+## [br]
+## 1. A wall has two liberties stacked against the wall, one above the other. It's unlikely the liberty bordering the
+## 	puzzle's edge is an island, and assuming it is an island often leads to an obvious contradiction.[br]
+## 2. A wall has two liberties side-by-side against the wall, so it can extend left or right. However, one of these is
+## 	not an actual liberty, and extending it along the wall invalidates a clue.[br]
+## [br]
+## This deduction executes a very simple bifurcation which creates a wall/island pair, repeatedly extending them, then
+## checking for a contradiction.
+func deduce_border_wall(border_wall_cell: Vector2i) -> void:
+	var liberties: Array[Vector2i] = board.get_liberties(board.get_wall_for_cell(border_wall_cell))
+	if liberties.size() != 2:
+		return
+	
+	var border_scenarios: Array[BorderScenario] = []
+	if is_border_cell(liberties[0]):
+		border_scenarios.append(BorderScenario.new(board, border_wall_cell, liberties[1], liberties[0]))
+	if is_border_cell(liberties[1]):
+		border_scenarios.append(BorderScenario.new(board, border_wall_cell, liberties[0], liberties[1]))
+	
+	for border_scenario: BorderScenario in border_scenarios:
+		border_scenario.step_repeatedly()
+		if border_scenario.has_new_contradictions():
+			for deduction: Deduction in border_scenario.deductions:
+				add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
 
 
 func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
@@ -663,6 +691,22 @@ func enqueue_wall_chokepoints() -> void:
 		if not _can_deduce(board, chokepoint):
 			continue
 		schedule_task(deduce_wall_chokepoint.bind(chokepoint), 235)
+	
+	for wall: Array[Vector2i] in board.get_walls():
+		var liberties: Array[Vector2i] = board.get_liberties(wall)
+		if liberties.size() != 2:
+			continue
+		if liberties.any(is_border_cell) and wall.any(is_border_cell):
+			schedule_task(deduce_border_wall.bind(wall.front()), 235)
+
+
+func is_border_cell(cell: Vector2i) -> bool:
+	var result: bool = false
+	for neighbor: Vector2i in board.get_neighbors(cell):
+		if board.get_cell_string(neighbor) == CELL_INVALID:
+			result = true
+			break
+	return result
 
 
 func enqueue_islands() -> void:
@@ -951,3 +995,76 @@ func _task_key(callable: Callable) -> String:
 	if not args.is_empty():
 		key += ":" + JSON.stringify(args)
 	return key
+
+
+## A simple bifurcation which only expands walls/islands to their neighbors.
+class BorderScenario:
+	var deductions: Array[Deduction]
+	
+	var _border_wall_cell: Vector2i
+	var _board: SolverBoard
+	var _changes: Dictionary[Vector2i, String] = {}
+	var _queue: Array[Vector2i] = []
+	var _visited: Dictionary[Vector2i, bool] = {}
+	
+	func _init(init_board: SolverBoard, init_border_wall_cell: Vector2i,
+			init_wall_assumption: Vector2i, init_island_assumption: Vector2i) -> void:
+		_board = init_board
+		_border_wall_cell = init_border_wall_cell
+		
+		for wall: Vector2i in _board.get_wall_for_cell(_border_wall_cell):
+			_visited[wall] = true
+		
+		_push_change(init_wall_assumption, CELL_WALL)
+		_push_change(init_island_assumption, CELL_ISLAND)
+		
+		deductions = [Deduction.new(init_island_assumption, CELL_WALL, BORDER_HUG, [init_border_wall_cell])]
+	
+	
+	func step_repeatedly() -> void:
+		while not _queue.is_empty():
+			var next_cell: Vector2i = _queue.pop_front()
+			var next_cell_value: String = get_cell_string(next_cell)
+			
+			var neighbor_match_cells: Array[Vector2i] = []
+			var neighbor_empty_cells: Array[Vector2i] = []
+			for neighbor: Vector2i in _board.get_neighbors(next_cell):
+				var neighbor_value: String = get_cell_string(neighbor)
+				if neighbor_value == next_cell_value:
+					neighbor_match_cells.append(neighbor)
+				elif neighbor_value == CELL_EMPTY:
+					neighbor_empty_cells.append(neighbor)
+			
+			var unvisited_neighbor_match: bool = false
+			for neighbor_match_cell: Vector2i in neighbor_match_cells:
+				if not _visited.has(neighbor_match_cell):
+					unvisited_neighbor_match = true
+					break
+			
+			if not unvisited_neighbor_match and neighbor_empty_cells.size() == 1:
+				_push_change(neighbor_empty_cells[0], next_cell_value)
+	
+	
+	func has_new_contradictions() -> bool:
+		var new_board: SolverBoard = _board.duplicate()
+		for change_cell: Vector2i in _changes:
+			new_board.set_cell_string(change_cell, _changes[change_cell])
+		var init_validation_result: SolverBoard.ValidationResult = _board.validate()
+		var validation_result: SolverBoard.ValidationResult = new_board.validate()
+		
+		return validation_result.error_count > init_validation_result.error_count
+	
+	
+	func get_cell_string(cell: Vector2i) -> String:
+		var cell_string: String
+		if _changes.has(cell):
+			cell_string = _changes[cell]
+		else:
+			cell_string = _board.get_cell_string(cell)
+		return cell_string
+	
+	
+	func _push_change(cell: Vector2i, value: String) -> void:
+		_changes[cell] = value
+		_visited[cell] = true
+		_queue.push_back(cell)
