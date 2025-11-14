@@ -310,7 +310,7 @@ func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: 
 
 func _on_validate_timer_timeout() -> void:
 	var model: SolverBoard = to_solver_board()
-	var result: SolverBoard.ValidationResult = model.validate()
+	var result_simple: SolverBoard.ValidationResult = model.validate_simple()
 	var result_strict: SolverBoard.ValidationResult = model.validate_strict()
 	
 	if result_strict.error_count == 0:
@@ -330,15 +330,15 @@ func _on_validate_timer_timeout() -> void:
 	# update error cells if the player made a mistake
 	var old_error_cells: Dictionary[Vector2i, bool] = error_cells
 	var new_error_cells: Dictionary[Vector2i, bool] = {}
-	for pool_cell: Vector2i in result.pools:
+	for pool_cell: Vector2i in result_simple.pools:
 		new_error_cells[pool_cell] = true
-	for joined_island_cell: Vector2i in result.joined_islands:
+	for joined_island_cell: Vector2i in result_simple.joined_islands:
 		new_error_cells[joined_island_cell] = true
-	for unclued_island_cell: Vector2i in result.unclued_islands:
+	for unclued_island_cell: Vector2i in result_simple.unclued_islands:
 		new_error_cells[unclued_island_cell] = true
-	for wrong_size_cell: Vector2i in result.wrong_size:
+	for wrong_size_cell: Vector2i in result_simple.wrong_size:
 		new_error_cells[wrong_size_cell] = true
-	for split_wall_cell in result.split_walls:
+	for split_wall_cell in result_simple.split_walls:
 		new_error_cells[split_wall_cell] = true
 	error_cells = new_error_cells
 	

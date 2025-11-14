@@ -197,6 +197,7 @@ func test_wrong_size() -> void:
 		"######",
 	]
 	assert_valid_strict()
+	assert_valid_simple()
 	
 	grid = [
 		"#### 4",
@@ -204,6 +205,7 @@ func test_wrong_size() -> void:
 		"######",
 	]
 	assert_invalid_strict({"wrong_size": [Vector2i(1, 1), Vector2i(2, 0), Vector2i(2, 1)]})
+	assert_invalid_simple({"wrong_size": [Vector2i(2, 0)]})
 	
 	grid = [
 		" . . 4",
@@ -214,36 +216,77 @@ func test_wrong_size() -> void:
 			Vector2i(0, 0),
 			Vector2i(1, 0), Vector2i(1, 1),
 			Vector2i(2, 0), Vector2i(2, 1)]})
+	assert_invalid_simple({"wrong_size": [
+			Vector2i(0, 0),
+			Vector2i(1, 0), Vector2i(1, 1),
+			Vector2i(2, 0), Vector2i(2, 1)]})
+
+
+func test_wrong_size_neighbors() -> void:
+	grid = [
+		"##   4",
+		"      ",
+		" 1  ##",
+	]
+	assert_valid()
+	assert_valid_simple()
+	
+	grid = [
+		"##   5",
+		"      ",
+		" 1  ##",
+	]
+	assert_invalid({"wrong_size": [Vector2i(2, 0)]})
+	assert_valid_simple()
+	
+	grid = [
+		"## . 5",
+		"   . .",
+		" 1  ##",
+	]
+	assert_invalid({
+			"wrong_size": [Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0), Vector2i(2, 1)],
+			"split_walls": [Vector2i(2, 2)]})
+	assert_invalid_simple({"split_walls": [Vector2i(2, 2)]})
+
+
+func test_asdf_bug_2() -> void:
+	grid = [
+		"##########",
+		" 3## . 4##",
+		" .   .####",
+		"       2  ",
+	]
+	assert_invalid({"wrong_size": [Vector2i(2, 1), Vector2i(2, 2), Vector2i(3, 1)]})
 
 
 func assert_valid() -> void:
-	_assert_validate({})
+	_assert_validate("validate", {})
 
 
 func assert_invalid(expected_result_dict: Dictionary) -> void:
-	_assert_validate(expected_result_dict)
+	_assert_validate("validate", expected_result_dict)
+
+
+func assert_valid_simple() -> void:
+	_assert_validate("validate_simple", {})
+
+
+func assert_invalid_simple(expected_result_dict: Dictionary) -> void:
+	_assert_validate("validate_simple", expected_result_dict)
 
 
 func assert_valid_strict() -> void:
-	_assert_validate_strict({})
+	_assert_validate("validate_strict", {})
 
 
 func assert_invalid_strict(expected_result_dict: Dictionary) -> void:
-	_assert_validate_strict(expected_result_dict)
+	_assert_validate("validate_strict", expected_result_dict)
 
 
-func _assert_validate(expected_result_dict: Dictionary) -> void:
+func _assert_validate(method: String, expected_result_dict: Dictionary) -> void:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
-	var validation_result: SolverBoard.ValidationResult = board.validate()
-	for key: String in ["joined_islands", "pools", "split_walls", "unclued_islands", "wrong_size"]:
-		var validation_result_value: Array[Vector2i] = validation_result.get(key)
-		validation_result_value.sort()
-		assert_eq(expected_result_dict.get(key, []), validation_result_value, "Incorrect %s." % [key])
-
-
-func _assert_validate_strict(expected_result_dict: Dictionary) -> void:
-	var board: SolverBoard = SolverTestUtils.init_board(grid)
-	var validation_result: SolverBoard.ValidationResult = board.validate_strict()
+	var validation_result: SolverBoard.ValidationResult = board.call(method)
 	for key: String in ["joined_islands", "pools", "split_walls", "unclued_islands", "wrong_size"]:
 		var validation_result_value: Array[Vector2i] = validation_result.get(key)
 		validation_result_value.sort()
