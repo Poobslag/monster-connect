@@ -86,7 +86,7 @@ func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String
 		
 		if _board.get_cell_string(chokepoint) == CELL_ISLAND and _board.get_clue_for_island_cell(chokepoint) == 0:
 			# buffer wall for any adjoining unclued islands
-			for liberty_cell in _board.get_liberties(_board.get_island_for_cell(chokepoint)):
+			for liberty_cell: Vector2i in _board.get_liberties(_board.get_island_for_cell(chokepoint)):
 				if needs_buffer(island_root, liberty_cell):
 					result[liberty_cell] = CELL_WALL
 	

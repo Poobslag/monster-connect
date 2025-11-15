@@ -26,5 +26,5 @@ static func _split_internal(label: String) -> void:
 
 
 static func print_results() -> void:
-	for key in _splits:
+	for key: String in _splits:
 		print("Benchmark %s: %.3f msec" % [key, _splits[key] / 1000.0])

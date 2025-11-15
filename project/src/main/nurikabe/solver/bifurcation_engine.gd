@@ -15,7 +15,7 @@ func add_scenario(board: SolverBoard,
 
 
 func step() -> void:
-	for scenario_key: String in _scenarios_by_key.keys():
+	for scenario_key: String in _scenarios_by_key:
 		var scenario: BifurcationScenario = _scenarios_by_key[scenario_key]
 		scenario.step()
 		if scenario.is_queue_empty() and not _scenarios_by_key[scenario_key].has_new_contradictions():

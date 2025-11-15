@@ -162,7 +162,7 @@ func _build() -> void:
 		for neighbor: Vector2i in [
 				cell + Vector2i.UP, cell + Vector2i.DOWN,
 				cell + Vector2i.LEFT, cell + Vector2i.RIGHT]:
-			if neighbor in _neighbors_by_cell:
+			if _neighbors_by_cell.has(neighbor):
 				_neighbors_by_cell[cell].append(neighbor)
 	
 	# run tarjan's algorithm

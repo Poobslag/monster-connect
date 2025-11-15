@@ -113,7 +113,7 @@ func _handle_mb_drag() -> void:
 				elif _last_set_cell_value == CELL_ISLAND:
 					_input_sfx = "drop_island_press"
 		CELL_EMPTY:
-			if not cell in _cells_to_erase and game_board.get_cell_string(cell) != CELL_EMPTY:
+			if not _cells_to_erase.has(cell) and game_board.get_cell_string(cell) != CELL_EMPTY:
 				_cells_to_erase[cell] = true
 				game_board.set_half_cell(cell, player.id)
 				if game_board.get_cell_string(cell) == CELL_WALL:
