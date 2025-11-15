@@ -1,4 +1,5 @@
 class_name SplitTimer
+## Benchmarks a series of events.
 
 static var _splits: Dictionary[String, int] = {}
 static var _last_time: int = 0
