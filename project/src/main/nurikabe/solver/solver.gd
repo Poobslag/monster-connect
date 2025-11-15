@@ -60,6 +60,9 @@ func add_deduction(pos: Vector2i, value: String,
 
 
 func apply_changes() -> void:
+	if not deductions.has_changes():
+		return
+	
 	var changes: Array[Dictionary] = deductions.get_changes()
 	for change: Dictionary[String, Variant] in changes:
 		var history_item: Dictionary[String, Variant] = {}

@@ -10,6 +10,10 @@ func add_deduction(pos: Vector2i, value: String,
 	cells[pos] = true
 
 
+func has_changes() -> bool:
+	return not deductions.is_empty()
+
+
 func get_changes() -> Array[Dictionary]:
 	var changes: Array[Dictionary] = []
 	for deduction: Deduction in deductions:
