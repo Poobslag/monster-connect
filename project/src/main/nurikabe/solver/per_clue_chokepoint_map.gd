@@ -21,14 +21,15 @@ func _init(init_board: SolverBoard) -> void:
 	var islands: Array[Array] = _board.get_islands()
 	
 	# collect visitable cells (empty cells, or clueless islands)
+	var island_clues: Dictionary[Vector2i, int] = _board.get_island_clues()
 	for cell: Vector2i in _board.cells:
 		if _board.get_cell(cell) in [CELL_ISLAND, CELL_EMPTY] \
-				and _board.get_clue_for_island_cell(cell) == 0:
+				and island_clues.get(cell, 0) == 0:
 			_visitable[cell] = true
 	
 	# seed queue from islands
 	for island: Array[Vector2i] in islands:
-		var clue_value: int = _board.get_clue_for_island(island)
+		var clue_value: int = island_clues.get(island.front(), 0)
 		if clue_value == 0:
 			continue
 		for liberty: Vector2i in _board.get_liberties(island):

@@ -45,17 +45,20 @@ func get_cell(cell_pos: Vector2i) -> int:
 ## [br]
 ## If zero clues are present, returns 0. If multiple clues are present, returns -1.
 func get_clue_for_island(group: Array[Vector2i]) -> int:
+	return 0 if group.is_empty() else get_clue_for_island_cell(group.front())
+
+
+func get_island_clues() -> Dictionary[Vector2i, int]:
 	return _get_cached(
-		"clue_for_island %s" % ["-" if group.is_empty() else str(group[0])],
-		_build_clue_value.bind(group))
+		"island_clues",
+		_build_island_clues)
 
 
 ## Returns the clue value for the specified group of cells.[br]
 ## [br]
 ## If zero clues are present, returns 0. If multiple clues are present, returns -1.
 func get_clue_for_island_cell(cell: Vector2i) -> int:
-	var group: Array[Vector2i] = get_island_group_map().groups_by_cell.get(cell, [] as Array[Vector2i])
-	return get_clue_for_island(group) if group else 0
+	return get_island_clues().get(cell, 0)
 
 
 func get_filled_cell_count() -> int:
@@ -209,7 +212,7 @@ func print_cells() -> void:
 func surround_island(cell: Vector2i) -> Array[Dictionary]:
 	var changes: Array[Dictionary] = []
 	var island: Array[Vector2i] = get_island_for_cell(cell)
-	if island.is_empty() or get_clue_for_island(island) != island.size():
+	if island.is_empty() or get_clue_for_island_cell(cell) != island.size():
 		return changes
 	
 	var liberties: Array[Vector2i] = get_liberties(island)
@@ -249,15 +252,21 @@ func _build_global_reachability_map() -> GlobalReachabilityMap:
 	return GlobalReachabilityMap.new(self)
 
 
-func _build_clue_value(group: Array[Vector2i]) -> int:
-	var result: int = 0
-	for cell: Vector2i in group:
-		if NurikabeUtils.is_clue(cells[cell]):
-			if result > 0:
-				# too many clues
-				result = -1
-				break
-			result = cells[cell]
+func _build_island_clues() -> Dictionary[Vector2i, int]:
+	var result: Dictionary[Vector2i, int] = {}
+	for island: Array[Vector2i] in get_islands():
+		var clue_value: int = 0
+		for cell: Vector2i in island:
+			var cell_value: int = cells[cell]
+			if NurikabeUtils.is_clue(cell_value):
+				if clue_value > 0:
+					clue_value = -1
+					break
+				clue_value = cell_value
+		if clue_value == 0:
+			continue
+		for cell: Vector2i in island:
+			result[cell] = clue_value
 	return result
 
 

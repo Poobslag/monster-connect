@@ -48,15 +48,16 @@ func _build() -> void:
 	
 	# collect visitable cells (empty cells, or clueless islands)
 	var visitable: Dictionary[Vector2i, bool] = {}
+	var island_clues: Dictionary[Vector2i, int] = _board.get_island_clues()
 	for cell: Vector2i in _board.cells:
 		if _board.get_cell(cell) in [CELL_ISLAND, CELL_EMPTY] \
-				and _board.get_clue_for_island_cell(cell) == 0:
+				and island_clues.get(cell, 0) == 0:
 			visitable[cell] = true
 	
 	# seed queue from islands
 	var queue: Array[Vector2i] = []
 	for island: Array[Vector2i] in islands:
-		var clue_value: int = _board.get_clue_for_island(island)
+		var clue_value: int = island_clues.get(island.front(), 0)
 		if clue_value == 0:
 			continue
 		var reachability: int = clue_value - island.size()
