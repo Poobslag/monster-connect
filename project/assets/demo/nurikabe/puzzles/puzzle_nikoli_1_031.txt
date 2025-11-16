@@ -1,0 +1,11 @@
+// puzzle 31 from nikoli's book "nurikabe 1"
+   1         5      
+       1   1       1
+                    
+                    
+ 5           5     5
+     1   5          
+                    
+                 5  
+         1          
+   5             1  
