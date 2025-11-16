@@ -109,7 +109,7 @@ func step() -> void:
 			if solver.board.get_cell_string(cell_pos) != CELL_EMPTY:
 				push_error("Illegal change: %s == %s" % [cell_pos, solver.board.get_cell_string(cell_pos)])
 		
-		for deduction_index in solver.deductions.deductions.size():
+		for deduction_index: int in solver.deductions.deductions.size():
 			var shown_index: int = solver.board.get_filled_cell_count() \
 					- solver.deductions.deductions.size() + deduction_index
 			var deduction: Deduction = solver.deductions.deductions[deduction_index]
