@@ -38,8 +38,8 @@ func update_cursor(game_board: NurikabeGameBoard, player: Player, cell: Vector2i
 	if player:
 		cursor_color = player.cursor.color
 	position = (Vector2(cell) + Vector2(0.5, 0.5)) * tile_size
-	var cell_string: String = game_board.get_cell_string(cell)
-	tall = true if cell_string == NurikabeUtils.CELL_WALL else false
+	var cell_value: int = game_board.get_cell(cell)
+	tall = true if cell_value == NurikabeUtils.CELL_WALL else false
 
 
 func _process(_delta: float) -> void:

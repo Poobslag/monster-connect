@@ -1,9 +1,9 @@
 extends GutTest
 
-const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
-const CELL_WALL: String = NurikabeUtils.CELL_WALL
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 var grid: Array[String] = []
 
@@ -144,18 +144,18 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
 	return SolverChokepointMap.new(board,
 		func(cell: Vector2i) -> bool:
-			var value: String = board.get_cell_string(cell)
-			return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+			var value: int = board.get_cell(cell)
+			return NurikabeUtils.is_clue(value) or value in [CELL_EMPTY, CELL_ISLAND])
 
 
 func _build_wall_chokepoint_map() -> SolverChokepointMap:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
 	return SolverChokepointMap.new(board,
 		func(cell: Vector2i) -> bool:
-			var value: String = board.get_cell_string(cell)
+			var value: int = board.get_cell(cell)
 			return value in [CELL_EMPTY, CELL_WALL],
 		func(cell: Vector2i) -> bool:
-			return board.get_cell_string(cell) == CELL_WALL)
+			return board.get_cell(cell) == CELL_WALL)
 
 
 func assert_chokepoints(chokepoint_map: SolverChokepointMap,

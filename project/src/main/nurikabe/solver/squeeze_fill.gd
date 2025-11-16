@@ -1,12 +1,12 @@
 class_name SqueezeFill
 ## Fills an empty corridor with walls (or islands) until it hits another wall (or island).
 
-const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
-const CELL_WALL: String = NurikabeUtils.CELL_WALL
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
-var changes: Dictionary[Vector2i, String] = {}
+var changes: Dictionary[Vector2i, int] = {}
 
 var _board: SolverBoard
 var _queue: Array[Vector2i] = []
@@ -22,7 +22,7 @@ func skip_cells(cells: Array[Vector2i]) -> void:
 		_visited[cell] = true
 
 
-func push_change(cell: Vector2i, value: String) -> void:
+func push_change(cell: Vector2i, value: int) -> void:
 	changes[cell] = value
 	_visited[cell] = true
 	_queue.push_back(cell)
@@ -30,12 +30,12 @@ func push_change(cell: Vector2i, value: String) -> void:
 
 func step() -> void:
 	var next_cell: Vector2i = _queue.pop_front()
-	var next_cell_value: String = get_cell_string(next_cell)
+	var next_cell_value: int = get_cell(next_cell)
 	
 	var neighbor_match_cells: Array[Vector2i] = []
 	var neighbor_empty_cells: Array[Vector2i] = []
 	for neighbor: Vector2i in _board.get_neighbors(next_cell):
-		var neighbor_value: String = get_cell_string(neighbor)
+		var neighbor_value: int = get_cell(neighbor)
 		if neighbor_value == CELL_EMPTY:
 			neighbor_empty_cells.append(neighbor)
 		elif neighbor_value == CELL_INVALID:
@@ -60,10 +60,10 @@ func fill(max_steps: int = 999999) -> void:
 		step()
 
 
-func get_cell_string(cell: Vector2i) -> String:
-	var cell_string: String
+func get_cell(cell: Vector2i) -> int:
+	var cell_value: int
 	if changes.has(cell):
-		cell_string = changes[cell]
+		cell_value = changes[cell]
 	else:
-		cell_string = _board.get_cell_string(cell)
-	return cell_string
+		cell_value = _board.get_cell(cell)
+	return cell_value

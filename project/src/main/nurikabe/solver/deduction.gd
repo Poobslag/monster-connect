@@ -36,11 +36,11 @@ enum Reason {
 }
 
 var pos: Vector2i
-var value: String
+var value: int
 var reason: Reason
 var reason_cells: Array[Vector2i]
 
-func _init(init_pos: Vector2i, init_value: String,
+func _init(init_pos: Vector2i, init_value: int,
 		init_reason: Reason = Reason.UNKNOWN,
 		init_reason_cells: Array[Vector2i] = []) -> void:
 	pos = init_pos
@@ -55,4 +55,4 @@ func to_change() -> Dictionary[String, Variant]:
 
 func _to_string() -> String:
 	var cells_str: String = "" if reason_cells.is_empty() else " " + " ".join(reason_cells)
-	return "%s->%s %s%s" % [pos, value, Utils.enum_to_snake_case(Reason, reason), cells_str]
+	return "%s->%s %s%s" % [pos, NurikabeUtils.to_cell_string(value), Utils.enum_to_snake_case(Reason, reason), cells_str]

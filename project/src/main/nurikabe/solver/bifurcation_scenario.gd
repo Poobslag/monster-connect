@@ -2,13 +2,13 @@ class_name BifurcationScenario
 
 var solver: Solver = Solver.new()
 var board: SolverBoard
-var assumptions: Dictionary[Vector2i, String]
+var assumptions: Dictionary[Vector2i, int]
 var deductions: Array[Deduction]
 var _last_validation_result: SolverBoard.ValidationResult
 var _initial_validation_result: SolverBoard.ValidationResult
 
 func _init(init_board: SolverBoard,
-		init_assumptions: Dictionary[Vector2i, String],
+		init_assumptions: Dictionary[Vector2i, int],
 		init_deductions: Array[Deduction]) -> void:
 	board = init_board
 	assumptions = init_assumptions

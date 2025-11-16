@@ -33,6 +33,6 @@ func _init(init_board: SolverBoard, init_cell_filter: Callable) -> void:
 func _build_group_map() -> void:
 	var cells: Array[Vector2i] = []
 	for cell: Vector2i in _board.cells:
-		if _cell_filter.call(_board.get_cell_string(cell)):
+		if _cell_filter.call(_board.get_cell(cell)):
 			cells.append(cell)
 	_group_map = GroupMap.new(cells)

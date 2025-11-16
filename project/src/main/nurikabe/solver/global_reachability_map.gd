@@ -12,10 +12,10 @@ enum ClueReachability {
 	CONFLICT,
 }
 
-const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
-const CELL_WALL: String = NurikabeUtils.CELL_WALL
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
@@ -49,7 +49,7 @@ func _build() -> void:
 	# collect visitable cells (empty cells, or clueless islands)
 	var visitable: Dictionary[Vector2i, bool] = {}
 	for cell: Vector2i in _board.cells:
-		if _board.get_cell_string(cell) in [CELL_ISLAND, CELL_EMPTY] \
+		if _board.get_cell(cell) in [CELL_ISLAND, CELL_EMPTY] \
 				and _board.get_clue_for_island_cell(cell) == 0:
 			visitable[cell] = true
 	

@@ -2,15 +2,14 @@ class_name SolverBoard
 
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
-const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
-const CELL_WALL: String = NurikabeUtils.CELL_WALL
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
-var cells: Dictionary[Vector2i, String]
+var cells: Dictionary[Vector2i, int]
 
 var _cache: Dictionary[String, Variant] = {}
-
 
 func perform_bfs(start_cell: Vector2i, filter: Callable) -> void:
 	var visited: Dictionary[Vector2i, bool] = {start_cell: true}
@@ -35,10 +34,10 @@ func duplicate() -> SolverBoard:
 
 func from_game_board(game_board: NurikabeGameBoard) -> void:
 	for cell_pos in game_board.get_used_cells():
-		set_cell_string(cell_pos, game_board.get_cell_string(cell_pos))
+		set_cell(cell_pos, game_board.get_cell(cell_pos))
 
 
-func get_cell_string(cell_pos: Vector2i) -> String:
+func get_cell(cell_pos: Vector2i) -> int:
 	return cells.get(cell_pos, CELL_INVALID)
 
 
@@ -110,7 +109,7 @@ func get_per_clue_chokepoint_map() -> PerClueChokepointMap:
 		_build_per_clue_chokepoint_map)
 
 
-func set_cell_string(cell_pos: Vector2i, value: String) -> void:
+func set_cell(cell_pos: Vector2i, value: int) -> void:
 	_cache.clear()
 	cells[cell_pos] = value
 
@@ -180,9 +179,9 @@ func get_wall_group_map() -> SolverGroupMap:
 ## Accepts a dictionary with the following keys:[br]
 ## 	'pos': (Vector2i) The cell to update.[br]
 ## 	'value': (String) The value to assign.[br]
-func set_cell_strings(changes: Array[Dictionary]) -> void:
+func set_cells(changes: Array[Dictionary]) -> void:
 	for change: Dictionary in changes:
-		set_cell_string(change["pos"], change["value"])
+		set_cell(change["pos"], change["value"])
 
 
 func print_cells() -> void:
@@ -202,7 +201,8 @@ func print_cells() -> void:
 	for y: int in range(rect.position.y, rect.end.y + 1):
 		var line: String = "| "
 		for x: int in range(rect.position.x, rect.end.x + 1):
-			line += get_cell_string(Vector2i(x, y)).lpad(2, " ")
+			var cell_string: String = NurikabeUtils.to_cell_string(get_cell(Vector2i(x, y)))
+			line += cell_string.lpad(2, " ")
 		print(line)
 
 
@@ -214,7 +214,7 @@ func surround_island(cell: Vector2i) -> Array[Dictionary]:
 	
 	var liberties: Array[Vector2i] = get_liberties(island)
 	for liberty: Vector2i in liberties:
-		if get_cell_string(liberty) == CELL_EMPTY:
+		if get_cell(liberty) == CELL_EMPTY:
 			changes.append({"pos": liberty, "value": CELL_WALL})
 	
 	return changes
@@ -240,8 +240,8 @@ func validate_strict() -> ValidationResult:
 func _build_flooded_board() -> SolverBoard:
 	var flooded_board: SolverBoard = duplicate()
 	for cell: Vector2i in flooded_board.cells:
-		if flooded_board.get_cell_string(cell) == CELL_EMPTY:
-			flooded_board.set_cell_string(cell, CELL_ISLAND)
+		if flooded_board.get_cell(cell) == CELL_EMPTY:
+			flooded_board.set_cell(cell, CELL_ISLAND)
 	return flooded_board
 
 
@@ -252,12 +252,12 @@ func _build_global_reachability_map() -> GlobalReachabilityMap:
 func _build_clue_value(group: Array[Vector2i]) -> int:
 	var result: int = 0
 	for cell: Vector2i in group:
-		if cells[cell].is_valid_int():
+		if NurikabeUtils.is_clue(cells[cell]):
 			if result > 0:
 				# too many clues
 				result = -1
 				break
-			result = cells[cell].to_int()
+			result = cells[cell]
 	return result
 
 
@@ -270,29 +270,31 @@ func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
 		for neighbor: Vector2i in get_neighbors(group_cell):
 			if neighbor in group_cell_set:
 				continue
-			if get_cell_string(neighbor) != CELL_EMPTY:
+			if get_cell(neighbor) != CELL_EMPTY:
 				continue
 			liberty_cell_set[neighbor] = true
-	return liberty_cell_set.keys()
+	var result: Array[Vector2i] = liberty_cell_set.keys()
+	return result
 
 
 func _build_island_group_map() -> SolverGroupMap:
-	return SolverGroupMap.new(self, func(value: String) -> bool:
-		return value.is_valid_int() or value == CELL_ISLAND)
+	var result: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
+		return NurikabeUtils.is_clue(value) or value == CELL_ISLAND)
+	return result
 
 
 func _build_flooded_island_group_map() -> SolverGroupMap:
-	return SolverGroupMap.new(self, func(value: String) -> bool:
-		return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND])
+	return SolverGroupMap.new(self, func(value: int) -> bool:
+		return NurikabeUtils.is_clue(value) or value in [CELL_EMPTY, CELL_ISLAND])
 
 
 func _build_island_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
-			var value: String = get_cell_string(cell)
-			return value.is_valid_int() or value in [CELL_EMPTY, CELL_ISLAND],
+			var value: int = get_cell(cell)
+			return NurikabeUtils.is_clue(value) or value in [CELL_EMPTY, CELL_ISLAND],
 		func(cell: Vector2i) -> bool:
-			return get_cell_string(cell).is_valid_int())
+			return NurikabeUtils.is_clue(get_cell(cell)))
 
 
 func _build_simple_validation_result() -> ValidationResult:
@@ -389,10 +391,10 @@ func _build_validation_result(simple_reach_checks: bool = false) -> ValidationRe
 func _build_wall_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
-			var value: String = get_cell_string(cell)
+			var value: int = get_cell(cell)
 			return value in [CELL_EMPTY, CELL_WALL],
 		func(cell: Vector2i) -> bool:
-			return get_cell_string(cell) == CELL_WALL)
+			return get_cell(cell) == CELL_WALL)
 
 
 func _build_per_clue_chokepoint_map() -> PerClueChokepointMap:
@@ -400,7 +402,7 @@ func _build_per_clue_chokepoint_map() -> PerClueChokepointMap:
 
 
 func _build_wall_group_map() -> SolverGroupMap:
-	return SolverGroupMap.new(self, func(value: String) -> bool:
+	return SolverGroupMap.new(self, func(value: int) -> bool:
 		return value == CELL_WALL)
 
 
