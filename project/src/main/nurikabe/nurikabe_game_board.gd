@@ -6,10 +6,10 @@ signal puzzle_finished
 
 const MAX_UNDO: int = 200
 
-const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
-const CELL_WALL: String = NurikabeUtils.CELL_WALL
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 @export_multiline var grid_string: String
 
@@ -119,7 +119,7 @@ func import_grid() -> void:
 		var row_string: String = grid_string_rows[y]
 		@warning_ignore("integer_division")
 		for x in row_string.length() / 2:
-			set_cell_string(Vector2i(x, y), row_string.substr(x * 2, 2).strip_edges())
+			set_cell(Vector2i(x, y), NurikabeUtils.from_cell_string(row_string.substr(x * 2, 2).strip_edges()))
 	
 	_undo_stack.clear()
 	_redo_stack.clear()
@@ -134,27 +134,27 @@ func import_grid() -> void:
 ## Accepts a dictionary with the following keys:[br]
 ## 	'pos': (Vector2i) The cell to update.[br]
 ## 	'value': (String) The value to assign.[br]
-func set_cell_strings(changes: Array[Dictionary], player_id: int = -1) -> void:
+func set_cells(changes: Array[Dictionary], player_id: int = -1) -> void:
 	if player_id != -1:
 		var cell_positions: Array[Vector2i] = []
-		var values: Array[String] = []
+		var values: Array[int] = []
 		for change: Dictionary in changes:
 			cell_positions.append(change["pos"])
 			values.append(change["value"])
 		_push_undo_action(player_id, cell_positions, values)
 	
 	for change: Dictionary in changes:
-		_set_cell_string_internal(change["pos"], change["value"])
+		_set_cell_internal(change["pos"], change["value"])
 
 
-func set_cell_string(cell_pos: Vector2i, value: String, player_id: int = -1) -> void:
+func set_cell(cell_pos: Vector2i, value: int, player_id: int = -1) -> void:
 	if player_id != -1:
 		_push_undo_action(player_id, [cell_pos], [value])
-	_set_cell_string_internal(cell_pos, value)
+	_set_cell_internal(cell_pos, value)
 
 
-func get_cell_string(cell_pos: Vector2i) -> String:
-	var result: String = CELL_INVALID
+func get_cell(cell_pos: Vector2i) -> int:
+	var result: int = CELL_INVALID
 	
 	if %TileMapGround.get_cell_source_id(cell_pos) != -1:
 		result = CELL_EMPTY
@@ -163,7 +163,7 @@ func get_cell_string(cell_pos: Vector2i) -> String:
 		result = CELL_WALL
 	
 	if %TileMapClue.get_cell_clue(cell_pos) != -1:
-		result = str(%TileMapClue.get_cell_clue(cell_pos))
+		result = %TileMapClue.get_cell_clue(cell_pos)
 	
 	if %TileMapIsland.get_cell_source_id(cell_pos) != -1:
 		result = CELL_ISLAND
@@ -221,16 +221,16 @@ func redo(player_id: int) -> void:
 
 
 func _apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> void:
-	var target_values: Array[String] = undo_action.new_values if is_redo else undo_action.old_values
+	var target_values: Array[int] = undo_action.new_values if is_redo else undo_action.old_values
 	for i: int in undo_action.cell_positions.size():
-		_set_cell_string_internal(undo_action.cell_positions[i], target_values[i])
+		_set_cell_internal(undo_action.cell_positions[i], target_values[i])
 
 
 func _can_apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> bool:
 	var conflict_count: int = 0
-	var expected_values: Array[String] = undo_action.old_values if is_redo else undo_action.new_values
+	var expected_values: Array[int] = undo_action.old_values if is_redo else undo_action.new_values
 	for i: int in undo_action.cell_positions.size():
-		if get_cell_string(undo_action.cell_positions[i]) != expected_values[i]:
+		if get_cell(undo_action.cell_positions[i]) != expected_values[i]:
 			conflict_count += 1
 	return conflict_count == 0
 
@@ -245,8 +245,8 @@ func _erase_cell(cell_pos: Vector2i) -> void:
 		%SteppableTiles.erase_cell(cell_pos)
 
 
-func _set_cell_string_internal(cell_pos: Vector2i, value: String) -> void:
-	if value.is_valid_int():
+func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
+	if NurikabeUtils.is_clue(value):
 		%TileMapClue.set_cell(cell_pos, int(value))
 	else:
 		%TileMapClue.erase_cell(cell_pos)
@@ -290,10 +290,10 @@ func validate() -> void:
 	%ValidateTimer.start()
 
 
-func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: Array[String]) -> void:
-	var old_values: Array[String] = []
+func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: Array[int]) -> void:
+	var old_values: Array[int] = []
 	for cell_position in cell_positions:
-		old_values.append(get_cell_string(cell_position))
+		old_values.append(get_cell(cell_position))
 	var undo_action: UndoAction = UndoAction.new()
 	undo_action.player_id = player_id
 	undo_action.cell_positions = cell_positions
@@ -319,7 +319,7 @@ func _on_validate_timer_timeout() -> void:
 	# update lowlight cells if the player isn't finished
 	var new_lowlight_cells: Dictionary[Vector2i, bool] = {}
 	for cell: Vector2i in model.cells:
-		if model.get_cell_string(cell).is_valid_int() or model.get_cell_string(cell) in [CELL_EMPTY, CELL_ISLAND]:
+		if NurikabeUtils.is_clue(model.get_cell(cell)) or model.get_cell(cell) in [CELL_EMPTY, CELL_ISLAND]:
 			new_lowlight_cells[cell] = true
 	for joined_island_cell: Vector2i in result_strict.joined_islands:
 		new_lowlight_cells.erase(joined_island_cell)
@@ -349,8 +349,8 @@ func _on_validate_timer_timeout() -> void:
 class UndoAction:
 	var player_id: int
 	var cell_positions: Array[Vector2i]
-	var old_values: Array[String]
-	var new_values: Array[String]
+	var old_values: Array[int]
+	var new_values: Array[int]
 	
 	func _to_string() -> String:
 		return str({

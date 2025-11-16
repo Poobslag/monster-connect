@@ -19,8 +19,8 @@ func _build() -> void:
 	groups = []
 	
 	var unvisited: Dictionary[Vector2i, bool] = {}
-	for next_cell: Vector2i in cells:
-		unvisited[next_cell] = true
+	for next_cell_value: Vector2i in cells:
+		unvisited[next_cell_value] = true
 	
 	while not unvisited.is_empty():
 		# start a new group

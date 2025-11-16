@@ -3,7 +3,7 @@ class_name DeductionBatch
 var deductions: Array[Deduction] = []
 var cells: Dictionary[Vector2i, bool]
 
-func add_deduction(pos: Vector2i, value: String,
+func add_deduction(pos: Vector2i, value: int,
 		reason: Deduction.Reason = Deduction.Reason.UNKNOWN,
 		reason_cells: Array[Vector2i] = []) -> void:
 	deductions.append(Deduction.new(pos, value, reason, reason_cells))

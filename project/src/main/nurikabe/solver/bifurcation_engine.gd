@@ -7,7 +7,7 @@ func clear() -> void:
 
 
 func add_scenario(board: SolverBoard,
-		assumptions: Dictionary[Vector2i, String],
+		assumptions: Dictionary[Vector2i, int],
 		deductions: Array[Deduction]) -> void:
 	var key: String = "%s -> %s" % [assumptions, deductions]
 	if not _scenarios_by_key.has(key):

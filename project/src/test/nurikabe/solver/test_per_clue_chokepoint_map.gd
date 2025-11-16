@@ -1,9 +1,9 @@
 extends GutTest
 
-const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
-const CELL_WALL: String = NurikabeUtils.CELL_WALL
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 var grid: Array[String] = []
 
@@ -105,9 +105,9 @@ func test_get_reachable_clues_by_cell() -> void:
 	assert_eq([Vector2i(3, 5)], reachable_clues_by_cell.get(Vector2i(3, 1), {} as Dictionary[Vector2i, bool]).keys())
 
 
-func assert_chokepoint_cells(island_cell: Vector2i, expected: Dictionary[Vector2i, String]) -> void:
+func assert_chokepoint_cells(island_cell: Vector2i, expected: Dictionary[Vector2i, int]) -> void:
 	var pccm: PerClueChokepointMap = init_per_clue_chokepoint_map()
-	var actual: Dictionary[Vector2i, String] = pccm.find_chokepoint_cells(island_cell)
+	var actual: Dictionary[Vector2i, int] = pccm.find_chokepoint_cells(island_cell)
 	assert_eq(actual, expected)
 
 

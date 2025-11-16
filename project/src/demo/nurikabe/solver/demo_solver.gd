@@ -16,10 +16,10 @@ extends Node
 		puzzle_path = value
 		_refresh_puzzle_path()
 
-const CELL_EMPTY := ""
-const CELL_INVALID := "!"
-const CELL_ISLAND := "."
-const CELL_WALL := "##"
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const PUZZLE_PATHS: Array[String] = [
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_061.txt",
@@ -106,8 +106,8 @@ func step() -> void:
 	if not changes.is_empty():
 		for change: Dictionary[String, Variant] in changes:
 			var cell_pos: Vector2i = change.get("pos")
-			if solver.board.get_cell_string(cell_pos) != CELL_EMPTY:
-				push_error("Illegal change: %s == %s" % [cell_pos, solver.board.get_cell_string(cell_pos)])
+			if solver.board.get_cell(cell_pos) != CELL_EMPTY:
+				push_error("Illegal change: %s == %s" % [cell_pos, solver.board.get_cell(cell_pos)])
 		
 		for deduction_index: int in solver.deductions.deductions.size():
 			var shown_index: int = solver.board.get_filled_cell_count() \
@@ -116,12 +116,13 @@ func step() -> void:
 			_show_message("%s %s" % [shown_index, str(deduction)])
 		
 		solver.apply_changes()
-		%GameBoard.set_cell_strings(changes)
+		for change: Dictionary[String, Variant] in changes:
+			%GameBoard.set_cell(change["pos"], change["value"])
 
 
 func copy_board_from_solver() -> void:
 	for cell: Vector2i in solver.board.cells:
-		%GameBoard.set_cell_string(cell, solver.board.get_cell_string(cell))
+		%GameBoard.set_cell(cell, solver.board.get_cell(cell))
 
 
 func solve_until_bifurcation() -> void:
@@ -182,7 +183,7 @@ func performance_test() -> void:
 		])
 	
 	for cell: Vector2i in solver.board.cells:
-		%GameBoard.set_cell_string(cell, solver.board.get_cell_string(cell))
+		%GameBoard.set_cell(cell, solver.board.get_cell(cell))
 
 
 func _show_message(s: String) -> void:

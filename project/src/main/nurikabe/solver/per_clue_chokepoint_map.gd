@@ -1,9 +1,9 @@
 class_name PerClueChokepointMap
 
-const CELL_EMPTY: String = NurikabeUtils.CELL_EMPTY
-const CELL_INVALID: String = NurikabeUtils.CELL_INVALID
-const CELL_ISLAND: String = NurikabeUtils.CELL_ISLAND
-const CELL_WALL: String = NurikabeUtils.CELL_WALL
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 var _board: SolverBoard
 
@@ -22,7 +22,7 @@ func _init(init_board: SolverBoard) -> void:
 	
 	# collect visitable cells (empty cells, or clueless islands)
 	for cell: Vector2i in _board.cells:
-		if _board.get_cell_string(cell) in [CELL_ISLAND, CELL_EMPTY] \
+		if _board.get_cell(cell) in [CELL_ISLAND, CELL_EMPTY] \
 				and _board.get_clue_for_island_cell(cell) == 0:
 			_visitable[cell] = true
 	
@@ -64,8 +64,8 @@ func get_reachable_clues_by_cell() -> Dictionary[Vector2i, Dictionary]:
 
 ## If there are any chokepoints which would prevent the island from being completed, this method returns the cell
 ## changes to preserve the island.
-func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String]:
-	var result: Dictionary[Vector2i, String] = {}
+func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, int]:
+	var result: Dictionary[Vector2i, int] = {}
 	var chokepoint_map: ChokepointMap = get_chokepoint_map(island_cell)
 	var clue_value: int = _board.get_clue_for_island_cell(island_cell)
 	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
@@ -75,7 +75,7 @@ func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String
 		if unchoked_cell_count >= clue_value:
 			continue
 		
-		if _board.get_cell_string(chokepoint) == CELL_EMPTY:
+		if _board.get_cell(chokepoint) == CELL_EMPTY:
 			# the chokepoint itself must be an island
 			result[chokepoint] = CELL_ISLAND
 		
@@ -84,7 +84,7 @@ func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, String
 			if needs_buffer(island_root, neighbor):
 				result[neighbor] = CELL_WALL
 		
-		if _board.get_cell_string(chokepoint) == CELL_ISLAND and _board.get_clue_for_island_cell(chokepoint) == 0:
+		if _board.get_cell(chokepoint) == CELL_ISLAND and _board.get_clue_for_island_cell(chokepoint) == 0:
 			# buffer wall for any adjoining unclued islands
 			for liberty_cell: Vector2i in _board.get_liberties(_board.get_island_for_cell(chokepoint)):
 				if needs_buffer(island_root, liberty_cell):
@@ -114,7 +114,7 @@ func get_wall_exclusion_map(island_cell: Vector2i) -> GroupMap:
 		component_cell_set[component_cell] = true
 	var cells: Array[Vector2i] = []
 	for cell: Vector2i in _board.cells:
-		var value: String = _board.get_cell_string(cell)
+		var value: int = _board.get_cell(cell)
 		if value == CELL_WALL or (value == CELL_EMPTY and not cell in component_cell_set):
 			cells.append(cell)
 	return GroupMap.new(cells)
@@ -181,4 +181,4 @@ func _init_reachable_clues_by_cell() -> void:
 func needs_buffer(island_root: Vector2i, cell: Vector2i) -> bool:
 	return _claimed_by_clue.has(cell) \
 		and _claimed_by_clue[cell] != island_root \
-		and _board.get_cell_string(cell) == CELL_EMPTY
+		and _board.get_cell(cell) == CELL_EMPTY
