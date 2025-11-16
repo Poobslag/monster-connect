@@ -18,7 +18,7 @@ func _init(init_board: SolverBoard) -> void:
 
 
 func skip_cells(cells: Array[Vector2i]) -> void:
-	for cell in cells:
+	for cell: Vector2i in cells:
 		_visited[cell] = true
 
 

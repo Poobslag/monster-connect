@@ -705,7 +705,7 @@ func deduce_wall_expansion(wall_cell: Vector2i) -> void:
 		squeeze_fill.skip_cells(wall)
 		squeeze_fill.push_change(liberties[0], CELL_WALL)
 		squeeze_fill.fill()
-		for change in squeeze_fill.changes:
+		for change: Vector2i in squeeze_fill.changes:
 			add_deduction(change, CELL_WALL, WALL_EXPANSION, [wall_cell])
 
 

@@ -55,4 +55,5 @@ func to_change() -> Dictionary[String, Variant]:
 
 func _to_string() -> String:
 	var cells_str: String = "" if reason_cells.is_empty() else " " + " ".join(reason_cells)
-	return "%s->%s %s%s" % [pos, NurikabeUtils.to_cell_string(value), Utils.enum_to_snake_case(Reason, reason), cells_str]
+	return "%s->%s %s%s" % [pos, NurikabeUtils.to_cell_string(value),
+			Utils.enum_to_snake_case(Reason, reason), cells_str]
