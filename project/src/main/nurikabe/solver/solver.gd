@@ -490,7 +490,7 @@ func deduce_unclued_lifeline() -> void:
 		
 		var clue_root: Vector2i = exclusive_clues_by_unclued[unclued_root]
 		var clue: Array[Vector2i] = board.get_island_for_cell(clue_root)
-		var clue_value: int = board.get_clue_for_island(clue)
+		var clue_value: int = board.get_clue_for_island_cell(clue_root)
 		
 		# calculate the minimum distance to the clued and unclued cells
 		var unclued_distance_map: Dictionary[Vector2i, int] \
@@ -532,7 +532,7 @@ func deduce_island_of_one(clue_cell: Vector2i) -> void:
 
 func deduce_clued_island(island_cell: Vector2i) -> void:
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
-	var clue_value: int = board.get_clue_for_island(island)
+	var clue_value: int = board.get_clue_for_island_cell(island_cell)
 	if clue_value < 1:
 		# unclued/invalid group
 		return
@@ -619,7 +619,7 @@ func deduce_corner_buffer(island_cell: Vector2i) -> void:
 
 func deduce_unclued_island(island_cell: Vector2i) -> void:
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
-	var clue_value: int = board.get_clue_for_island(island)
+	var clue_value: int = board.get_clue_for_island_cell(island_cell)
 	if clue_value != 0:
 		# clued/invalid group
 		return
@@ -965,7 +965,7 @@ func get_merged_island_info(island_cells: Array[Vector2i]) -> Dictionary[String,
 		if island.is_empty() or visited_island_roots.has(island.front()):
 			continue
 		result["neighbor_island_cells"].append(island_cell)
-		var neighbor_clue_value: int = board.get_clue_for_island(island)
+		var neighbor_clue_value: int = board.get_clue_for_island_cell(island_cell)
 		result["total_joined_size"] += island.size()
 		if neighbor_clue_value >= 1:
 			result["clue_value"] = max(result["clue_value"], neighbor_clue_value)
@@ -1055,9 +1055,10 @@ func _react_to_changes(changes: Array[Dictionary]) -> void:
 		var island: Array[Vector2i] = board.get_island_for_cell(island_root)
 		if board.get_liberties(island).is_empty():
 			continue
-		if board.get_clue_for_island(island) >= 1:
+		var clue_value: int = board.get_clue_for_island_cell(island_root)
+		if clue_value >= 1:
 			schedule_task(deduce_clued_island.bind(island_root), 350)
-		if board.get_clue_for_island(island) == 0:
+		elif clue_value == 0:
 			schedule_task(deduce_unclued_island.bind(island_root), 350)
 
 
