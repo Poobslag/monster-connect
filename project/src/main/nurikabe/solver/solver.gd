@@ -1008,7 +1008,7 @@ func enqueue_island_release() -> void:
 				assumptions[other_liberty] = CELL_ISLAND
 			
 			_add_bifurcation_scenario(
-				"island_release", [island.front()],
+				"island_release", [island.front(), liberty],
 				assumptions,
 				[Deduction.new(liberty, CELL_ISLAND, ISLAND_RELEASE, [island.front()])]
 			)
@@ -1041,7 +1041,7 @@ func enqueue_island_strangle() -> void:
 				assumptions[other_liberty] = CELL_WALL
 			
 			_add_bifurcation_scenario(
-				"island_strangle", [island.front()],
+				"island_strangle", [island.front(), liberty],
 				assumptions,
 				[Deduction.new(liberty, CELL_WALL, ISLAND_STRANGLE, [island.front()])]
 			)
@@ -1060,14 +1060,14 @@ func enqueue_wall_strangle() -> void:
 		var liberties: Array[Vector2i] = board.get_liberties(wall)
 		if liberties.size() == 2:
 			_add_bifurcation_scenario(
-				"wall_strangle", [wall.front(), liberties[0], liberties[1]],
+				"wall_strangle", [wall.front(), liberties[0]],
 				{liberties[0]: CELL_ISLAND, liberties[1]: CELL_WALL},
-				[Deduction.new(liberties[0], CELL_WALL, WALL_STRANGLE, [wall.front(), liberties[0], liberties[1]])]
+				[Deduction.new(liberties[0], CELL_WALL, WALL_STRANGLE, [wall.front()])]
 			)
 			_add_bifurcation_scenario(
-				"wall_strangle", [wall.front(), liberties[1], liberties[0]],
+				"wall_strangle", [wall.front(), liberties[1]],
 				{liberties[1]: CELL_ISLAND, liberties[0]: CELL_WALL},
-				[Deduction.new(liberties[1], CELL_WALL, WALL_STRANGLE, [wall.front(), liberties[1], liberties[0]])]
+				[Deduction.new(liberties[1], CELL_WALL, WALL_STRANGLE, [wall.front()])]
 			)
 	
 	if not has_scheduled_task(run_bifurcation_step):
@@ -1146,7 +1146,8 @@ func run_bifurcation_step() -> void:
 		_bifurcation_engine.step(key)
 		_log.pause(key)
 	if _bifurcation_engine.has_new_contradictions():
-		for key: String in _bifurcation_engine.get_scenario_keys():
+		var scenario_keys: Array[String] = _bifurcation_engine.get_scenario_keys()
+		for key: String in scenario_keys:
 			if not _bifurcation_engine.scenario_has_new_contradictions(key):
 				_log.end(key)
 				continue
