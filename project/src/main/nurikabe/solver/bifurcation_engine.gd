@@ -6,20 +6,23 @@ func clear() -> void:
 	_scenarios_by_key.clear()
 
 
-func add_scenario(board: SolverBoard,
+func get_scenario_keys() -> Array[String]:
+	return _scenarios_by_key.keys()
+
+
+func add_scenario(board: SolverBoard, key: String, cells: Array[Vector2i],
 		assumptions: Dictionary[Vector2i, int],
 		deductions: Array[Deduction]) -> void:
-	var key: String = "%s -> %s" % [assumptions, deductions]
-	if not _scenarios_by_key.has(key):
-		_scenarios_by_key[key] = BifurcationScenario.new(board, assumptions, deductions)
+	var combo_key: String = _combo_key(key, cells)
+	if not _scenarios_by_key.has(combo_key):
+		_scenarios_by_key[combo_key] = BifurcationScenario.new(board, assumptions, deductions)
 
 
-func step() -> void:
-	for scenario_key: String in _scenarios_by_key:
-		var scenario: BifurcationScenario = _scenarios_by_key[scenario_key]
-		scenario.step()
-		if scenario.is_queue_empty() and not _scenarios_by_key[scenario_key].has_new_contradictions():
-			_scenarios_by_key.erase(scenario_key)
+func step(scenario_key: String) -> void:
+	var scenario: BifurcationScenario = _scenarios_by_key[scenario_key]
+	scenario.step()
+	if scenario.is_queue_empty() and not _scenarios_by_key[scenario_key].has_new_contradictions():
+		_scenarios_by_key.erase(scenario_key)
 
 
 func is_queue_empty() -> bool:
@@ -31,15 +34,18 @@ func get_scenario_count() -> int:
 	return _scenarios_by_key.size()
 
 
-func has_contradictions() -> bool:
+func has_new_contradictions() -> bool:
 	return _scenarios_by_key.values().any(func(scenario: BifurcationScenario) -> bool:
 		return scenario.has_new_contradictions())
 
 
-func get_confirmed_deductions() -> Array[Deduction]:
-	var result: Array[Deduction] = []
-	for scenario_key: String in _scenarios_by_key:
-		var scenario: BifurcationScenario = _scenarios_by_key[scenario_key]
-		if scenario.has_new_contradictions():
-			result.append_array(scenario.deductions)
-	return result
+func scenario_has_new_contradictions(key: String) -> bool:
+	return _scenarios_by_key[key].has_new_contradictions()
+
+
+func get_scenario_deductions(key: String) -> Array[Deduction]:
+	return _scenarios_by_key[key].deductions
+
+
+func _combo_key(key: String, cells: Array[Vector2i] = []) -> String:
+	return key if cells.is_empty() else key + " ".join(cells)
