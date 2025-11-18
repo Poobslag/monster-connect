@@ -16,6 +16,12 @@ extends Node
 		puzzle_path = value
 		_refresh_puzzle_path()
 
+@export var log_enabled: bool = false:
+	set(value):
+		log_enabled = value
+		solver.log_enabled = log_enabled
+
+
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
