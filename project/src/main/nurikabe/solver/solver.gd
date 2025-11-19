@@ -727,16 +727,11 @@ func deduce_corner_buffer(island_cell: Vector2i) -> void:
 		var merged_island_cells: Array[Vector2i] = []
 		merged_island_cells.append_array(board.get_neighbors(diagonal))
 		merged_island_cells.append(island_cell)
-		var merged_island_info: Dictionary[String, Variant] = get_merged_island_info(merged_island_cells)
-		var invalid_merge: bool = false
-		if merged_island_info["total_clues"] == 2:
-			invalid_merge = true
-		if merged_island_info["total_clues"] == 1 \
-				and merged_island_info["total_joined_size"] + 2 > merged_island_info["clue_value"]:
-			invalid_merge = true
-		if invalid_merge:
+		if not is_valid_merged_island(merged_island_cells, 2):
+			var unique_neighbor_island_cells: Array[Vector2i] \
+					= get_unique_neighbor_island_cells(merged_island_cells)
 			add_deduction(diagonal, CELL_WALL, CORNER_BUFFER,
-					merged_island_info["neighbor_island_cells"])
+					unique_neighbor_island_cells)
 	
 	_log.end("corner_buffer", [island_cell])
 
@@ -773,15 +768,14 @@ func deduce_island_divider(island_cell: Vector2i) -> void:
 	_log.start("island_divider", [island_cell])
 	
 	var liberties: Array[Vector2i] = board.get_liberties(board.get_island_for_cell(island_cell))
-	var clue_value: int = board.get_clue_for_island_cell(island_cell)
 	for liberty: Vector2i in liberties:
 		if not _should_deduce(board, liberty):
 			continue
 		
-		var merged_island_info: Dictionary[String, Variant] = get_merged_island_info(board.get_neighbors(liberty))
-		if merged_island_info["total_clues"] > 1 or merged_island_info["total_joined_size"] + 1 > clue_value:
-			add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER,
-					merged_island_info["neighbor_island_cells"])
+		if not is_valid_merged_island(board.get_neighbors(liberty), 1):
+			var unique_neighbor_island_cells: Array[Vector2i] \
+					= get_unique_neighbor_island_cells(board.get_neighbors(liberty))
+			add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER, unique_neighbor_island_cells)
 	
 	_log.end("island_divider", [island_cell])
 
@@ -1105,27 +1099,44 @@ func enqueue_unreachable_squares() -> void:
 			schedule_task(deduce_unreachable_square.bind(cell), 235)
 
 
-func get_merged_island_info(island_cells: Array[Vector2i]) -> Dictionary[String, Variant]:
+func get_unique_neighbor_island_cells(island_cells: Array[Vector2i]) -> Array[Vector2i]:
+	var neighbor_islands_by_root: Dictionary[Vector2i, Vector2i] = {}
+	for island_cell: Vector2i in island_cells:
+		var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
+		if not island.is_empty():
+			neighbor_islands_by_root[island.front()] = island_cell
+	var result: Array[Vector2i] = neighbor_islands_by_root.values()
+	result.sort()
+	return result
+
+
+func is_valid_merged_island(island_cells: Array[Vector2i], merge_cells: int) -> bool:
 	var visited_island_roots: Dictionary[Vector2i, bool] = {}
-	var result: Dictionary[String, Variant] = {
-		"total_joined_size": 0,
-		"total_clues": 0,
-		"clue_value": 0,
-		"neighbor_island_cells": [] as Array[Vector2i],
-	}
+	var total_joined_size: int = merge_cells
+	var total_clues: int = 0
+	var clue_value: int = 0
+	
+	var result: bool = true
 	
 	for island_cell: Vector2i in island_cells:
 		var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
 		if island.is_empty() or visited_island_roots.has(island.front()):
 			continue
-		result["neighbor_island_cells"].append(island_cell)
 		var neighbor_clue_value: int = board.get_clue_for_island_cell(island_cell)
-		result["total_joined_size"] += island.size()
+		total_joined_size += island.size()
 		if neighbor_clue_value >= 1:
-			result["clue_value"] = max(result["clue_value"], neighbor_clue_value)
-			result["total_clues"] += 1
+			if clue_value > 0:
+				result = false
+				break
+			clue_value = neighbor_clue_value
+			total_clues += 1
+			if total_clues >= 2:
+				result = false
+				break
+		if clue_value > 0 and total_joined_size > clue_value:
+			result = false
+			break
 		visited_island_roots[island.front()] = true
-	result["neighbor_island_cells"].sort()
 	
 	return result
 
@@ -1263,7 +1274,7 @@ class BorderScenario:
 		var new_board: SolverBoard = _board.duplicate()
 		for change_cell: Vector2i in _squeeze_fill.changes:
 			new_board.set_cell(change_cell, _squeeze_fill.changes[change_cell])
-		var init_validation_result: SolverBoard.ValidationResult = _board.validate()
-		var validation_result: SolverBoard.ValidationResult = new_board.validate()
+		var init_validation_result: SolverBoard.ValidationResult = _board.validate_simple()
+		var validation_result: SolverBoard.ValidationResult = new_board.validate_simple()
 		
 		return validation_result.error_count > init_validation_result.error_count
