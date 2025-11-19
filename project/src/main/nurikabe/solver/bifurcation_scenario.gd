@@ -17,12 +17,12 @@ func _init(init_board: SolverBoard,
 
 
 func _build() -> void:
-	_initial_validation_result = board.validate()
+	_initial_validation_result = board.validate_simple()
 	solver.board = board.duplicate()
 	for assumption_cell in assumptions:
 		solver.add_deduction(assumption_cell, assumptions[assumption_cell], Deduction.Reason.ASSUMPTION)
 	solver.apply_changes()
-	_last_validation_result = solver.board.validate()
+	_last_validation_result = solver.board.validate_simple()
 
 
 func is_queue_empty() -> bool:
@@ -38,5 +38,5 @@ func step() -> void:
 
 
 func has_new_contradictions() -> bool:
-	_last_validation_result = solver.board.validate()
+	_last_validation_result = solver.board.validate_simple()
 	return _last_validation_result.error_count > _initial_validation_result.error_count
