@@ -668,6 +668,8 @@ func deduce_clued_island_forced_expansion(island_cell: Vector2i) -> void:
 	if squeeze_fill.changes.size() == clue_value - island.size():
 		for new_island_cell: Vector2i in squeeze_fill.changes:
 			for new_island_neighbor: Vector2i in board.get_neighbors(new_island_cell):
+				if new_island_neighbor in squeeze_fill.changes:
+					continue
 				if _should_deduce(board, new_island_neighbor):
 					add_deduction(new_island_neighbor, CELL_WALL, ISLAND_MOAT, [island[0]])
 	
