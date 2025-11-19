@@ -297,21 +297,21 @@ func deduce_border_wall(border_wall_cell: Vector2i) -> void:
 func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 	var old_deductions_size: int = deductions.size()
 	
-	if deductions.size() == old_deductions_size or perform_redundant_deductions:
+	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
+			and _should_deduce(board, chokepoint):
 		deduce_island_chokepoint_cramped(chokepoint)
 	
-	if deductions.size() == old_deductions_size or perform_redundant_deductions:
+	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
+			and _should_deduce(board, chokepoint):
 		deduce_island_chokepoint_tiny_pool(chokepoint)
 	
-	if deductions.size() == old_deductions_size or perform_redundant_deductions:
+	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
+			and _should_deduce(board, chokepoint):
 		deduce_island_chokepoint_pool(chokepoint)
 
 
 ## Deduces when a chokepoint prevents an island from reaching its required size.
 func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
-	if not _should_deduce(board, chokepoint):
-		return
-	
 	_log.start("island_chokepoint_cramped", [chokepoint])
 	
 	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint)
@@ -336,9 +336,6 @@ func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 
 ## Deduces when a chokepoint forces a 2x2 pool in a simple 2-cell case.
 func deduce_island_chokepoint_tiny_pool(chokepoint: Vector2i) -> void:
-	if not _should_deduce(board, chokepoint):
-		return
-	
 	_log.start("island_chokepoint_tiny_pool", [chokepoint])
 	
 	# Check for two empty cells leading into a dead end, which create a pool.
@@ -353,9 +350,6 @@ func deduce_island_chokepoint_tiny_pool(chokepoint: Vector2i) -> void:
 
 ## Deduces when a chokepoint forces a 2x2 pool in a complex multi-cell case.
 func deduce_island_chokepoint_pool(chokepoint: Vector2i) -> void:
-	if not _should_deduce(board, chokepoint):
-		return
-	
 	_log.start("island_chokepoint_pool", [chokepoint])
 	
 	var split_neighbor_set: Dictionary[Vector2i, bool] = {}
@@ -813,8 +807,17 @@ func deduce_unreachable_square(cell: Vector2i) -> void:
 
 
 func deduce_wall(wall_cell: Vector2i) -> void:
-	deduce_wall_expansion(wall_cell)
-	deduce_pool(wall_cell)
+	var old_deductions_size: int = deductions.size()
+	var wall: Array[Vector2i] = board.get_wall_for_cell(wall_cell)
+	var liberties: Array[Vector2i] = board.get_liberties(wall)
+	
+	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
+			and board.get_walls().size() >= 2 and liberties.size() == 1:
+		deduce_wall_expansion(wall_cell)
+	
+	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
+			and wall.size() >= 3 and liberties.size() >= 1:
+		deduce_pool(wall_cell)
 
 
 func deduce_wall_chokepoint(chokepoint: Vector2i) -> void:
@@ -844,18 +847,13 @@ func deduce_wall_expansion(wall_cell: Vector2i) -> void:
 	_log.start("wall_expansion", [wall_cell])
 	
 	var wall: Array[Vector2i] = board.get_wall_for_cell(wall_cell)
-	var liberties: Array[Vector2i] = board.get_liberties(wall)
-	if board.get_walls().size() <= 1:
-		_log.end("wall_expansion", [wall_cell])
-		return
-	
-	if liberties.size() == 1:
-		var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
-		squeeze_fill.skip_cells(wall)
-		squeeze_fill.push_change(liberties[0], CELL_WALL)
-		squeeze_fill.fill()
-		for change: Vector2i in squeeze_fill.changes:
-			add_deduction(change, CELL_WALL, WALL_EXPANSION, [wall_cell])
+	var liberties: Array[Vector2i] = board.get_liberties(board.get_wall_for_cell(wall_cell))
+	var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
+	squeeze_fill.skip_cells(wall)
+	squeeze_fill.push_change(liberties[0], CELL_WALL)
+	squeeze_fill.fill()
+	for change: Vector2i in squeeze_fill.changes:
+		add_deduction(change, CELL_WALL, WALL_EXPANSION, [wall_cell])
 	
 	_log.end("wall_expansion", [wall_cell])
 
@@ -864,14 +862,7 @@ func deduce_pool(wall_cell: Vector2i) -> void:
 	_log.start("pool", [wall_cell])
 	
 	var wall: Array[Vector2i] = board.get_wall_for_cell(wall_cell)
-	var liberties: Array[Vector2i] = board.get_liberties(wall)
-	if liberties.is_empty():
-		_log.end("pool", [wall_cell])
-		return
-	if wall.size() < 3:
-		_log.end("pool", [wall_cell])
-		return
-	
+	var liberties: Array[Vector2i] = board.get_liberties(board.get_wall_for_cell(wall_cell))
 	var wall_cell_set: Dictionary[Vector2i, bool] = {}
 	for next_wall_cell in wall:
 		wall_cell_set[next_wall_cell] = true
@@ -1108,9 +1099,8 @@ func enqueue_unreachable_squares() -> void:
 		if not _should_deduce(board, cell):
 			continue
 		if board.get_global_reachability_map().get_clue_reachability(cell) \
-				== GlobalReachabilityMap.ClueReachability.REACHABLE:
-			continue
-		schedule_task(deduce_unreachable_square.bind(cell), 235)
+				!= GlobalReachabilityMap.ClueReachability.REACHABLE:
+			schedule_task(deduce_unreachable_square.bind(cell), 235)
 
 
 func get_merged_island_info(island_cells: Array[Vector2i]) -> Dictionary[String, Variant]:
