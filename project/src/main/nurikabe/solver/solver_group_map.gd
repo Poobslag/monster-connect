@@ -36,3 +36,7 @@ func _build_group_map() -> void:
 		if _cell_filter.call(_board.get_cell(cell)):
 			cells.append(cell)
 	_group_map = GroupMap.new(cells)
+
+
+func erase_group(group: Array[Vector2i]) -> void:
+	_group_map.erase_group(group)
