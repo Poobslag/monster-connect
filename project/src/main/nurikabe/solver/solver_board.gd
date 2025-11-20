@@ -1,6 +1,16 @@
 class_name SolverBoard
 
+enum ValidationMode {
+	COMPLEX,
+	SIMPLE,
+	STRICT,
+}
+
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
+
+const VALIDATE_COMPLEX: ValidationMode = ValidationMode.COMPLEX
+const VALIDATE_SIMPLE: ValidationMode = ValidationMode.SIMPLE
+const VALIDATE_STRICT: ValidationMode = ValidationMode.STRICT
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
@@ -223,16 +233,16 @@ func surround_island(cell: Vector2i) -> Array[Dictionary]:
 	return changes
 
 
-func validate() -> ValidationResult:
-	return _get_cached(
-		"validation_result",
-		_build_validation_result)
-
-
-func validate_strict() -> ValidationResult:
-	return _get_cached(
-		"strict_validation_result",
-		_build_strict_validation_result)
+func validate(mode: ValidationMode) -> ValidationResult:
+	var result: ValidationResult
+	match mode:
+		VALIDATE_COMPLEX:
+			result = _get_cached("complex_validation_result", _build_validation_result.bind(mode))
+		VALIDATE_SIMPLE:
+			result = _get_cached("simple_validation_result", _build_validation_result.bind(mode))
+		VALIDATE_STRICT:
+			result = _get_cached("strict_validation_result", _build_strict_validation_result)
+	return result
 
 
 func _build_flooded_board() -> SolverBoard:
@@ -302,10 +312,10 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 
 
 func _build_strict_validation_result() -> ValidationResult:
-	return get_flooded_board().validate()
+	return get_flooded_board().validate(VALIDATE_SIMPLE)
 
 
-func _build_validation_result() -> ValidationResult:
+func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
 	
 	# joined islands
@@ -369,13 +379,24 @@ func _build_validation_result() -> ValidationResult:
 			result.wrong_size.append_array(island)
 			continue
 		
-		var group_map: SolverGroupMap = get_flooded_island_group_map()
-		var flooded_island_group: Array[Vector2i] \
-				= group_map.groups_by_cell.get(island_cell, [] as Array[Vector2i])
-		if clue_value > flooded_island_group.size():
-			# island is too small and can't grow
-			result.wrong_size.append_array(island)
-			continue
+		match mode:
+			VALIDATE_COMPLEX:
+				var chokepoint_map: ChokepointMap = get_per_clue_chokepoint_map().get_chokepoint_map(island_cell)
+				var island_max_size: int = chokepoint_map.get_component_cells(island_cell).size()
+				if clue_value > island_max_size:
+					# island is too small and can't grow
+					result.wrong_size.append_array(island)
+					continue
+			VALIDATE_SIMPLE:
+				var group_map: SolverGroupMap = get_flooded_island_group_map()
+				var flooded_island_group: Array[Vector2i] \
+						= group_map.groups_by_cell.get(island_cell, [] as Array[Vector2i])
+				if clue_value > flooded_island_group.size():
+					# island is too small and can't grow
+					result.wrong_size.append_array(island)
+					continue
+			_:
+				push_error("Unexpected validation mode: %s" % [mode])
 	
 	return result
 

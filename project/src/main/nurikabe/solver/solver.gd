@@ -140,6 +140,13 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 	elif get_last_run(enqueue_wall_chokepoints) < board.get_filled_cell_count():
 		schedule_task(enqueue_wall_chokepoints, 35)
 	
+	if has_scheduled_task(enqueue_border_walls_simple):
+		pass
+	elif get_last_run(enqueue_border_walls_simple) == -1:
+		schedule_task(enqueue_border_walls_simple, 135)
+	elif get_last_run(enqueue_border_walls_simple) < board.get_filled_cell_count():
+		schedule_task(enqueue_border_walls_simple, 35)
+	
 	if has_scheduled_task(enqueue_island_chokepoints):
 		pass
 	elif get_last_run(enqueue_island_chokepoints) == -1:
@@ -173,6 +180,14 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 		if not metrics.has("bifurcation_stops"):
 			metrics["bifurcation_stops"] = 0
 		metrics["bifurcation_stops"] += 1
+	
+	if is_queue_empty():
+		if has_scheduled_task(enqueue_border_walls_complex):
+			pass
+		elif get_last_run(enqueue_border_walls_complex) == -1:
+			schedule_task(enqueue_border_walls_complex, 125)
+		elif get_last_run(enqueue_border_walls_complex) < board.get_filled_cell_count():
+			schedule_task(enqueue_border_walls_complex, 25)
 
 
 func get_last_run(callable: Callable) -> int:
@@ -271,12 +286,14 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 ## [br]
 ## This deduction executes a very simple bifurcation which creates a wall/island pair, repeatedly extending them, then
 ## checking for a contradiction.
-func deduce_border_wall(border_wall_cell: Vector2i) -> void:
-	_log.start("border_wall", [border_wall_cell])
+func deduce_border_wall(border_wall_cell: Vector2i,
+		mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> void:
+	var key: String = "border_wall_simple" if mode == SolverBoard.VALIDATE_SIMPLE else "border_wall_complex"
+	_log.start(key, [border_wall_cell])
 	
 	var liberties: Array[Vector2i] = board.get_liberties(board.get_wall_for_cell(border_wall_cell))
 	if liberties.size() != 2:
-		_log.end("border_wall", [border_wall_cell])
+		_log.end(key, [border_wall_cell])
 		return
 	
 	var border_scenarios: Array[BorderScenario] = []
@@ -287,11 +304,11 @@ func deduce_border_wall(border_wall_cell: Vector2i) -> void:
 	
 	for border_scenario: BorderScenario in border_scenarios:
 		border_scenario.fill()
-		if border_scenario.has_new_contradictions():
+		if border_scenario.has_new_contradictions(mode):
 			for deduction: Deduction in border_scenario.deductions:
 				add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
 	
-	_log.end("border_wall", [border_wall_cell])
+	_log.end(key, [border_wall_cell])
 
 
 func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
@@ -907,13 +924,23 @@ func enqueue_wall_chokepoints() -> void:
 		if not _should_deduce(board, chokepoint):
 			continue
 		schedule_task(deduce_wall_chokepoint.bind(chokepoint), 235)
-	
+
+
+func enqueue_border_walls_simple() -> void:
+	enqueue_border_walls(SolverBoard.VALIDATE_SIMPLE)
+
+
+func enqueue_border_walls_complex() -> void:
+	enqueue_border_walls(SolverBoard.VALIDATE_COMPLEX)
+
+
+func enqueue_border_walls(mode: SolverBoard.ValidationMode) -> void:
 	for wall: Array[Vector2i] in board.get_walls():
 		var liberties: Array[Vector2i] = board.get_liberties(wall)
 		if liberties.size() != 2:
 			continue
 		if liberties.any(is_border_cell) and wall.any(is_border_cell):
-			schedule_task(deduce_border_wall.bind(wall.front()), 235)
+			schedule_task(deduce_border_wall.bind(wall.front(), mode), 235)
 
 
 func is_border_cell(cell: Vector2i) -> bool:
@@ -1149,19 +1176,15 @@ func run_bifurcation_step() -> void:
 		_bifurcation_engine.step(key)
 		_log.pause(key)
 	if _bifurcation_engine.has_new_contradictions():
-		var scenario_keys: Array[String] = _bifurcation_engine.get_scenario_keys()
-		for key: String in scenario_keys:
-			if not _bifurcation_engine.scenario_has_new_contradictions(key):
-				_log.end(key)
-				continue
-			for deduction: Deduction in _bifurcation_engine.get_scenario_deductions(key):
-				if not _should_deduce(board, deduction.pos):
-					continue
-				add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
-			_log.end(key)
-		_bifurcation_engine.clear()
+		# found a contradiction; we can make a deduction
+		_add_bifurcation_deductions()
 	elif not _bifurcation_engine.is_queue_empty():
+		# there's still more to do
 		schedule_task(run_bifurcation_step, 10)
+	else:
+		# we're stuck; check if any of the scenarios cause a complex contradiction which we overlooked
+		if _bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_COMPLEX):
+			_add_bifurcation_deductions(SolverBoard.VALIDATE_COMPLEX)
 	
 	if _bifurcation_engine.is_queue_empty() and metrics.has("bifurcation_start_time"):
 		var bifurcation_duration: int = (Time.get_ticks_usec() - metrics["bifurcation_start_time"])
@@ -1170,6 +1193,22 @@ func run_bifurcation_step() -> void:
 		if not metrics.has("bifurcation_duration"):
 			metrics["bifurcation_duration"] = 0.0
 		metrics["bifurcation_duration"] += bifurcation_duration / 1000.0
+
+
+func _add_bifurcation_deductions(mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> void:
+	# found a contradiction; we can make a deduction
+	var scenario_keys: Array[String] = _bifurcation_engine.get_scenario_keys()
+	for key: String in scenario_keys:
+		_log.start(key)
+		if not _bifurcation_engine.scenario_has_new_contradictions(key, mode):
+			_log.end(key)
+			continue
+		for deduction: Deduction in _bifurcation_engine.get_scenario_deductions(key):
+			if not _should_deduce(board, deduction.pos):
+				continue
+			add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
+		_log.end(key)
+	_bifurcation_engine.clear()
 
 
 func _add_bifurcation_scenario(key: String, cells: Array[Vector2i],
@@ -1270,11 +1309,11 @@ class BorderScenario:
 		_squeeze_fill.fill()
 	
 	
-	func has_new_contradictions() -> bool:
+	func has_new_contradictions(mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> bool:
 		var new_board: SolverBoard = _board.duplicate()
 		for change_cell: Vector2i in _squeeze_fill.changes:
 			new_board.set_cell(change_cell, _squeeze_fill.changes[change_cell])
-		var init_validation_result: SolverBoard.ValidationResult = _board.validate()
-		var validation_result: SolverBoard.ValidationResult = new_board.validate()
+		var init_validation_result: SolverBoard.ValidationResult = _board.validate(mode)
+		var validation_result: SolverBoard.ValidationResult = new_board.validate(mode)
 		
 		return validation_result.error_count > init_validation_result.error_count
