@@ -4,8 +4,6 @@ var solver: Solver = Solver.new()
 var board: SolverBoard
 var assumptions: Dictionary[Vector2i, int]
 var deductions: Array[Deduction]
-var _last_validation_result: SolverBoard.ValidationResult
-var _initial_validation_result: SolverBoard.ValidationResult
 
 func _init(init_board: SolverBoard,
 		init_assumptions: Dictionary[Vector2i, int],
@@ -17,12 +15,10 @@ func _init(init_board: SolverBoard,
 
 
 func _build() -> void:
-	_initial_validation_result = board.validate()
 	solver.board = board.duplicate()
 	for assumption_cell in assumptions:
 		solver.add_deduction(assumption_cell, assumptions[assumption_cell], Deduction.Reason.ASSUMPTION)
 	solver.apply_changes()
-	_last_validation_result = solver.board.validate()
 
 
 func is_queue_empty() -> bool:
@@ -30,13 +26,16 @@ func is_queue_empty() -> bool:
 
 
 func step() -> void:
-	if _last_validation_result.error_count > _initial_validation_result.error_count or solver.is_queue_empty():
+	var initial_validation_result: SolverBoard.ValidationResult = board.validate(SolverBoard.VALIDATE_SIMPLE)
+	var last_validation_result: SolverBoard.ValidationResult  = solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
+	if last_validation_result.error_count > initial_validation_result.error_count or solver.is_queue_empty():
 		return
 	
 	solver.step()
 	solver.apply_changes()
 
 
-func has_new_contradictions() -> bool:
-	_last_validation_result = solver.board.validate()
-	return _last_validation_result.error_count > _initial_validation_result.error_count
+func has_new_contradictions(mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> bool:
+	var initial_validation_result: SolverBoard.ValidationResult = board.validate(mode)
+	var last_validation_result: SolverBoard.ValidationResult  = solver.board.validate(mode)
+	return last_validation_result.error_count > initial_validation_result.error_count

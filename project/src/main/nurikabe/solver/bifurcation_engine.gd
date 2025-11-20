@@ -21,8 +21,6 @@ func add_scenario(board: SolverBoard, key: String, cells: Array[Vector2i],
 func step(scenario_key: String) -> void:
 	var scenario: BifurcationScenario = _scenarios_by_key[scenario_key]
 	scenario.step()
-	if scenario.is_queue_empty() and not _scenarios_by_key[scenario_key].has_new_contradictions():
-		_scenarios_by_key.erase(scenario_key)
 
 
 func is_queue_empty() -> bool:
@@ -34,13 +32,14 @@ func get_scenario_count() -> int:
 	return _scenarios_by_key.size()
 
 
-func has_new_contradictions() -> bool:
+func has_new_contradictions(mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> bool:
 	return _scenarios_by_key.values().any(func(scenario: BifurcationScenario) -> bool:
-		return scenario.has_new_contradictions())
+		return scenario.has_new_contradictions(mode))
 
 
-func scenario_has_new_contradictions(key: String) -> bool:
-	return _scenarios_by_key[key].has_new_contradictions()
+func scenario_has_new_contradictions(key: String,
+		mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> bool:
+	return _scenarios_by_key[key].has_new_contradictions(mode)
 
 
 func get_scenario_deductions(key: String) -> Array[Deduction]:

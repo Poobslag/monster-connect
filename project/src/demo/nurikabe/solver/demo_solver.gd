@@ -237,7 +237,7 @@ func _on_performance_suite_timer_timeout() -> void:
 	copy_board_from_solver()
 	var duration: int = Time.get_ticks_usec() - start_time
 	var filled: bool = solver.board.is_filled()
-	var validation_errors: SolverBoard.ValidationResult = solver.board.validate()
+	var validation_errors: SolverBoard.ValidationResult = solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
 	var puzzle_name: String = StringUtils.substring_after_last(next_path, "/").trim_suffix(".txt")
 	var result: String = "err" if validation_errors.error_count > 0 else "dnf" if not filled else "ok"
 	_show_message("| %s | %s %s | %s | %s |" % [

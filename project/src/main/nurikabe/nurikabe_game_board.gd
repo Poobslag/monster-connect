@@ -310,10 +310,10 @@ func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: 
 
 func _on_validate_timer_timeout() -> void:
 	var model: SolverBoard = to_solver_board()
-	var validation_result: SolverBoard.ValidationResult = model.validate()
-	var strict_validation_result: SolverBoard.ValidationResult = model.validate_strict()
+	var result_simple: SolverBoard.ValidationResult = model.validate(SolverBoard.VALIDATE_SIMPLE)
+	var result_strict: SolverBoard.ValidationResult = model.validate(SolverBoard.VALIDATE_STRICT)
 	
-	if strict_validation_result.error_count == 0:
+	if result_strict.error_count == 0:
 		puzzle_finished.emit()
 	
 	# update lowlight cells if the player isn't finished
@@ -321,24 +321,24 @@ func _on_validate_timer_timeout() -> void:
 	for cell: Vector2i in model.cells:
 		if NurikabeUtils.is_clue(model.get_cell(cell)) or model.get_cell(cell) in [CELL_EMPTY, CELL_ISLAND]:
 			new_lowlight_cells[cell] = true
-	for joined_island_cell: Vector2i in strict_validation_result.joined_islands:
+	for joined_island_cell: Vector2i in result_strict.joined_islands:
 		new_lowlight_cells.erase(joined_island_cell)
-	for wrong_size_cell: Vector2i in strict_validation_result.wrong_size:
+	for wrong_size_cell: Vector2i in result_strict.wrong_size:
 		new_lowlight_cells.erase(wrong_size_cell)
 	lowlight_cells = new_lowlight_cells
 	
 	# update error cells if the player made a mistake
 	var old_error_cells: Dictionary[Vector2i, bool] = error_cells
 	var new_error_cells: Dictionary[Vector2i, bool] = {}
-	for pool_cell: Vector2i in validation_result.pools:
+	for pool_cell: Vector2i in result_simple.pools:
 		new_error_cells[pool_cell] = true
-	for joined_island_cell: Vector2i in validation_result.joined_islands:
+	for joined_island_cell: Vector2i in result_simple.joined_islands:
 		new_error_cells[joined_island_cell] = true
-	for unclued_island_cell: Vector2i in validation_result.unclued_islands:
+	for unclued_island_cell: Vector2i in result_simple.unclued_islands:
 		new_error_cells[unclued_island_cell] = true
-	for wrong_size_cell: Vector2i in validation_result.wrong_size:
+	for wrong_size_cell: Vector2i in result_simple.wrong_size:
 		new_error_cells[wrong_size_cell] = true
-	for split_wall_cell in validation_result.split_walls:
+	for split_wall_cell in result_simple.split_walls:
 		new_error_cells[split_wall_cell] = true
 	error_cells = new_error_cells
 	
