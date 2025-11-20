@@ -28,7 +28,6 @@ const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const PUZZLE_PATHS: Array[String] = [
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_061.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_062.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_063.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_064.txt",
@@ -38,6 +37,7 @@ const PUZZLE_PATHS: Array[String] = [
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_068.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_069.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_070.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_071.txt",
 ]
 
 var performance_data: Dictionary[String, Variant] = {}
