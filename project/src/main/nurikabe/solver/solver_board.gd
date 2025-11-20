@@ -222,16 +222,11 @@ func surround_island(cell: Vector2i) -> Array[Dictionary]:
 	
 	return changes
 
+
 func validate() -> ValidationResult:
 	return _get_cached(
 		"validation_result",
 		_build_validation_result)
-
-
-func validate_simple() -> ValidationResult:
-	return _get_cached(
-		"simple_validation_result",
-		_build_simple_validation_result)
 
 
 func validate_strict() -> ValidationResult:
@@ -306,15 +301,11 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 			return NurikabeUtils.is_clue(get_cell(cell)))
 
 
-func _build_simple_validation_result() -> ValidationResult:
-	return _build_validation_result(true)
-
-
 func _build_strict_validation_result() -> ValidationResult:
 	return get_flooded_board().validate()
 
 
-func _build_validation_result(simple_reach_checks: bool = false) -> ValidationResult:
+func _build_validation_result() -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
 	
 	# joined islands
@@ -378,21 +369,13 @@ func _build_validation_result(simple_reach_checks: bool = false) -> ValidationRe
 			result.wrong_size.append_array(island)
 			continue
 		
-		if simple_reach_checks:
-			var group_map: SolverGroupMap = get_flooded_island_group_map()
-			var flooded_island_group: Array[Vector2i] \
-					= group_map.groups_by_cell.get(island_cell, [] as Array[Vector2i])
-			if clue_value > flooded_island_group.size():
-				# island is too small and can't grow
-				result.wrong_size.append_array(island)
-				continue
-		else:
-			var chokepoint_map: ChokepointMap = get_per_clue_chokepoint_map().get_chokepoint_map(island_cell)
-			var island_max_size: int = chokepoint_map.get_component_cells(island_cell).size()
-			if clue_value > island_max_size:
-				# island is too small and can't grow
-				result.wrong_size.append_array(island)
-				continue
+		var group_map: SolverGroupMap = get_flooded_island_group_map()
+		var flooded_island_group: Array[Vector2i] \
+				= group_map.groups_by_cell.get(island_cell, [] as Array[Vector2i])
+		if clue_value > flooded_island_group.size():
+			# island is too small and can't grow
+			result.wrong_size.append_array(island)
+			continue
 	
 	return result
 

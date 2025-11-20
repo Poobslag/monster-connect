@@ -197,7 +197,7 @@ func test_wrong_size() -> void:
 		"######",
 	]
 	assert_valid_strict()
-	assert_valid_simple()
+	assert_valid()
 	
 	grid = [
 		"#### 4",
@@ -205,7 +205,7 @@ func test_wrong_size() -> void:
 		"######",
 	]
 	assert_invalid_strict({"wrong_size": [Vector2i(1, 1), Vector2i(2, 0), Vector2i(2, 1)]})
-	assert_invalid_simple({"wrong_size": [Vector2i(2, 0)]})
+	assert_invalid({"wrong_size": [Vector2i(2, 0)]})
 	
 	grid = [
 		" . . 4",
@@ -216,7 +216,7 @@ func test_wrong_size() -> void:
 			Vector2i(0, 0),
 			Vector2i(1, 0), Vector2i(1, 1),
 			Vector2i(2, 0), Vector2i(2, 1)]})
-	assert_invalid_simple({"wrong_size": [
+	assert_invalid({"wrong_size": [
 			Vector2i(0, 0),
 			Vector2i(1, 0), Vector2i(1, 1),
 			Vector2i(2, 0), Vector2i(2, 1)]})
@@ -229,35 +229,22 @@ func test_wrong_size_neighbors() -> void:
 		" 1  ##",
 	]
 	assert_valid()
-	assert_valid_simple()
 	
+	# these clues can't grow to their full size, but our validator is too simple to catch that
 	grid = [
 		"##   5",
 		"      ",
 		" 1  ##",
 	]
-	assert_invalid({"wrong_size": [Vector2i(2, 0)]})
-	assert_valid_simple()
+	assert_valid()
 	
+	# these clues can't grow to their full size, but our validator is too simple to catch that
 	grid = [
 		"## . 5",
 		"   . .",
 		" 1  ##",
 	]
-	assert_invalid({
-			"wrong_size": [Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0), Vector2i(2, 1)],
-			"split_walls": [Vector2i(2, 2)]})
-	assert_invalid_simple({"split_walls": [Vector2i(2, 2)]})
-
-
-func test_asdf_bug_2() -> void:
-	grid = [
-		"##########",
-		" 3## . 4##",
-		" .   .####",
-		"       2  ",
-	]
-	assert_invalid({"wrong_size": [Vector2i(2, 1), Vector2i(2, 2), Vector2i(3, 1)]})
+	assert_invalid({"split_walls": [Vector2i(2, 2)]})
 
 
 func assert_valid() -> void:
@@ -266,14 +253,6 @@ func assert_valid() -> void:
 
 func assert_invalid(expected_result_dict: Dictionary) -> void:
 	_assert_validate("validate", expected_result_dict)
-
-
-func assert_valid_simple() -> void:
-	_assert_validate("validate_simple", {})
-
-
-func assert_invalid_simple(expected_result_dict: Dictionary) -> void:
-	_assert_validate("validate_simple", expected_result_dict)
 
 
 func assert_valid_strict() -> void:

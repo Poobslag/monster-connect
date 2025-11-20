@@ -1274,7 +1274,7 @@ class BorderScenario:
 		var new_board: SolverBoard = _board.duplicate()
 		for change_cell: Vector2i in _squeeze_fill.changes:
 			new_board.set_cell(change_cell, _squeeze_fill.changes[change_cell])
-		var init_validation_result: SolverBoard.ValidationResult = _board.validate_simple()
-		var validation_result: SolverBoard.ValidationResult = new_board.validate_simple()
+		var init_validation_result: SolverBoard.ValidationResult = _board.validate()
+		var validation_result: SolverBoard.ValidationResult = new_board.validate()
 		
 		return validation_result.error_count > init_validation_result.error_count
