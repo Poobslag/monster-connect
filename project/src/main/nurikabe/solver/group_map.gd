@@ -44,3 +44,11 @@ func _build() -> void:
 					unvisited.erase(neighbor)
 		
 		groups.append(group)
+
+
+func erase_group(group: Array[Vector2i]) -> void:
+	groups.erase(group)
+	for cell: Vector2i in group:
+		cells.erase(cell)
+		groups_by_cell.erase(cell)
+		roots_by_cell.erase(cell)

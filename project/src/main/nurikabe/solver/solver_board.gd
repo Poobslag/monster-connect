@@ -133,6 +133,12 @@ func get_flooded_island_group_map() -> SolverGroupMap:
 		_build_flooded_island_group_map)
 
 
+func get_flooded_wall_group_map() -> SolverGroupMap:
+	return _get_cached(
+		"flooded_wall_group_map",
+		_build_flooded_wall_group_map)
+
+
 func get_islands() -> Array[Array]:
 	return get_island_group_map().groups
 
@@ -302,6 +308,20 @@ func _build_flooded_island_group_map() -> SolverGroupMap:
 		return NurikabeUtils.is_clue(value) or value in [CELL_EMPTY, CELL_ISLAND])
 
 
+func _build_flooded_wall_group_map() -> SolverGroupMap:
+	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
+		return value in [CELL_EMPTY, CELL_WALL])
+	for group: Array[Vector2i] in group_map.groups:
+		var has_wall: bool = false
+		for cell: Vector2i in group:
+			if cells[cell] == CELL_WALL:
+				has_wall = true
+				break
+		if not has_wall:
+			group_map.erase_group(group)
+	return group_map
+
+
 func _build_island_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
@@ -344,23 +364,16 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 			result.pools.append(pool_cell)
 	
 	# split walls
-	var wall_chokepoint_map: SolverChokepointMap = get_wall_chokepoint_map()
-	if wall_chokepoint_map.get_subtree_roots().size() > 1:
-		var components: Array[Dictionary] = []
-		for subtree_root: Vector2i in wall_chokepoint_map.get_subtree_roots():
-			var special_count: int = wall_chokepoint_map.get_component_special_count(subtree_root)
-			components.append({"root": subtree_root, "special_count": special_count} as Dictionary[String, Variant])
-		components.sort_custom(func(a: Dictionary[String, Variant], b: Dictionary[String, Variant]) -> bool:
-			return a["special_count"] > b["special_count"])
-		var split_root_set: Dictionary[Vector2i, bool] = {}
-		for component_index in range(1, components.size()):
-			var component: Dictionary[String, Variant] = components[component_index]
-			if component["special_count"] > 0:
-				split_root_set[component["root"]] = true
-		if not split_root_set.is_empty():
-			for wall: Array[Vector2i] in get_walls():
-				if split_root_set.has(wall_chokepoint_map.get_subtree_root(wall.front())):
-					result.split_walls.append_array(wall)
+	var flooded_wall_group_map: SolverGroupMap = get_flooded_wall_group_map()
+	if flooded_wall_group_map.groups.size() > 1:
+		var flooded_wall_groups: Array[Array] = flooded_wall_group_map.groups.duplicate()
+		flooded_wall_groups.sort_custom(func(a: Array[Vector2i], b: Array[Vector2i]) -> bool:
+			return a.size() > b.size())
+		for wall_group_index: int in range(1, flooded_wall_groups.size()):
+			var wall_group: Array[Vector2i] = flooded_wall_groups[wall_group_index]
+			for cell: Vector2i in wall_group:
+				if cells[cell] == CELL_WALL:
+					result.split_walls.append(cell)
 	
 	# unclued islands
 	for island: Array[Vector2i] in get_islands():
