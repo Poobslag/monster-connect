@@ -102,7 +102,7 @@ func _handle_lmb_press() -> void:
 func _handle_mb_drag() -> void:
 	var cell: Vector2i = _mouse_cell()
 	var old_cell_value: int = game_board.get_cell(cell)
-	if old_cell_value == _last_set_cell or old_cell_value not in [CELL_EMPTY, CELL_WALL, CELL_ISLAND]:
+	if old_cell_value == _last_set_cell or (old_cell_value != CELL_EMPTY and old_cell_value != CELL_WALL and old_cell_value != CELL_ISLAND):
 		return
 	
 	match _last_set_cell:

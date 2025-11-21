@@ -50,7 +50,8 @@ func _build() -> void:
 	var visitable: Dictionary[Vector2i, bool] = {}
 	var island_clues: Dictionary[Vector2i, int] = _board.get_island_clues()
 	for cell: Vector2i in _board.cells:
-		if _board.get_cell(cell) in [CELL_ISLAND, CELL_EMPTY] \
+		var cell_value: int = _board.get_cell(cell)
+		if cell_value == CELL_ISLAND or cell_value == CELL_EMPTY \
 				and island_clues.get(cell, 0) == 0:
 			visitable[cell] = true
 	
@@ -77,7 +78,8 @@ func _build() -> void:
 	while not queue.is_empty():
 		var cell: Vector2i = queue.pop_front()
 		
-		for neighbor: Vector2i in _board.get_neighbors(cell):
+		for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
 			if not visitable.has(neighbor):
 				continue
 			if _reach_score_by_cell.has(neighbor):

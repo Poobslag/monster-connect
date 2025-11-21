@@ -31,7 +31,8 @@ const CLUE_COLOR: Color = Color("666666")
 const POS_NOT_FOUND: Vector2i = Vector2i(-1, -1)
 
 const NEIGHBOR_DIRS: Array[Vector2i] = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
-
+const NEIGHBOR_DIRS_WITH_SELF: Array[Vector2i] = [Vector2i.ZERO,
+		Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 
 static func pool_triplet(cell: Vector2i, dir: Vector2i) -> Array[Vector2i]:
 	return [cell + dir, cell + Vector2i(dir.x, 0), cell + Vector2i(0, dir.y)]
