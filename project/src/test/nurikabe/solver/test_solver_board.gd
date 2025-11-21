@@ -264,6 +264,54 @@ func test_complex_bug() -> void:
 	assert_invalid(VALIDATE_COMPLEX, {"wrong_size": [Vector2i(2, 1), Vector2i(2, 2), Vector2i(3, 1)]})
 
 
+func test_increase_heat() -> void:
+	grid = [
+		"######  ##",
+		" 3 .      ",
+		"          ",
+		"   6      ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	board.increase_heat([Vector2i(1, 1)])
+	
+	# heat spreads to adjacent walls and their liberties
+	assert_heat(board, Vector2i(0, 0), 0.5)
+	assert_heat(board, Vector2i(1, 0), 0.5)
+	assert_heat(board, Vector2i(2, 0), 0.5)
+	assert_heat(board, Vector2i(3, 0), 0.25)
+	assert_heat(board, Vector2i(4, 0), 0.125)
+	assert_heat(board, Vector2i(4, 1), 0.125)
+	
+	# head spreads to islands and their liberties
+	assert_heat(board, Vector2i(0, 0), 0.5)
+	assert_heat(board, Vector2i(1, 1), 1.0)
+	assert_heat(board, Vector2i(2, 1), 0.5)
+	assert_heat(board, Vector2i(0, 2), 0.5)
+	assert_heat(board, Vector2i(1, 2), 0.5)
+	
+	# heat spreads nearby
+	assert_heat(board, Vector2i(2, 2), 0.25)
+	assert_heat(board, Vector2i(1, 3), 0.25)
+
+
+func test_decrease_heat() -> void:
+	grid = [
+		"######  ##",
+		" 3 .      ",
+		"          ",
+		"   6      ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	board.increase_heat([Vector2i(1, 1)])
+	assert_heat(board, Vector2i(1, 1), 1.000)
+	board.decrease_heat(3)
+	assert_heat(board, Vector2i(1, 1), 0.729)
+
+
+func assert_heat(board: SolverBoard, cell: Vector2i, expected_heat: float) -> void:
+	assert_almost_eq(board.get_heat(cell), expected_heat, 0.01)
+
+
 func assert_valid(mode: SolverBoard.ValidationMode) -> void:
 	_assert_validate(mode, {})
 

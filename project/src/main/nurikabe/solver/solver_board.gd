@@ -17,8 +17,17 @@ const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
+const HEAT_RADIUS: int = 2 # how far heat spreads, in cells
+const HEAT_HISTORY: int = 50 # how many heat events are remembered
+const HEAT_SPREAD_FACTOR: float = 0.5 # how effectively heat spreads to neighboring cells; 0.0 = near, 1.0 = far
+const HEAT_FADE_FACTOR: float = 0.9 # how fast heat fades over time; 0.0 = fast, 1.0 = slow
+
 var cells: Dictionary[Vector2i, int]
 
+var _heat_by_cell: Dictionary[Vector2i, float] = {}
+
+## Deferred heat calculations. We defer these until they're needed as they're moderately expensive to calculate.
+var _pending_heat_changes: Array[Callable] = []
 var _cache: Dictionary[String, Variant] = {}
 
 func perform_bfs(start_cell: Vector2i, filter: Callable) -> void:
@@ -38,13 +47,20 @@ func perform_bfs(start_cell: Vector2i, filter: Callable) -> void:
 func duplicate() -> SolverBoard:
 	var copy: SolverBoard = SolverBoard.new()
 	copy.cells = cells.duplicate()
+	copy._heat_by_cell = _heat_by_cell.duplicate()
+	copy._pending_heat_changes = _pending_heat_changes.duplicate()
 	copy._cache = _cache.duplicate()
 	return copy
 
 
 func from_game_board(game_board: NurikabeGameBoard) -> void:
-	for cell_pos in game_board.get_used_cells():
+	var non_empty_cells: Array[Vector2i] = []
+	for cell_pos: Vector2i in game_board.get_used_cells():
+		var cell_value: int = game_board.get_cell(cell_pos)
 		set_cell(cell_pos, game_board.get_cell(cell_pos))
+		if cell_value != CELL_EMPTY:
+			non_empty_cells.append(cell_pos)
+	increase_heat(non_empty_cells)
 
 
 func get_cell(cell_pos: Vector2i) -> int:
@@ -94,6 +110,12 @@ func get_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
 		_build_liberties.bind(group))
 
 
+func get_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
+	return _get_cached(
+		"group_neighbors %s" % ["-" if group.is_empty() else str(group[0])],
+		_build_group_neighbors.bind(group))
+
+
 func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
 	return [cell_pos + Vector2i.UP, cell_pos + Vector2i.DOWN, cell_pos + Vector2i.LEFT, cell_pos + Vector2i.RIGHT]
 
@@ -126,6 +148,23 @@ func set_cell(cell_pos: Vector2i, value: int) -> void:
 	_cache.clear()
 	cells[cell_pos] = value
 
+
+func increase_heat(heated_cells: Array[Vector2i]) -> void:
+	_pending_heat_changes.append(_apply_heat_increase.bind(heated_cells))
+	if _pending_heat_changes.size() > HEAT_HISTORY:
+		_pending_heat_changes.pop_front()
+
+
+func decrease_heat(factor: float = 1.0) -> void:
+	_pending_heat_changes.append(_apply_heat_decrease.bind(factor))
+	if _pending_heat_changes.size() > HEAT_HISTORY:
+		_pending_heat_changes.pop_front()
+
+
+func get_heat(cell: Vector2i) -> float:
+	if _pending_heat_changes:
+		_apply_heat_changes()
+	return _heat_by_cell.get(cell, 0.0)
 
 func get_flooded_island_group_map() -> SolverGroupMap:
 	return _get_cached(
@@ -282,19 +321,23 @@ func _build_island_clues() -> Dictionary[Vector2i, int]:
 
 
 func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
+	return get_group_neighbors(group).filter(func(neighbor: Vector2i) -> bool:
+		return get_cell(neighbor) == CELL_EMPTY)
+
+
+func _build_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
 	var group_cell_set: Dictionary[Vector2i, bool] = {}
 	var liberty_cell_set: Dictionary[Vector2i, bool] = {}
 	for group_cell: Vector2i in group:
 		group_cell_set[group_cell] = true
 	for group_cell: Vector2i in group:
 		for neighbor: Vector2i in get_neighbors(group_cell):
-			if neighbor in group_cell_set:
+			if not cells.has(neighbor):
 				continue
-			if get_cell(neighbor) != CELL_EMPTY:
+			if group_cell_set.has(neighbor):
 				continue
 			liberty_cell_set[neighbor] = true
-	var result: Array[Vector2i] = liberty_cell_set.keys()
-	return result
+	return liberty_cell_set.keys()
 
 
 func _build_island_group_map() -> SolverGroupMap:
@@ -436,6 +479,64 @@ func _get_cached(cache_key: String, builder: Callable) -> Variant:
 	if not _cache.has(cache_key):
 		_cache[cache_key] = builder.call()
 	return _cache[cache_key]
+func _apply_heat_changes() -> void:
+	while not _pending_heat_changes.is_empty():
+		_pending_heat_changes.pop_front().call()
+
+
+func _apply_heat_increase(heated_cells: Array[Vector2i]) -> void:
+	var visited: Dictionary[Vector2i, bool] = {}
+	var queue: Array[Array] = []
+	for cell: Vector2i in heated_cells:
+		visited[cell] = true
+		queue.append([cell, 0])
+	
+	while not queue.is_empty():
+		var queue_item: Array[Variant] = queue.pop_front()
+		var cell: Vector2i = queue_item[0]
+		var heat_distance: int = queue_item[1]
+		
+		_increase_heat_for_cell(cell, heat_distance)
+		
+		var connected_cells: Array[Vector2i]
+		match cells[cell]:
+			CELL_WALL:
+				connected_cells = get_wall_for_cell(cell)
+			CELL_ISLAND:
+				connected_cells = get_island_for_cell(cell)
+			CELL_EMPTY:
+				connected_cells = [cell]
+			_:
+				if NurikabeUtils.is_clue(cells[cell]):
+					connected_cells = get_island_for_cell(cell)
+		var neighbors: Array[Vector2i] = get_group_neighbors(connected_cells)
+		
+		for group_cell: Vector2i in connected_cells:
+			if visited.has(group_cell):
+				continue
+			_increase_heat_for_cell(group_cell, heat_distance)
+			visited[group_cell] = true
+		
+		for neighbor: Vector2i in neighbors:
+			if visited.has(neighbor):
+				continue
+			if heat_distance < HEAT_RADIUS:
+				queue.append([neighbor, heat_distance + 1])
+				visited[neighbor] = true
+			else:
+				_increase_heat_for_cell(neighbor, heat_distance + 1)
+				visited[neighbor] = true
+
+
+func _apply_heat_decrease(factor: float = 1.0) -> void:
+	for cell: Vector2i in _heat_by_cell:
+		_heat_by_cell[cell] *= pow(HEAT_FADE_FACTOR, factor)
+
+
+func _increase_heat_for_cell(cell: Vector2i, distance: int) -> void:
+	if not _heat_by_cell.has(cell):
+		_heat_by_cell[cell] = 0.0
+	_heat_by_cell[cell] += pow(HEAT_SPREAD_FACTOR, distance)
 
 
 class ValidationResult:

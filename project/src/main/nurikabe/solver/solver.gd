@@ -81,6 +81,11 @@ func apply_changes() -> void:
 	_react_to_changes(changes)
 
 
+func apply_heat() -> void:
+	board.decrease_heat()
+	board.increase_heat(deductions.cells.keys())
+
+
 func clear() -> void:
 	deductions.clear()
 	metrics.clear()
