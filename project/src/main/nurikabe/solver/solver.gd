@@ -5,6 +5,8 @@ const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
+const NEIGHBOR_DIRS: Array[Vector2i] = NurikabeUtils.NEIGHBOR_DIRS
+
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
 const UNKNOWN_REASON: Deduction.Reason = Deduction.Reason.UNKNOWN
@@ -256,7 +258,8 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 	
 	_log.start("adjacent_clues", [clue_cell])
 	
-	for neighbor: Vector2i in board.get_neighbors(clue_cell):
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = clue_cell + neighbor_dir
 		if not _should_deduce(board, neighbor):
 			continue
 		var adjacent_clues: Array[Vector2i] = _find_adjacent_clues(neighbor)
@@ -313,7 +316,7 @@ func deduce_island_chokepoint_tiny_pool(chokepoint: Vector2i) -> void:
 	
 	# Check for two empty cells leading into a dead end, which create a pool.
 	var old_deductions_size: int = deductions.size()
-	for dir: Vector2i in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+	for dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
 		_check_island_chokepoint_tiny_pool(chokepoint, dir)
 		if deductions.size() > old_deductions_size:
 			break
@@ -327,7 +330,8 @@ func deduce_island_chokepoint_pool(chokepoint: Vector2i) -> void:
 	
 	var split_neighbor_set: Dictionary[Vector2i, bool] = {}
 	var split_root_set: Dictionary[Vector2i, bool] = {}
-	for neighbor: Vector2i in board.get_neighbors(chokepoint):
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = chokepoint + neighbor_dir
 		if board.get_cell(neighbor) != CELL_EMPTY:
 			continue
 		var island_chokepoint_map: SolverChokepointMap = board.get_island_chokepoint_map()
@@ -344,7 +348,8 @@ func deduce_island_chokepoint_pool(chokepoint: Vector2i) -> void:
 			continue
 		var wall_cell_set: Dictionary[Vector2i, bool] = {chokepoint: true}
 		board.perform_bfs(neighbor, func(cell: Vector2i) -> bool:
-			if board.get_cell(cell) in [CELL_WALL, CELL_INVALID] or cell == chokepoint:
+			var cell_value: int = board.get_cell(cell)
+			if cell_value == CELL_WALL or cell_value == CELL_INVALID or cell == chokepoint:
 				return false
 			wall_cell_set[cell] = true
 			return true)
@@ -395,8 +400,9 @@ func _check_island_chokepoint_tiny_pool(chokepoint: Vector2i, dir: Vector2i) -> 
 	var solid: Array[bool] = []
 	var wall: Array[bool] = []
 	for magic_cell in magic_cells:
-		solid.append(board.get_cell(magic_cell) in [CELL_WALL, CELL_INVALID])
-		wall.append(board.get_cell(magic_cell) == CELL_WALL)
+		var magic_value: int = board.get_cell(magic_cell)
+		solid.append(magic_value == CELL_WALL or magic_value == CELL_INVALID)
+		wall.append(magic_value == CELL_WALL)
 	
 	if (solid[2] and solid[3] and solid[4]) \
 			and (wall[0] and wall[2] or wall[1] and wall[3]):
@@ -434,7 +440,8 @@ func deduce_clue_chokepoint_snug(island_cell: Vector2i) -> void:
 	for component_cell: Vector2i in component_cells:
 		if board.get_cell(component_cell) == CELL_EMPTY:
 			add_deduction(component_cell, CELL_ISLAND, ISLAND_SNUG, [island_cell])
-		for neighbor: Vector2i in board.get_neighbors(component_cell):
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = component_cell + neighbor_dir
 			if board.get_per_clue_chokepoint_map().needs_buffer(island_root, neighbor):
 				add_deduction(neighbor, CELL_WALL, ISLAND_BUFFER, [island_cell])
 	
@@ -475,7 +482,8 @@ func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
 		if not board.get_cell(cell) == CELL_EMPTY:
 			continue
 		var wall_roots: Dictionary[Vector2i, bool] = {}
-		for neighbor: Vector2i in board.get_neighbors(cell):
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
 			if not wall_exclusion_map.roots_by_cell.has(neighbor):
 				continue
 			wall_roots[wall_exclusion_map.roots_by_cell.get(neighbor)] = true
@@ -557,7 +565,8 @@ func deduce_island_of_one(clue_cell: Vector2i) -> void:
 		_log.end("island_of_one", [clue_cell])
 		return
 	
-	for neighbor: Vector2i in board.get_neighbors(clue_cell):
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = clue_cell + neighbor_dir
 		if not _should_deduce(board, neighbor):
 			continue
 		add_deduction(neighbor, CELL_WALL,
@@ -637,7 +646,8 @@ func deduce_clued_island_forced_expansion(island_cell: Vector2i) -> void:
 	
 	if squeeze_fill.changes.size() == clue_value - island.size():
 		for new_island_cell: Vector2i in squeeze_fill.changes:
-			for new_island_neighbor: Vector2i in board.get_neighbors(new_island_cell):
+			for new_island_neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+				var new_island_neighbor: Vector2i = new_island_cell + new_island_neighbor_dir
 				if new_island_neighbor in squeeze_fill.changes:
 					continue
 				if _should_deduce(board, new_island_neighbor):
@@ -669,13 +679,13 @@ func deduce_clued_island_corner(island_cell: Vector2i) -> void:
 	
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
 	var liberties: Array[Vector2i] = board.get_liberties(island)
-	var liberty_connectors: Array[Vector2i] = []
-	liberty_connectors.assign(Utils.intersection( \
-			board.get_neighbors(liberties[0]), board.get_neighbors(liberties[1])))
-	for liberty_connector: Vector2i in liberty_connectors:
-		if not _should_deduce(board, liberty_connector):
+	for diagonal_dir: Vector2i in NEIGHBOR_DIRS:
+		var diagonal: Vector2i = liberties[0] + diagonal_dir
+		if diagonal.distance_to(liberties[1]) != 1:
 			continue
-		add_deduction(liberty_connector, CELL_WALL, CORNER_ISLAND, [island_cell])
+		if not _should_deduce(board, diagonal):
+			continue
+		add_deduction(diagonal, CELL_WALL, CORNER_ISLAND, [island_cell])
 	
 	_log.end("clued_island_corner", [island_cell])
 
@@ -685,17 +695,15 @@ func deduce_corner_buffer(island_cell: Vector2i) -> void:
 
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
 	var liberties: Array[Vector2i] = board.get_liberties(island)
-	var diagonals: Array[Vector2i] = []
-	for neighbor: Vector2i in board.get_neighbors(liberties[0]):
-		if (neighbor - liberties[1]).length() != 1:
+	for diagonal_dir: Vector2i in NEIGHBOR_DIRS:
+		var diagonal: Vector2i = liberties[0] + diagonal_dir
+		if diagonal.distance_to(liberties[1]) != 1:
 			continue
-		if not _should_deduce(board, neighbor):
+		if not _should_deduce(board, diagonal):
 			continue
-		diagonals.append(neighbor)
-	
-	for diagonal: Vector2i in diagonals:
 		var merged_island_cells: Array[Vector2i] = []
-		merged_island_cells.append_array(board.get_neighbors(diagonal))
+		for merged_dir in NEIGHBOR_DIRS:
+			merged_island_cells.append(diagonal + merged_dir)
 		merged_island_cells.append(island_cell)
 		if not is_valid_merged_island(merged_island_cells, 2):
 			var unique_neighbor_island_cells: Array[Vector2i] \
@@ -742,9 +750,12 @@ func deduce_island_divider(island_cell: Vector2i) -> void:
 		if not _should_deduce(board, liberty):
 			continue
 		
-		if not is_valid_merged_island(board.get_neighbors(liberty), 1):
+		var neighbors: Array[Vector2i] = []
+		for neighbor_dir in NEIGHBOR_DIRS:
+			neighbors.append(liberty + neighbor_dir)
+		if not is_valid_merged_island(neighbors, 1):
 			var unique_neighbor_island_cells: Array[Vector2i] \
-					= get_unique_neighbor_island_cells(board.get_neighbors(liberty))
+					= get_unique_neighbor_island_cells(neighbors)
 			add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER, unique_neighbor_island_cells)
 	
 	_log.end("island_divider", [island_cell])
@@ -792,7 +803,8 @@ func deduce_wall_chokepoint(chokepoint: Vector2i) -> void:
 	
 	var max_choked_special_count: int = 0
 	var split_neighbor: Vector2i = POS_NOT_FOUND
-	for neighbor: Vector2i in board.get_neighbors(chokepoint):
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = chokepoint + neighbor_dir
 		if board.get_cell(neighbor) != CELL_WALL:
 			continue
 		var special_count: int = board.get_wall_chokepoint_map() \
@@ -881,7 +893,8 @@ func enqueue_wall_chokepoints() -> void:
 
 func is_border_cell(cell: Vector2i) -> bool:
 	var result: bool = false
-	for neighbor: Vector2i in board.get_neighbors(cell):
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = cell + neighbor_dir
 		if board.get_cell(neighbor) == CELL_INVALID:
 			result = true
 			break
@@ -921,7 +934,8 @@ func enqueue_island_battleground() -> void:
 	for cell: Vector2i in clued_island_neighbors_by_empty_cell:
 		if clued_island_neighbors_by_empty_cell[cell].size() != 1:
 			continue
-		for neighbor: Vector2i in board.get_neighbors(cell):
+		for neighbor_dir in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
 			if not clued_island_neighbors_by_empty_cell.has(neighbor):
 				continue
 			if clued_island_neighbors_by_empty_cell[neighbor].size() != 1:
@@ -986,7 +1000,8 @@ func enqueue_island_strangle() -> void:
 			
 			var assumptions: Dictionary[Vector2i, int] = {}
 			assumptions[liberty] = CELL_ISLAND
-			for new_wall_cell: Vector2i in board.get_neighbors(liberty):
+			for new_wall_cell_dir: Vector2i in NEIGHBOR_DIRS:
+				var new_wall_cell: Vector2i = liberty + new_wall_cell_dir
 				if not _should_deduce(board, new_wall_cell):
 					continue
 				assumptions[new_wall_cell] = CELL_WALL
@@ -1212,7 +1227,8 @@ func _should_deduce(target_board: SolverBoard, cell: Vector2i) -> bool:
 
 func _find_adjacent_clues(cell: Vector2i) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
-	for neighbor: Vector2i in board.get_neighbors(cell):
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = cell + neighbor_dir
 		if NurikabeUtils.is_clue(board.get_cell(neighbor)):
 			result.append(neighbor)
 	return result
@@ -1220,7 +1236,8 @@ func _find_adjacent_clues(cell: Vector2i) -> Array[Vector2i]:
 
 func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 	var clued_neighbor_roots: Dictionary[Vector2i, bool] = {}
-	for neighbor: Vector2i in board.get_neighbors(cell):
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = cell + neighbor_dir
 		if board.get_clue_for_island_cell(neighbor) == 0:
 			continue
 		var neighbor_root: Vector2i = board.get_island_root_for_cell(neighbor)
@@ -1235,7 +1252,8 @@ func _react_to_changes(changes: Array[Dictionary]) -> void:
 	for change: Dictionary[String, Variant] in changes:
 		var cell: Vector2i = change["pos"]
 		cells_to_check[cell] = true
-		for neighbor: Vector2i in board.get_neighbors(cell):
+		for neighbor_dir in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
 			cells_to_check[neighbor] = true
 	for cell_to_check: Vector2i in cells_to_check:
 		var wall_root: Vector2i = board.get_wall_root_for_cell(cell_to_check)

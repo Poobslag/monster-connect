@@ -34,7 +34,8 @@ func step() -> void:
 	
 	var neighbor_match_cells: Array[Vector2i] = []
 	var neighbor_empty_cells: Array[Vector2i] = []
-	for neighbor: Vector2i in _board.get_neighbors(next_cell):
+	for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+		var neighbor: Vector2i = next_cell + neighbor_dir
 		var neighbor_value: int = get_cell(neighbor)
 		if neighbor_value == CELL_EMPTY:
 			neighbor_empty_cells.append(neighbor)

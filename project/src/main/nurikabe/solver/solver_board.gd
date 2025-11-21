@@ -37,7 +37,8 @@ func perform_bfs(start_cell: Vector2i, filter: Callable) -> void:
 		var next_cell: Vector2i = queue.pop_front()
 		if not filter.call(next_cell):
 			continue
-		for neighbor: Vector2i in get_neighbors(next_cell):
+		for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+			var neighbor: Vector2i = next_cell + neighbor_dir
 			if visited.has(neighbor):
 				continue
 			visited[neighbor] = true
@@ -114,10 +115,6 @@ func get_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
 	return _get_cached(
 		"group_neighbors %s" % ["-" if group.is_empty() else str(group[0])],
 		_build_group_neighbors.bind(group))
-
-
-func get_neighbors(cell_pos: Vector2i) -> Array[Vector2i]:
-	return [cell_pos + Vector2i.UP, cell_pos + Vector2i.DOWN, cell_pos + Vector2i.LEFT, cell_pos + Vector2i.RIGHT]
 
 
 func get_global_reachability_map() -> GlobalReachabilityMap:
@@ -297,9 +294,8 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 	var local_wall_roots: Dictionary[Vector2i, bool] = {}
 	var local_island_roots: Dictionary[Vector2i, bool] = {}
 	for local_cell: Vector2i in local_cells:
-		for cell: Vector2i in [local_cell,
-				local_cell + Vector2i.UP, local_cell + Vector2i.DOWN,
-				local_cell + Vector2i.LEFT, local_cell + Vector2i.RIGHT]:
+		for cell_dir in NurikabeUtils.NEIGHBOR_DIRS_WITH_SELF:
+			var cell: Vector2i = local_cell + cell_dir
 			if not cells.has(cell):
 				continue
 			match cells[cell]:
@@ -409,7 +405,8 @@ func _build_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
 	for group_cell: Vector2i in group:
 		group_cell_set[group_cell] = true
 	for group_cell: Vector2i in group:
-		for neighbor: Vector2i in get_neighbors(group_cell):
+		for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+			var neighbor: Vector2i = group_cell + neighbor_dir
 			if not cells.has(neighbor):
 				continue
 			if group_cell_set.has(neighbor):
@@ -426,7 +423,7 @@ func _build_island_group_map() -> SolverGroupMap:
 
 func _build_flooded_island_group_map() -> SolverGroupMap:
 	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return NurikabeUtils.is_clue(value) or value in [CELL_EMPTY, CELL_ISLAND])
+		return NurikabeUtils.is_clue(value) or value == CELL_EMPTY or value == CELL_ISLAND)
 	for group: Array[Vector2i] in group_map.groups:
 		if group.all(func(cell: Vector2i) -> bool:
 				return cells[cell] == CELL_EMPTY):

@@ -23,7 +23,8 @@ func _init(init_board: SolverBoard) -> void:
 	# collect visitable cells (empty cells, or clueless islands)
 	var island_clues: Dictionary[Vector2i, int] = _board.get_island_clues()
 	for cell: Vector2i in _board.cells:
-		if _board.get_cell(cell) in [CELL_ISLAND, CELL_EMPTY] \
+		var cell_value: int = _board.get_cell(cell)
+		if cell_value == CELL_ISLAND or cell_value == CELL_EMPTY \
 				and island_clues.get(cell, 0) == 0:
 			_visitable[cell] = true
 	
@@ -80,7 +81,8 @@ func find_chokepoint_cells(island_cell: Vector2i) -> Dictionary[Vector2i, int]:
 			# the chokepoint itself must be an island
 			result[chokepoint] = CELL_ISLAND
 		
-		for neighbor: Vector2i in _board.get_neighbors(chokepoint):
+		for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+			var neighbor: Vector2i = chokepoint + neighbor_dir
 			# buffer wall between this and other clued islands
 			if needs_buffer(island_root, neighbor):
 				result[neighbor] = CELL_WALL
@@ -148,7 +150,8 @@ func _init_chokepoint_map(island_cell: Vector2i) -> void:
 	while not queue.is_empty():
 		var cell: Vector2i = queue.pop_front()
 		
-		for neighbor: Vector2i in _board.get_neighbors(cell):
+		for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
 			if not _visitable.has(neighbor):
 				continue
 			if _claimed_by_clue.has(neighbor) \
