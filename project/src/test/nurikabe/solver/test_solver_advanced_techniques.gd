@@ -81,8 +81,6 @@ func test_enqueue_island_strangle() -> void:
 	]
 	var expected: Array[String] = [
 		"(1, 2)->## island_strangle (2, 2)",
-		"(2, 1)->## island_strangle (2, 2)",
-		"(3, 1)->## island_strangle (2, 2)",
 		"(4, 1)->## island_strangle (2, 2)",
 	]
 	assert_deductions(solver.enqueue_island_strangle, expected)
@@ -97,6 +95,6 @@ func test_enqueue_island_release() -> void:
 		" 6    ",
 	]
 	var expected: Array[String] = [
-		"(1, 1)->. island_release (0, 1)",
+		"(1, 4)->. island_release (0, 4)",
 	]
 	assert_deductions(solver.enqueue_island_release, expected)

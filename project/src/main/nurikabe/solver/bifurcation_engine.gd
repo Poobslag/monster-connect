@@ -32,9 +32,18 @@ func get_scenario_count() -> int:
 	return _scenarios_by_key.size()
 
 
+func has_new_local_contradictions() -> bool:
+	return _scenarios_by_key.values().any(func(scenario: BifurcationScenario) -> bool:
+		return scenario.has_new_local_contradictions())
+
+
 func has_new_contradictions(mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> bool:
 	return _scenarios_by_key.values().any(func(scenario: BifurcationScenario) -> bool:
 		return scenario.has_new_contradictions(mode))
+
+
+func scenario_has_new_local_contradictions(key: String) -> bool:
+	return _scenarios_by_key[key].has_new_local_contradictions()
 
 
 func scenario_has_new_contradictions(key: String,
