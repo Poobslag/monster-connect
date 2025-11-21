@@ -192,6 +192,13 @@ func test_unclued_islands() -> void:
 		" .####",
 	]
 	assert_invalid(VALIDATE_COMPLEX, {"unclued_islands": [Vector2i(0, 2)]})
+	
+	grid = [
+		"####  ",
+		"  ## 2",
+		" .####",
+	]
+	assert_invalid(VALIDATE_COMPLEX, {"unclued_islands": [Vector2i(0, 2)]})
 
 
 func test_wrong_size() -> void:

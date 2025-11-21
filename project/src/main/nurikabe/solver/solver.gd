@@ -352,10 +352,7 @@ func deduce_island_chokepoint_pool(chokepoint: Vector2i) -> void:
 		var pool_cell_set: Dictionary[Vector2i, bool] = {}
 		for wall_cell: Vector2i in wall_cell_set:
 			for pool_dir: Vector2i in [Vector2i(-1, -1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(1, 1)]:
-				var pool_triplet_cells: Array[Vector2i] =  [
-					wall_cell + pool_dir,
-					wall_cell + Vector2i(pool_dir.x, 0),
-					wall_cell + Vector2i(0, pool_dir.y)]
+				var pool_triplet_cells: Array[Vector2i] = NurikabeUtils.pool_triplet(wall_cell, pool_dir)
 				if pool_triplet_cells.all(func(pool_triplet_cell: Vector2i) -> bool:
 						return board.get_cell(pool_triplet_cell) == CELL_WALL \
 							or pool_triplet_cell in wall_cell_set):
