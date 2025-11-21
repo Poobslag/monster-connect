@@ -562,6 +562,8 @@ func _get_cached(cache_key: String, builder: Callable) -> Variant:
 	if not _cache.has(cache_key):
 		_cache[cache_key] = builder.call()
 	return _cache[cache_key]
+
+
 func _apply_heat_changes() -> void:
 	while not _pending_heat_changes.is_empty():
 		_pending_heat_changes.pop_front().call()
