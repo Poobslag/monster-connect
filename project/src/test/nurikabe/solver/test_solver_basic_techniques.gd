@@ -511,6 +511,7 @@ func test_enqueue_wall_chokepoints_border_hug() -> void:
 	]
 	var expected: Array[String] = [
 		"(0, 1)->## border_hug (0, 0)",
+		"(3, 4)->## border_hug (3, 3)",
 	]
 	assert_deductions(solver.enqueue_wall_strangle, expected)
 
