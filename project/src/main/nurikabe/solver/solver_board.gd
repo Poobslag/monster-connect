@@ -166,6 +166,7 @@ func get_heat(cell: Vector2i) -> float:
 		_apply_heat_changes()
 	return _heat_by_cell.get(cell, 0.0)
 
+
 func get_flooded_island_group_map() -> SolverGroupMap:
 	return _get_cached(
 		"flooded_island_group_map",
@@ -305,19 +306,24 @@ func _build_global_reachability_map() -> GlobalReachabilityMap:
 func _build_island_clues() -> Dictionary[Vector2i, int]:
 	var result: Dictionary[Vector2i, int] = {}
 	for island: Array[Vector2i] in get_islands():
-		var clue_value: int = 0
-		for cell: Vector2i in island:
-			var cell_value: int = cells[cell]
-			if NurikabeUtils.is_clue(cell_value):
-				if clue_value > 0:
-					clue_value = -1
-					break
-				clue_value = cell_value
+		var clue_value: int = _clue_value_for_cells(island)
 		if clue_value == 0:
 			continue
 		for cell: Vector2i in island:
 			result[cell] = clue_value
 	return result
+
+
+func _clue_value_for_cells(island: Array[Vector2i]) -> int:
+	var clue_value: int = 0
+	for cell: Vector2i in island:
+		var cell_value: int = cells[cell]
+		if NurikabeUtils.is_clue(cell_value):
+			if clue_value > 0:
+				clue_value = -1
+				break
+			clue_value = cell_value
+	return clue_value
 
 
 func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
@@ -347,20 +353,21 @@ func _build_island_group_map() -> SolverGroupMap:
 
 
 func _build_flooded_island_group_map() -> SolverGroupMap:
-	return SolverGroupMap.new(self, func(value: int) -> bool:
+	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
 		return NurikabeUtils.is_clue(value) or value in [CELL_EMPTY, CELL_ISLAND])
+	for group: Array[Vector2i] in group_map.groups:
+		if group.all(func(cell: Vector2i) -> bool:
+				return cells[cell] == CELL_EMPTY):
+			group_map.erase_group(group)
+	return group_map
 
 
 func _build_flooded_wall_group_map() -> SolverGroupMap:
 	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
 		return value in [CELL_EMPTY, CELL_WALL])
 	for group: Array[Vector2i] in group_map.groups:
-		var has_wall: bool = false
-		for cell: Vector2i in group:
-			if cells[cell] == CELL_WALL:
-				has_wall = true
-				break
-		if not has_wall:
+		if group.all(func(cell: Vector2i) -> bool:
+				return cells[cell] == CELL_EMPTY):
 			group_map.erase_group(group)
 	return group_map
 
@@ -419,9 +426,12 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 					result.split_walls.append(cell)
 	
 	# unclued islands
-	for island: Array[Vector2i] in get_islands():
-		if get_liberties(island).size() == 0 and get_clue_for_island(island) == 0:
-			result.unclued_islands.append_array(island)
+	for flooded_island_group: Array[Vector2i] in get_flooded_island_group_map().groups:
+		if _clue_value_for_cells(flooded_island_group) != 0:
+			continue
+		for cell in flooded_island_group:
+			if get_cell(cell) == CELL_ISLAND:
+				result.unclued_islands.append(cell)
 	
 	# wrong size
 	for island: Array[Vector2i] in get_islands():
