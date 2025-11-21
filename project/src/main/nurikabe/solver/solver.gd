@@ -1143,16 +1143,18 @@ func run_bifurcation_step() -> void:
 		_log.start(key)
 		_bifurcation_engine.step(key)
 		_log.pause(key)
-	if _bifurcation_engine.has_new_contradictions():
+	if _bifurcation_engine.has_new_local_contradictions():
 		# found a contradiction; we can make a deduction
-		_add_bifurcation_deductions()
+		_add_local_bifurcation_deductions()
 	elif not _bifurcation_engine.is_queue_empty():
 		# there's still more to do
 		schedule_task(run_bifurcation_step, 10)
-	else:
-		# we're stuck; check if any of the scenarios cause a complex contradiction which we overlooked
-		if _bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_COMPLEX):
-			_add_bifurcation_deductions(SolverBoard.VALIDATE_COMPLEX)
+	elif _bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_SIMPLE):
+		# we're stuck; check if any of the scenarios cause a contradiction which we overlooked
+		_add_bifurcation_deductions(SolverBoard.VALIDATE_SIMPLE)
+	elif _bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_COMPLEX):
+		# we're stuck; check if any of the scenarios cause a contradiction which we overlooked
+		_add_bifurcation_deductions(SolverBoard.VALIDATE_COMPLEX)
 	
 	if _bifurcation_engine.is_queue_empty() and metrics.has("bifurcation_start_time"):
 		var bifurcation_duration: int = (Time.get_ticks_usec() - metrics["bifurcation_start_time"])
@@ -1161,6 +1163,22 @@ func run_bifurcation_step() -> void:
 		if not metrics.has("bifurcation_duration"):
 			metrics["bifurcation_duration"] = 0.0
 		metrics["bifurcation_duration"] += bifurcation_duration / 1000.0
+
+
+func _add_local_bifurcation_deductions() -> void:
+	# found a contradiction; we can make a deduction
+	var scenario_keys: Array[String] = _bifurcation_engine.get_scenario_keys()
+	for key: String in scenario_keys:
+		_log.start(key)
+		if not _bifurcation_engine.scenario_has_new_local_contradictions(key):
+			_log.end(key)
+			continue
+		for deduction: Deduction in _bifurcation_engine.get_scenario_deductions(key):
+			if not _should_deduce(board, deduction.pos):
+				continue
+			add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
+		_log.end(key)
+	_bifurcation_engine.clear()
 
 
 func _add_bifurcation_deductions(mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> void:

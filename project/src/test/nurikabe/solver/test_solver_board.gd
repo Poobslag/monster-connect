@@ -47,6 +47,22 @@ func test_joined_islands_two() -> void:
 		Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)]})
 
 
+func test_joined_islands_local() -> void:
+	grid = [
+		" 3   3",
+		" .   .",
+		" .## .",
+	]
+	assert_valid_local([Vector2i(0, 2)])
+	
+	grid = [
+		" 3 . 3",
+		" .   .",
+		" .## .",
+	]
+	assert_invalid_local([Vector2i(1, 1)], "j")
+
+
 func test_joined_islands_three() -> void:
 	grid = [
 		" 3        ",
@@ -91,6 +107,22 @@ func test_pools_one() -> void:
 	]
 	assert_invalid(VALIDATE_STRICT, {"pools": [
 			Vector2i(0, 1), Vector2i(0, 2), Vector2i(1, 1), Vector2i(1, 2)]})
+
+
+func test_pools_local() -> void:
+	grid = [
+		"      ",
+		"##    ",
+		"####  ",
+	]
+	assert_valid_local([Vector2i(1, 1)])
+	
+	grid = [
+		"      ",
+		"####  ",
+		"####  ",
+	]
+	assert_invalid_local([Vector2i(1, 1)], "p")
 
 
 func test_pools_two() -> void:
@@ -146,6 +178,22 @@ func test_split_walls_two() -> void:
 	assert_invalid(VALIDATE_COMPLEX, {"split_walls": [Vector2i(2, 2)]})
 
 
+func test_split_walls_local() -> void:
+	grid = [
+		"  ####",
+		"     .",
+		" 6  ##",
+	]
+	assert_valid_local([Vector2i(2, 1)])
+	
+	grid = [
+		"  ####",
+		"     .",
+		" 6 .##",
+	]
+	assert_invalid_local([Vector2i(1, 2)], "s")
+
+
 func test_split_walls_three() -> void:
 	grid = [
 		"##   3",
@@ -199,6 +247,22 @@ func test_unclued_islands() -> void:
 		" .####",
 	]
 	assert_invalid(VALIDATE_COMPLEX, {"unclued_islands": [Vector2i(0, 2)]})
+
+
+func test_unclued_islands_local() -> void:
+	grid = [
+		"  ####",
+		"     .",
+		" 6  ##",
+	]
+	assert_valid_local([Vector2i(2, 1)])
+	
+	grid = [
+		"  ####",
+		"  ## .",
+		" 6  ##",
+	]
+	assert_invalid_local([Vector2i(2, 1)], "u")
 
 
 func test_wrong_size() -> void:
@@ -259,6 +323,22 @@ func test_wrong_size_neighbors() -> void:
 			"wrong_size": [Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0), Vector2i(2, 1)],
 			"split_walls": [Vector2i(2, 2)]})
 	assert_invalid(VALIDATE_SIMPLE, {"split_walls": [Vector2i(2, 2)]})
+
+
+func test_wrong_size_local() -> void:
+	grid = [
+		" 2    ",
+		"     .",
+		"     2",
+	]
+	assert_valid_local([Vector2i(2, 1)])
+	
+	grid = [
+		" 2   .",
+		"     .",
+		"     2",
+	]
+	assert_invalid_local([Vector2i(2, 1)], "c")
 
 
 func test_complex_bug() -> void:
@@ -323,6 +403,14 @@ func assert_valid(mode: SolverBoard.ValidationMode) -> void:
 	_assert_validate(mode, {})
 
 
+func assert_valid_local(local_cells: Array[Vector2i]) -> void:
+	_assert_validate_local(local_cells, "")
+
+
+func assert_invalid_local(local_cells: Array[Vector2i], expected_result: String) -> void:
+	_assert_validate_local(local_cells, expected_result)
+
+
 func assert_invalid(mode: SolverBoard.ValidationMode, expected_result_dict: Dictionary) -> void:
 	_assert_validate(mode, expected_result_dict)
 
@@ -334,3 +422,9 @@ func _assert_validate(mode: SolverBoard.ValidationMode, expected_result_dict: Di
 		var validation_result_value: Array[Vector2i] = validation_result.get(key)
 		validation_result_value.sort()
 		assert_eq(expected_result_dict.get(key, []), validation_result_value, "Incorrect %s." % [key])
+
+
+func _assert_validate_local(local_cells: Array[Vector2i], expected_result: String) -> void:
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	var validation_result: String = board.validate_local(local_cells)
+	assert_eq(validation_result, expected_result)

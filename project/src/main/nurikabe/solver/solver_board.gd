@@ -291,6 +291,78 @@ func validate(mode: ValidationMode) -> ValidationResult:
 	return result
 
 
+func validate_local(local_cells: Array[Vector2i]) -> String:
+	var result: String = ""
+	
+	var local_wall_roots: Dictionary[Vector2i, bool] = {}
+	var local_island_roots: Dictionary[Vector2i, bool] = {}
+	for local_cell: Vector2i in local_cells:
+		for cell: Vector2i in [local_cell,
+				local_cell + Vector2i.UP, local_cell + Vector2i.DOWN,
+				local_cell + Vector2i.LEFT, local_cell + Vector2i.RIGHT]:
+			if not cells.has(cell):
+				continue
+			match cells[cell]:
+				CELL_WALL:
+					local_wall_roots[get_wall_root_for_cell(cell)] = true
+				CELL_ISLAND:
+					local_island_roots[get_island_root_for_cell(cell)] = true
+	
+	# joined islands
+	for island_root: Vector2i in local_island_roots:
+		if get_clue_for_island_cell(island_root) == -1:
+			result += "j"
+			break
+	
+	# pools
+	for local_cell: Vector2i in local_cells:
+		var has_pool: bool = false
+		if get_cell(local_cell) != CELL_WALL:
+			continue
+		for pool_dir: Vector2i in [Vector2i(-1, -1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(1, 1)]:
+			if NurikabeUtils.pool_triplet(local_cell, pool_dir).all(func(pool_cell: Vector2i) -> bool:
+					return get_cell(pool_cell) == CELL_WALL):
+				has_pool = true
+				break
+		if has_pool:
+			result += "p"
+			break
+	
+	# split walls
+	if not local_wall_roots.is_empty():
+		for local_wall_cell: Vector2i in local_wall_roots:
+			var wall: Array[Vector2i] = get_wall_for_cell(local_wall_cell)
+			if get_liberties(wall).size() == 0 and get_walls().size() > 1:
+				result += "s"
+				break
+	
+	# unclued islands
+	for local_island_cell: Vector2i in local_island_roots:
+		var island: Array[Vector2i] = get_island_for_cell(local_island_cell)
+		if get_liberties(island).size() == 0 and get_clue_for_island(island) == 0:
+			result += "u"
+			break
+	
+	# wrong size
+	for local_island_root: Vector2i in local_island_roots:
+		var island: Array[Vector2i] = get_island_for_cell(local_island_root)
+		var clue_value: int = get_clue_for_island_cell(local_island_root)
+		if clue_value == 0 or clue_value == -1:
+			continue
+		
+		if clue_value < island.size():
+			# island is too large
+			result += "c"
+			break
+		
+		if get_liberties(island).size() == 0 and clue_value > island.size():
+			# island is too small and can't grow
+			result += "c"
+			break
+	
+	return result
+
+
 func _build_flooded_board() -> SolverBoard:
 	var flooded_board: SolverBoard = duplicate()
 	for cell: Vector2i in flooded_board.cells:
@@ -364,7 +436,7 @@ func _build_flooded_island_group_map() -> SolverGroupMap:
 
 func _build_flooded_wall_group_map() -> SolverGroupMap:
 	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return value in [CELL_EMPTY, CELL_WALL])
+		return value == CELL_EMPTY or value == CELL_WALL)
 	for group: Array[Vector2i] in group_map.groups:
 		if group.all(func(cell: Vector2i) -> bool:
 				return cells[cell] == CELL_EMPTY):
@@ -376,9 +448,10 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
 			var value: int = get_cell(cell)
-			return NurikabeUtils.is_clue(value) or value in [CELL_EMPTY, CELL_ISLAND],
+			return NurikabeUtils.is_clue(value) or value == CELL_EMPTY or value == CELL_ISLAND,
 		func(cell: Vector2i) -> bool:
-			return NurikabeUtils.is_clue(get_cell(cell)))
+			var value: int = get_cell(cell)
+			return NurikabeUtils.is_clue(value))
 
 
 func _build_strict_validation_result() -> ValidationResult:
@@ -429,7 +502,7 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 	for flooded_island_group: Array[Vector2i] in get_flooded_island_group_map().groups:
 		if _clue_value_for_cells(flooded_island_group) != 0:
 			continue
-		for cell in flooded_island_group:
+		for cell: Vector2i in flooded_island_group:
 			if get_cell(cell) == CELL_ISLAND:
 				result.unclued_islands.append(cell)
 	
@@ -471,7 +544,7 @@ func _build_wall_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
 			var value: int = get_cell(cell)
-			return value in [CELL_EMPTY, CELL_WALL],
+			return value == CELL_EMPTY or value == CELL_WALL,
 		func(cell: Vector2i) -> bool:
 			return get_cell(cell) == CELL_WALL)
 
