@@ -10,6 +10,7 @@ extends Node
 ## 	[kbd]R[/kbd]: Reset the board.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 ## 	[kbd]Shift + P[/kbd]: Print task queue to console.
+## 	[kbd]B[/kbd]: Print benchmark results for AggregateTimer/SplitTimer.
 
 @export_file("*.txt") var puzzle_path: String:
 	set(value):
@@ -83,6 +84,9 @@ func _input(event: InputEvent) -> void:
 			%GameBoard.reset()
 			solver.board = %GameBoard.to_solver_board()
 			solver.clear()
+		KEY_B:
+			AggregateTimer.print_results()
+			SplitTimer.print_results()
 
 
 func _ready() -> void:

@@ -140,13 +140,6 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 	elif get_last_run(enqueue_wall_chokepoints) < board.get_filled_cell_count():
 		schedule_task(enqueue_wall_chokepoints, 35)
 	
-	if has_scheduled_task(enqueue_border_walls_simple):
-		pass
-	elif get_last_run(enqueue_border_walls_simple) == -1:
-		schedule_task(enqueue_border_walls_simple, 135)
-	elif get_last_run(enqueue_border_walls_simple) < board.get_filled_cell_count():
-		schedule_task(enqueue_border_walls_simple, 35)
-	
 	if has_scheduled_task(enqueue_island_chokepoints):
 		pass
 	elif get_last_run(enqueue_island_chokepoints) == -1:
@@ -180,14 +173,6 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 		if not metrics.has("bifurcation_stops"):
 			metrics["bifurcation_stops"] = 0
 		metrics["bifurcation_stops"] += 1
-	
-	if is_queue_empty():
-		if has_scheduled_task(enqueue_border_walls_complex):
-			pass
-		elif get_last_run(enqueue_border_walls_complex) == -1:
-			schedule_task(enqueue_border_walls_complex, 125)
-		elif get_last_run(enqueue_border_walls_complex) < board.get_filled_cell_count():
-			schedule_task(enqueue_border_walls_complex, 25)
 
 
 func get_last_run(callable: Callable) -> int:
@@ -275,40 +260,6 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 				ADJACENT_CLUES, [adjacent_clues[0], adjacent_clues[1]] as Array[Vector2i])
 	
 	_log.end("adjacent_clues", [clue_cell])
-
-
-## There are two common border wall scenarios:[br]
-## [br]
-## 1. A wall has two liberties stacked against the wall, one above the other. It's unlikely the liberty bordering the
-## 	puzzle's edge is an island, and assuming it is an island often leads to an obvious contradiction.[br]
-## 2. A wall has two liberties side-by-side against the wall, so it can extend left or right. However, one of these is
-## 	not an actual liberty, and extending it along the wall invalidates a clue.[br]
-## [br]
-## This deduction executes a very simple bifurcation which creates a wall/island pair, repeatedly extending them, then
-## checking for a contradiction.
-func deduce_border_wall(border_wall_cell: Vector2i,
-		mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> void:
-	var key: String = "border_wall_simple" if mode == SolverBoard.VALIDATE_SIMPLE else "border_wall_complex"
-	_log.start(key, [border_wall_cell])
-	
-	var liberties: Array[Vector2i] = board.get_liberties(board.get_wall_for_cell(border_wall_cell))
-	if liberties.size() != 2:
-		_log.end(key, [border_wall_cell])
-		return
-	
-	var border_scenarios: Array[BorderScenario] = []
-	if is_border_cell(liberties[0]):
-		border_scenarios.append(BorderScenario.new(board, border_wall_cell, liberties[1], liberties[0]))
-	if is_border_cell(liberties[1]):
-		border_scenarios.append(BorderScenario.new(board, border_wall_cell, liberties[0], liberties[1]))
-	
-	for border_scenario: BorderScenario in border_scenarios:
-		border_scenario.fill()
-		if border_scenario.has_new_contradictions(mode):
-			for deduction: Deduction in border_scenario.deductions:
-				add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
-	
-	_log.end(key, [border_wall_cell])
 
 
 func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
@@ -926,23 +877,6 @@ func enqueue_wall_chokepoints() -> void:
 		schedule_task(deduce_wall_chokepoint.bind(chokepoint), 235)
 
 
-func enqueue_border_walls_simple() -> void:
-	enqueue_border_walls(SolverBoard.VALIDATE_SIMPLE)
-
-
-func enqueue_border_walls_complex() -> void:
-	enqueue_border_walls(SolverBoard.VALIDATE_COMPLEX)
-
-
-func enqueue_border_walls(mode: SolverBoard.ValidationMode) -> void:
-	for wall: Array[Vector2i] in board.get_walls():
-		var liberties: Array[Vector2i] = board.get_liberties(wall)
-		if liberties.size() != 2:
-			continue
-		if liberties.any(is_border_cell) and wall.any(is_border_cell):
-			schedule_task(deduce_border_wall.bind(wall.front(), mode), 235)
-
-
 func is_border_cell(cell: Vector2i) -> bool:
 	var result: bool = false
 	for neighbor: Vector2i in board.get_neighbors(cell):
@@ -969,6 +903,7 @@ func enqueue_islands() -> void:
 			schedule_task(deduce_clued_island.bind(island.front()), 250)
 
 
+## Executes a bifurcation on two islands which are almost adjacent.
 func enqueue_island_battleground() -> void:
 	var clued_island_neighbors_by_empty_cell: Dictionary[Vector2i, Array] = {}
 	var islands: Array[Array] = board.get_islands()
@@ -999,38 +934,44 @@ func enqueue_island_battleground() -> void:
 				[Deduction.new(cell, CELL_WALL,
 						ISLAND_BATTLEGROUND, [clued_liberty, neighbor_liberty])])
 	
-	if not has_scheduled_task(run_bifurcation_step):
+	if _bifurcation_engine.get_scenario_count() >= 1 \
+			and not has_scheduled_task(run_bifurcation_step):
 		schedule_task(run_bifurcation_step, 10)
 
 
+## Executes a bifurcation on an island with only two liberties, testing each possible wall/island pair.
 func enqueue_island_release() -> void:
 	for island: Array[Vector2i] in board.get_islands():
 		if board.get_liberties(island).size() != 2:
 			continue
+		var clue_value: int = board.get_clue_for_island(island)
 		var liberties: Array[Vector2i] = board.get_liberties(island)
 		for liberty: Vector2i in liberties:
 			if not _should_deduce(board, liberty):
 				continue
 			
-			var assumptions: Dictionary[Vector2i, int] = {}
-			assumptions[liberty] = CELL_WALL
+			var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
+			squeeze_fill.push_change(liberty, CELL_WALL)
 			for other_liberty: Vector2i in liberties:
 				if other_liberty == liberty:
 					continue
 				if not _should_deduce(board, other_liberty):
 					continue
-				assumptions[other_liberty] = CELL_ISLAND
-			
+				squeeze_fill.push_change(other_liberty, CELL_ISLAND)
+			squeeze_fill.skip_cells(island)
+			squeeze_fill.fill(clue_value - island.size() - 1)
 			_add_bifurcation_scenario(
 				"island_release", [island.front(), liberty],
-				assumptions,
+				squeeze_fill.changes,
 				[Deduction.new(liberty, CELL_ISLAND, ISLAND_RELEASE, [island.front()])]
 			)
 	
-	if not has_scheduled_task(run_bifurcation_step):
+	if _bifurcation_engine.get_scenario_count() >= 1 \
+			and not has_scheduled_task(run_bifurcation_step):
 		schedule_task(run_bifurcation_step, 10)
 
 
+## Executes a bifurcation on an island which is one cell away from being complete.
 func enqueue_island_strangle() -> void:
 	for island: Array[Vector2i] in board.get_islands():
 		var clue_value: int = board.get_clue_for_island(island)
@@ -1060,10 +1001,21 @@ func enqueue_island_strangle() -> void:
 				[Deduction.new(liberty, CELL_WALL, ISLAND_STRANGLE, [island.front()])]
 			)
 	
-	if not has_scheduled_task(run_bifurcation_step):
+	if _bifurcation_engine.get_scenario_count() >= 1 \
+			and not has_scheduled_task(run_bifurcation_step):
 		schedule_task(run_bifurcation_step, 10)
 
 
+## Executes a bifurcation on a wall with only two liberties, testing each possible wall/island pair.[br]
+## [br]
+## There are two common border wall scenarios:[br]
+## [br]
+## 1. A wall has two liberties stacked against the wall, one above the other. It's unlikely the liberty bordering the
+## 	puzzle's edge is an island, and assuming it is an island often leads to an obvious contradiction.[br]
+## 2. A wall has two liberties side-by-side against the wall, so it can extend left or right. However, one of these is
+## 	not an actual liberty, and extending it along the wall invalidates a clue.[br]
+## [br]
+## This deduction doesn't apply only to border walls, but border walls are the most useful case.
 func enqueue_wall_strangle() -> void:
 	var walls: Array[Array] = board.get_walls()
 	if walls.size() < 2:
@@ -1072,19 +1024,33 @@ func enqueue_wall_strangle() -> void:
 	
 	for wall: Array[Vector2i] in walls:
 		var liberties: Array[Vector2i] = board.get_liberties(wall)
-		if liberties.size() == 2:
+		if liberties.size() != 2:
+			continue
+		
+		var scenario_key: String
+		var reason: Deduction.Reason
+		if liberties.any(is_border_cell) or wall.any(is_border_cell):
+			scenario_key = "border_hug"
+			reason = BORDER_HUG
+		else:
+			scenario_key = "wall_strangle"
+			reason = WALL_STRANGLE
+			
+		for liberty: Vector2i in liberties:
+			var other_liberty: Vector2i = liberties[1] if liberty == liberties[0] else liberties[0]
+			
+			var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
+			squeeze_fill.push_change(liberty, CELL_ISLAND)
+			squeeze_fill.push_change(other_liberty, CELL_WALL)
+			squeeze_fill.skip_cells(wall)
+			squeeze_fill.fill()
 			_add_bifurcation_scenario(
-				"wall_strangle", [wall.front(), liberties[0]],
-				{liberties[0]: CELL_ISLAND, liberties[1]: CELL_WALL},
-				[Deduction.new(liberties[0], CELL_WALL, WALL_STRANGLE, [wall.front()])]
+				scenario_key, [wall.front(), liberty],
+				squeeze_fill.changes,
+				[Deduction.new(liberty, CELL_WALL, reason, [wall.front()])]
 			)
-			_add_bifurcation_scenario(
-				"wall_strangle", [wall.front(), liberties[1]],
-				{liberties[1]: CELL_ISLAND, liberties[0]: CELL_WALL},
-				[Deduction.new(liberties[1], CELL_WALL, WALL_STRANGLE, [wall.front()])]
-			)
-	
-	if not has_scheduled_task(run_bifurcation_step):
+	if _bifurcation_engine.get_scenario_count() >= 1 \
+			and not has_scheduled_task(run_bifurcation_step):
 		schedule_task(run_bifurcation_step, 10)
 
 
@@ -1282,38 +1248,3 @@ func _task_key(callable: Callable) -> String:
 	if not args.is_empty():
 		key += ":" + JSON.stringify(args)
 	return key
-
-
-## A simple bifurcation which only expands walls/islands to their neighbors.
-class BorderScenario:
-	var deductions: Array[Deduction]
-	
-	var _border_wall_cell: Vector2i
-	var _board: SolverBoard
-	var _squeeze_fill: SqueezeFill
-	
-	func _init(init_board: SolverBoard, init_border_wall_cell: Vector2i,
-			init_wall_assumption: Vector2i, init_island_assumption: Vector2i) -> void:
-		_board = init_board
-		_border_wall_cell = init_border_wall_cell
-		
-		_squeeze_fill = SqueezeFill.new(init_board)
-		_squeeze_fill.skip_cells(_board.get_wall_for_cell(_border_wall_cell))
-		_squeeze_fill.push_change(init_wall_assumption, CELL_WALL)
-		_squeeze_fill.push_change(init_island_assumption, CELL_ISLAND)
-		
-		deductions = [Deduction.new(init_island_assumption, CELL_WALL, BORDER_HUG, [init_border_wall_cell])]
-	
-	
-	func fill() -> void:
-		_squeeze_fill.fill()
-	
-	
-	func has_new_contradictions(mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> bool:
-		var new_board: SolverBoard = _board.duplicate()
-		for change_cell: Vector2i in _squeeze_fill.changes:
-			new_board.set_cell(change_cell, _squeeze_fill.changes[change_cell])
-		var init_validation_result: SolverBoard.ValidationResult = _board.validate(mode)
-		var validation_result: SolverBoard.ValidationResult = new_board.validate(mode)
-		
-		return validation_result.error_count > init_validation_result.error_count
