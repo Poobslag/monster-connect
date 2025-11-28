@@ -1,6 +1,6 @@
 class_name BifurcationScenario
 
-var solver: Solver = Solver.new()
+var solver: Solver = Solver.new(false)
 var board: SolverBoard
 var assumptions: Dictionary[Vector2i, int]
 var deductions: Array[Deduction]
@@ -27,15 +27,15 @@ func _build() -> void:
 	solver.apply_changes()
 
 
-func is_queue_empty() -> bool:
-	return solver.is_queue_empty()
+func has_available_probes() -> bool:
+	return solver.has_available_probes()
 
 
 func step() -> void:
 	if has_new_local_contradictions():
 		return
 	
-	solver.step()
+	solver.run_next_probe(false)
 	if solver.deductions.has_changes():
 		_change_cells.append_array(solver.deductions.cells.keys())
 		solver.apply_changes()

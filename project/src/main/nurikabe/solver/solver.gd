@@ -1,5 +1,7 @@
 class_name Solver
 
+signal ran_probe(probe: Probe)
+
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
@@ -47,16 +49,54 @@ var log_enabled: bool = false
 var perform_redundant_deductions: bool = false
 
 var deductions: DeductionBatch = DeductionBatch.new()
-var board: SolverBoard
+var board: SolverBoard:
+	set(value):
+		board = value
+		decision_manager.board = value
+		probe_library.board = value
+
 var metrics: Dictionary[String, Variant] = {}
+
+var decision_manager: DecisionManager = DecisionManager.new()
+var probe_library: ProbeLibrary = ProbeLibrary.new()
 
 var _change_history: Array[Dictionary] = []
 var _log: DeductionLogger = DeductionLogger.new(self)
-var _task_history: Dictionary[String, Dictionary] = {
-}
-var _task_queue: Array[Dictionary] = [
-]
 var _bifurcation_engine: BifurcationEngine = BifurcationEngine.new()
+
+func _init(create_default_probes: bool = true) -> void:
+	decision_manager.probe_library = probe_library
+	ran_probe.connect(probe_library._on_Solver_ran_probe)
+	
+	if create_default_probes:
+		probe_library.add_probe(create_island_of_one_probes)
+		probe_library.add_probe(create_adjacent_clue_probes)
+		probe_library.add_probe(create_island_probes)
+		probe_library.add_probe(create_wall_probes)
+		probe_library.add_probe(create_island_divider_probes)
+		probe_library.add_probe(create_unreachable_square_probes)
+		probe_library.add_probe(create_wall_chokepoint_probes)
+		probe_library.add_probe(create_island_chokepoint_probes)	
+		probe_library.add_probe(deduce_unclued_lifeline)
+		
+		probe_library.add_probe(create_bifurcation_probes).set_bifurcation()
+		probe_library.add_probe(create_wall_strangle_probes).set_bifurcation()
+		probe_library.add_probe(create_island_battleground_probes).set_bifurcation()
+		probe_library.add_probe(create_island_release_probes).set_bifurcation()
+		probe_library.add_probe(create_island_strangle_probes).set_bifurcation()
+
+
+func create_bifurcation_probes() -> void:
+	print("90: create bifurcation probes: %s" % [board.get_filled_cell_count()])
+	if not metrics.has("bifurcation_stops"):
+		metrics["bifurcation_stops"] = 0
+	metrics["bifurcation_stops"] += 1
+	
+	create_wall_strangle_probes()
+	create_island_battleground_probes()
+	create_island_release_probes()
+	create_island_strangle_probes()
+
 
 func add_deduction(pos: Vector2i, value: int,
 		reason: Deduction.Reason = UNKNOWN_REASON,
@@ -80,7 +120,7 @@ func apply_changes() -> void:
 	board.set_cells(changes)
 	deductions.clear()
 	
-	_react_to_changes(changes)
+	_create_change_probes(changes)
 
 
 func apply_heat() -> void:
@@ -89,167 +129,36 @@ func apply_heat() -> void:
 
 
 func clear() -> void:
+	decision_manager.clear()
 	deductions.clear()
 	metrics.clear()
+	probe_library.clear()
 	_bifurcation_engine.clear()
 	_change_history.clear()
-	_task_history.clear()
-	_task_queue.clear()
-
-
-func is_queue_empty() -> bool:
-	return _task_queue.is_empty()
 
 
 func get_changes() -> Array[Dictionary]:
 	return deductions.get_changes()
 
 
-func schedule_tasks(allow_bifurcation: bool = true) -> void:
-	if get_last_run(enqueue_islands_of_one) == -1:
-		schedule_task(enqueue_islands_of_one, 1000)
-	
-	if get_last_run(enqueue_adjacent_clues) == -1:
-		schedule_task(enqueue_adjacent_clues, 1000)
-	
-	if has_scheduled_task(enqueue_islands):
-		pass
-	elif get_last_run(enqueue_islands) == -1:
-		schedule_task(enqueue_islands, 150)
-	elif get_last_run(enqueue_islands) < board.get_filled_cell_count():
-		schedule_task(enqueue_islands, 50)
-	
-	if has_scheduled_task(enqueue_walls):
-		pass
-	elif get_last_run(enqueue_walls) == -1:
-		schedule_task(enqueue_walls, 145)
-	elif get_last_run(enqueue_walls) < board.get_filled_cell_count():
-		schedule_task(enqueue_walls, 45)
-	
-	if has_scheduled_task(enqueue_island_dividers):
-		pass
-	elif get_last_run(enqueue_island_dividers) == -1:
-		schedule_task(enqueue_island_dividers, 140)
-	elif get_last_run(enqueue_island_dividers) < board.get_filled_cell_count():
-		schedule_task(enqueue_island_dividers, 40)
-	
-	if has_scheduled_task(enqueue_unreachable_squares):
-		pass
-	elif get_last_run(enqueue_unreachable_squares) == -1:
-		schedule_task(enqueue_unreachable_squares, 135)
-	elif get_last_run(enqueue_unreachable_squares) < board.get_filled_cell_count():
-		schedule_task(enqueue_unreachable_squares, 35)
-	
-	if has_scheduled_task(enqueue_wall_chokepoints):
-		pass
-	elif get_last_run(enqueue_wall_chokepoints) == -1:
-		schedule_task(enqueue_wall_chokepoints, 135)
-	elif get_last_run(enqueue_wall_chokepoints) < board.get_filled_cell_count():
-		schedule_task(enqueue_wall_chokepoints, 35)
-	
-	if has_scheduled_task(enqueue_island_chokepoints):
-		pass
-	elif get_last_run(enqueue_island_chokepoints) == -1:
-		schedule_task(enqueue_island_chokepoints, 130)
-	elif get_last_run(enqueue_island_chokepoints) < board.get_filled_cell_count():
-		schedule_task(enqueue_island_chokepoints, 30)
-	
-	if is_queue_empty() and allow_bifurcation:
-		metrics["bifurcation_start_time"] = Time.get_ticks_usec()
-		
-		if has_scheduled_task(enqueue_wall_strangle):
-			pass
-		elif get_last_run(enqueue_wall_strangle) < board.get_filled_cell_count():
-			schedule_task(enqueue_wall_strangle, 20)
-		
-		if has_scheduled_task(enqueue_island_battleground):
-			pass
-		elif get_last_run(enqueue_island_battleground) < board.get_filled_cell_count():
-			schedule_task(enqueue_island_battleground, 20)
-		
-		if has_scheduled_task(enqueue_island_release):
-			pass
-		elif get_last_run(enqueue_island_release) < board.get_filled_cell_count():
-			schedule_task(enqueue_island_release, 20)
-		
-		if has_scheduled_task(enqueue_island_strangle):
-			pass
-		elif get_last_run(enqueue_island_strangle) < board.get_filled_cell_count():
-			schedule_task(enqueue_island_strangle, 20)
-		
-		if not metrics.has("bifurcation_stops"):
-			metrics["bifurcation_stops"] = 0
-		metrics["bifurcation_stops"] += 1
+func has_available_probes() -> bool:
+	return probe_library.has_available_probes()
 
 
-func get_last_run(callable: Callable) -> int:
-	var task_key: String = _task_key(callable)
-	var history_item: Dictionary[String, Variant] = _task_history.get(task_key, {} as Dictionary[String, Variant])
-	return -1 if history_item.is_empty() else history_item["last_run"]
+func run_all_probes() -> void:
+	while probe_library.has_available_probes():
+		run_next_probe()
 
 
-func has_scheduled_task(callable: Callable) -> bool:
-	return not get_scheduled_task(callable).is_empty()
-
-
-func has_scheduled_tasks() -> bool:
-	return not _task_queue.is_empty()
-
-
-func get_scheduled_task(callable: Callable) -> Dictionary[String, Variant]:
-	var key: String = _task_key(callable)
-	var result: Dictionary[String, Variant]
-	for task: Dictionary[String, Variant] in _task_queue:
-		if task["key"] == key:
-			result = task
-			break
-	return result
-
-
-func schedule_task(callable: Callable, priority: int) -> void:
-	var scheduled_task: Dictionary[String, Variant] = get_scheduled_task(callable)
-	var tasks_dirty: bool = false
-	if scheduled_task.is_empty():
-		var key: String = _task_key(callable)
-		_task_queue.append({"key": key, "callable": callable, "priority": priority} as Dictionary[String, Variant])
-		tasks_dirty = true
-	elif scheduled_task["priority"] != priority:
-		scheduled_task["priority"] = priority
-		tasks_dirty = true
-	if tasks_dirty:
-		_task_queue.sort_custom(func(a: Dictionary[String, Variant], b: Dictionary[String, Variant]) -> bool:
-			return a.priority > b.priority)
-
-
-func step() -> void:
-	if not _task_queue.is_empty():
-		run_next_task()
-
-
-func print_queue() -> void:
-	var strings: Array[String] = []
-	print("task_queue.size=%s; filled_cells=%s" % [_task_queue.size(), board.get_filled_cell_count()])
-	for task: Dictionary[String, Variant] in _task_queue:
-		strings.append(" priority=%s: %s" % [task["priority"], task["key"]])
-	print("\n".join(strings))
-
-
-func run_all_tasks() -> void:
-	while not _task_queue.is_empty():
-		run_next_task()
-
-
-func run_next_task() -> void:
-	if _task_queue.is_empty():
+func run_next_probe(allow_bifurcation: bool = true) -> void:
+	var next_probe: Probe = decision_manager.choose_probe(allow_bifurcation)
+	if next_probe == null:
 		return
 	
-	var next_task: Dictionary[String, Variant] = _task_queue.pop_front()
 	if verbose:
-		print("(%s;%s) run %s" % [board.get_filled_cell_count(), Time.get_ticks_msec(), next_task["key"]])
-	_task_history[next_task["key"]] = {
-		"last_run": board.get_filled_cell_count()
-	} as Dictionary[String, Variant]
-	next_task["callable"].call()
+		print("(%s;%s) run %s" % [board.get_filled_cell_count(), Time.get_ticks_msec(), next_probe.key])
+	next_probe.run()
+	ran_probe.emit(next_probe)
 
 
 func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
@@ -861,34 +770,32 @@ func deduce_pool(wall_cell: Vector2i) -> void:
 	_log.end("pool", [wall_cell])
 
 
-func enqueue_adjacent_clues() -> void:
+func create_adjacent_clue_probes() -> void:
 	for cell: Vector2i in board.cells:
 		if NurikabeUtils.is_clue(board.get_cell(cell)):
-			schedule_task(deduce_adjacent_clues.bind(cell), 1100)
+			probe_library.add_probe(deduce_adjacent_clues.bind(cell)).set_one_shot()
 
 
-func enqueue_island_chokepoints() -> void:
+func create_island_chokepoint_probes() -> void:
 	var chokepoints: Array[Vector2i] = board.get_island_chokepoint_map().chokepoints_by_cell.keys()
 	for chokepoint: Vector2i in chokepoints:
 		if not _should_deduce(board, chokepoint):
 			continue
-		schedule_task(deduce_island_chokepoint.bind(chokepoint), 230)
+		probe_library.add_probe(deduce_island_chokepoint.bind(chokepoint)).set_one_shot()
 	
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
 		if board.get_liberties(island).is_empty():
 			continue
-		schedule_task(deduce_clue_chokepoint.bind(island.front()), 225)
-	
-	schedule_task(deduce_unclued_lifeline, 224)
+		probe_library.add_probe(deduce_clue_chokepoint.bind(island.front())).set_one_shot()
 
 
-func enqueue_wall_chokepoints() -> void:
+func create_wall_chokepoint_probes() -> void:
 	var chokepoints: Array[Vector2i] = board.get_wall_chokepoint_map().chokepoints_by_cell.keys()
 	for chokepoint: Vector2i in chokepoints:
 		if not _should_deduce(board, chokepoint):
 			continue
-		schedule_task(deduce_wall_chokepoint.bind(chokepoint), 235)
+		probe_library.add_probe(deduce_wall_chokepoint.bind(chokepoint)).set_one_shot()
 
 
 func is_border_cell(cell: Vector2i) -> bool:
@@ -901,7 +808,7 @@ func is_border_cell(cell: Vector2i) -> bool:
 	return result
 
 
-func enqueue_islands() -> void:
+func create_island_probes() -> void:
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
 		if board.get_liberties(island).is_empty():
@@ -912,14 +819,14 @@ func enqueue_islands() -> void:
 			continue
 		elif clue_value == 0:
 			# unclued island
-			schedule_task(deduce_unclued_island.bind(island.front()), 250)
+			probe_library.add_probe(deduce_unclued_island.bind(island.front())).set_one_shot()
 		else:
 			# clued island
-			schedule_task(deduce_clued_island.bind(island.front()), 250)
+			probe_library.add_probe(deduce_clued_island.bind(island.front())).set_one_shot()
 
 
 ## Executes a bifurcation on two islands which are almost adjacent.
-func enqueue_island_battleground() -> void:
+func create_island_battleground_probes() -> void:
 	var clued_island_neighbors_by_empty_cell: Dictionary[Vector2i, Array] = {}
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
@@ -951,12 +858,12 @@ func enqueue_island_battleground() -> void:
 						ISLAND_BATTLEGROUND, [clued_liberty, neighbor_liberty])])
 	
 	if _bifurcation_engine.get_scenario_count() >= 1 \
-			and not has_scheduled_task(run_bifurcation_step):
-		schedule_task(run_bifurcation_step, 10)
+			and not probe_library.has_probe(run_bifurcation_step):
+		probe_library.add_probe(run_bifurcation_step).set_one_shot().set_bifurcation().set_one_shot()
 
 
 ## Executes a bifurcation on an island with only two liberties, testing each possible wall/island pair.
-func enqueue_island_release() -> void:
+func create_island_release_probes() -> void:
 	for island: Array[Vector2i] in board.get_islands():
 		if board.get_liberties(island).size() != 2:
 			continue
@@ -982,13 +889,12 @@ func enqueue_island_release() -> void:
 				[Deduction.new(liberty, CELL_ISLAND, ISLAND_RELEASE, [island.front()])]
 			)
 	
-	if _bifurcation_engine.get_scenario_count() >= 1 \
-			and not has_scheduled_task(run_bifurcation_step):
-		schedule_task(run_bifurcation_step, 10)
+	if _bifurcation_engine.get_scenario_count() >= 1:
+		probe_library.add_probe(run_bifurcation_step).set_one_shot().set_bifurcation().set_one_shot()
 
 
 ## Executes a bifurcation on an island which is one cell away from being complete.
-func enqueue_island_strangle() -> void:
+func create_island_strangle_probes() -> void:
 	for island: Array[Vector2i] in board.get_islands():
 		var clue_value: int = board.get_clue_for_island(island)
 		if island.size() != clue_value - 1:
@@ -1018,9 +924,8 @@ func enqueue_island_strangle() -> void:
 				[Deduction.new(liberty, CELL_WALL, ISLAND_STRANGLE, [island.front()])]
 			)
 	
-	if _bifurcation_engine.get_scenario_count() >= 1 \
-			and not has_scheduled_task(run_bifurcation_step):
-		schedule_task(run_bifurcation_step, 10)
+	if _bifurcation_engine.get_scenario_count() >= 1:
+		probe_library.add_probe(run_bifurcation_step).set_one_shot().set_bifurcation().set_one_shot()
 
 
 ## Executes a bifurcation on a wall with only two liberties, testing each possible wall/island pair.[br]
@@ -1033,7 +938,7 @@ func enqueue_island_strangle() -> void:
 ## 	not an actual liberty, and extending it along the wall invalidates a clue.[br]
 ## [br]
 ## This deduction doesn't apply only to border walls, but border walls are the most useful case.
-func enqueue_wall_strangle() -> void:
+func create_wall_strangle_probes() -> void:
 	var walls: Array[Array] = board.get_walls()
 	if walls.size() < 2:
 		# The wall strangle deduction requires two walls.
@@ -1066,12 +971,11 @@ func enqueue_wall_strangle() -> void:
 				squeeze_fill.changes,
 				[Deduction.new(liberty, CELL_WALL, reason, [wall.front()])]
 			)
-	if _bifurcation_engine.get_scenario_count() >= 1 \
-			and not has_scheduled_task(run_bifurcation_step):
-		schedule_task(run_bifurcation_step, 10)
+	if _bifurcation_engine.get_scenario_count() >= 1:
+		probe_library.add_probe(run_bifurcation_step).set_one_shot().set_bifurcation().set_one_shot()
 
 
-func enqueue_island_dividers() -> void:
+func create_island_divider_probes() -> void:
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
 		var clue_value: int = board.get_clue_for_island(island)
@@ -1080,33 +984,33 @@ func enqueue_island_dividers() -> void:
 			continue
 		if board.get_liberties(island).is_empty():
 			continue
-		schedule_task(deduce_island_divider.bind(island.front()), 240)
+		probe_library.add_probe(deduce_island_divider.bind(island.front())).set_one_shot()
 
 
-func enqueue_islands_of_one() -> void:
+func create_island_of_one_probes() -> void:
 	for cell: Vector2i in board.cells:
 		if board.get_cell(cell) != 1:
 			continue
 		if board.get_liberties(board.get_island_for_cell(cell)).is_empty():
 			continue
-		schedule_task(deduce_island_of_one.bind(cell), 1100)
+		probe_library.add_probe(deduce_island_of_one.bind(cell)).set_one_shot()
 
 
-func enqueue_walls() -> void:
+func create_wall_probes() -> void:
 	var walls: Array[Array] = board.get_walls()
 	for wall: Array[Vector2i] in walls:
 		if board.get_liberties(wall).is_empty():
 			continue
-		schedule_task(deduce_wall.bind(wall.front()), 245)
+		probe_library.add_probe(deduce_wall.bind(wall.front())).set_one_shot()
 
 
-func enqueue_unreachable_squares() -> void:
+func create_unreachable_square_probes() -> void:
 	for cell: Vector2i in board.cells:
 		if not _should_deduce(board, cell):
 			continue
 		if board.get_global_reachability_map().get_clue_reachability(cell) \
 				!= GlobalReachabilityMap.ClueReachability.REACHABLE:
-			schedule_task(deduce_unreachable_square.bind(cell), 235)
+			probe_library.add_probe(deduce_unreachable_square.bind(cell)).set_one_shot()
 
 
 func get_unique_neighbor_island_cells(island_cells: Array[Vector2i]) -> Array[Vector2i]:
@@ -1161,9 +1065,9 @@ func run_bifurcation_step() -> void:
 	if _bifurcation_engine.has_new_local_contradictions():
 		# found a contradiction; we can make a deduction
 		_add_local_bifurcation_deductions()
-	elif not _bifurcation_engine.is_queue_empty():
+	elif _bifurcation_engine.has_available_probes():
 		# there's still more to do
-		schedule_task(run_bifurcation_step, 10)
+		probe_library.add_probe(run_bifurcation_step).set_bifurcation().set_one_shot()
 	elif _bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_SIMPLE):
 		# we're stuck; check if any of the scenarios cause a contradiction which we overlooked
 		_add_bifurcation_deductions(SolverBoard.VALIDATE_SIMPLE)
@@ -1171,7 +1075,7 @@ func run_bifurcation_step() -> void:
 		# we're stuck; check if any of the scenarios cause a contradiction which we overlooked
 		_add_bifurcation_deductions(SolverBoard.VALIDATE_COMPLEX)
 	
-	if _bifurcation_engine.is_queue_empty() and metrics.has("bifurcation_start_time"):
+	if not _bifurcation_engine.has_available_probes() and metrics.has("bifurcation_start_time"):
 		var bifurcation_duration: int = (Time.get_ticks_usec() - metrics["bifurcation_start_time"])
 		metrics.erase("bifurcation_start_time")
 		
@@ -1221,6 +1125,41 @@ func _add_bifurcation_scenario(key: String, cells: Array[Vector2i],
 	_bifurcation_engine.add_scenario(board, key, cells, assumptions, bifurcation_deductions)
 
 
+func _create_change_probes(changes: Array[Dictionary]) -> void:
+	var affected_wall_roots: Dictionary[Vector2i, bool] = {}
+	var affected_island_roots: Dictionary[Vector2i, bool] = {}
+	var cells_to_check: Dictionary[Vector2i, bool] = {}
+	for change: Dictionary[String, Variant] in changes:
+		var cell: Vector2i = change["pos"]
+		cells_to_check[cell] = true
+		for neighbor_dir in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			cells_to_check[neighbor] = true
+	for cell_to_check: Vector2i in cells_to_check:
+		var wall_root: Vector2i = board.get_wall_root_for_cell(cell_to_check)
+		if wall_root != POS_NOT_FOUND:
+			affected_wall_roots[wall_root] = true
+		var island_root: Vector2i = board.get_island_root_for_cell(cell_to_check)
+		if island_root != POS_NOT_FOUND:
+			affected_island_roots[island_root] = true
+	
+	for wall_root: Vector2i in affected_wall_roots:
+		var wall: Array[Vector2i] = board.get_wall_for_cell(wall_root)
+		if board.get_liberties(wall).is_empty():
+			continue
+		probe_library.add_probe(deduce_wall.bind(wall_root)).set_one_shot()
+	
+	for island_root: Vector2i in affected_island_roots:
+		var island: Array[Vector2i] = board.get_island_for_cell(island_root)
+		if board.get_liberties(island).is_empty():
+			continue
+		var clue_value: int = board.get_clue_for_island_cell(island_root)
+		if clue_value >= 1:
+			probe_library.add_probe(deduce_clued_island.bind(island_root)).set_one_shot()
+		elif clue_value == 0:
+			probe_library.add_probe(deduce_unclued_island.bind(island_root)).set_one_shot()
+
+
 func _should_deduce(target_board: SolverBoard, cell: Vector2i) -> bool:
 	return target_board.get_cell(cell) == CELL_EMPTY and (cell not in deductions.cells or perform_redundant_deductions)
 
@@ -1243,46 +1182,3 @@ func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 		var neighbor_root: Vector2i = board.get_island_root_for_cell(neighbor)
 		clued_neighbor_roots[neighbor_root] = true
 	return clued_neighbor_roots.keys()
-
-
-func _react_to_changes(changes: Array[Dictionary]) -> void:
-	var affected_wall_roots: Dictionary[Vector2i, bool] = {}
-	var affected_island_roots: Dictionary[Vector2i, bool] = {}
-	var cells_to_check: Dictionary[Vector2i, bool] = {}
-	for change: Dictionary[String, Variant] in changes:
-		var cell: Vector2i = change["pos"]
-		cells_to_check[cell] = true
-		for neighbor_dir in NEIGHBOR_DIRS:
-			var neighbor: Vector2i = cell + neighbor_dir
-			cells_to_check[neighbor] = true
-	for cell_to_check: Vector2i in cells_to_check:
-		var wall_root: Vector2i = board.get_wall_root_for_cell(cell_to_check)
-		if wall_root != POS_NOT_FOUND:
-			affected_wall_roots[wall_root] = true
-		var island_root: Vector2i = board.get_island_root_for_cell(cell_to_check)
-		if island_root != POS_NOT_FOUND:
-			affected_island_roots[island_root] = true
-	
-	for wall_root: Vector2i in affected_wall_roots:
-		var wall: Array[Vector2i] = board.get_wall_for_cell(wall_root)
-		if board.get_liberties(wall).is_empty():
-			continue
-		schedule_task(deduce_wall.bind(wall_root), 345)
-	
-	for island_root: Vector2i in affected_island_roots:
-		var island: Array[Vector2i] = board.get_island_for_cell(island_root)
-		if board.get_liberties(island).is_empty():
-			continue
-		var clue_value: int = board.get_clue_for_island_cell(island_root)
-		if clue_value >= 1:
-			schedule_task(deduce_clued_island.bind(island_root), 350)
-		elif clue_value == 0:
-			schedule_task(deduce_unclued_island.bind(island_root), 350)
-
-
-func _task_key(callable: Callable) -> String:
-	var key: String = callable.get_method()
-	var args: Array[Variant] = callable.get_bound_arguments()
-	if not args.is_empty():
-		key += ":" + JSON.stringify(args)
-	return key

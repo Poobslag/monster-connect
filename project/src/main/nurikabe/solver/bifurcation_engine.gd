@@ -23,9 +23,9 @@ func step(scenario_key: String) -> void:
 	scenario.step()
 
 
-func is_queue_empty() -> bool:
-	return _scenarios_by_key.values().all(func(scenario: BifurcationScenario) -> bool:
-		return scenario.is_queue_empty())
+func has_available_probes() -> bool:
+	return _scenarios_by_key.values().any(func(scenario: BifurcationScenario) -> bool:
+		return scenario.has_available_probes())
 
 
 func get_scenario_count() -> int:

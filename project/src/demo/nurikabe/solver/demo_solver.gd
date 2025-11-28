@@ -46,6 +46,7 @@ var solver: Solver = Solver.new()
 
 var performance_suite_queue: Array[String] = []
 
+
 func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
 		KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9:
@@ -162,11 +163,7 @@ func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, 
 		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
 		if solver.board.is_filled():
 			break
-		if not solver.has_scheduled_tasks():
-			solver.schedule_tasks(allow_bifurcation)
-		if not solver.has_scheduled_tasks():
-			break
-		solver.step()
+		solver.run_next_probe(allow_bifurcation)
 		if apply_changes:
 			solver.apply_heat()
 			solver.apply_changes()

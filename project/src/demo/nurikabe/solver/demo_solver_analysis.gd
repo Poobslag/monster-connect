@@ -15,26 +15,28 @@ func parse() -> void:
 		var line_split: PackedStringArray = line.split("|")
 		for i in line_split.size():
 			line_split[i] = line_split[i].strip_edges()
-		if line_split.size() < 3:
+		if line_split.size() < 4:
 			continue
 		
-		var technique_string: String = line_split[1]
-		if technique_string.find("(") != -1:
-			technique_string = StringUtils.substring_before(technique_string, "(")
+		var probe_key: String = line_split[1]
+		if probe_key.find("(") != -1:
+			probe_key = StringUtils.substring_before(probe_key, "(")
 		
-		if not raw_metrics.has(technique_string):
-			raw_metrics[technique_string] = {
+		if not raw_metrics.has(probe_key):
+			raw_metrics[probe_key] = {
 				"duration": 0,
 				"attempt_count": 0,
 				"success_count": 0,
 				"cells": 0,
+				"probes": 0,
 			} as Dictionary[String, Variant]
 		
-		raw_metrics[technique_string]["duration"] += int(line_split[2])
-		raw_metrics[technique_string]["attempt_count"] += 1
-		raw_metrics[technique_string]["cells"] += int(line_split[3])
+		raw_metrics[probe_key]["duration"] += int(line_split[4])
+		raw_metrics[probe_key]["attempt_count"] += 1
+		raw_metrics[probe_key]["cells"] += int(line_split[2])
+		raw_metrics[probe_key]["probes"] += int(line_split[3])
 		if int(line_split[3]) > 0:
-			raw_metrics[technique_string]["success_count"] += 1
+			raw_metrics[probe_key]["success_count"] += 1
 	
 	# convert raw_metrics to dict
 	var solver_metrics: Dictionary[String, Variant] = {}
@@ -42,7 +44,7 @@ func parse() -> void:
 		var raw_metric: Dictionary[String, Variant] = raw_metrics[technique]
 		var success: float = float(raw_metric["success_count"]) / raw_metric["attempt_count"]
 		var cost: float = float(raw_metric["duration"]) / maxi(1, raw_metric["attempt_count"])
-		var impact: float = float(raw_metric["cells"]) / maxi(1, raw_metric["success_count"])
+		var impact: float = float(max(raw_metric["cells"], raw_metric["probes"])) / maxi(1, raw_metric["success_count"])
 		
 		solver_metrics[technique] = {
 			"success": success,
