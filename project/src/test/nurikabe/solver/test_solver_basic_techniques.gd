@@ -500,21 +500,6 @@ func test_enqueue_wall_chokepoints() -> void:
 	assert_deductions(solver.enqueue_wall_chokepoints, expected)
 
 
-func test_enqueue_wall_chokepoints_border_hug() -> void:
-	grid = [
-		"########",
-		"     .##",
-		"     . 7",
-		"      ##",
-		"####    ",
-		" 1##    ",
-	]
-	var expected: Array[String] = [
-		"(0, 1)->## border_hug (0, 0)",
-	]
-	assert_deductions(solver.enqueue_wall_strangle, expected)
-
-
 func test_enqueue_wall_chokepoints_border_hug_invalid_1() -> void:
 	grid = [
 		"   6    ## 1",

@@ -961,6 +961,8 @@ func enqueue_island_release() -> void:
 		if board.get_liberties(island).size() != 2:
 			continue
 		var clue_value: int = board.get_clue_for_island(island)
+		if island.size() >= clue_value:
+			continue
 		var liberties: Array[Vector2i] = board.get_liberties(island)
 		for liberty: Vector2i in liberties:
 			if not _should_deduce(board, liberty):
