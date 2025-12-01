@@ -95,7 +95,6 @@ func test_create_island_strangle_probes() -> void:
 		"     . 4 .  ",
 	]
 	var expected: Array[String] = [
-		"(1, 2)->## island_strangle (2, 2)",
 		"(4, 1)->## island_strangle (2, 2)",
 	]
 	assert_deductions(solver.create_island_strangle_probes, expected)
@@ -112,4 +111,14 @@ func test_create_island_release_probes() -> void:
 	var expected: Array[String] = [
 		"(1, 4)->. island_release (0, 4)",
 	]
+	assert_deductions(solver.create_island_release_probes, expected)
+
+
+func test_create_island_release_probes_complete() -> void:
+	grid = [
+		"##    ",
+		" . . .",
+		" 6 . .",
+	]
+	var expected: Array[String] = []
 	assert_deductions(solver.create_island_release_probes, expected)

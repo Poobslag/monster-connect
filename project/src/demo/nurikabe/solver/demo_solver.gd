@@ -9,7 +9,10 @@ extends Node
 ## 	[kbd]E[/kbd]: Solve until bifurcation is necessary.
 ## 	[kbd]R[/kbd]: Reset the board.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
-## 	[kbd]Shift + P[/kbd]: Print task queue to console.
+## 	[kbd]S[/kbd]: Assign a fixed seed.
+## 	[kbd]Shift + S[/kbd]: Increment the fixed seed.
+## 	[kbd]Shift + P[/kbd]: Print available probes and bifurcation scenarios to console.
+## 	[kbd]H[/kbd]: Clear the solver history. Forces deductions to be rerun.
 ## 	[kbd]B[/kbd]: Print benchmark results for AggregateTimer/SplitTimer.
 
 @export_file("*.txt") var puzzle_path: String:
@@ -21,6 +24,11 @@ extends Node
 	set(value):
 		log_enabled = value
 		solver.log_enabled = log_enabled
+
+@export var verbose: bool = false:
+	set(value):
+		verbose = value
+		solver.verbose = verbose
 
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
@@ -43,8 +51,13 @@ const PUZZLE_PATHS: Array[String] = [
 
 var performance_data: Dictionary[String, Variant] = {}
 var solver: Solver = Solver.new()
-
 var performance_suite_queue: Array[String] = []
+var fixed_seed: int = -1
+
+func _ready() -> void:
+	_refresh_puzzle_path()
+	solver.board = %GameBoard.to_solver_board()
+	solver.decision_manager.strategy = DecisionManager.Strategy.RANDOM
 
 
 func _input(event: InputEvent) -> void:
@@ -78,21 +91,32 @@ func _input(event: InputEvent) -> void:
 			%GameBoard.validate()
 		KEY_P:
 			if Input.is_key_pressed(KEY_SHIFT):
-				solver.print_queue()
+				solver.probe_library.print_available_probes()
+				solver.bifurcation_engine.print_scenarios()
 			else:
 				print_grid_string()
 		KEY_R:
 			%GameBoard.reset()
 			solver.board = %GameBoard.to_solver_board()
 			solver.clear()
+			apply_fixed_seed()
+		KEY_S:
+			fixed_seed = max(0, fixed_seed)
+			if Input.is_key_pressed(KEY_SHIFT):
+				fixed_seed += 1
+			_show_message("seed: %s" % [fixed_seed])
+			apply_fixed_seed()
+		KEY_H:
+			solver.probe_library.clear_history()
+			_show_message("cleared history")
 		KEY_B:
 			AggregateTimer.print_results()
 			SplitTimer.print_results()
 
 
-func _ready() -> void:
-	_refresh_puzzle_path()
-	solver.board = %GameBoard.to_solver_board()
+func apply_fixed_seed() -> void:
+	if fixed_seed >= 0:
+		solver.decision_manager.rng.seed = fixed_seed
 
 
 func print_grid_string() -> void:
@@ -177,6 +201,7 @@ func load_puzzle(new_puzzle_path: String) -> void:
 	puzzle_path = new_puzzle_path
 	solver.board = %GameBoard.to_solver_board()
 	solver.clear()
+	apply_fixed_seed()
 
 
 func performance_test() -> void:

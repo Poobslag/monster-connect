@@ -1,6 +1,6 @@
 class_name Solver
 
-signal ran_probe(probe: Probe)
+signal about_to_run_probe(probe: Probe)
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
@@ -57,37 +57,22 @@ var board: SolverBoard:
 
 var metrics: Dictionary[String, Variant] = {}
 
+var bifurcation_engine: BifurcationEngine = BifurcationEngine.new()
 var decision_manager: DecisionManager = DecisionManager.new()
 var probe_library: ProbeLibrary = ProbeLibrary.new()
 
 var _change_history: Array[Dictionary] = []
 var _log: DeductionLogger = DeductionLogger.new(self)
-var _bifurcation_engine: BifurcationEngine = BifurcationEngine.new()
 
-func _init(create_default_probes: bool = true) -> void:
+func _init(default_probes: bool = true) -> void:
 	decision_manager.probe_library = probe_library
-	ran_probe.connect(probe_library._on_Solver_ran_probe)
+	about_to_run_probe.connect(probe_library._on_solver_about_to_run_probe)
 	
-	if create_default_probes:
-		probe_library.add_probe(create_island_of_one_probes)
-		probe_library.add_probe(create_adjacent_clue_probes)
-		probe_library.add_probe(create_island_probes)
-		probe_library.add_probe(create_wall_probes)
-		probe_library.add_probe(create_island_divider_probes)
-		probe_library.add_probe(create_unreachable_square_probes)
-		probe_library.add_probe(create_wall_chokepoint_probes)
-		probe_library.add_probe(create_island_chokepoint_probes)	
-		probe_library.add_probe(deduce_unclued_lifeline)
-		
-		probe_library.add_probe(create_bifurcation_probes).set_bifurcation()
-		probe_library.add_probe(create_wall_strangle_probes).set_bifurcation()
-		probe_library.add_probe(create_island_battleground_probes).set_bifurcation()
-		probe_library.add_probe(create_island_release_probes).set_bifurcation()
-		probe_library.add_probe(create_island_strangle_probes).set_bifurcation()
+	if default_probes:
+		_create_default_probes()
 
 
 func create_bifurcation_probes() -> void:
-	print("90: create bifurcation probes: %s" % [board.get_filled_cell_count()])
 	if not metrics.has("bifurcation_stops"):
 		metrics["bifurcation_stops"] = 0
 	metrics["bifurcation_stops"] += 1
@@ -96,6 +81,20 @@ func create_bifurcation_probes() -> void:
 	create_island_battleground_probes()
 	create_island_release_probes()
 	create_island_strangle_probes()
+
+
+func add_bifurcation_scenario(key: String, cells: Array[Vector2i],
+		assumptions: Dictionary[Vector2i, int],
+		bifurcation_deductions: Array[Deduction]) -> void:
+	if not bifurcation_deductions.any(func(d: Deduction) -> bool:
+			return should_deduce(board, d.pos)):
+		# the target cells have already been deduced
+		return
+	if not metrics.has("bifurcation_scenarios"):
+		metrics["bifurcation_scenarios"] = 0
+	metrics["bifurcation_scenarios"] += 1
+	bifurcation_engine.add_scenario(board, key, cells, assumptions, bifurcation_deductions)
+	probe_library.add_probe(run_bifurcation_step).set_bifurcation().set_one_shot()
 
 
 func add_deduction(pos: Vector2i, value: int,
@@ -119,6 +118,7 @@ func apply_changes() -> void:
 	_change_history.append_array(changes)
 	board.set_cells(changes)
 	deductions.clear()
+	bifurcation_engine.clear()
 	
 	_create_change_probes(changes)
 
@@ -128,13 +128,16 @@ func apply_heat() -> void:
 	board.increase_heat(deductions.cells.keys())
 
 
-func clear() -> void:
+func clear(default_probes: bool = true) -> void:
 	decision_manager.clear()
 	deductions.clear()
 	metrics.clear()
 	probe_library.clear()
-	_bifurcation_engine.clear()
+	bifurcation_engine.clear()
 	_change_history.clear()
+	
+	if default_probes:
+		_create_default_probes()
 
 
 func get_changes() -> Array[Dictionary]:
@@ -157,8 +160,8 @@ func run_next_probe(allow_bifurcation: bool = true) -> void:
 	
 	if verbose:
 		print("(%s;%s) run %s" % [board.get_filled_cell_count(), Time.get_ticks_msec(), next_probe.key])
+	about_to_run_probe.emit(next_probe)
 	next_probe.run()
-	ran_probe.emit(next_probe)
 
 
 func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
@@ -169,7 +172,7 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 	
 	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 		var neighbor: Vector2i = clue_cell + neighbor_dir
-		if not _should_deduce(board, neighbor):
+		if not should_deduce(board, neighbor):
 			continue
 		var adjacent_clues: Array[Vector2i] = _find_adjacent_clues(neighbor)
 		if adjacent_clues.size() >= 2:
@@ -180,23 +183,28 @@ func deduce_adjacent_clues(clue_cell: Vector2i) -> void:
 
 
 func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
+	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
+		return
+	
 	var old_deductions_size: int = deductions.size()
 	
 	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
-			and _should_deduce(board, chokepoint):
+			and should_deduce(board, chokepoint):
 		deduce_island_chokepoint_cramped(chokepoint)
 	
 	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
-			and _should_deduce(board, chokepoint):
+			and should_deduce(board, chokepoint):
 		deduce_island_chokepoint_tiny_pool(chokepoint)
 	
 	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
-			and _should_deduce(board, chokepoint):
+			and should_deduce(board, chokepoint):
 		deduce_island_chokepoint_pool(chokepoint)
 
 
 ## Deduces when a chokepoint prevents an island from reaching its required size.
 func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
+	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
+		return
 	_log.start("island_chokepoint_cramped", [chokepoint])
 	
 	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint)
@@ -221,6 +229,8 @@ func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 
 ## Deduces when a chokepoint forces a 2x2 pool in a simple 2-cell case.
 func deduce_island_chokepoint_tiny_pool(chokepoint: Vector2i) -> void:
+	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
+		return
 	_log.start("island_chokepoint_tiny_pool", [chokepoint])
 	
 	# Check for two empty cells leading into a dead end, which create a pool.
@@ -235,6 +245,8 @@ func deduce_island_chokepoint_tiny_pool(chokepoint: Vector2i) -> void:
 
 ## Deduces when a chokepoint forces a 2x2 pool in a complex multi-cell case.
 func deduce_island_chokepoint_pool(chokepoint: Vector2i) -> void:
+	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
+		return
 	_log.start("island_chokepoint_pool", [chokepoint])
 	
 	var split_neighbor_set: Dictionary[Vector2i, bool] = {}
@@ -325,6 +337,10 @@ func _check_island_chokepoint_tiny_pool(chokepoint: Vector2i, dir: Vector2i) -> 
 
 
 func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
+	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
+	if board.get_liberties(island).is_empty():
+		return
+	
 	var old_deductions_size: int = deductions.size()
 	
 	if deductions.size() == old_deductions_size or perform_redundant_deductions:
@@ -338,6 +354,10 @@ func deduce_clue_chokepoint(island_cell: Vector2i) -> void:
 
 
 func deduce_clue_chokepoint_snug(island_cell: Vector2i) -> void:
+	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
+	if board.get_liberties(island).is_empty():
+		return
+	
 	_log.start("clue_chokepoint_snug", [island_cell])
 	
 	var island_root: Vector2i = board.get_island_root_for_cell(island_cell)
@@ -358,13 +378,15 @@ func deduce_clue_chokepoint_snug(island_cell: Vector2i) -> void:
 
 
 func deduce_clue_chokepoint_loose(island_cell: Vector2i) -> void:
-	_log.start("clue_chokepoint_loose", [island_cell])
-	
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
+	if board.get_liberties(island).is_empty():
+		return
+	
+	_log.start("clue_chokepoint_loose", [island_cell])
 	var chokepoint_cells: Dictionary[Vector2i, int] = \
 			board.get_per_clue_chokepoint_map().find_chokepoint_cells(island_cell)
 	for chokepoint: Vector2i in chokepoint_cells:
-		if not _should_deduce(board, chokepoint):
+		if not should_deduce(board, chokepoint):
 			continue
 		if chokepoint_cells[chokepoint] == CELL_ISLAND:
 			if chokepoint in board.get_liberties(island):
@@ -378,6 +400,9 @@ func deduce_clue_chokepoint_loose(island_cell: Vector2i) -> void:
 
 
 func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
+	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
+	if board.get_liberties(island).is_empty():
+		return
 	_log.start("clue_chokepoint_wall_weaver", [island_cell])
 	
 	var clue_value: int = board.get_clue_for_island_cell(island_cell)
@@ -406,7 +431,7 @@ func deduce_clue_chokepoint_wall_weaver(island_cell: Vector2i) -> void:
 		if connectors_by_wall[wall_root].size() > 1:
 			continue
 		var connector: Vector2i = connectors_by_wall[wall_root].front()
-		if not _should_deduce(board, connector):
+		if not should_deduce(board, connector):
 			continue
 		deductions.add_deduction(connector, CELL_WALL, WALL_WEAVER, [island_cell])
 	
@@ -457,7 +482,7 @@ func deduce_unclued_lifeline() -> void:
 		var chokepoint_map: ChokepointMap = ChokepointMap.new(corridor_cells, func(cell: Vector2i) -> bool:
 			return cell in unclued)
 		for chokepoint: Vector2i in chokepoint_map.chokepoints_by_cell.keys():
-			if not _should_deduce(board, chokepoint):
+			if not should_deduce(board, chokepoint):
 				continue
 			var unchoked_special_count: int = \
 					chokepoint_map.get_unchoked_special_count(chokepoint, clue_root)
@@ -469,14 +494,13 @@ func deduce_unclued_lifeline() -> void:
 
 func deduce_island_of_one(clue_cell: Vector2i) -> void:
 	_log.start("island_of_one", [clue_cell])
-	
 	if not board.get_cell(clue_cell) == 1:
 		_log.end("island_of_one", [clue_cell])
 		return
 	
 	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 		var neighbor: Vector2i = clue_cell + neighbor_dir
-		if not _should_deduce(board, neighbor):
+		if not should_deduce(board, neighbor):
 			continue
 		add_deduction(neighbor, CELL_WALL,
 			ISLAND_OF_ONE, [clue_cell])
@@ -518,17 +542,18 @@ func deduce_clued_island(island_cell: Vector2i) -> void:
 
 
 func deduce_clued_island_moat(island_cell: Vector2i) -> void:
-	_log.start("clued_island_moat", [island_cell])
-	
 	var clue_value: int = board.get_clue_for_island_cell(island_cell)
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
 	var liberties: Array[Vector2i] = board.get_liberties(island)
 	if clue_value != island.size():
-		_log.end("clued_island_moat", [island_cell])
+		return
+	if liberties.is_empty():
 		return
 	
+	_log.start("clued_island_moat", [island_cell])
+	
 	for liberty: Vector2i in liberties:
-		if not _should_deduce(board, liberty):
+		if not should_deduce(board, liberty):
 			continue
 		add_deduction(liberty, CELL_WALL, ISLAND_MOAT, [island[0]])
 	
@@ -536,21 +561,19 @@ func deduce_clued_island_moat(island_cell: Vector2i) -> void:
 
 
 func deduce_clued_island_forced_expansion(island_cell: Vector2i) -> void:
-	_log.start("clued_island_forced_expansion", [island_cell])
-	
 	var clue_value: int = board.get_clue_for_island_cell(island_cell)
 	var island: Array[Vector2i] = board.get_island_for_cell(island_cell)
 	var liberties: Array[Vector2i] = board.get_liberties(island)
 	if liberties.size() != 1 or clue_value <= island.size():
-		_log.end("clued_island_forced_expansion", [island_cell])
 		return
 	
+	_log.start("clued_island_forced_expansion", [island_cell])
 	var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
 	squeeze_fill.skip_cells(island)
 	squeeze_fill.push_change(liberties[0], CELL_ISLAND)
 	squeeze_fill.fill(clue_value - island.size() - 1)
 	for new_island_cell: Vector2i in squeeze_fill.changes:
-		if _should_deduce(board, new_island_cell):
+		if should_deduce(board, new_island_cell):
 			add_deduction(new_island_cell, CELL_ISLAND, ISLAND_EXPANSION, [island[0]])
 	
 	if squeeze_fill.changes.size() == clue_value - island.size():
@@ -559,7 +582,7 @@ func deduce_clued_island_forced_expansion(island_cell: Vector2i) -> void:
 				var new_island_neighbor: Vector2i = new_island_cell + new_island_neighbor_dir
 				if new_island_neighbor in squeeze_fill.changes:
 					continue
-				if _should_deduce(board, new_island_neighbor):
+				if should_deduce(board, new_island_neighbor):
 					add_deduction(new_island_neighbor, CELL_WALL, ISLAND_MOAT, [island[0]])
 	
 	_log.end("clued_island_forced_expansion", [island_cell])
@@ -575,7 +598,7 @@ func deduce_clued_island_snug(island_cell: Vector2i) -> void:
 		return
 	
 	for deduction_cell: Vector2i in board.get_island_chokepoint_map().get_component_cells(island_cell):
-		if _should_deduce(board, deduction_cell):
+		if should_deduce(board, deduction_cell):
 			add_deduction(deduction_cell, CELL_ISLAND, ISLAND_SNUG, [island_cell])
 	
 	_log.end("clued_island_snug", [island_cell])
@@ -592,7 +615,7 @@ func deduce_clued_island_corner(island_cell: Vector2i) -> void:
 		var diagonal: Vector2i = liberties[0] + diagonal_dir
 		if diagonal.distance_to(liberties[1]) != 1:
 			continue
-		if not _should_deduce(board, diagonal):
+		if not should_deduce(board, diagonal):
 			continue
 		add_deduction(diagonal, CELL_WALL, CORNER_ISLAND, [island_cell])
 	
@@ -608,7 +631,7 @@ func deduce_corner_buffer(island_cell: Vector2i) -> void:
 		var diagonal: Vector2i = liberties[0] + diagonal_dir
 		if diagonal.distance_to(liberties[1]) != 1:
 			continue
-		if not _should_deduce(board, diagonal):
+		if not should_deduce(board, diagonal):
 			continue
 		var merged_island_cells: Array[Vector2i] = []
 		for merged_dir in NEIGHBOR_DIRS:
@@ -656,7 +679,7 @@ func deduce_island_divider(island_cell: Vector2i) -> void:
 	
 	var liberties: Array[Vector2i] = board.get_liberties(board.get_island_for_cell(island_cell))
 	for liberty: Vector2i in liberties:
-		if not _should_deduce(board, liberty):
+		if not should_deduce(board, liberty):
 			continue
 		
 		var neighbors: Array[Vector2i] = []
@@ -671,7 +694,7 @@ func deduce_island_divider(island_cell: Vector2i) -> void:
 
 
 func deduce_unreachable_square(cell: Vector2i) -> void:
-	if not _should_deduce(board, cell):
+	if not should_deduce(board, cell):
 		return
 	
 	_log.start("unreachable_square", [cell])
@@ -707,7 +730,9 @@ func deduce_wall(wall_cell: Vector2i) -> void:
 
 
 func deduce_wall_chokepoint(chokepoint: Vector2i) -> void:
-	if not _should_deduce(board, chokepoint):
+	if not should_deduce(board, chokepoint):
+		return
+	if not board.get_wall_chokepoint_map().chokepoints_by_cell.has(chokepoint):
 		return
 	
 	var max_choked_special_count: int = 0
@@ -754,7 +779,7 @@ func deduce_pool(wall_cell: Vector2i) -> void:
 	for next_wall_cell in wall:
 		wall_cell_set[next_wall_cell] = true
 	for liberty: Vector2i in liberties:
-		if not _should_deduce(board, liberty):
+		if not should_deduce(board, liberty):
 			continue
 		for pool_dir: Vector2i in [Vector2i(-1, -1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(1, 1)]:
 			var pool_triplet_cells: Array[Vector2i] =  [
@@ -779,7 +804,7 @@ func create_adjacent_clue_probes() -> void:
 func create_island_chokepoint_probes() -> void:
 	var chokepoints: Array[Vector2i] = board.get_island_chokepoint_map().chokepoints_by_cell.keys()
 	for chokepoint: Vector2i in chokepoints:
-		if not _should_deduce(board, chokepoint):
+		if not should_deduce(board, chokepoint):
 			continue
 		probe_library.add_probe(deduce_island_chokepoint.bind(chokepoint)).set_one_shot()
 	
@@ -793,7 +818,7 @@ func create_island_chokepoint_probes() -> void:
 func create_wall_chokepoint_probes() -> void:
 	var chokepoints: Array[Vector2i] = board.get_wall_chokepoint_map().chokepoints_by_cell.keys()
 	for chokepoint: Vector2i in chokepoints:
-		if not _should_deduce(board, chokepoint):
+		if not should_deduce(board, chokepoint):
 			continue
 		probe_library.add_probe(deduce_wall_chokepoint.bind(chokepoint)).set_one_shot()
 
@@ -851,15 +876,18 @@ func create_island_battleground_probes() -> void:
 				continue
 			var clued_liberty: Vector2i = clued_island_neighbors_by_empty_cell[cell][0]
 			var neighbor_liberty: Vector2i = clued_island_neighbors_by_empty_cell[neighbor][0]
-			_add_bifurcation_scenario(
+			create_bifurcation_probe(
 				"island_battleground", [clued_liberty, neighbor_liberty],
 				{cell: CELL_ISLAND, neighbor: CELL_WALL},
 				[Deduction.new(cell, CELL_WALL,
 						ISLAND_BATTLEGROUND, [clued_liberty, neighbor_liberty])])
-	
-	if _bifurcation_engine.get_scenario_count() >= 1 \
-			and not probe_library.has_probe(run_bifurcation_step):
-		probe_library.add_probe(run_bifurcation_step).set_one_shot().set_bifurcation().set_one_shot()
+
+
+func create_bifurcation_probe(key: String, cells: Array[Vector2i],
+		assumptions: Dictionary[Vector2i, int],
+		bifurcation_deductions: Array[Deduction]) -> void:
+	probe_library.add_probe(add_bifurcation_scenario.bind(
+			key, cells, assumptions, bifurcation_deductions)).set_bifurcation().set_one_shot()
 
 
 ## Executes a bifurcation on an island with only two liberties, testing each possible wall/island pair.
@@ -868,9 +896,11 @@ func create_island_release_probes() -> void:
 		if board.get_liberties(island).size() != 2:
 			continue
 		var clue_value: int = board.get_clue_for_island(island)
+		if island.size() >= clue_value:
+			continue
 		var liberties: Array[Vector2i] = board.get_liberties(island)
 		for liberty: Vector2i in liberties:
-			if not _should_deduce(board, liberty):
+			if not should_deduce(board, liberty):
 				continue
 			
 			var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
@@ -878,19 +908,19 @@ func create_island_release_probes() -> void:
 			for other_liberty: Vector2i in liberties:
 				if other_liberty == liberty:
 					continue
-				if not _should_deduce(board, other_liberty):
+				if not should_deduce(board, other_liberty):
 					continue
 				squeeze_fill.push_change(other_liberty, CELL_ISLAND)
 			squeeze_fill.skip_cells(island)
 			squeeze_fill.fill(clue_value - island.size() - 1)
-			_add_bifurcation_scenario(
+			create_bifurcation_probe(
 				"island_release", [island.front(), liberty],
 				squeeze_fill.changes,
 				[Deduction.new(liberty, CELL_ISLAND, ISLAND_RELEASE, [island.front()])]
 			)
 	
-	if _bifurcation_engine.get_scenario_count() >= 1:
-		probe_library.add_probe(run_bifurcation_step).set_one_shot().set_bifurcation().set_one_shot()
+	if bifurcation_engine.get_scenario_count() >= 1:
+		probe_library.add_probe(run_bifurcation_step).set_bifurcation().set_one_shot()
 
 
 ## Executes a bifurcation on an island which is one cell away from being complete.
@@ -901,31 +931,30 @@ func create_island_strangle_probes() -> void:
 			continue
 		var liberties: Array[Vector2i] = board.get_liberties(island)
 		for liberty: Vector2i in liberties:
-			if not _should_deduce(board, liberty):
+			if not should_deduce(board, liberty):
 				continue
 			
 			var assumptions: Dictionary[Vector2i, int] = {}
 			assumptions[liberty] = CELL_ISLAND
 			for new_wall_cell_dir: Vector2i in NEIGHBOR_DIRS:
 				var new_wall_cell: Vector2i = liberty + new_wall_cell_dir
-				if not _should_deduce(board, new_wall_cell):
+				if not should_deduce(board, new_wall_cell):
 					continue
 				assumptions[new_wall_cell] = CELL_WALL
 			for other_liberty: Vector2i in liberties:
 				if other_liberty == liberty:
 					continue
-				if not _should_deduce(board, other_liberty):
+				if not should_deduce(board, other_liberty):
 					continue
 				assumptions[other_liberty] = CELL_WALL
-			
-			_add_bifurcation_scenario(
+			create_bifurcation_probe(
 				"island_strangle", [island.front(), liberty],
 				assumptions,
 				[Deduction.new(liberty, CELL_WALL, ISLAND_STRANGLE, [island.front()])]
 			)
 	
-	if _bifurcation_engine.get_scenario_count() >= 1:
-		probe_library.add_probe(run_bifurcation_step).set_one_shot().set_bifurcation().set_one_shot()
+	if bifurcation_engine.get_scenario_count() >= 1:
+		probe_library.add_probe(run_bifurcation_step).set_bifurcation().set_one_shot()
 
 
 ## Executes a bifurcation on a wall with only two liberties, testing each possible wall/island pair.[br]
@@ -966,13 +995,13 @@ func create_wall_strangle_probes() -> void:
 			squeeze_fill.push_change(other_liberty, CELL_WALL)
 			squeeze_fill.skip_cells(wall)
 			squeeze_fill.fill()
-			_add_bifurcation_scenario(
+			create_bifurcation_probe(
 				scenario_key, [wall.front(), liberty],
 				squeeze_fill.changes,
 				[Deduction.new(liberty, CELL_WALL, reason, [wall.front()])]
 			)
-	if _bifurcation_engine.get_scenario_count() >= 1:
-		probe_library.add_probe(run_bifurcation_step).set_one_shot().set_bifurcation().set_one_shot()
+	if bifurcation_engine.get_scenario_count() >= 1:
+		probe_library.add_probe(run_bifurcation_step).set_bifurcation().set_one_shot()
 
 
 func create_island_divider_probes() -> void:
@@ -1006,7 +1035,7 @@ func create_wall_probes() -> void:
 
 func create_unreachable_square_probes() -> void:
 	for cell: Vector2i in board.cells:
-		if not _should_deduce(board, cell):
+		if not should_deduce(board, cell):
 			continue
 		if board.get_global_reachability_map().get_clue_reachability(cell) \
 				!= GlobalReachabilityMap.ClueReachability.REACHABLE:
@@ -1057,25 +1086,29 @@ func is_valid_merged_island(island_cells: Array[Vector2i], merge_cells: int) -> 
 
 func run_bifurcation_step() -> void:
 	if verbose:
-		print("> bifurcating: %s scenarios" % [_bifurcation_engine.get_scenario_count()])
-	for key: String in _bifurcation_engine.get_scenario_keys():
+		print("> bifurcating: %s scenarios (%s)" \
+				% [bifurcation_engine.get_scenario_count(), bifurcation_engine.get_scenario_keys()])
+	for key: String in bifurcation_engine.get_scenario_keys():
 		_log.start(key)
-		_bifurcation_engine.step(key)
+		bifurcation_engine.step(key)
 		_log.pause(key)
-	if _bifurcation_engine.has_new_local_contradictions():
+	if bifurcation_engine.has_new_local_contradictions():
 		# found a contradiction; we can make a deduction
 		_add_local_bifurcation_deductions()
-	elif _bifurcation_engine.has_available_probes():
+	elif bifurcation_engine.has_available_probes():
 		# there's still more to do
 		probe_library.add_probe(run_bifurcation_step).set_bifurcation().set_one_shot()
-	elif _bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_SIMPLE):
+	elif bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_SIMPLE):
 		# we're stuck; check if any of the scenarios cause a contradiction which we overlooked
 		_add_bifurcation_deductions(SolverBoard.VALIDATE_SIMPLE)
-	elif _bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_COMPLEX):
+	elif bifurcation_engine.has_new_contradictions(SolverBoard.VALIDATE_COMPLEX):
 		# we're stuck; check if any of the scenarios cause a contradiction which we overlooked
 		_add_bifurcation_deductions(SolverBoard.VALIDATE_COMPLEX)
+	else:
+		# we're stuck; remove all pending bifurcation scenarios. they're dead ends
+		bifurcation_engine.clear()
 	
-	if not _bifurcation_engine.has_available_probes() and metrics.has("bifurcation_start_time"):
+	if not bifurcation_engine.has_available_probes() and metrics.has("bifurcation_start_time"):
 		var bifurcation_duration: int = (Time.get_ticks_usec() - metrics["bifurcation_start_time"])
 		metrics.erase("bifurcation_start_time")
 		
@@ -1084,45 +1117,40 @@ func run_bifurcation_step() -> void:
 		metrics["bifurcation_duration"] += bifurcation_duration / 1000.0
 
 
+func should_deduce(target_board: SolverBoard, cell: Vector2i) -> bool:
+	return target_board.get_cell(cell) == CELL_EMPTY and (cell not in deductions.cells or perform_redundant_deductions)
+
+
 func _add_local_bifurcation_deductions() -> void:
 	# found a contradiction; we can make a deduction
-	var scenario_keys: Array[String] = _bifurcation_engine.get_scenario_keys()
+	var scenario_keys: Array[String] = bifurcation_engine.get_scenario_keys()
 	for key: String in scenario_keys:
 		_log.start(key)
-		if not _bifurcation_engine.scenario_has_new_local_contradictions(key):
+		if not bifurcation_engine.scenario_has_new_local_contradictions(key):
 			_log.end(key)
 			continue
-		for deduction: Deduction in _bifurcation_engine.get_scenario_deductions(key):
-			if not _should_deduce(board, deduction.pos):
+		for deduction: Deduction in bifurcation_engine.get_scenario_deductions(key):
+			if not should_deduce(board, deduction.pos):
 				continue
 			add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
 		_log.end(key)
-	_bifurcation_engine.clear()
+	bifurcation_engine.clear()
 
 
 func _add_bifurcation_deductions(mode: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE) -> void:
 	# found a contradiction; we can make a deduction
-	var scenario_keys: Array[String] = _bifurcation_engine.get_scenario_keys()
+	var scenario_keys: Array[String] = bifurcation_engine.get_scenario_keys()
 	for key: String in scenario_keys:
 		_log.start(key)
-		if not _bifurcation_engine.scenario_has_new_contradictions(key, mode):
+		if not bifurcation_engine.scenario_has_new_contradictions(key, mode):
 			_log.end(key)
 			continue
-		for deduction: Deduction in _bifurcation_engine.get_scenario_deductions(key):
-			if not _should_deduce(board, deduction.pos):
+		for deduction: Deduction in bifurcation_engine.get_scenario_deductions(key):
+			if not should_deduce(board, deduction.pos):
 				continue
 			add_deduction(deduction.pos, deduction.value, deduction.reason, deduction.reason_cells)
 		_log.end(key)
-	_bifurcation_engine.clear()
-
-
-func _add_bifurcation_scenario(key: String, cells: Array[Vector2i],
-		assumptions: Dictionary[Vector2i, int],
-		bifurcation_deductions: Array[Deduction]) -> void:
-	if not metrics.has("bifurcation_scenarios"):
-		metrics["bifurcation_scenarios"] = 0
-	metrics["bifurcation_scenarios"] += 1
-	_bifurcation_engine.add_scenario(board, key, cells, assumptions, bifurcation_deductions)
+	bifurcation_engine.clear()
 
 
 func _create_change_probes(changes: Array[Dictionary]) -> void:
@@ -1160,8 +1188,22 @@ func _create_change_probes(changes: Array[Dictionary]) -> void:
 			probe_library.add_probe(deduce_unclued_island.bind(island_root)).set_one_shot()
 
 
-func _should_deduce(target_board: SolverBoard, cell: Vector2i) -> bool:
-	return target_board.get_cell(cell) == CELL_EMPTY and (cell not in deductions.cells or perform_redundant_deductions)
+func _create_default_probes() -> void:
+	probe_library.add_probe(create_island_of_one_probes)
+	probe_library.add_probe(create_adjacent_clue_probes)
+	probe_library.add_probe(create_island_probes)
+	probe_library.add_probe(create_wall_probes)
+	probe_library.add_probe(create_island_divider_probes)
+	probe_library.add_probe(create_unreachable_square_probes)
+	probe_library.add_probe(create_wall_chokepoint_probes)
+	probe_library.add_probe(create_island_chokepoint_probes)
+	probe_library.add_probe(deduce_unclued_lifeline)
+	
+	probe_library.add_probe(create_bifurcation_probes).set_bifurcation()
+	probe_library.add_probe(create_wall_strangle_probes).set_bifurcation()
+	probe_library.add_probe(create_island_battleground_probes).set_bifurcation()
+	probe_library.add_probe(create_island_release_probes).set_bifurcation()
+	probe_library.add_probe(create_island_strangle_probes).set_bifurcation()
 
 
 func _find_adjacent_clues(cell: Vector2i) -> Array[Vector2i]:

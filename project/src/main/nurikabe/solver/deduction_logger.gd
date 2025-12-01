@@ -39,7 +39,8 @@ func end(key: String, cells: Array[Vector2i] = []) -> void:
 	_stop_deduction_timer(combo_key)
 	var deduction_info: Dictionary[String, Variant] = deduction_info_by_key.get(combo_key)
 	_log.store_string("| %s | %s | %s | %s |\n"
-			% [combo_key, deduction_info["deductions_delta"], deduction_info["probes_delta"], deduction_info["time_delta"]])
+			% [combo_key, deduction_info["deductions_delta"],
+			deduction_info["probes_delta"], deduction_info["time_delta"]])
 	_log.flush()
 	_delete_deduction_timer(combo_key)
 

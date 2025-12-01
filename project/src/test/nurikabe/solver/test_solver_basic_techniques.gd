@@ -152,7 +152,7 @@ func test_create_island_chokepoint_probes_lifeline() -> void:
 		"(3, 3)->. unclued_lifeline (3, 5)",
 		"(3, 4)->. unclued_lifeline (3, 5)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
 func test_create_island_chokepoint_probes_lifeline_2() -> void:
@@ -169,7 +169,7 @@ func test_create_island_chokepoint_probes_lifeline_2() -> void:
 		"(3, 3)->. unclued_lifeline (3, 5)",
 		"(3, 4)->. unclued_lifeline (3, 5)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
 func test_create_island_chokepoint_probes_lifeline_3() -> void:
@@ -190,7 +190,7 @@ func test_create_island_chokepoint_probes_lifeline_3() -> void:
 		"(1, 5)->. unclued_lifeline (1, 7)",
 		"(1, 6)->. unclued_lifeline (1, 7)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
 func test_create_island_chokepoint_probes_lifeline_4() -> void:
@@ -211,7 +211,7 @@ func test_create_island_chokepoint_probes_lifeline_4() -> void:
 		"(1, 5)->. unclued_lifeline (1, 7)",
 		"(1, 6)->. unclued_lifeline (1, 7)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
 func test_create_island_chokepoint_probes_lifeline_5() -> void:
@@ -228,7 +228,7 @@ func test_create_island_chokepoint_probes_lifeline_5() -> void:
 		"(3, 4)->. unclued_lifeline (2, 4)",
 		"(4, 4)->. unclued_lifeline (2, 4)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
 func test_create_island_chokepoint_probes_lifeline_6() -> void:
@@ -244,7 +244,7 @@ func test_create_island_chokepoint_probes_lifeline_6() -> void:
 		"(2, 3)->. unclued_lifeline (1, 1)",
 		"(3, 3)->. unclued_lifeline (1, 1)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
 func test_create_island_chokepoint_probes_lifeline_invalid_too_short() -> void:
@@ -261,7 +261,7 @@ func test_create_island_chokepoint_probes_lifeline_invalid_too_short() -> void:
 	]
 	var expected: Array[String] = [
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
 func test_create_island_chokepoint_probes_lifeline_invalid_bendy() -> void:
@@ -277,7 +277,7 @@ func test_create_island_chokepoint_probes_lifeline_invalid_bendy() -> void:
 	]
 	var expected: Array[String] = [
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
 func test_create_island_divider_probes() -> void:
@@ -520,6 +520,17 @@ func test_create_wall_chokepoint_probes_border_hug_invalid_2() -> void:
 	var expected: Array[String] = [
 	]
 	assert_deductions(solver.create_wall_chokepoint_probes, expected)
+
+
+func test_create_wall_chokepoint_probes_border_hug_invalid_3() -> void:
+	grid = [
+		"####   . 4",
+		"## 1## .##",
+		"##########",
+	]
+	var expected: Array[String] = [
+	]
+	assert_deductions(solver.deduce_wall_chokepoint.bind(Vector2i(2, 0)), expected)
 
 
 func test_create_wall_probes_pool_triplet_1() -> void:

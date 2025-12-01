@@ -44,7 +44,8 @@ func parse() -> void:
 		var raw_metric: Dictionary[String, Variant] = raw_metrics[technique]
 		var success: float = float(raw_metric["success_count"]) / raw_metric["attempt_count"]
 		var cost: float = float(raw_metric["duration"]) / maxi(1, raw_metric["attempt_count"])
-		var impact: float = float(max(raw_metric["cells"], raw_metric["probes"])) / maxi(1, raw_metric["success_count"])
+		var impact: float = float(max(raw_metric["cells"], raw_metric["probes"])) \
+				/ maxi(1, raw_metric["success_count"])
 		
 		solver_metrics[technique] = {
 			"success": success,

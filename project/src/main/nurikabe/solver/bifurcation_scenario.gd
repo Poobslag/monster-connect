@@ -53,3 +53,8 @@ func has_new_contradictions(mode: SolverBoard.ValidationMode = SolverBoard.VALID
 	var initial_validation_result: SolverBoard.ValidationResult = board.validate(mode)
 	var last_validation_result: SolverBoard.ValidationResult = solver.board.validate(mode)
 	return last_validation_result.error_count > initial_validation_result.error_count
+
+
+func should_deduce() -> bool:
+	return deductions.any(func(d: Deduction) -> bool:
+		return solver.should_deduce(board, d.pos))

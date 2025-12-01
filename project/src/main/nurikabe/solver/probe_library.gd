@@ -6,10 +6,11 @@ var _probe_history: Dictionary[String, int] = {}
 
 func clear() -> void:
 	_probe_history.clear()
-	
-	for key: String in _probes.keys():
-		if _probes[key].one_shot:
-			_probes.erase(key)
+	_probes.clear()
+
+
+func clear_history() -> void:
+	_probe_history.clear()
 
 
 func add_probe(callable: Callable) -> ProbeBuilder:
@@ -23,7 +24,8 @@ func add_probe(callable: Callable) -> ProbeBuilder:
 func get_available_probes() -> Array[Probe]:
 	var available: Array[Probe] = []
 	for key: String in _probes:
-		if _probe_history.get(key) == board.get_filled_cell_count():
+		if _probe_history.get(key) == board.get_filled_cell_count() \
+				and key != "run_bifurcation_step":
 			continue
 		available.append(_probes[key])
 	return available
@@ -44,18 +46,27 @@ func has_probe(callable: Callable) -> bool:
 func has_available_probes() -> bool:
 	var result: bool = false
 	for key: String in _probes:
-		if _probe_history.get(key) == board.get_filled_cell_count():
+		if _probe_history.get(key) == board.get_filled_cell_count() \
+				and key != "run_bifurcation_step":
 			continue
 		result = true
 		break
 	return result
 
 
+func print_available_probes() -> void:
+	var available_probes: Array[Probe] = get_available_probes()
+	print("%s available probes:" % [available_probes.size()])
+	for i: int in available_probes.size():
+		var probe: Probe = available_probes[i]
+		print(" (%s) %s" % [i, probe.key])
+
+
 func size() -> int:
 	return _probes.size()
 
 
-func _on_Solver_ran_probe(probe: Probe) -> void:
+func _on_solver_about_to_run_probe(probe: Probe) -> void:
 	if probe.one_shot:
 		_probes.erase(probe.key)
 	else:

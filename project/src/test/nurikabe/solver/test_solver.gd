@@ -11,7 +11,8 @@ var solver: Solver = Solver.new(false)
 var grid: Array[String] = []
 
 func before_each() -> void:
-	solver.clear()
+	solver.clear(false)
+	solver.decision_manager.strategy = DecisionManager.Strategy.FIRST
 
 
 func assert_deductions(callable: Callable, expected_str_array: Array[String]) -> void:
