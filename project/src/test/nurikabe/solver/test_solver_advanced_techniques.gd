@@ -73,6 +73,21 @@ func test_enqueue_wall_strangle_one_wall() -> void:
 	assert_deductions(solver.enqueue_wall_strangle, expected)
 
 
+func test_enqueue_wall_chokepoints_border_hug() -> void:
+	grid = [
+		"########",
+		"     .##",
+		"     . 7",
+		"      ##",
+		"####    ",
+		" 1##    ",
+	]
+	var expected: Array[String] = [
+		"(0, 1)->## border_hug (0, 0)",
+	]
+	assert_deductions(solver.enqueue_wall_strangle, expected)
+
+
 func test_enqueue_island_strangle() -> void:
 	grid = [
 		"           7",
@@ -97,4 +112,14 @@ func test_enqueue_island_release() -> void:
 	var expected: Array[String] = [
 		"(1, 4)->. island_release (0, 4)",
 	]
+	assert_deductions(solver.enqueue_island_release, expected)
+
+
+func test_enqueue_island_release_probes_complete() -> void:
+	grid = [
+		"##    ",
+		" . . .",
+		" 6 . .",
+	]
+	var expected: Array[String] = []
 	assert_deductions(solver.enqueue_island_release, expected)
