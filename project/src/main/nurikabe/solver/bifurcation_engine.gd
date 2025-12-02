@@ -66,7 +66,7 @@ func get_scenario_deductions(key: String) -> Array[Deduction]:
 func print_scenarios() -> void:
 	var keys: Array[String] = get_scenario_keys()
 	print("%s bifurcation scenarios:" % [keys.size()])
-	for i: int in keys.size():
+	for i in keys.size():
 		print(" (%s) %s" % [i, keys[i]])
 
 

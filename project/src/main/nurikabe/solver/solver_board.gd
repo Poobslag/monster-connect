@@ -632,3 +632,13 @@ class ValidationResult:
 			return joined_islands.size() \
 					+ pools.size() + split_walls.size() \
 					+ unclued_islands.size() + wrong_size.size()
+	
+	
+	func _to_string() -> String:
+		return JSON.stringify({
+			"joined_islands": joined_islands,
+			"pools": pools,
+			"split_walls": split_walls,
+			"unclued_islands": unclued_islands,
+			"wrong_size": wrong_size,
+		})

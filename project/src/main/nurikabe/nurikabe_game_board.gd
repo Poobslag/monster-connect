@@ -222,14 +222,14 @@ func redo(player_id: int) -> void:
 
 func _apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> void:
 	var target_values: Array[int] = undo_action.new_values if is_redo else undo_action.old_values
-	for i: int in undo_action.cell_positions.size():
+	for i in undo_action.cell_positions.size():
 		_set_cell_internal(undo_action.cell_positions[i], target_values[i])
 
 
 func _can_apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> bool:
 	var conflict_count: int = 0
 	var expected_values: Array[int] = undo_action.old_values if is_redo else undo_action.new_values
-	for i: int in undo_action.cell_positions.size():
+	for i in undo_action.cell_positions.size():
 		if get_cell(undo_action.cell_positions[i]) != expected_values[i]:
 			conflict_count += 1
 	return conflict_count == 0

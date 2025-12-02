@@ -13,6 +13,10 @@ func clear_history() -> void:
 	_probe_history.clear()
 
 
+func get_probe_keys() -> Array[String]:
+	return _probes.keys()
+
+
 func add_probe(callable: Callable) -> ProbeBuilder:
 	if has_probe(callable):
 		return ProbeBuilder.new(Probe.new(Callable()))
@@ -57,7 +61,7 @@ func has_available_probes() -> bool:
 func print_available_probes() -> void:
 	var available_probes: Array[Probe] = get_available_probes()
 	print("%s available probes:" % [available_probes.size()])
-	for i: int in available_probes.size():
+	for i in available_probes.size():
 		var probe: Probe = available_probes[i]
 		print(" (%s) %s" % [i, probe.key])
 
