@@ -74,17 +74,37 @@ func _on_solver_about_to_run_probe(probe: Probe) -> void:
 
 
 class ProbeBuilder:
-	var _probe: Probe
+	var probe: Probe
 	
 	func _init(init_probe: Probe) -> void:
-		_probe = init_probe
+		probe = init_probe
 	
 	
 	func set_one_shot(one_shot: bool = true) -> ProbeBuilder:
-		_probe.one_shot = one_shot
+		probe.one_shot = one_shot
 		return self
 	
 	
 	func set_bifurcation(bifurcation: bool = true) -> ProbeBuilder:
-		_probe.bifurcation = bifurcation
+		probe.bifurcation = bifurcation
+		return self
+	
+	
+	func deduction_cells(cells: Array[Vector2i]) -> ProbeBuilder:
+		probe.add_deduction_cells(cells)
+		return self
+	
+	
+	func deduction_cell(cell: Vector2i) -> ProbeBuilder:
+		probe.add_deduction_cell(cell)
+		return self
+	
+	
+	func related_cells(cells: Array[Vector2i]) -> ProbeBuilder:
+		probe.add_related_cells(cells)
+		return self
+	
+	
+	func related_cell(cell: Vector2i) -> ProbeBuilder:
+		probe.add_related_cell(cell)
 		return self
