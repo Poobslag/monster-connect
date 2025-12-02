@@ -1,0 +1,187 @@
+{
+  "bifurcate_border_hug": {
+    "cost": 0.03794,
+    "impact": 0.05311
+  },
+  "bifurcate_island_battleground": {
+    "cost": 0.04918,
+    "impact": 0.02627
+  },
+  "bifurcate_island_release": {
+    "cost": 0.04742,
+    "impact": 0.03121
+  },
+  "bifurcate_island_strangle": {
+    "cost": 0.041,
+    "impact": 0.02538
+  },
+  "bifurcate_wall_strangle": {
+    "cost": 0.03918,
+    "impact": 0.02501
+  },
+  "create_adjacent_clue_probes": {
+    "cost": 0.01999,
+    "spawn_cost": 0.09134,
+    "spawn_impact": 0.08383
+  },
+  "create_bifurcation_probes": {
+    "cost": 0.1003,
+    "spawn_cost": 1.0,
+    "spawn_impact": 0.70675
+  },
+  "create_island_battleground_probes": {
+    "cost": 0.02319,
+    "spawn_cost": 0.21447,
+    "spawn_impact": 0.11457
+  },
+  "create_island_chokepoint_probes": {
+    "cost": 0.04127,
+    "spawn_cost": 0.4399,
+    "spawn_impact": 1.0
+  },
+  "create_island_divider_probes": {
+    "cost": 0.01906,
+    "spawn_cost": 0.06121,
+    "spawn_impact": 0.3013
+  },
+  "create_island_of_one_probes": {
+    "cost": 0.00804,
+    "spawn_cost": 0.00054,
+    "spawn_impact": 0.04526
+  },
+  "create_island_probes": {
+    "cost": 0.01771,
+    "spawn_cost": 0.23082,
+    "spawn_impact": 0.80362
+  },
+  "create_island_release_probes": {
+    "cost": 0.0256,
+    "spawn_cost": 0.32476,
+    "spawn_impact": 0.21378
+  },
+  "create_island_strangle_probes": {
+    "cost": 0.01464,
+    "spawn_cost": 0.16808,
+    "spawn_impact": 0.10406
+  },
+  "create_unreachable_square_probes": {
+    "cost": 0.03359,
+    "spawn_cost": 0.03738,
+    "spawn_impact": 0.3876
+  },
+  "create_wall_chokepoint_probes": {
+    "cost": 0.04251,
+    "spawn_cost": 0.01003,
+    "spawn_impact": 0.30448
+  },
+  "create_wall_probes": {
+    "cost": 0.01814,
+    "spawn_cost": 0.07514,
+    "spawn_impact": 0.42836
+  },
+  "create_wall_strangle_probes": {
+    "cost": 0.03475,
+    "spawn_cost": 0.32096,
+    "spawn_impact": 0.29668
+  },
+  "deduce_adjacent_clues": {
+    "cost": 0.00463,
+    "impact": 0.00425
+  },
+  "deduce_clue_chokepoint": {
+    "cost": 0.03349,
+    "impact": 0.09857
+  },
+  "deduce_clue_chokepoint_loose": {
+    "cost": 0.0062,
+    "impact": 0.07029
+  },
+  "deduce_clue_chokepoint_snug": {
+    "cost": 0.01544,
+    "impact": 0.94258
+  },
+  "deduce_clue_chokepoint_wall_weaver": {
+    "cost": 0.01773,
+    "impact": 0.24838
+  },
+  "deduce_clued_island": {
+    "cost": 0.02923,
+    "impact": 0.09934
+  },
+  "deduce_clued_island_corner": {
+    "cost": 0.00555,
+    "impact": 0.07705
+  },
+  "deduce_clued_island_forced_expansion": {
+    "cost": 0.00565,
+    "impact": 0.52399
+  },
+  "deduce_clued_island_moat": {
+    "cost": 0.00588,
+    "impact": 0.58117
+  },
+  "deduce_clued_island_snug": {
+    "cost": 0.02174,
+    "impact": 0.00246
+  },
+  "deduce_corner_buffer": {
+    "cost": 0.00554,
+    "impact": 0.00581
+  },
+  "deduce_island_chokepoint": {
+    "cost": 0.03101,
+    "impact": 0.00946
+  },
+  "deduce_island_chokepoint_cramped": {
+    "cost": 0.01955,
+    "impact": 0.00001
+  },
+  "deduce_island_chokepoint_pool": {
+    "cost": 0.00612,
+    "impact": 0.007
+  },
+  "deduce_island_chokepoint_tiny_pool": {
+    "cost": 0.0055,
+    "impact": 0.00523
+  },
+  "deduce_island_divider": {
+    "cost": 0.00681,
+    "impact": 0.03354
+  },
+  "deduce_island_of_one": {
+    "cost": 0.00647,
+    "impact": 0.53861
+  },
+  "deduce_pool": {
+    "cost": 0.00566,
+    "impact": 0.03891
+  },
+  "deduce_unclued_island": {
+    "cost": 0.008,
+    "impact": 0.04898
+  },
+  "deduce_unclued_island_forced_expansion": {
+    "cost": 0.0055,
+    "impact": 0.34674
+  },
+  "deduce_unclued_lifeline": {
+    "cost": 0.0694,
+    "impact": 0.10925
+  },
+  "deduce_unreachable_square": {
+    "cost": 0.02968,
+    "impact": 0.30778
+  },
+  "deduce_wall": {
+    "cost": 0.00908,
+    "impact": 0.05179
+  },
+  "deduce_wall_chokepoint": {
+    "cost": 0.0053,
+    "impact": 0.16082
+  },
+  "deduce_wall_expansion": {
+    "cost": 0.00624,
+    "impact": 0.34915
+  }
+}

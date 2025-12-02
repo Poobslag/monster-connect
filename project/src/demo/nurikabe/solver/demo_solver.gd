@@ -8,9 +8,10 @@ extends Node
 ## 	[kbd]Shift + W[/kbd]: Performance test puzzles #61-70.
 ## 	[kbd]E[/kbd]: Solve until bifurcation is necessary.
 ## 	[kbd]R[/kbd]: Reset the board.
+## 	[kbd]T[/kbd]: Toggle strategies.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
-## 	[kbd]S[/kbd]: Assign a fixed seed.
-## 	[kbd]Shift + S[/kbd]: Increment the fixed seed.
+## 	[kbd]S[/kbd]: Assign a fixed seed, and enable the 'random' strategy.
+## 	[kbd]Shift + S[/kbd]: Increment the fixed seed, and enable the 'random' strategy.
 ## 	[kbd]Shift + P[/kbd]: Print available probes and bifurcation scenarios to console.
 ## 	[kbd]H[/kbd]: Clear the solver history. Forces deductions to be rerun.
 ## 	[kbd]B[/kbd]: Print benchmark results for AggregateTimer/SplitTimer.
@@ -57,7 +58,7 @@ var fixed_seed: int = -1
 func _ready() -> void:
 	_refresh_puzzle_path()
 	solver.board = %GameBoard.to_solver_board()
-	solver.decision_manager.strategy = DecisionManager.Strategy.RANDOM
+	solver.decision_manager.strategy = DecisionManager.Strategy.SMART
 
 
 func _input(event: InputEvent) -> void:
@@ -104,8 +105,12 @@ func _input(event: InputEvent) -> void:
 			fixed_seed = max(0, fixed_seed)
 			if Input.is_key_pressed(KEY_SHIFT):
 				fixed_seed += 1
-			_show_message("seed: %s" % [fixed_seed])
+			_show_message("strategy=random seed=%s" % [fixed_seed])
 			apply_fixed_seed()
+			solver.decision_manager.strategy = DecisionManager.Strategy.RANDOM
+		KEY_T:
+			_show_message("strategy=smart")
+			solver.decision_manager.strategy = DecisionManager.Strategy.SMART
 		KEY_H:
 			solver.probe_library.clear_history()
 			_show_message("cleared history")
@@ -268,7 +273,8 @@ func _on_performance_suite_timer_timeout() -> void:
 	var duration: int = Time.get_ticks_usec() - start_time
 	var filled: bool = solver.board.is_filled()
 	var validation_errors: SolverBoard.ValidationResult = solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
-	push_error("validation_errors: %s" % [validation_errors])
+	if validation_errors.error_count > 0:
+		push_error("Validation errors for %s: %s" % [next_path, validation_errors])
 	var puzzle_name: String = StringUtils.substring_after_last(next_path, "/").trim_suffix(".txt")
 	var result: String = "err" if validation_errors.error_count > 0 else "dnf" if not filled else "ok"
 	_show_message("| %s | %s %s | %s | %s |" % [

@@ -211,11 +211,11 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
 		return
-	_log.start("island_chokepoint_cramped", [chokepoint])
+	_log.start("deduce_island_chokepoint_cramped", [chokepoint])
 	
 	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint)
 	if clue_cell == POS_NOT_FOUND:
-		_log.end("island_chokepoint_cramped", [chokepoint])
+		_log.end("deduce_island_chokepoint_cramped", [chokepoint])
 		return
 	var chokepoint_value: int = board.get_cell(chokepoint)
 	var clue_value: int = chokepoint_value if NurikabeUtils.is_clue(chokepoint_value) else 0
@@ -230,14 +230,14 @@ func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 			add_deduction(chokepoint, CELL_ISLAND,
 				ISLAND_CHOKEPOINT, [clue_cell])
 	
-	_log.end("island_chokepoint_cramped", [chokepoint])
+	_log.end("deduce_island_chokepoint_cramped", [chokepoint])
 
 
 ## Deduces when a chokepoint forces a 2x2 pool in a simple 2-cell case.
 func deduce_island_chokepoint_tiny_pool(chokepoint: Vector2i) -> void:
 	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
 		return
-	_log.start("island_chokepoint_tiny_pool", [chokepoint])
+	_log.start("deduce_island_chokepoint_tiny_pool", [chokepoint])
 	
 	# Check for two empty cells leading into a dead end, which create a pool.
 	var old_deductions_size: int = deductions.size()
@@ -246,14 +246,14 @@ func deduce_island_chokepoint_tiny_pool(chokepoint: Vector2i) -> void:
 		if deductions.size() > old_deductions_size:
 			break
 	
-	_log.end("island_chokepoint_tiny_pool", [chokepoint])
+	_log.end("deduce_island_chokepoint_tiny_pool", [chokepoint])
 
 
 ## Deduces when a chokepoint forces a 2x2 pool in a complex multi-cell case.
 func deduce_island_chokepoint_pool(chokepoint: Vector2i) -> void:
 	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
 		return
-	_log.start("island_chokepoint_pool", [chokepoint])
+	_log.start("deduce_island_chokepoint_pool", [chokepoint])
 	
 	var split_neighbor_set: Dictionary[Vector2i, bool] = {}
 	var split_root_set: Dictionary[Vector2i, bool] = {}
@@ -297,7 +297,7 @@ func deduce_island_chokepoint_pool(chokepoint: Vector2i) -> void:
 			pool_cells.sort()
 			add_deduction(chokepoint, CELL_ISLAND, POOL_CHOKEPOINT, pool_cells)
 	
-	_log.end("island_chokepoint_pool", [chokepoint])
+	_log.end("deduce_island_chokepoint_pool", [chokepoint])
 
 
 ## Returns true if converting the chokepoint to a wall would enclose a 2x2 pool.[br]
@@ -1251,8 +1251,11 @@ func _create_change_probes(changes: Array[Dictionary]) -> void:
 
 
 func _create_default_probes() -> void:
-	probe_library.add_probe(create_island_of_one_probes)
-	probe_library.add_probe(create_adjacent_clue_probes)
+	# starting techniques; we do these once and then never again
+	probe_library.add_probe(create_island_of_one_probes).set_one_shot()
+	probe_library.add_probe(create_adjacent_clue_probes).set_one_shot()
+	
+	# basic techniques; we can do these again and again
 	probe_library.add_probe(create_island_probes)
 	probe_library.add_probe(create_wall_probes)
 	probe_library.add_probe(create_island_divider_probes)
@@ -1261,6 +1264,7 @@ func _create_default_probes() -> void:
 	probe_library.add_probe(create_island_chokepoint_probes)
 	probe_library.add_probe(deduce_unclued_lifeline)
 	
+	# advanced techniques; these require bifurcation and are very expensive
 	probe_library.add_probe(create_bifurcation_probes).set_bifurcation()
 	probe_library.add_probe(create_wall_strangle_probes).set_bifurcation()
 	probe_library.add_probe(create_island_battleground_probes).set_bifurcation()
