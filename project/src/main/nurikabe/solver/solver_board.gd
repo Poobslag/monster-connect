@@ -23,6 +23,7 @@ const HEAT_SPREAD_FACTOR: float = 0.5 # how effectively heat spreads to neighbor
 const HEAT_FADE_FACTOR: float = 0.9 # how fast heat fades over time; 0.0 = fast, 1.0 = slow
 
 var cells: Dictionary[Vector2i, int]
+var version: int
 
 var _heat_by_cell: Dictionary[Vector2i, float] = {}
 
@@ -48,6 +49,7 @@ func perform_bfs(start_cell: Vector2i, filter: Callable) -> void:
 func duplicate() -> SolverBoard:
 	var copy: SolverBoard = SolverBoard.new()
 	copy.cells = cells.duplicate()
+	copy.version = version
 	copy._heat_by_cell = _heat_by_cell.duplicate()
 	copy._pending_heat_changes = _pending_heat_changes.duplicate()
 	copy._cache = _cache.duplicate()
@@ -88,21 +90,17 @@ func get_clue_for_island_cell(cell: Vector2i) -> int:
 	return get_island_clues().get(cell, 0)
 
 
-func get_filled_cell_count() -> int:
-	return _get_cached("filled_cell_count", func() -> int:
-		var result: int = 0
-		for cell: Vector2i in cells:
-			if cells[cell] != CELL_EMPTY:
-				result += 1
-		return result)
-
-
 func get_flooded_board() -> SolverBoard:
 	return _get_cached("get_flooded_board", _build_flooded_board)
 
 
 func is_filled() -> bool:
-	return get_filled_cell_count() == cells.size()
+	return _get_cached("filled", func() -> int:
+		var result: int = true
+		for cell: Vector2i in cells:
+			if cells[cell] == CELL_EMPTY:
+				result = false
+		return result)
 
 
 func get_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
@@ -144,6 +142,7 @@ func get_per_clue_chokepoint_map() -> PerClueChokepointMap:
 func set_cell(cell_pos: Vector2i, value: int) -> void:
 	_cache.clear()
 	cells[cell_pos] = value
+	version += 1
 
 
 func increase_heat(heated_cells: Array[Vector2i]) -> void:
