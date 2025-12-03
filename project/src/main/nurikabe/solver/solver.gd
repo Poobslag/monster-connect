@@ -73,7 +73,7 @@ func apply_changes() -> void:
 		var history_item: Dictionary[String, Variant] = {}
 		history_item["pos"] = change["pos"]
 		history_item["value"] = change["value"]
-		history_item["tick"] = board.get_filled_cell_count()
+		history_item["tick"] = board.version
 		_change_history.append(history_item)
 	
 	_change_history.append_array(changes)
@@ -116,42 +116,42 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 		pass
 	elif get_last_run(enqueue_islands) == -1:
 		schedule_task(enqueue_islands, 150)
-	elif get_last_run(enqueue_islands) < board.get_filled_cell_count():
+	elif get_last_run(enqueue_islands) < board.version:
 		schedule_task(enqueue_islands, 50)
 	
 	if has_scheduled_task(enqueue_walls):
 		pass
 	elif get_last_run(enqueue_walls) == -1:
 		schedule_task(enqueue_walls, 145)
-	elif get_last_run(enqueue_walls) < board.get_filled_cell_count():
+	elif get_last_run(enqueue_walls) < board.version:
 		schedule_task(enqueue_walls, 45)
 	
 	if has_scheduled_task(enqueue_island_dividers):
 		pass
 	elif get_last_run(enqueue_island_dividers) == -1:
 		schedule_task(enqueue_island_dividers, 140)
-	elif get_last_run(enqueue_island_dividers) < board.get_filled_cell_count():
+	elif get_last_run(enqueue_island_dividers) < board.version:
 		schedule_task(enqueue_island_dividers, 40)
 	
 	if has_scheduled_task(enqueue_unreachable_squares):
 		pass
 	elif get_last_run(enqueue_unreachable_squares) == -1:
 		schedule_task(enqueue_unreachable_squares, 135)
-	elif get_last_run(enqueue_unreachable_squares) < board.get_filled_cell_count():
+	elif get_last_run(enqueue_unreachable_squares) < board.version:
 		schedule_task(enqueue_unreachable_squares, 35)
 	
 	if has_scheduled_task(enqueue_wall_chokepoints):
 		pass
 	elif get_last_run(enqueue_wall_chokepoints) == -1:
 		schedule_task(enqueue_wall_chokepoints, 135)
-	elif get_last_run(enqueue_wall_chokepoints) < board.get_filled_cell_count():
+	elif get_last_run(enqueue_wall_chokepoints) < board.version:
 		schedule_task(enqueue_wall_chokepoints, 35)
 	
 	if has_scheduled_task(enqueue_island_chokepoints):
 		pass
 	elif get_last_run(enqueue_island_chokepoints) == -1:
 		schedule_task(enqueue_island_chokepoints, 130)
-	elif get_last_run(enqueue_island_chokepoints) < board.get_filled_cell_count():
+	elif get_last_run(enqueue_island_chokepoints) < board.version:
 		schedule_task(enqueue_island_chokepoints, 30)
 	
 	if is_queue_empty() and allow_bifurcation:
@@ -159,22 +159,22 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 		
 		if has_scheduled_task(enqueue_wall_strangle):
 			pass
-		elif get_last_run(enqueue_wall_strangle) < board.get_filled_cell_count():
+		elif get_last_run(enqueue_wall_strangle) < board.version:
 			schedule_task(enqueue_wall_strangle, 20)
 		
 		if has_scheduled_task(enqueue_island_battleground):
 			pass
-		elif get_last_run(enqueue_island_battleground) < board.get_filled_cell_count():
+		elif get_last_run(enqueue_island_battleground) < board.version:
 			schedule_task(enqueue_island_battleground, 20)
 		
 		if has_scheduled_task(enqueue_island_release):
 			pass
-		elif get_last_run(enqueue_island_release) < board.get_filled_cell_count():
+		elif get_last_run(enqueue_island_release) < board.version:
 			schedule_task(enqueue_island_release, 20)
 		
 		if has_scheduled_task(enqueue_island_strangle):
 			pass
-		elif get_last_run(enqueue_island_strangle) < board.get_filled_cell_count():
+		elif get_last_run(enqueue_island_strangle) < board.version:
 			schedule_task(enqueue_island_strangle, 20)
 		
 		if not metrics.has("bifurcation_stops"):
@@ -228,7 +228,7 @@ func step() -> void:
 
 func print_queue() -> void:
 	var strings: Array[String] = []
-	print("task_queue.size=%s; filled_cells=%s" % [_task_queue.size(), board.get_filled_cell_count()])
+	print("task_queue.size=%s; version=%s" % [_task_queue.size(), board.version])
 	for task: Dictionary[String, Variant] in _task_queue:
 		strings.append(" priority=%s: %s" % [task["priority"], task["key"]])
 	print("\n".join(strings))
@@ -245,9 +245,9 @@ func run_next_task() -> void:
 	
 	var next_task: Dictionary[String, Variant] = _task_queue.pop_front()
 	if verbose:
-		print("(%s;%s) run %s" % [board.get_filled_cell_count(), Time.get_ticks_msec(), next_task["key"]])
+		print("(%s;%s) run %s" % [board.version, Time.get_ticks_msec(), next_task["key"]])
 	_task_history[next_task["key"]] = {
-		"last_run": board.get_filled_cell_count()
+		"last_run": board.version
 	} as Dictionary[String, Variant]
 	next_task["callable"].call()
 

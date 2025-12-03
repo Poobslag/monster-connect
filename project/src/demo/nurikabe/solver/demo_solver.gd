@@ -120,8 +120,7 @@ func step() -> void:
 				push_error("Illegal change: %s == %s" % [cell_pos, solver.board.get_cell(cell_pos)])
 		
 		for deduction_index: int in solver.deductions.deductions.size():
-			var shown_index: int = solver.board.get_filled_cell_count() \
-					- solver.deductions.deductions.size() + deduction_index
+			var shown_index: int = solver.board.version + deduction_index
 			var deduction: Deduction = solver.deductions.deductions[deduction_index]
 			var heat: float = solver.board.get_heat(deduction.pos)
 			_show_message("%s %s heat=%.2f" % \
@@ -151,7 +150,7 @@ func solve_until_bifurcation() -> void:
 			])
 	else:
 		_show_message("bifurcation required: (%s)" % [
-			solver.board.get_filled_cell_count()
+			solver.board.version
 			])
 
 
@@ -159,7 +158,7 @@ func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, 
 		apply_changes: bool = true, allow_bifurcation: bool = true) -> void:
 	var idle_steps: int = 0
 	while idle_steps < idle_step_threshold and solver.deductions.size() < deduction_threshold:
-		var old_filled_cell_count: int = solver.board.get_filled_cell_count()
+		var old_version: int = solver.board.version
 		if solver.board.is_filled():
 			break
 		if not solver.has_scheduled_tasks():
@@ -170,7 +169,7 @@ func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, 
 		if apply_changes:
 			solver.apply_heat()
 			solver.apply_changes()
-		if old_filled_cell_count == solver.board.get_filled_cell_count():
+		if old_version == solver.board.version:
 			idle_steps += 1
 		else:
 			idle_steps = 0
