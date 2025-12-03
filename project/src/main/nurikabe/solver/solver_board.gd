@@ -100,6 +100,7 @@ func is_filled() -> bool:
 		for cell: Vector2i in cells:
 			if cells[cell] == CELL_EMPTY:
 				result = false
+				break
 		return result)
 
 
