@@ -54,6 +54,8 @@ func parse() -> void:
 		var total_spawn_impact: float = 0.0
 		var probe_bag: Dictionary[String, int] = spawned_probes_by_parent.get(technique)
 		for child_key: String in probe_bag:
+			if child_key == "run_bifurcation_step":
+				continue
 			var spawn_count: int = probe_bag[child_key]
 			total_spawn_cost += solver_metrics[child_key]["cost"] * spawn_count
 			total_spawn_impact += solver_metrics[child_key]["impact"] * spawn_count

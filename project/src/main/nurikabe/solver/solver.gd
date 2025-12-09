@@ -407,8 +407,9 @@ func create_wall_strangle_probes() -> void:
 	_log.end("create_wall_strangle_probes")
 
 
-func create_island_divider_probes() -> void:
-	_log.start("create_island_divider_probes")
+func deduce_all_island_dividers() -> void:
+	_log.start("deduce_all_island_dividers")
+	var all_liberties: Dictionary[Vector2i, bool] = {}
 	var islands: Array[Array] = board.get_islands()
 	for island: Array[Vector2i] in islands:
 		var clue_value: int = board.get_clue_for_island(island)
@@ -416,11 +417,19 @@ func create_island_divider_probes() -> void:
 			# unclued/invalid island
 			continue
 		var liberties: Array[Vector2i] = board.get_liberties(island)
-		if liberties.is_empty():
-			continue
-		probe_library.add_probe(deduce_island_divider.bind(island.front())).set_one_shot() \
-				.related_cells(liberties)
-	_log.end("create_island_divider_probes")
+		for liberty: Vector2i in liberties:
+			if should_deduce(board, liberty):
+				all_liberties[liberty] = true
+	
+	for liberty: Vector2i in all_liberties:
+		var neighbors: Array[Vector2i] = []
+		for neighbor_dir in NEIGHBOR_DIRS:
+			neighbors.append(liberty + neighbor_dir)
+		if not _is_valid_merged_island(neighbors, 1):
+			var unique_neighbor_island_cells: Array[Vector2i] \
+					= get_unique_neighbor_island_cells(neighbors)
+			add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER, unique_neighbor_island_cells)
+	_log.end("deduce_all_island_dividers")
 
 
 func deduce_all_adjacent_clues() -> void:
@@ -772,23 +781,6 @@ func deduce_clued_island_snug(island_cell: Vector2i) -> void:
 	_log.end("deduce_clued_island_snug", [island_cell])
 
 
-func deduce_island_divider(island_cell: Vector2i) -> void:
-	_log.start("deduce_island_divider", [island_cell])
-	var liberties: Array[Vector2i] = board.get_liberties(board.get_island_for_cell(island_cell))
-	for liberty: Vector2i in liberties:
-		if not should_deduce(board, liberty):
-			continue
-		
-		var neighbors: Array[Vector2i] = []
-		for neighbor_dir in NEIGHBOR_DIRS:
-			neighbors.append(liberty + neighbor_dir)
-		if not _is_valid_merged_island(neighbors, 1):
-			var unique_neighbor_island_cells: Array[Vector2i] \
-					= get_unique_neighbor_island_cells(neighbors)
-			add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER, unique_neighbor_island_cells)
-	_log.end("deduce_island_divider", [island_cell])
-
-
 func deduce_wall_chokepoint(chokepoint: Vector2i) -> void:
 	if not should_deduce(board, chokepoint):
 		return
@@ -1121,9 +1113,9 @@ func _create_default_probes() -> void:
 	# basic techniques; we can do these again and again
 	probe_library.add_probe(create_all_island_probes)
 	probe_library.add_probe(create_all_wall_probes)
-	probe_library.add_probe(create_island_divider_probes)
 	probe_library.add_probe(create_wall_chokepoint_probes)
 	probe_library.add_probe(create_island_chokepoint_probes)
+	probe_library.add_probe(deduce_all_island_dividers)
 	probe_library.add_probe(deduce_all_unreachable_squares)
 	probe_library.add_probe(deduce_unclued_lifeline)
 	
