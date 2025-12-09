@@ -85,7 +85,7 @@ func add_bifurcation_scenario(key: String, cells: Array[Vector2i],
 	metrics["bifurcation_scenarios"] += 1
 	bifurcation_engine.add_scenario(board, key, cells, assumptions, bifurcation_deductions)
 	var builder: ProbeLibrary.ProbeBuilder = probe_library.add_probe(run_bifurcation_step) \
-			.set_bifurcation().set_one_shot().related_cells(cells)
+			.set_bifurcation().set_one_shot()
 	for deduction: Deduction in bifurcation_deductions:
 		builder.probe.add_deduction_cell(deduction.pos)
 
@@ -114,11 +114,6 @@ func apply_changes() -> void:
 	bifurcation_engine.clear()
 	
 	_create_change_probes(changes)
-
-
-func apply_heat() -> void:
-	board.decrease_heat()
-	board.increase_heat(deductions.cells.keys())
 
 
 func clear(default_probes: bool = true) -> void:
@@ -185,8 +180,7 @@ func create_wall_probes(wall: Array[Vector2i]) -> void:
 	if liberties.is_empty():
 		return
 	if wall.size() >= 3 and liberties.size() >= 1:
-		probe_library.add_probe(deduce_pool.bind(wall.front())).set_one_shot() \
-				.related_cells(liberties)
+		probe_library.add_probe(deduce_pool.bind(wall.front())).set_one_shot()
 
 
 func create_bifurcation_probes() -> void:
@@ -212,8 +206,7 @@ func create_island_chokepoint_probes() -> void:
 		var liberties: Array[Vector2i] = board.get_liberties(island)
 		if liberties.is_empty():
 			continue
-		probe_library.add_probe(deduce_clue_chokepoint.bind(island.front())).set_one_shot() \
-				.related_cells(liberties)
+		probe_library.add_probe(deduce_clue_chokepoint.bind(island.front())).set_one_shot()
 	_log.end("create_island_chokepoint_probes")
 
 
@@ -238,8 +231,7 @@ func create_island_probes(island: Array[Vector2i]) -> void:
 	
 	if clue_value >= 1:
 		# clued island
-		probe_library.add_probe(deduce_clued_island_snug.bind(island.front())).set_one_shot() \
-				.related_cells(liberties)
+		probe_library.add_probe(deduce_clued_island_snug.bind(island.front())).set_one_shot()
 
 
 ## Executes a bifurcation on two islands which are almost adjacent.
@@ -282,7 +274,7 @@ func create_bifurcation_probe(key: String, cells: Array[Vector2i],
 		bifurcation_deductions: Array[Deduction]) -> void:
 	var builder: ProbeLibrary.ProbeBuilder = probe_library.add_probe(add_bifurcation_scenario.bind(
 			key, cells, assumptions, bifurcation_deductions)) \
-		.set_bifurcation().set_one_shot().related_cells(cells)
+		.set_bifurcation().set_one_shot()
 	for deduction: Deduction in bifurcation_deductions:
 		builder.probe.add_deduction_cell(deduction.pos)
 

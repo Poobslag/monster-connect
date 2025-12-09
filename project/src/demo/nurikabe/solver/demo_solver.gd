@@ -152,11 +152,9 @@ func step() -> void:
 		for deduction_index: int in solver.deductions.deductions.size():
 			var shown_index: int = solver.board.version + deduction_index
 			var deduction: Deduction = solver.deductions.deductions[deduction_index]
-			var heat: float = solver.board.get_heat(deduction.pos)
-			_show_message("%s %s heat=%.2f" % \
-					[shown_index, str(deduction), heat])
+			_show_message("%s %s" % \
+					[shown_index, str(deduction)])
 		
-		solver.apply_heat()
 		solver.apply_changes()
 		for change: Dictionary[String, Variant] in changes:
 			%GameBoard.set_cell(change["pos"], change["value"])
@@ -192,7 +190,6 @@ func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, 
 			break
 		solver.run_next_probe(allow_bifurcation)
 		if apply_changes:
-			solver.apply_heat()
 			solver.apply_changes()
 		if old_version == solver.board.version:
 			idle_steps += 1
