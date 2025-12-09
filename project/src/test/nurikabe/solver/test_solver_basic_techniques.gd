@@ -474,7 +474,7 @@ func test_enqueue_unreachable_squares_blocked() -> void:
 	assert_deductions(solver.enqueue_unreachable_squares, expected)
 
 
-func test_enqueue_unreachable_squares_wall_bubble() -> void:
+func test_enqueue_bubbles_wall_bubble() -> void:
 	grid = [
 		" 3  ######  ",
 		"  ####      ",
@@ -485,7 +485,21 @@ func test_enqueue_unreachable_squares_wall_bubble() -> void:
 		"(0, 3)->## wall_bubble",
 		"(2, 3)->## wall_bubble",
 	]
-	assert_deductions(solver.enqueue_unreachable_squares, expected)
+	assert_deductions(solver.enqueue_bubbles, expected)
+
+
+func test_enqueue_bubbles_island_bubble() -> void:
+	grid = [
+		" 9 . .",
+		" .  ##",
+		" .## 1",
+		" .  ##",
+		"   . .",
+	]
+	var expected: Array[String] = [
+		"(0, 4)->. island_bubble",
+	]
+	assert_deductions(solver.enqueue_bubbles, expected)
 
 
 func test_enqueue_wall_chokepoints() -> void:

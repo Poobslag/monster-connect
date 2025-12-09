@@ -158,6 +158,17 @@ func decrease_heat(factor: float = 1.0) -> void:
 		_pending_heat_changes.pop_front()
 
 
+func get_empty_regions() -> Array[Array]:
+	return get_empty_region_group_map().groups
+
+
+func get_empty_region_group_map() -> SolverGroupMap:
+	return _get_cached(
+		"empty_region_group_map",
+		_build_empty_region_group_map
+	)
+
+
 func get_heat(cell: Vector2i) -> float:
 	if _pending_heat_changes:
 		_apply_heat_changes()
@@ -392,6 +403,12 @@ func _clue_value_for_cells(island: Array[Vector2i]) -> int:
 				break
 			clue_value = cell_value
 	return clue_value
+
+
+func _build_empty_region_group_map() -> SolverGroupMap:
+	var result: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
+		return value == CELL_EMPTY)
+	return result
 
 
 func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
