@@ -280,7 +280,7 @@ func test_create_island_chokepoint_probes_lifeline_invalid_bendy() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_create_island_divider_probes() -> void:
+func test_deduce_all_island_dividers() -> void:
 	grid = [
 		" .   3",
 		" 3    ",
@@ -289,10 +289,10 @@ func test_create_island_divider_probes() -> void:
 	var expected: Array[String] = [
 		"(1, 0)->## island_divider (0, 0) (2, 0)",
 	]
-	assert_deductions(solver.create_island_divider_probes, expected)
+	assert_deductions(solver.deduce_all_island_dividers, expected)
 
 
-func test_create_island_divider_probes_unclued() -> void:
+func test_deduce_all_island_dividers_unclued() -> void:
 	grid = [
 		" .   .",
 		" 3    ",
@@ -301,10 +301,10 @@ func test_create_island_divider_probes_unclued() -> void:
 	var expected: Array[String] = [
 		"(1, 0)->## island_divider (0, 0) (2, 0)",
 	]
-	assert_deductions(solver.create_island_divider_probes, expected)
+	assert_deductions(solver.deduce_all_island_dividers, expected)
 
 
-func test_create_island_divider_probes_invalid() -> void:
+func test_deduce_all_island_dividers_invalid() -> void:
 	grid = [
 		"      ",
 		"     .",
@@ -312,7 +312,7 @@ func test_create_island_divider_probes_invalid() -> void:
 	]
 	var expected: Array[String] = [
 	]
-	assert_deductions(solver.create_island_divider_probes, expected)
+	assert_deductions(solver.deduce_all_island_dividers, expected)
 
 
 func test_create_all_island_probes_corner_island() -> void:
