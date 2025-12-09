@@ -18,6 +18,7 @@ const ADJACENT_CLUES: Deduction.Reason = Deduction.Reason.ADJACENT_CLUES
 ## basic techniques
 const CORNER_BUFFER: Deduction.Reason = Deduction.Reason.CORNER_BUFFER
 const CORNER_ISLAND: Deduction.Reason = Deduction.Reason.CORNER_ISLAND
+const ISLAND_BUBBLE: Deduction.Reason = Deduction.Reason.ISLAND_BUBBLE
 const ISLAND_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_BUFFER
 const ISLAND_CHOKEPOINT: Deduction.Reason = Deduction.Reason.ISLAND_CHOKEPOINT
 const ISLAND_CONNECTOR: Deduction.Reason = Deduction.Reason.ISLAND_CONNECTOR
@@ -153,6 +154,13 @@ func schedule_tasks(allow_bifurcation: bool = true) -> void:
 		schedule_task(enqueue_island_chokepoints, 130)
 	elif get_last_run(enqueue_island_chokepoints) < board.version:
 		schedule_task(enqueue_island_chokepoints, 30)
+	
+	if has_scheduled_task(enqueue_bubbles):
+		pass
+	elif get_last_run(enqueue_bubbles) == -1:
+		schedule_task(enqueue_bubbles, 128)
+	elif get_last_run(enqueue_bubbles) < board.version:
+		schedule_task(enqueue_bubbles, 28)
 	
 	if is_queue_empty() and allow_bifurcation:
 		metrics["bifurcation_start_time"] = Time.get_ticks_usec()
@@ -865,6 +873,29 @@ func enqueue_adjacent_clues() -> void:
 	for cell: Vector2i in board.cells:
 		if NurikabeUtils.is_clue(board.get_cell(cell)):
 			schedule_task(deduce_adjacent_clues.bind(cell), 1100)
+
+
+func enqueue_bubbles() -> void:
+	for empty_region: Array[Vector2i] in board.get_empty_regions():
+		var has_wall_neighbor: bool = false
+		var has_island_neighbor: bool = false
+		for neighbor: Vector2i in board.get_group_neighbors(empty_region):
+			var neighbor_value: int = board.get_cell(neighbor)
+			if neighbor_value == CELL_WALL:
+				has_wall_neighbor = true
+			elif neighbor_value == CELL_ISLAND or NurikabeUtils.is_clue(neighbor_value):
+				has_island_neighbor = true
+			if has_wall_neighbor and has_island_neighbor:
+				break
+		
+		if has_wall_neighbor and not has_island_neighbor:
+			for cell: Vector2i in empty_region:
+				if _should_deduce(board, cell):
+					add_deduction(cell, CELL_WALL, WALL_BUBBLE)
+		elif has_island_neighbor and not has_wall_neighbor:
+			for cell: Vector2i in empty_region:
+				if _should_deduce(board, cell):
+					add_deduction(cell, CELL_ISLAND, ISLAND_BUBBLE)
 
 
 func enqueue_island_chokepoints() -> void:
