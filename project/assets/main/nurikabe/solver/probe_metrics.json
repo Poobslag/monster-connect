@@ -20,123 +20,118 @@
     "impact": 0.00468
   },
   "create_all_island_probes": {
-    "cost": 0.10811,
-    "impact": 0.00295,
-    "spawn_cost": 0.09607,
-    "spawn_impact": 0.031
+    "cost": 0.12998,
+    "impact": 0.00382,
+    "spawn_cost": 0.0999,
+    "spawn_impact": 0.02701
   },
   "create_all_wall_probes": {
-    "cost": 0.09633,
-    "impact": 0.00794,
-    "spawn_cost": 0.01049,
-    "spawn_impact": 0.01909
+    "cost": 0.12655,
+    "impact": 0.00839,
+    "spawn_cost": 0.01256,
+    "spawn_impact": 0.02094
   },
   "create_bifurcation_probes": {
-    "cost": 0.10038,
+    "cost": 0.12399,
     "spawn_cost": 1.0,
-    "spawn_impact": 0.1237
+    "spawn_impact": 0.11802
   },
   "create_island_battleground_probes": {
-    "cost": 0.02296,
-    "spawn_cost": 0.17174,
-    "spawn_impact": 0.01824
+    "cost": 0.02925,
+    "spawn_cost": 0.19212,
+    "spawn_impact": 0.02064
   },
   "create_island_chokepoint_probes": {
-    "cost": 0.05912,
-    "spawn_cost": 0.32386,
-    "spawn_impact": 0.1077
-  },
-  "create_island_divider_probes": {
-    "cost": 0.01909,
-    "spawn_cost": 0.03803,
-    "spawn_impact": 0.01979
+    "cost": 0.07365,
+    "spawn_cost": 0.44121,
+    "spawn_impact": 0.11309
   },
   "create_island_release_probes": {
-    "cost": 0.02887,
-    "spawn_cost": 0.35084,
-    "spawn_impact": 0.03988
+    "cost": 0.03456,
+    "spawn_cost": 0.36785,
+    "spawn_impact": 0.03958
   },
   "create_island_strangle_probes": {
-    "cost": 0.01288,
-    "spawn_cost": 0.12921,
-    "spawn_impact": 0.01796
+    "cost": 0.01505,
+    "spawn_cost": 0.15077,
+    "spawn_impact": 0.02021
   },
   "create_wall_chokepoint_probes": {
-    "cost": 0.04754,
-    "spawn_cost": 0.00481,
-    "spawn_impact": 0.01478
+    "cost": 0.05942,
+    "spawn_cost": 0.00569,
+    "spawn_impact": 0.01686
   },
   "create_wall_strangle_probes": {
-    "cost": 0.0359,
-    "spawn_cost": 0.35187,
-    "spawn_impact": 0.04864
+    "cost": 0.04596,
+    "spawn_cost": 0.37953,
+    "spawn_impact": 0.04881
   },
   "deduce_all_adjacent_clues": {
-    "cost": 0.01965,
+    "cost": 0.02864,
     "impact": 1.0
   },
+  "deduce_all_island_dividers": {
+    "cost": 0.03264,
+    "impact": 0.02358
+  },
   "deduce_all_islands_of_one": {
-    "cost": 0.00525,
+    "cost": 0.00623,
     "impact": 0.22967
   },
   "deduce_all_unreachable_squares": {
-    "cost": 0.04071,
-    "impact": 0.04004
+    "cost": 0.04884,
+    "impact": 0.03798
   },
   "deduce_clue_chokepoint": {
-    "cost": 0.03188,
-    "impact": 0.01264
+    "cost": 0.0399,
+    "impact": 0.01221
   },
   "deduce_clue_chokepoint_loose": {
-    "cost": 0.01283,
-    "impact": 0.01129
+    "cost": 0.01628,
+    "impact": 0.01091
   },
   "deduce_clue_chokepoint_wall_weaver": {
-    "cost": 0.01651,
-    "impact": 0.0283
+    "cost": 0.02298,
+    "impact": 0.02696
   },
   "deduce_clued_island_snug": {
-    "cost": 0.01144,
-    "impact": 0.00369
+    "cost": 0.01342,
+    "impact": 0.00363
   },
   "deduce_island": {
-    "cost": 0.00441,
-    "impact": 0.01957
+    "cost": 0.00518,
+    "impact": 0.01978
   },
   "deduce_island_chokepoint": {
-    "cost": 0.03216,
-    "impact": 0.00422
+    "cost": 0.04044,
+    "impact": 0.00382
   },
   "deduce_island_chokepoint_cramped": {
-    "cost": 0.01666,
+    "cost": 0.02254,
     "impact": 0.00001
   },
   "deduce_island_chokepoint_pool": {
-    "cost": 0.00524,
-    "impact": 0.00245
+    "cost": 0.0062,
+    "impact": 0.00218
   },
   "deduce_island_chokepoint_tiny_pool": {
-    "cost": 0.00441,
-    "impact": 0.00191
-  },
-  "deduce_island_divider": {
-    "cost": 0.00537,
-    "impact": 0.00279
+    "cost": 0.00506,
+    "impact": 0.00178
   },
   "deduce_pool": {
-    "cost": 0.0058,
-    "impact": 0.01055
+    "cost": 0.00661,
+    "impact": 0.01102
   },
   "deduce_unclued_lifeline": {
-    "cost": 0.069,
-    "impact": 0.02132
+    "cost": 0.08725,
+    "impact": 0.01918
   },
   "deduce_wall": {
-    "cost": 0.00411,
-    "impact": 0.00721
+    "cost": 0.00486,
+    "impact": 0.0072
   },
   "deduce_wall_chokepoint": {
-    "cost": 0.00401,
-    "impact": 0.01234
+    "cost": 0.00577,
+    "impact": 0.01709
   }
 }
