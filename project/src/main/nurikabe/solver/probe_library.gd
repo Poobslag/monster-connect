@@ -113,13 +113,3 @@ class ProbeBuilder:
 	func deduction_cell(cell: Vector2i) -> ProbeBuilder:
 		probe.add_deduction_cell(cell)
 		return self
-	
-	
-	func related_cells(cells: Array[Vector2i]) -> ProbeBuilder:
-		probe.add_related_cells(cells)
-		return self
-	
-	
-	func related_cell(cell: Vector2i) -> ProbeBuilder:
-		probe.add_related_cell(cell)
-		return self
