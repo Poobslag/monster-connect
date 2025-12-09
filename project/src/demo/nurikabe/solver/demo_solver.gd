@@ -8,8 +8,12 @@ extends Node
 ## 	[kbd]Shift + W[/kbd]: Performance test puzzles #61-70.
 ## 	[kbd]E[/kbd]: Solve until bifurcation is necessary.
 ## 	[kbd]R[/kbd]: Reset the board.
+## 	[kbd]T[/kbd]: Toggle strategies.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
-## 	[kbd]Shift + P[/kbd]: Print task queue to console.
+## 	[kbd]Shift + P[/kbd]: Print available probes and bifurcation scenarios to console.
+## 	[kbd]S[/kbd]: Assign a fixed seed, and enable the 'random' strategy.
+## 	[kbd]Shift + S[/kbd]: Increment the fixed seed, and enable the 'random' strategy.
+## 	[kbd]H[/kbd]: Clear the solver history. Forces deductions to be rerun.
 ## 	[kbd]B[/kbd]: Print benchmark results for AggregateTimer/SplitTimer.
 
 @export_file("*.txt") var puzzle_path: String:
@@ -21,6 +25,11 @@ extends Node
 	set(value):
 		log_enabled = value
 		solver.log_enabled = log_enabled
+
+@export var verbose: bool = false:
+	set(value):
+		verbose = value
+		solver.verbose = verbose
 
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
@@ -43,8 +52,14 @@ const PUZZLE_PATHS: Array[String] = [
 
 var performance_data: Dictionary[String, Variant] = {}
 var solver: Solver = Solver.new()
-
 var performance_suite_queue: Array[String] = []
+var fixed_seed: int = -1
+
+func _ready() -> void:
+	_refresh_puzzle_path()
+	solver.board = %GameBoard.to_solver_board()
+	solver.decision_manager.strategy = DecisionManager.Strategy.SMART
+
 
 func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
@@ -77,21 +92,36 @@ func _input(event: InputEvent) -> void:
 			%GameBoard.validate()
 		KEY_P:
 			if Input.is_key_pressed(KEY_SHIFT):
-				solver.print_queue()
+				solver.probe_library.print_available_probes()
+				solver.bifurcation_engine.print_scenarios()
 			else:
 				print_grid_string()
 		KEY_R:
 			%GameBoard.reset()
 			solver.board = %GameBoard.to_solver_board()
 			solver.clear()
+			apply_fixed_seed()
+		KEY_S:
+			fixed_seed = max(0, fixed_seed)
+			if Input.is_key_pressed(KEY_SHIFT):
+				fixed_seed += 1
+			_show_message("strategy=random seed=%s" % [fixed_seed])
+			apply_fixed_seed()
+			solver.decision_manager.strategy = DecisionManager.Strategy.RANDOM
+		KEY_T:
+			_show_message("strategy=smart")
+			solver.decision_manager.strategy = DecisionManager.Strategy.SMART
+		KEY_H:
+			solver.probe_library.clear_history()
+			_show_message("cleared history")
 		KEY_B:
 			AggregateTimer.print_results()
 			SplitTimer.print_results()
 
 
-func _ready() -> void:
-	_refresh_puzzle_path()
-	solver.board = %GameBoard.to_solver_board()
+func apply_fixed_seed() -> void:
+	if fixed_seed >= 0:
+		solver.decision_manager.rng.seed = fixed_seed
 
 
 func print_grid_string() -> void:
@@ -144,8 +174,7 @@ func solve_until_bifurcation() -> void:
 	if not %MessageLabel.text.is_empty():
 		_show_message("--------")
 	if solver.board.is_filled():
-		_show_message("bifurcation: stops=%s, scenarios=%s" % [
-			solver.metrics.get("bifurcation_stops"),
+		_show_message("bifurcation: scenarios=%s" % [
 			solver.metrics.get("bifurcation_scenarios"),
 			])
 	else:
@@ -161,11 +190,7 @@ func keep_stepping(idle_step_threshold: int, deduction_threshold: int = 999999, 
 		var old_version: int = solver.board.version
 		if solver.board.is_filled():
 			break
-		if not solver.has_scheduled_tasks():
-			solver.schedule_tasks(allow_bifurcation)
-		if not solver.has_scheduled_tasks():
-			break
-		solver.step()
+		solver.run_next_probe(allow_bifurcation)
 		if apply_changes:
 			solver.apply_heat()
 			solver.apply_changes()
@@ -179,6 +204,7 @@ func load_puzzle(new_puzzle_path: String) -> void:
 	puzzle_path = new_puzzle_path
 	solver.board = %GameBoard.to_solver_board()
 	solver.clear()
+	apply_fixed_seed()
 
 
 func performance_test() -> void:
@@ -189,10 +215,9 @@ func performance_test() -> void:
 	if not %MessageLabel.text.is_empty():
 		_show_message("--------")
 	_show_message("%.3f msec" % [(Time.get_ticks_usec() - start_time) / 1000.0])
-	_show_message("bifurcation: stops=%s, scenarios=%s, duration=%.3f" % [
-		solver.metrics.get("bifurcation_stops", 0),
-		solver.metrics.get("bifurcation_scenarios", 0),
-		solver.metrics.get("bifurcation_duration", 0),
+	_show_message("bifurcation: scenarios=%s, duration=%.3f" % [
+			solver.metrics.get("bifurcation_scenarios", 0),
+			solver.metrics.get("bifurcation_duration", 0),
 		])
 	
 	for cell: Vector2i in solver.board.cells:
@@ -209,7 +234,7 @@ func _show_suite_results() -> void:
 	_show_message("✔️ %s / %s completed ⏱ %s ms total 🔀 %s bifurcations" % [
 		performance_data.get("total_ok", 0), performance_data.get("total_run", 0),
 		_msec_str(performance_data.get("total_duration") / 1000.0),
-		performance_data.get("total_bifurcation_stops"),
+		performance_data.get("total_bifurcation_scenarios"),
 	])
 	_show_message("--------")
 	_show_message("finished")
@@ -245,13 +270,15 @@ func _on_performance_suite_timer_timeout() -> void:
 	var duration: int = Time.get_ticks_usec() - start_time
 	var filled: bool = solver.board.is_filled()
 	var validation_errors: SolverBoard.ValidationResult = solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
+	if validation_errors.error_count > 0:
+		push_error("Validation errors for %s: %s" % [next_path, validation_errors])
 	var puzzle_name: String = StringUtils.substring_after_last(next_path, "/").trim_suffix(".txt")
 	var result: String = "err" if validation_errors.error_count > 0 else "dnf" if not filled else "ok"
 	_show_message("| %s | %s %s | %s | %s |" % [
 			puzzle_name,
 			"✅" if result == "ok" else "⚠️", result,
 			_msec_str(duration / 1000.0),
-			solver.metrics.get("bifurcation_stops", 0)
+			solver.metrics.get("bifurcation_scenarios", 0)
 		])
 	
 	if not performance_data.has("total_duration"):
@@ -266,9 +293,9 @@ func _on_performance_suite_timer_timeout() -> void:
 		performance_data["total_ok"] = 0
 	performance_data["total_ok"] += 1 if result == "ok" else 0
 	
-	if not performance_data.has("total_bifurcation_stops"):
-		performance_data["total_bifurcation_stops"] = 0
-	performance_data["total_bifurcation_stops"] += solver.metrics.get("bifurcation_stops", 0)
+	if not performance_data.has("total_bifurcation_scenarios"):
+		performance_data["total_bifurcation_scenarios"] = 0
+	performance_data["total_bifurcation_scenarios"] += solver.metrics.get("bifurcation_scenarios", 0)
 
 
 func _msec_str(msec: float) -> String:

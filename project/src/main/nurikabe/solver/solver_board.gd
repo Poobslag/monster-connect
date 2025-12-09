@@ -31,9 +31,11 @@ var _heat_by_cell: Dictionary[Vector2i, float] = {}
 var _pending_heat_changes: Array[Callable] = []
 var _cache: Dictionary[String, Variant] = {}
 
-func perform_bfs(start_cell: Vector2i, filter: Callable) -> void:
-	var visited: Dictionary[Vector2i, bool] = {start_cell: true}
-	var queue: Array[Vector2i] = [start_cell]
+func perform_bfs(start_cells: Array[Vector2i], filter: Callable) -> void:
+	var visited: Dictionary[Vector2i, bool] = {}
+	for start_cell: Vector2i in start_cells:
+		visited[start_cell] = true
+	var queue: Array[Vector2i] = start_cells.duplicate()
 	while not queue.is_empty():
 		var next_cell: Vector2i = queue.pop_front()
 		if not filter.call(next_cell):
@@ -49,7 +51,6 @@ func perform_bfs(start_cell: Vector2i, filter: Callable) -> void:
 func duplicate() -> SolverBoard:
 	var copy: SolverBoard = SolverBoard.new()
 	copy.cells = cells.duplicate()
-	copy.version = version
 	copy._heat_by_cell = _heat_by_cell.duplicate()
 	copy._pending_heat_changes = _pending_heat_changes.duplicate()
 	copy._cache = _cache.duplicate()
@@ -140,6 +141,12 @@ func get_per_clue_chokepoint_map() -> PerClueChokepointMap:
 		_build_per_clue_chokepoint_map)
 
 
+func get_per_clue_extent_map() -> PerClueExtentMap:
+	return _get_cached(
+		"per_clue_extent_map",
+		_build_per_clue_extent_map)
+
+
 func set_cell(cell_pos: Vector2i, value: int) -> void:
 	_cache.clear()
 	cells[cell_pos] = value
@@ -156,17 +163,6 @@ func decrease_heat(factor: float = 1.0) -> void:
 	_pending_heat_changes.append(_apply_heat_decrease.bind(factor))
 	if _pending_heat_changes.size() > HEAT_HISTORY:
 		_pending_heat_changes.pop_front()
-
-
-func get_empty_regions() -> Array[Array]:
-	return get_empty_region_group_map().groups
-
-
-func get_empty_region_group_map() -> SolverGroupMap:
-	return _get_cached(
-		"empty_region_group_map",
-		_build_empty_region_group_map
-	)
 
 
 func get_heat(cell: Vector2i) -> float:
@@ -405,12 +401,6 @@ func _clue_value_for_cells(island: Array[Vector2i]) -> int:
 	return clue_value
 
 
-func _build_empty_region_group_map() -> SolverGroupMap:
-	var result: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return value == CELL_EMPTY)
-	return result
-
-
 func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
 	return get_group_neighbors(group).filter(func(neighbor: Vector2i) -> bool:
 		return get_cell(neighbor) == CELL_EMPTY)
@@ -534,8 +524,7 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 		
 		match mode:
 			VALIDATE_COMPLEX:
-				var chokepoint_map: ChokepointMap = get_per_clue_chokepoint_map().get_chokepoint_map(island_cell)
-				var island_max_size: int = chokepoint_map.get_component_cells(island_cell).size()
+				var island_max_size: int = get_per_clue_extent_map().get_extent_size(island_cell)
 				if clue_value > island_max_size:
 					# island is too small and can't grow
 					result.wrong_size.append_array(island)
@@ -565,6 +554,10 @@ func _build_wall_chokepoint_map() -> SolverChokepointMap:
 
 func _build_per_clue_chokepoint_map() -> PerClueChokepointMap:
 	return PerClueChokepointMap.new(self)
+
+
+func _build_per_clue_extent_map() -> PerClueExtentMap:
+	return PerClueExtentMap.new(self)
 
 
 func _build_wall_group_map() -> SolverGroupMap:
@@ -649,3 +642,13 @@ class ValidationResult:
 			return joined_islands.size() \
 					+ pools.size() + split_walls.size() \
 					+ unclued_islands.size() + wrong_size.size()
+	
+	
+	func _to_string() -> String:
+		return JSON.stringify({
+			"joined_islands": joined_islands,
+			"pools": pools,
+			"split_walls": split_walls,
+			"unclued_islands": unclued_islands,
+			"wrong_size": wrong_size,
+		})

@@ -7,17 +7,18 @@ const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
-var solver: Solver = Solver.new()
+var solver: Solver = Solver.new(false)
 var grid: Array[String] = []
 
 func before_each() -> void:
-	solver.clear()
+	solver.clear(false)
+	solver.decision_manager.strategy = DecisionManager.Strategy.FIRST
 
 
 func assert_deductions(callable: Callable, expected_str_array: Array[String]) -> void:
 	solver.board = SolverTestUtils.init_board(grid)
 	callable.call()
-	solver.run_all_tasks()
+	solver.run_all_probes()
 	var actual_str_array: Array[String] = deductions_to_strings(solver.deductions.deductions)
 	assert_eq(str(actual_str_array), str(expected_str_array))
 

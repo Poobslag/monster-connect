@@ -84,6 +84,8 @@ func get_distance_map(start_cells: Array[Vector2i]) -> Dictionary[Vector2i, int]
 		distance_by_cell[cell] = 0
 	while not queue.is_empty():
 		var next_cell: Vector2i = queue.pop_front()
+		if not _neighbors_by_cell.has(next_cell):
+			continue
 		for neighbor: Vector2i in _neighbors_by_cell.get(next_cell):
 			if distance_by_cell.has(neighbor):
 				continue

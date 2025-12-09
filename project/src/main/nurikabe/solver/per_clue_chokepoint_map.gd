@@ -1,4 +1,8 @@
 class_name PerClueChokepointMap
+## Calculates chokepoints for each clue.[br]
+## [br]
+## Uses Tarjan's articulation-point algorithm to calculate whether blocking cells invalidates certain clues. O(n)
+## build for each queried clue.
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
@@ -24,8 +28,8 @@ func _init(init_board: SolverBoard) -> void:
 	var island_clues: Dictionary[Vector2i, int] = _board.get_island_clues()
 	for cell: Vector2i in _board.cells:
 		var cell_value: int = _board.get_cell(cell)
-		if cell_value == CELL_ISLAND or cell_value == CELL_EMPTY \
-				and island_clues.get(cell, 0) == 0:
+		if cell_value == CELL_EMPTY \
+				or (cell_value == CELL_ISLAND and island_clues.get(cell, 0) == 0):
 			_visitable[cell] = true
 	
 	# seed queue from islands
