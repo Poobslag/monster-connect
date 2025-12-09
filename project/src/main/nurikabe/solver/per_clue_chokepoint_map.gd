@@ -52,9 +52,9 @@ func get_distance_map(island_cell: Vector2i, start_cells: Array[Vector2i]) -> Di
 
 
 func get_chokepoint_map(island_cell: Vector2i) -> ChokepointMap:
-	if not _has_chokepoint_map(island_cell):
-		_init_chokepoint_map(island_cell)
 	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
+	if not _has_chokepoint_map(island_root):
+		_init_chokepoint_map(island_root)
 	return _chokepoint_map_by_clue.get(island_root)
 
 
@@ -127,17 +127,16 @@ func get_wall_exclusion_map(island_cell: Vector2i) -> GroupMap:
 	return GroupMap.new(cells)
 
 
-func _has_chokepoint_map(island_cell: Vector2i) -> bool:
-	var island_root: Vector2i = _board.get_island_root_for_cell(island_cell)
+func _has_chokepoint_map(island_root: Vector2i) -> bool:
 	return _chokepoint_map_by_clue.has(island_root)
 
 
-func _init_chokepoint_map(island_cell: Vector2i) -> void:
+func _init_chokepoint_map(island_root: Vector2i) -> void:
 	var reach_score_by_cell: Dictionary[Vector2i, int] = {}
-	var queue: Array[Vector2i] = [island_cell]
+	var queue: Array[Vector2i] = [island_root]
 	
-	var island: Array[Vector2i] = _board.get_island_for_cell(island_cell)
-	var clue_value: int = _board.get_clue_for_island_cell(island_cell)
+	var island: Array[Vector2i] = _board.get_island_for_cell(island_root)
+	var clue_value: int = _board.get_clue_for_island_cell(island_root)
 	var reachability: int = clue_value - island.size()
 	for other_island_cell: Vector2i in island:
 		reach_score_by_cell[other_island_cell] = reachability + 1
