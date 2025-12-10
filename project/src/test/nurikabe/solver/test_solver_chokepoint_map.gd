@@ -145,7 +145,7 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(board,
 		func(cell: Vector2i) -> bool:
 			var value: int = board.get_cell(cell)
-			return NurikabeUtils.is_clue(value) or value == CELL_EMPTY or value == CELL_ISLAND)
+			return NurikabeUtils.is_island(value) or value == CELL_EMPTY)
 
 
 func _build_wall_chokepoint_map() -> SolverChokepointMap:

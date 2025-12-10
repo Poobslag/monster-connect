@@ -1,10 +1,135 @@
 extends GutTest
 
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+
 const VALIDATE_STRICT: SolverBoard.ValidationMode = SolverBoard.VALIDATE_STRICT
 const VALIDATE_COMPLEX: SolverBoard.ValidationMode = SolverBoard.VALIDATE_COMPLEX
 const VALIDATE_SIMPLE: SolverBoard.ValidationMode = SolverBoard.VALIDATE_SIMPLE
 
 var grid: Array[String]
+
+func test_islands() -> void:
+	grid = [
+		" 3## 2",
+		"  ##  ",
+		"  ##  ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.islands, [
+		{"cells": [Vector2i(0, 0)], "clue": 3, "liberties": [Vector2i(0, 1)]},
+		{"cells": [Vector2i(2, 0)], "clue": 2, "liberties": [Vector2i(2, 1)]},
+	])
+
+
+func test_set_cell_island_open_islands() -> void:
+	grid = [
+		" 5    ",
+		" . .  ",
+		"  ##  ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.islands, [
+		{
+			"cells": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)],
+			"clue": 5,
+			"liberties": [Vector2i(0, 2), Vector2i(1, 0), Vector2i(2, 1)],
+		},
+	])
+	board.set_cell(Vector2i(2, 1), CELL_ISLAND)
+	assert_groups(board.islands, [
+		{
+			"cells": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)],
+			"clue": 5,
+			"liberties": [Vector2i(0, 2), Vector2i(1, 0), Vector2i(2, 0), Vector2i(2, 2)],
+		},
+	])
+
+
+func test_set_cell_island_merge_islands() -> void:
+	grid = [
+		" 5   .",
+		" . .  ",
+		"  ##  ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.islands, [
+		{
+			"cells": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)],
+			"clue": 5,
+			"liberties": [Vector2i(0, 2), Vector2i(1, 0), Vector2i(2, 1)],
+		},
+		{
+			"cells": [Vector2i(2, 0)],
+			"clue": 0,
+			"liberties": [Vector2i(1, 0), Vector2i(2, 1)],
+		},
+	])
+	board.set_cell(Vector2i(1, 0), CELL_ISLAND)
+	assert_groups(board.islands, [
+		{
+			"cells": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0)],
+			"clue": 5,
+			"liberties": [Vector2i(0, 2), Vector2i(2, 1)],
+		},
+	])
+
+
+func test_set_cell_wall_close_island() -> void:
+	grid = [
+		" 5    ",
+		" . .  ",
+		"  ##  ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.islands, [
+		{
+			"cells": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)],
+			"clue": 5,
+			"liberties": [Vector2i(0, 2), Vector2i(1, 0), Vector2i(2, 1)],
+		},
+	])
+	board.set_cell(Vector2i(0, 2), CELL_WALL)
+	assert_groups(board.islands, [
+		{
+			"cells": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)],
+			"clue": 5,
+			"liberties": [Vector2i(1, 0), Vector2i(2, 1)],
+		},
+	])
+
+
+func test_walls() -> void:
+	grid = [
+		"## 1##",
+		"  ##  ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.walls, [
+		{"cells": [Vector2i(0, 0)], "clue": 0, "liberties": [Vector2i(0, 1)]},
+		{"cells": [Vector2i(1, 1)], "clue": 0, "liberties": [Vector2i(0, 1), Vector2i(2, 1)]},
+		{"cells": [Vector2i(2, 0)], "clue": 0, "liberties": [Vector2i(2, 1)]},
+	])
+
+
+func test_set_cell_walls() -> void:
+	grid = [
+		"##  ##",
+		" 1## 1",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.walls, [
+		{"cells": [Vector2i(0, 0)], "clue": 0, "liberties": [Vector2i(1, 0)]},
+		{"cells": [Vector2i(1, 1)], "clue": 0, "liberties": [Vector2i(1, 0)]},
+		{"cells": [Vector2i(2, 0)], "clue": 0, "liberties": [Vector2i(1, 0)]},
+	])
+	board.set_cell(Vector2i(1, 0), CELL_WALL)
+	assert_groups(board.walls, [
+		{"cells": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0)], "clue": 0, "liberties": []},
+	])
+
 
 func test_joined_islands_two() -> void:
 	grid = [
@@ -349,6 +474,25 @@ func test_complex_bug() -> void:
 		"       2  ",
 	]
 	assert_invalid(VALIDATE_COMPLEX, {"wrong_size": [Vector2i(2, 1), Vector2i(2, 2), Vector2i(3, 1)]})
+
+
+func assert_groups(actual_groups: Array[CellGroup], expected_props_list: Array[Dictionary]) -> void:
+	var actual_props_list: Array[Dictionary] = []
+	for actual_group: CellGroup in actual_groups:
+		actual_props_list.append({
+			"cells": actual_group.cells,
+			"clue": actual_group.clue,
+			"liberties": actual_group.liberties,
+		})
+	for props_list: Array[Dictionary] in [actual_props_list, expected_props_list]:
+		for props: Dictionary in props_list:
+			if props.has("liberties"):
+				props["liberties"].sort()
+			if props.has("cells"):
+				props["cells"].sort()
+		props_list.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+			return a["cells"].front() > b["cells"].front())
+	assert_eq(actual_props_list, expected_props_list)
 
 
 func assert_valid(mode: SolverBoard.ValidationMode) -> void:

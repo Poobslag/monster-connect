@@ -42,6 +42,14 @@ static func is_clue(value: int) -> int:
 	return value >= 1 and value <= 255
 
 
+static func is_island(value: int) -> int:
+	return value >= 1 and value <= 256
+
+
+static func is_island_or_empty(value: int) -> int:
+	return value >= 1 and value <= 257
+
+
 static func to_cell_string(value: int) -> String:
 	match value:
 		CELL_INVALID: return CELL_STRING_INVALID
