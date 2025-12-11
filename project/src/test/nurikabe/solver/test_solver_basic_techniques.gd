@@ -1,6 +1,6 @@
 extends TestSolver
 
-func test_create_island_chokepoint_probes_wall_weaver_1() -> void:
+func test_deduce_all_clue_chokepoints_wall_weaver_1() -> void:
 	grid = [
 		"#### 4 .  ",
 		" 7####    ",
@@ -10,10 +10,10 @@ func test_create_island_chokepoint_probes_wall_weaver_1() -> void:
 	var expected: Array[String] = [
 		"(3, 2)->## wall_weaver (0, 1)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_clue_chokepoints, expected)
 
 
-func test_create_island_chokepoint_probes_wall_weaver_2() -> void:
+func test_deduce_all_clue_chokepoints_wall_weaver_2() -> void:
 	grid = [
 		"## 6    ##",
 		"##      ##",
@@ -26,10 +26,10 @@ func test_create_island_chokepoint_probes_wall_weaver_2() -> void:
 		"(1, 2)->## wall_weaver (1, 0)",
 		"(3, 1)->## wall_weaver (1, 0)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_clue_chokepoints, expected)
 
 
-func test_create_island_chokepoint_probes_wall_weaver_3() -> void:
+func test_deduce_all_clue_chokepoints_wall_weaver_3() -> void:
 	grid = [
 		"###### . . . .",
 		"## 2## .#### .",
@@ -43,10 +43,10 @@ func test_create_island_chokepoint_probes_wall_weaver_3() -> void:
 		"(1, 4)->## wall_weaver (4, 2)",
 		"(2, 3)->## wall_weaver (4, 2)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_clue_chokepoints, expected)
 
 
-func test_create_island_chokepoint_probes_adjacent() -> void:
+func test_deduce_all_clue_chokepoints_adjacent() -> void:
 	grid = [
 		"   4  ",
 		"####  ",
@@ -57,10 +57,10 @@ func test_create_island_chokepoint_probes_adjacent() -> void:
 		"(2, 0)->. island_expansion (1, 0)",
 		"(2, 1)->. island_chokepoint (1, 0)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_clue_chokepoints, expected)
 
 
-func test_create_island_chokepoint_probes_distant() -> void:
+func test_deduce_all_clue_chokepoints_distant() -> void:
 	grid = [
 		"   2####",
 		"       5",
@@ -71,10 +71,10 @@ func test_create_island_chokepoint_probes_distant() -> void:
 		"(1, 2)->. island_chokepoint (3, 1)",
 		"(2, 2)->. island_chokepoint (3, 1)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_clue_chokepoints, expected)
 
 
-func test_create_island_chokepoint_probes_dead_end() -> void:
+func test_deduce_all_island_chokepoints_dead_end() -> void:
 	grid = [
 		"    11 .  ",
 		"######    ",
@@ -85,10 +85,10 @@ func test_create_island_chokepoint_probes_dead_end() -> void:
 	var expected: Array[String] = [
 		"(1, 0)->. pool_chokepoint (0, 0) (0, 1) (1, 0) (1, 1)",
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_island_chokepoints, expected)
 
 
-func test_create_island_chokepoint_probes_big_dead_end() -> void:
+func test_deduce_all_island_chokepoints_big_dead_end() -> void:
 	grid = [
 		" 2  ##   3    ",
 		"  ## 1##     3",
@@ -98,14 +98,12 @@ func test_create_island_chokepoint_probes_big_dead_end() -> void:
 		"              ",
 	]
 	var expected: Array[String] = [
-		"(1, 5)->. pool_chokepoint (0, 3) (0, 4) (0, 5) (1, 3) (1, 4) (1, 5)",
-		"(2, 5)->. pool_chokepoint (0, 3) (0, 4) (0, 5) (1, 3) (1, 4) (1, 5) (2, 4) (2, 5)",
-		"(3, 5)->. pool_chokepoint (0, 3) (0, 4) (0, 5) (1, 3) (1, 4) (1, 5) (2, 4) (2, 5)",
+		"(1, 5)->. pool_chokepoint (0, 3) (0, 4) (0, 5) (1, 3) (1, 4) (1, 5)"
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_island_chokepoints, expected)
 
 
-func test_create_island_chokepoint_probes_false_positive() -> void:
+func test_deduce_all_island_chokepoints_false_positive() -> void:
 	grid = [
 		"  ####  ",
 		"   4    ",
@@ -119,10 +117,10 @@ func test_create_island_chokepoint_probes_false_positive() -> void:
 	]
 	var expected: Array[String] = [
 	]
-	assert_deductions(solver.create_island_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_island_chokepoints, expected)
 
 
-func test_create_all_island_probes_snug() -> void:
+func test_deduce_all_islands_snug() -> void:
 	grid = [
 		" .    ",
 		" 5    ",
@@ -136,10 +134,10 @@ func test_create_all_island_probes_snug() -> void:
 		"(0, 4)->. island_snug (1, 4)",
 		"(1, 3)->. island_snug (1, 4)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_clued_island_snugs, expected)
 
 
-func test_create_island_chokepoint_probes_lifeline() -> void:
+func test_deduce_all_island_chokepoints_lifeline() -> void:
 	grid = [
 		"    ####",
 		" 2  ## .",
@@ -155,7 +153,7 @@ func test_create_island_chokepoint_probes_lifeline() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_create_island_chokepoint_probes_lifeline_2() -> void:
+func test_deduce_all_island_chokepoints_lifeline_2() -> void:
 	grid = [
 		"    ####",
 		" 2  ## .",
@@ -172,7 +170,7 @@ func test_create_island_chokepoint_probes_lifeline_2() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_create_island_chokepoint_probes_lifeline_3() -> void:
+func test_deduce_all_island_chokepoints_lifeline_3() -> void:
 	grid = [
 		"  ##  ",
 		"   .  ",
@@ -193,7 +191,7 @@ func test_create_island_chokepoint_probes_lifeline_3() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_create_island_chokepoint_probes_lifeline_4() -> void:
+func test_deduce_all_island_chokepoints_lifeline_4() -> void:
 	grid = [
 		"  ##  ",
 		"   .  ",
@@ -214,7 +212,7 @@ func test_create_island_chokepoint_probes_lifeline_4() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_create_island_chokepoint_probes_lifeline_5() -> void:
+func test_deduce_all_island_chokepoints_lifeline_5() -> void:
 	grid = [
 		"############",
 		"## .## 6    ",
@@ -231,7 +229,7 @@ func test_create_island_chokepoint_probes_lifeline_5() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_create_island_chokepoint_probes_lifeline_6() -> void:
+func test_deduce_all_island_chokepoints_lifeline_6() -> void:
 	grid = [
 		"####     4",
 		"## .      ",
@@ -247,7 +245,7 @@ func test_create_island_chokepoint_probes_lifeline_6() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_create_island_chokepoint_probes_lifeline_invalid_too_short() -> void:
+func test_deduce_all_island_chokepoints_lifeline_invalid_too_short() -> void:
 	# the unclued lifeline deduction can't apply to clues which are too close; they could swerve
 	grid = [
 		"  ##  ",
@@ -264,7 +262,7 @@ func test_create_island_chokepoint_probes_lifeline_invalid_too_short() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_create_island_chokepoint_probes_lifeline_invalid_bendy() -> void:
+func test_deduce_all_island_chokepoints_lifeline_invalid_bendy() -> void:
 	# the unclued lifeline deduction can't apply to diagonal clues
 	grid = [
 		"    ####",
@@ -315,7 +313,7 @@ func test_deduce_all_island_dividers_invalid() -> void:
 	assert_deductions(solver.deduce_all_island_dividers, expected)
 
 
-func test_create_all_island_probes_corner_island() -> void:
+func test_deduce_all_islands_corner_island() -> void:
 	# The cell at (1, 1) can't be an island or it would block the 2 island from growing.
 	grid = [
 		" 2  ####",
@@ -324,10 +322,10 @@ func test_create_all_island_probes_corner_island() -> void:
 	var expected: Array[String] = [
 		"(1, 1)->## corner_island (0, 0)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
-func test_create_all_island_probes_island_expansion_1() -> void:
+func test_deduce_all_islands_island_expansion_1() -> void:
 	grid = [
 		" 4    ",
 		"####  ",
@@ -339,10 +337,10 @@ func test_create_all_island_probes_island_expansion_1() -> void:
 		"(2, 1)->. island_expansion (0, 0)",
 		"(2, 2)->## island_moat (0, 0)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
-func test_create_all_island_probes_island_expansion_and_moat() -> void:
+func test_deduce_all_islands_island_expansion_and_moat() -> void:
 	grid = [
 		" 2    ",
 		"##    ",
@@ -353,10 +351,10 @@ func test_create_all_island_probes_island_expansion_and_moat() -> void:
 		"(1, 1)->## island_moat (0, 0)",
 		"(2, 0)->## island_moat (0, 0)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
-func test_create_all_island_probes_island_connector() -> void:
+func test_deduce_all_islands_island_connector() -> void:
 	grid = [
 		"     6",
 		"##    ",
@@ -365,10 +363,10 @@ func test_create_all_island_probes_island_connector() -> void:
 	var expected: Array[String] = [
 		"(1, 2)->. island_connector (0, 2)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
-func test_create_all_island_probes_island_moat() -> void:
+func test_deduce_all_islands_island_moat() -> void:
 	grid = [
 		" 2    ",
 		" .    ",
@@ -379,10 +377,10 @@ func test_create_all_island_probes_island_moat() -> void:
 		"(1, 0)->## island_moat (0, 0)",
 		"(1, 1)->## island_moat (0, 0)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
-func test_create_all_island_probes_island_snug() -> void:
+func test_deduce_all_islands_island_snug() -> void:
 	grid = [
 		"   4  ",
 		"####  ",
@@ -392,10 +390,10 @@ func test_create_all_island_probes_island_snug() -> void:
 		"(2, 0)->. island_snug (1, 0)",
 		"(2, 1)->. island_snug (1, 0)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_clued_island_snugs, expected)
 
 
-func test_create_all_island_probes_corner_buffer_1() -> void:
+func test_deduce_all_islands_corner_buffer_1() -> void:
 	grid = [
 		"            ",
 		"    ########",
@@ -406,10 +404,10 @@ func test_create_all_island_probes_corner_buffer_1() -> void:
 	var expected: Array[String] = [
 		"(3, 3)->## corner_buffer (3, 2) (4, 4)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
-func test_create_all_island_probes_corner_buffer_2() -> void:
+func test_deduce_all_islands_corner_buffer_2() -> void:
 	grid = [
 		"            ",
 		"    ########",
@@ -420,7 +418,7 @@ func test_create_all_island_probes_corner_buffer_2() -> void:
 	var expected: Array[String] = [
 		"(3, 3)->## corner_buffer (3, 2) (4, 4)",
 	]
-	assert_deductions(solver.create_all_island_probes, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
 func test_deduce_all_unreachable_squares_1() -> void:
@@ -502,7 +500,7 @@ func test_create_empty_region_probes_island_bubble() -> void:
 	assert_deductions(solver.deduce_all_bubbles, expected)
 
 
-func test_create_wall_chokepoint_probes() -> void:
+func test_deduce_all_wall_chokepoints() -> void:
 	grid = [
 		"   3##  ",
 		"       3",
@@ -511,10 +509,10 @@ func test_create_wall_chokepoint_probes() -> void:
 	var expected: Array[String] = [
 		"(2, 1)->## wall_connector (2, 0)",
 	]
-	assert_deductions(solver.create_wall_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_wall_chokepoints, expected)
 
 
-func test_create_wall_chokepoint_probes_border_hug_invalid_1() -> void:
+func test_deduce_all_wall_chokepoints_border_hug_invalid_1() -> void:
 	grid = [
 		"   6    ## 1",
 		"        ####",
@@ -522,10 +520,10 @@ func test_create_wall_chokepoint_probes_border_hug_invalid_1() -> void:
 	]
 	var expected: Array[String] = [
 	]
-	assert_deductions(solver.create_wall_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_wall_chokepoints, expected)
 
 
-func test_create_wall_chokepoint_probes_border_hug_invalid_2() -> void:
+func test_deduce_all_wall_chokepoints_border_hug_invalid_2() -> void:
 	grid = [
 		"          ## 1",
 		"     8    ####",
@@ -533,10 +531,10 @@ func test_create_wall_chokepoint_probes_border_hug_invalid_2() -> void:
 	]
 	var expected: Array[String] = [
 	]
-	assert_deductions(solver.create_wall_chokepoint_probes, expected)
+	assert_deductions(solver.deduce_all_wall_chokepoints, expected)
 
 
-func test_create_wall_chokepoint_probes_border_hug_invalid_3() -> void:
+func test_deduce_all_wall_chokepoints_border_hug_invalid_3() -> void:
 	grid = [
 		"####   . 4",
 		"## 1## .##",
@@ -547,7 +545,7 @@ func test_create_wall_chokepoint_probes_border_hug_invalid_3() -> void:
 	assert_deductions(solver.deduce_wall_chokepoint.bind(Vector2i(2, 0)), expected)
 
 
-func test_create_all_wall_probes_pool_triplet_1() -> void:
+func test_deduce_all_walls_pool_triplet_1() -> void:
 	grid = [
 		" 4    ",
 		"    ##",
@@ -556,7 +554,7 @@ func test_create_all_wall_probes_pool_triplet_1() -> void:
 	var expected: Array[String] = [
 		"(1, 1)->. pool_triplet (1, 2) (2, 1) (2, 2)",
 	]
-	assert_deductions(solver.create_all_wall_probes, expected)
+	assert_deductions(solver.deduce_all_walls, expected)
 
 
 func test_pool_triplets_2() -> void:
@@ -568,10 +566,10 @@ func test_pool_triplets_2() -> void:
 	var expected: Array[String] = [
 		"(1, 1)->. pool_triplet (0, 1) (0, 2) (1, 2)",
 	]
-	assert_deductions(solver.create_all_wall_probes, expected)
+	assert_deductions(solver.deduce_all_walls, expected)
 
 
-func test_create_all_wall_probes_pool_triplets_invalid_1() -> void:
+func test_deduce_all_walls_pool_triplets_invalid_1() -> void:
 	grid = [
 		" 3#### 3",
 		"        ",
@@ -579,10 +577,10 @@ func test_create_all_wall_probes_pool_triplets_invalid_1() -> void:
 	]
 	var expected: Array[String] = [
 	]
-	assert_deductions(solver.create_all_wall_probes, expected)
+	assert_deductions(solver.deduce_all_walls, expected)
 
 
-func test_create_all_wall_probes_pool_triplets_invalid_2() -> void:
+func test_deduce_all_walls_pool_triplets_invalid_2() -> void:
 	grid = [
 		"##########",
 		"## 1## 1##",
@@ -591,10 +589,10 @@ func test_create_all_wall_probes_pool_triplets_invalid_2() -> void:
 	]
 	var expected: Array[String] = [
 	]
-	assert_deductions(solver.create_all_wall_probes, expected)
+	assert_deductions(solver.deduce_all_walls, expected)
 
 
-func test_create_all_wall_probes_wall_expansion_1() -> void:
+func test_deduce_all_walls_wall_expansion_1() -> void:
 	grid = [
 		"## 4  ",
 		"      ",
@@ -603,4 +601,4 @@ func test_create_all_wall_probes_wall_expansion_1() -> void:
 	var expected: Array[String] = [
 		"(0, 1)->## wall_expansion (0, 0)",
 	]
-	assert_deductions(solver.create_all_wall_probes, expected)
+	assert_deductions(solver.deduce_all_walls, expected)
