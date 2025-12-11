@@ -53,7 +53,8 @@ func test_extent_cells_neighbors_2() -> void:
 
 func assert_extent_cells(island_cell: Vector2i, expected: Array[Vector2i]) -> void:
 	var pcem: PerClueExtentMap = init_per_clue_extent_map()
-	var actual: Array[Vector2i] = pcem.get_extent_cells(island_cell)
+	var island: CellGroup = pcem.board.get_island_for_cell(island_cell)
+	var actual: Array[Vector2i] = pcem.get_extent_cells(island)
 	actual.sort()
 	expected.sort()
 	assert_eq(actual, expected)
@@ -61,7 +62,8 @@ func assert_extent_cells(island_cell: Vector2i, expected: Array[Vector2i]) -> vo
 
 func assert_extent_size(island_cell: Vector2i, expected: int) -> void:
 	var pcem: PerClueExtentMap = init_per_clue_extent_map()
-	var actual: int = pcem.get_extent_size(island_cell)
+	var island: CellGroup = pcem.board.get_island_for_cell(island_cell)
+	var actual: int = pcem.get_extent_size(island)
 	assert_eq(actual, expected)
 
 

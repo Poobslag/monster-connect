@@ -19,7 +19,7 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
-var _board: SolverBoard
+var board: SolverBoard
 
 var _adjacent_clues_by_cell: Dictionary[Vector2i, int] = {}
 var _nearest_clue_root_by_cell: Dictionary[Vector2i, Vector2i] = {}
@@ -27,7 +27,7 @@ var _reachability_by_cell: Dictionary[Vector2i, ClueReachability] = {}
 var _reach_score_by_cell: Dictionary[Vector2i, int] = {}
 
 func _init(init_board: SolverBoard) -> void:
-	_board = init_board
+	board = init_board
 	_build()
 
 
@@ -44,25 +44,25 @@ func get_nearest_clue_cell(cell: Vector2i) -> Vector2i:
 
 
 func _build() -> void:
-	var islands: Array[Array] = _board.get_islands()
-	
 	# collect visitable cells (empty cells, or clueless islands)
 	var visitable: Dictionary[Vector2i, bool] = {}
-	var island_clues: Dictionary[Vector2i, int] = _board.get_island_clues()
-	for cell: Vector2i in _board.cells:
-		var cell_value: int = _board.get_cell(cell)
-		if cell_value == CELL_ISLAND or cell_value == CELL_EMPTY \
-				and island_clues.get(cell, 0) == 0:
+	for cell: Vector2i in board.cells:
+		var cell_value: int = board.get_cell(cell)
+		if cell_value == CELL_EMPTY:
+			visitable[cell] = true
+	for island: CellGroup in board.islands:
+		if island.clue != 0:
+			continue
+		for cell: Vector2i in island.cells:
 			visitable[cell] = true
 	
 	# seed queue from islands
 	var queue: Array[Vector2i] = []
-	for island: Array[Vector2i] in islands:
-		var clue_value: int = island_clues.get(island.front(), 0)
-		if clue_value == 0:
+	for island: CellGroup in board.islands:
+		if island.clue == 0:
 			continue
-		var reachability: int = clue_value - island.size()
-		for liberty: Vector2i in _board.get_liberties(island):
+		var reachability: int = island.clue - island.size()
+		for liberty: Vector2i in island.liberties:
 			if _reach_score_by_cell.has(liberty):
 				# cell is adjacent to two or more islands, so no islands can reach it
 				_reach_score_by_cell[liberty] = 0
@@ -70,7 +70,7 @@ func _build() -> void:
 				continue
 			
 			_reach_score_by_cell[liberty] = reachability
-			_nearest_clue_root_by_cell[liberty] = island.front()
+			_nearest_clue_root_by_cell[liberty] = island.cells.front()
 			_adjacent_clues_by_cell[liberty] = 1
 			queue.append(liberty)
 	
@@ -96,7 +96,7 @@ func _build() -> void:
 			queue.append(neighbor)
 	
 	# classify each cell into ClueReachability categories
-	for cell: Vector2i in _board.cells:
+	for cell: Vector2i in board.cells:
 		var reachability: ClueReachability = ClueReachability.UNKNOWN
 		if not _reach_score_by_cell.has(cell):
 			reachability = ClueReachability.IMPOSSIBLE

@@ -6,6 +6,7 @@ enum ValidationMode {
 	STRICT,
 }
 
+const NEIGHBOR_DIRS: Array[Vector2i] = NurikabeUtils.NEIGHBOR_DIRS
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
 const VALIDATE_COMPLEX: ValidationMode = ValidationMode.COMPLEX
@@ -20,9 +21,24 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 var cells: Dictionary[Vector2i, int]
 var version: int
 
+var islands: Array[CellGroup] = []:
+	get:
+		_rebuild_groups()
+		return islands
+var walls: Array[CellGroup] = []:
+	get:
+		_rebuild_groups()
+		return walls
+
+## Forces islands/walls to be rebuilt from scratch.[br]
+## [br]
+## Set to [code]true[/code] when incremental updates are too costly.
+var groups_need_rebuild: bool = true
+
 var _cache: Dictionary[String, Variant] = {}
 
-func perform_bfs(start_cells: Array[Vector2i], filter: Callable) -> void:
+func perform_bfs(start_cells: Array[Vector2i], filter: Callable) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
 	var visited: Dictionary[Vector2i, bool] = {}
 	for start_cell: Vector2i in start_cells:
 		visited[start_cell] = true
@@ -31,22 +47,35 @@ func perform_bfs(start_cells: Array[Vector2i], filter: Callable) -> void:
 		var next_cell: Vector2i = queue.pop_front()
 		if not filter.call(next_cell):
 			continue
-		for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+		result.append(next_cell)
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor: Vector2i = next_cell + neighbor_dir
+			if not cells.has(neighbor):
+				continue
 			if visited.has(neighbor):
 				continue
 			visited[neighbor] = true
 			queue.append(neighbor)
+	return result
 
 
 func duplicate() -> SolverBoard:
 	var copy: SolverBoard = SolverBoard.new()
 	copy.cells = cells.duplicate()
+	copy.version = version
+	copy.islands.resize(islands.size())
+	for i in islands.size():
+		copy.islands[i] = islands[i].duplicate()
+	copy.walls.resize(walls.size())
+	for i in walls.size():
+		copy.walls[i] = walls[i].duplicate()
+	copy.groups_need_rebuild = groups_need_rebuild
 	copy._cache = _cache.duplicate()
 	return copy
 
 
 func from_game_board(game_board: NurikabeGameBoard) -> void:
+	groups_need_rebuild = true
 	var non_empty_cells: Array[Vector2i] = []
 	for cell_pos: Vector2i in game_board.get_used_cells():
 		var cell_value: int = game_board.get_cell(cell_pos)
@@ -57,26 +86,6 @@ func from_game_board(game_board: NurikabeGameBoard) -> void:
 
 func get_cell(cell_pos: Vector2i) -> int:
 	return cells.get(cell_pos, CELL_INVALID)
-
-
-## Returns the clue value for the specified group of cells.[br]
-## [br]
-## If zero clues are present, returns 0. If multiple clues are present, returns -1.
-func get_clue_for_island(group: Array[Vector2i]) -> int:
-	return 0 if group.is_empty() else get_clue_for_island_cell(group.front())
-
-
-func get_island_clues() -> Dictionary[Vector2i, int]:
-	return _get_cached(
-		"island_clues",
-		_build_island_clues)
-
-
-## Returns the clue value for the specified group of cells.[br]
-## [br]
-## If zero clues are present, returns 0. If multiple clues are present, returns -1.
-func get_clue_for_island_cell(cell: Vector2i) -> int:
-	return get_island_clues().get(cell, 0)
 
 
 func get_flooded_board() -> SolverBoard:
@@ -91,18 +100,6 @@ func is_filled() -> bool:
 				result = false
 				break
 		return result)
-
-
-func get_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
-	return _get_cached(
-		"liberties %s" % ["-" if group.is_empty() else str(group[0])],
-		_build_liberties.bind(group))
-
-
-func get_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
-	return _get_cached(
-		"group_neighbors %s" % ["-" if group.is_empty() else str(group[0])],
-		_build_group_neighbors.bind(group))
 
 
 func get_global_reachability_map() -> GlobalReachabilityMap:
@@ -136,9 +133,70 @@ func get_per_clue_extent_map() -> PerClueExtentMap:
 
 
 func set_cell(cell_pos: Vector2i, value: int) -> void:
-	_cache.clear()
+	if get_cell(cell_pos) == value:
+		return
+	
+	if not groups_need_rebuild and get_cell(cell_pos) != CELL_EMPTY:
+		push_warning("set_cell called on non-empty cell")
+		groups_need_rebuild = true
+	
 	cells[cell_pos] = value
+	
+	if not groups_need_rebuild:
+		match value:
+			CELL_WALL:
+				_expand_groups(walls, cell_pos)
+				_erase_liberties(islands, cell_pos)
+			CELL_ISLAND:
+				_expand_groups(islands, cell_pos)
+				_erase_liberties(walls, cell_pos)
+			_:
+				groups_need_rebuild = true
+	
+	_cache.clear()
 	version += 1
+
+
+func _expand_groups(groups: Array[CellGroup], cell: Vector2i) -> void:
+	var adjacent_groups: Array[CellGroup]
+	for group: CellGroup in groups:
+		if group.liberties.has(cell):
+			adjacent_groups.append(group)
+	if adjacent_groups.size() == 0:
+		# 0 adjacent groups; start a new group
+		var group: CellGroup = CellGroup.new()
+		group.cells = [cell]
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			if get_cell(neighbor) == CELL_EMPTY:
+				group.liberties.append(neighbor)
+		groups.append(group)
+	elif adjacent_groups.size() == 1:
+		# 1 adjacent group; expand the group
+		var group: CellGroup = adjacent_groups[0]
+		group.cells.append(cell)
+		group.liberties.erase(cell)
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			if get_cell(neighbor) == CELL_EMPTY and not group.liberties.has(neighbor):
+				group.liberties.append(neighbor)
+	else:
+		# 2+ adjacent groups; join the groups
+		var group: CellGroup = adjacent_groups[0]
+		for i in range(1, adjacent_groups.size()):
+			group.merge(adjacent_groups[i])
+			groups.erase(adjacent_groups[i])
+		group.cells.append(cell)
+		group.liberties.erase(cell)
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			if get_cell(neighbor) == CELL_EMPTY and not group.liberties.has(neighbor):
+				group.liberties.append(neighbor)
+
+
+func _erase_liberties(groups: Array[CellGroup], cell: Vector2i) -> void:
+	for group: CellGroup in groups:
+		group.liberties.erase(cell)
 
 
 func get_flooded_island_group_map() -> SolverGroupMap:
@@ -153,58 +211,26 @@ func get_flooded_wall_group_map() -> SolverGroupMap:
 		_build_flooded_wall_group_map)
 
 
-func get_islands() -> Array[Array]:
-	return get_island_group_map().groups
+func get_island_for_cell(cell: Vector2i) -> CellGroup:
+	var cell_value: int = get_cell(cell)
+	if not NurikabeUtils.is_island(cell_value):
+		return null
+	
+	var result: CellGroup
+	for island: CellGroup in islands:
+		if island.cells.has(cell):
+			result = island
+			break
+	return result
 
 
-func get_islands_by_cell() -> Dictionary[Vector2i, Array]:
-	return get_island_group_map().groups_by_cell
-
-
-func get_island_for_cell(cell: Vector2i) -> Array[Vector2i]:
-	return get_islands_by_cell().get(cell, [] as Array[Vector2i])
-
-
-func get_island_roots_by_cell() -> Dictionary[Vector2i, Vector2i]:
-	return get_island_group_map().roots_by_cell
-
-
-func get_island_root_for_cell(cell: Vector2i) -> Vector2i:
-	return get_island_roots_by_cell().get(cell, POS_NOT_FOUND)
-
-
-func get_island_group_map() -> SolverGroupMap:
-	return _get_cached(
-		"island_group_map",
-		_build_island_group_map
-	)
-
-
-func get_walls() -> Array[Array]:
-	return get_wall_group_map().groups
-
-
-func get_walls_by_cell() -> Dictionary[Vector2i, Array]:
-	return get_wall_group_map().groups_by_cell
-
-
-func get_wall_for_cell(cell: Vector2i) -> Array[Vector2i]:
-	return get_walls_by_cell().get(cell, [] as Array[Vector2i])
-
-
-func get_wall_roots_by_cell() -> Dictionary[Vector2i, Vector2i]:
-	return get_wall_group_map().roots_by_cell
-
-
-func get_wall_root_for_cell(cell: Vector2i) -> Vector2i:
-	return get_wall_roots_by_cell().get(cell, POS_NOT_FOUND)
-
-
-func get_wall_group_map() -> SolverGroupMap:
-	return _get_cached(
-		"wall_group_map",
-		_build_wall_group_map
-	)
+func get_wall_for_cell(cell: Vector2i) -> CellGroup:
+	var result: CellGroup
+	for wall: CellGroup in walls:
+		if wall.cells.has(cell):
+			result = wall
+			break
+	return result
 
 
 ## Sets the specified cells on the model.[br]
@@ -241,12 +267,11 @@ func print_cells() -> void:
 
 func surround_island(cell: Vector2i) -> Array[Dictionary]:
 	var changes: Array[Dictionary] = []
-	var island: Array[Vector2i] = get_island_for_cell(cell)
-	if island.is_empty() or get_clue_for_island_cell(cell) != island.size():
+	var island: CellGroup = get_island_for_cell(cell)
+	if not island or island.clue != island.size():
 		return changes
 	
-	var liberties: Array[Vector2i] = get_liberties(island)
-	for liberty: Vector2i in liberties:
+	for liberty: Vector2i in island.liberties:
 		if get_cell(liberty) == CELL_EMPTY:
 			changes.append({"pos": liberty, "value": CELL_WALL})
 	
@@ -268,8 +293,8 @@ func validate(mode: ValidationMode) -> ValidationResult:
 func validate_local(local_cells: Array[Vector2i]) -> String:
 	var result: String = ""
 	
-	var local_wall_roots: Dictionary[Vector2i, bool] = {}
-	var local_island_roots: Dictionary[Vector2i, bool] = {}
+	var local_walls: Dictionary[CellGroup, bool] = {}
+	var local_islands: Dictionary[CellGroup, bool] = {}
 	for local_cell: Vector2i in local_cells:
 		for cell_dir in NurikabeUtils.NEIGHBOR_DIRS_WITH_SELF:
 			var cell: Vector2i = local_cell + cell_dir
@@ -277,13 +302,13 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 				continue
 			match cells[cell]:
 				CELL_WALL:
-					local_wall_roots[get_wall_root_for_cell(cell)] = true
+					local_walls[get_wall_for_cell(cell)] = true
 				CELL_ISLAND:
-					local_island_roots[get_island_root_for_cell(cell)] = true
+					local_islands[get_island_for_cell(cell)] = true
 	
 	# joined islands
-	for island_root: Vector2i in local_island_roots:
-		if get_clue_for_island_cell(island_root) == -1:
+	for island: CellGroup in local_islands:
+		if island.clue == -1:
 			result += "j"
 			break
 	
@@ -302,33 +327,29 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 			break
 	
 	# split walls
-	if not local_wall_roots.is_empty():
-		for local_wall_cell: Vector2i in local_wall_roots:
-			var wall: Array[Vector2i] = get_wall_for_cell(local_wall_cell)
-			if get_liberties(wall).size() == 0 and get_walls().size() > 1:
+	if not local_walls.is_empty():
+		for wall: CellGroup in local_walls:
+			if wall.liberties.size() == 0 and walls.size() > 1:
 				result += "s"
 				break
 	
 	# unclued islands
-	for local_island_cell: Vector2i in local_island_roots:
-		var island: Array[Vector2i] = get_island_for_cell(local_island_cell)
-		if get_liberties(island).size() == 0 and get_clue_for_island(island) == 0:
+	for island: CellGroup in local_islands:
+		if island.liberties.is_empty() and island.clue == 0:
 			result += "u"
 			break
 	
 	# wrong size
-	for local_island_root: Vector2i in local_island_roots:
-		var island: Array[Vector2i] = get_island_for_cell(local_island_root)
-		var clue_value: int = get_clue_for_island_cell(local_island_root)
-		if clue_value == 0 or clue_value == -1:
+	for island: CellGroup in local_islands:
+		if island.clue == 0 or island.clue == -1:
 			continue
 		
-		if clue_value < island.size():
+		if island.clue < island.size():
 			# island is too large
 			result += "c"
 			break
 		
-		if get_liberties(island).size() == 0 and clue_value > island.size():
+		if island.liberties.is_empty() and island.clue > island.size():
 			# island is too small and can't grow
 			result += "c"
 			break
@@ -338,6 +359,7 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 
 func _build_flooded_board() -> SolverBoard:
 	var flooded_board: SolverBoard = duplicate()
+	flooded_board.groups_need_rebuild = true
 	for cell: Vector2i in flooded_board.cells:
 		if flooded_board.get_cell(cell) == CELL_EMPTY:
 			flooded_board.set_cell(cell, CELL_ISLAND)
@@ -350,11 +372,11 @@ func _build_global_reachability_map() -> GlobalReachabilityMap:
 
 func _build_island_clues() -> Dictionary[Vector2i, int]:
 	var result: Dictionary[Vector2i, int] = {}
-	for island: Array[Vector2i] in get_islands():
-		var clue_value: int = _clue_value_for_cells(island)
+	for island: CellGroup in islands:
+		var clue_value: int = island.clue
 		if clue_value == 0:
 			continue
-		for cell: Vector2i in island:
+		for cell: Vector2i in island.cells:
 			result[cell] = clue_value
 	return result
 
@@ -371,18 +393,13 @@ func _clue_value_for_cells(island: Array[Vector2i]) -> int:
 	return clue_value
 
 
-func _build_liberties(group: Array[Vector2i]) -> Array[Vector2i]:
-	return get_group_neighbors(group).filter(func(neighbor: Vector2i) -> bool:
-		return get_cell(neighbor) == CELL_EMPTY)
-
-
 func _build_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
 	var group_cell_set: Dictionary[Vector2i, bool] = {}
 	var liberty_cell_set: Dictionary[Vector2i, bool] = {}
 	for group_cell: Vector2i in group:
 		group_cell_set[group_cell] = true
 	for group_cell: Vector2i in group:
-		for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor: Vector2i = group_cell + neighbor_dir
 			if not cells.has(neighbor):
 				continue
@@ -394,13 +411,13 @@ func _build_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
 
 func _build_island_group_map() -> SolverGroupMap:
 	var result: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return NurikabeUtils.is_clue(value) or value == CELL_ISLAND)
+		return NurikabeUtils.is_island(value))
 	return result
 
 
 func _build_flooded_island_group_map() -> SolverGroupMap:
 	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return NurikabeUtils.is_clue(value) or value == CELL_EMPTY or value == CELL_ISLAND)
+		return NurikabeUtils.is_island_or_empty(value))
 	for group: Array[Vector2i] in group_map.groups:
 		if group.all(func(cell: Vector2i) -> bool:
 				return cells[cell] == CELL_EMPTY):
@@ -422,7 +439,7 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
 			var value: int = get_cell(cell)
-			return NurikabeUtils.is_clue(value) or value == CELL_EMPTY or value == CELL_ISLAND,
+			return NurikabeUtils.is_island_or_empty(value),
 		func(cell: Vector2i) -> bool:
 			var value: int = get_cell(cell)
 			return NurikabeUtils.is_clue(value))
@@ -436,20 +453,20 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
 	
 	# joined islands
-	for island: Array[Vector2i] in get_islands():
-		if get_clue_for_island(island) == -1:
-			for cell: Vector2i in island:
+	for island: CellGroup in islands:
+		if island.clue == -1:
+			for cell: Vector2i in island.cells:
 				result.joined_islands.append(cell)
 	
 	# pools
-	for wall: Array[Vector2i] in get_walls():
+	for wall: CellGroup in walls:
 		if wall.size() < 4:
 			continue
 		var wall_cell_set: Dictionary[Vector2i, bool] = {}
 		var pool_cell_set: Dictionary[Vector2i, bool] = {}
-		for next_wall_cell: Vector2i in wall:
+		for next_wall_cell: Vector2i in wall.cells:
 			wall_cell_set[next_wall_cell] = true
-		for next_wall_cell: Vector2i in wall:
+		for next_wall_cell: Vector2i in wall.cells:
 			if wall_cell_set.has(next_wall_cell + Vector2i(0, 1)) \
 					and wall_cell_set.has(next_wall_cell + Vector2i(1, 0)) \
 					and wall_cell_set.has(next_wall_cell + Vector2i(1, 1)):
@@ -481,31 +498,29 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 				result.unclued_islands.append(cell)
 	
 	# wrong size
-	for island: Array[Vector2i] in get_islands():
-		var island_cell: Vector2i = island.front()
-		var clue_value: int = get_clue_for_island_cell(island_cell)
-		if clue_value == 0 or clue_value == -1:
+	for island: CellGroup in islands:
+		if island.clue == 0 or island.clue == -1:
 			continue
 		
-		if clue_value < island.size():
+		if island.clue < island.size():
 			# island is too large
-			result.wrong_size.append_array(island)
+			result.wrong_size.append_array(island.cells)
 			continue
 		
 		match mode:
 			VALIDATE_COMPLEX:
-				var island_max_size: int = get_per_clue_extent_map().get_extent_size(island_cell)
-				if clue_value > island_max_size:
+				var island_max_size: int = get_per_clue_extent_map().get_extent_size(island)
+				if island.clue > island_max_size:
 					# island is too small and can't grow
-					result.wrong_size.append_array(island)
+					result.wrong_size.append_array(island.cells)
 					continue
 			VALIDATE_SIMPLE:
 				var group_map: SolverGroupMap = get_flooded_island_group_map()
 				var flooded_island_group: Array[Vector2i] \
-						= group_map.groups_by_cell.get(island_cell, [] as Array[Vector2i])
-				if clue_value > flooded_island_group.size():
+						= group_map.groups_by_cell.get(island.cells.front(), [] as Array[Vector2i])
+				if island.clue > flooded_island_group.size():
 					# island is too small and can't grow
-					result.wrong_size.append_array(island)
+					result.wrong_size.append_array(island.cells)
 					continue
 			_:
 				push_error("Unexpected validation mode: %s" % [mode])
@@ -539,6 +554,52 @@ func _get_cached(cache_key: String, builder: Callable) -> Variant:
 	if not _cache.has(cache_key):
 		_cache[cache_key] = builder.call()
 	return _cache[cache_key]
+
+
+func _rebuild_groups() -> void:
+	if not groups_need_rebuild:
+		return
+	
+	groups_need_rebuild = false
+	
+	islands.clear()
+	walls.clear()
+	
+	var visited: Dictionary[Vector2i, bool] = {}
+	for cell: Vector2i in cells:
+		if cell in visited:
+			continue
+		visited[cell] = true
+		var cell_value: int = cells[cell]
+		var new_group: CellGroup
+		if NurikabeUtils.is_island(cell_value):
+			new_group = CellGroup.new()
+			new_group.cells = perform_bfs([cell], func(c: Vector2i) -> bool:
+				return NurikabeUtils.is_island(get_cell(c)))
+			new_group.clue = _clue_value_for_cells(new_group.cells)
+			islands.append(new_group)
+		elif cell_value == CELL_WALL:
+			new_group = CellGroup.new()
+			new_group.cells = perform_bfs([cell], func(c: Vector2i) -> bool:
+				return get_cell(c) == CELL_WALL)
+			walls.append(new_group)
+		if not new_group:
+			continue
+		
+		var group_cell_set: Dictionary[Vector2i, bool] = {}
+		for group_cell: Vector2i in new_group.cells:
+			group_cell_set[group_cell] = true
+		
+		# populate group liberties
+		var liberties: Dictionary[Vector2i, bool] = {}
+		for group_cell: Vector2i in new_group.cells:
+			for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+				var neighbor: Vector2i = group_cell + neighbor_dir
+				if get_cell(neighbor) == CELL_EMPTY and not group_cell_set.has(neighbor):
+					liberties[neighbor] = true
+		new_group.liberties = liberties.keys()
+		
+		visited.merge(group_cell_set)
 
 
 class ValidationResult:
