@@ -443,7 +443,7 @@ func deduce_all_bubbles() -> void:
 		var bubble: bool = true
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor_value: int = board.get_cell(cell + neighbor_dir)
-			if neighbor_value != CELL_INVALID and not NurikabeUtils.is_island(neighbor_value):
+			if neighbor_value != CELL_INVALID and neighbor_value != CELL_ISLAND:
 				bubble = false
 				break
 		if bubble:
@@ -509,8 +509,7 @@ func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint)
 	if clue_cell == POS_NOT_FOUND:
 		return
-	var chokepoint_value: int = board.get_cell(chokepoint)
-	var clue_value: int = chokepoint_value if NurikabeUtils.is_clue(chokepoint_value) else 0
+	var clue_value: int = board.get_clue(clue_cell)
 	var unchoked_cell_count: int = \
 			board.get_island_chokepoint_map().get_unchoked_cell_count(chokepoint, clue_cell)
 	if unchoked_cell_count < clue_value:
@@ -867,7 +866,7 @@ func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 		var neighbor: Vector2i = cell + neighbor_dir
 		var neighbor_value: int = board.get_cell(neighbor)
-		if not NurikabeUtils.is_island(neighbor_value):
+		if neighbor_value != CELL_ISLAND:
 			continue
 		var island: CellGroup = board.get_island_for_cell(neighbor)
 		if island.clue == 0:
@@ -879,7 +878,7 @@ func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 func _get_unique_islands(cells: Array[Vector2i]) -> Array[CellGroup]:
 	var islands: Dictionary[CellGroup, bool] = {}
 	for cell: Vector2i in cells:
-		if not NurikabeUtils.is_island(board.get_cell(cell)):
+		if board.get_cell(cell) != CELL_ISLAND:
 			continue
 		var island: CellGroup = board.get_island_for_cell(cell)
 		islands[island] = true

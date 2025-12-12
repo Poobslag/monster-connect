@@ -18,6 +18,7 @@ const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
+var clues: Dictionary[Vector2i, int]
 var cells: Dictionary[Vector2i, int]
 var version: int
 
@@ -70,6 +71,7 @@ func perform_bfs(start_cells: Array[Vector2i], filter: Callable) -> Array[Vector
 func duplicate() -> SolverBoard:
 	var copy: SolverBoard = SolverBoard.new()
 	copy.cells = cells.duplicate()
+	copy.clues = clues.duplicate()
 	copy.version = version
 	copy.groups_need_rebuild = groups_need_rebuild
 	copy.empty_cells = empty_cells.duplicate()
@@ -94,9 +96,20 @@ func from_game_board(game_board: NurikabeGameBoard) -> void:
 	var non_empty_cells: Array[Vector2i] = []
 	for cell_pos: Vector2i in game_board.get_used_cells():
 		var cell_value: int = game_board.get_cell(cell_pos)
-		set_cell(cell_pos, game_board.get_cell(cell_pos))
+		if NurikabeUtils.is_clue(cell_value):
+			set_clue(cell_pos, cell_value)
+		else:
+			set_cell(cell_pos, cell_value)
 		if cell_value != CELL_EMPTY:
 			non_empty_cells.append(cell_pos)
+
+
+func get_clue(cell_pos: Vector2i) -> int:
+	return clues[cell_pos]
+
+
+func has_clue(cell_pos: Vector2i) -> int:
+	return clues.has(cell_pos)
 
 
 func get_cell(cell_pos: Vector2i) -> int:
@@ -139,6 +152,11 @@ func get_per_clue_extent_map() -> PerClueExtentMap:
 	return _get_cached(
 		"per_clue_extent_map",
 		_build_per_clue_extent_map)
+
+
+func set_clue(cell_pos: Vector2i, clue: int) -> void:
+	clues[cell_pos] = clue
+	set_cell(cell_pos, CELL_ISLAND)
 
 
 func set_cell(cell_pos: Vector2i, value: int) -> void:
@@ -251,7 +269,9 @@ func print_cells() -> void:
 	for y: int in range(rect.position.y, rect.end.y + 1):
 		var line: String = "| "
 		for x: int in range(rect.position.x, rect.end.x + 1):
-			var cell_string: String = NurikabeUtils.to_cell_string(get_cell(Vector2i(x, y)))
+			var cell: Vector2i = Vector2i(x, y)
+			var cell_value: int = get_clue(cell) if has_clue(cell) else get_cell(cell)
+			var cell_string: String = NurikabeUtils.to_cell_string(cell_value)
 			line += cell_string.lpad(2, " ")
 		print(line)
 
@@ -372,15 +392,16 @@ func _build_island_clues() -> Dictionary[Vector2i, int]:
 
 
 func _clue_value_for_cells(island: Array[Vector2i]) -> int:
-	var clue_value: int = 0
+	var total_clue_value: int = 0
 	for cell: Vector2i in island:
-		var cell_value: int = cells[cell]
-		if NurikabeUtils.is_clue(cell_value):
-			if clue_value > 0:
-				clue_value = -1
-				break
-			clue_value = cell_value
-	return clue_value
+		if not has_clue(cell):
+			continue
+		var clue_value: int = get_clue(cell)
+		if total_clue_value > 0:
+			total_clue_value = -1
+			break
+		total_clue_value = clue_value
+	return total_clue_value
 
 
 func _build_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
@@ -401,13 +422,13 @@ func _build_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
 
 func _build_island_group_map() -> SolverGroupMap:
 	var result: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return NurikabeUtils.is_island(value))
+		return value == CELL_ISLAND)
 	return result
 
 
 func _build_flooded_island_group_map() -> SolverGroupMap:
 	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return NurikabeUtils.is_island_or_empty(value))
+		return value == CELL_ISLAND or value == CELL_EMPTY)
 	for group: Array[Vector2i] in group_map.groups:
 		if group.all(func(cell: Vector2i) -> bool:
 				return cells[cell] == CELL_EMPTY):
@@ -429,10 +450,9 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
 			var value: int = get_cell(cell)
-			return NurikabeUtils.is_island_or_empty(value),
+			return value == CELL_ISLAND or value == CELL_EMPTY,
 		func(cell: Vector2i) -> bool:
-			var value: int = get_cell(cell)
-			return NurikabeUtils.is_clue(value))
+			return has_clue(cell))
 
 
 func _build_strict_validation_result() -> ValidationResult:
@@ -476,7 +496,7 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 		for wall_group_index: int in range(1, flooded_wall_groups.size()):
 			var wall_group: Array[Vector2i] = flooded_wall_groups[wall_group_index]
 			for cell: Vector2i in wall_group:
-				if cells[cell] == CELL_WALL:
+				if get_cell(cell) == CELL_WALL:
 					result.split_walls.append(cell)
 	
 	# unclued islands
@@ -566,10 +586,10 @@ func _rebuild_groups() -> void:
 		var new_group: CellGroup
 		if cell_value == CELL_EMPTY:
 			empty_cells[cell] = true
-		elif NurikabeUtils.is_island(cell_value):
+		elif cell_value == CELL_ISLAND:
 			new_group = CellGroup.new()
 			new_group.cells = perform_bfs([cell], func(c: Vector2i) -> bool:
-				return NurikabeUtils.is_island(get_cell(c)))
+				return get_cell(c) == CELL_ISLAND)
 			new_group.clue = _clue_value_for_cells(new_group.cells)
 			islands.append(new_group)
 		elif cell_value == CELL_WALL:
