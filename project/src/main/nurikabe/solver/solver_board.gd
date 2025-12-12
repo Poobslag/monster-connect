@@ -162,36 +162,28 @@ func _expand_groups(groups: Array[CellGroup], cell: Vector2i) -> void:
 	for group: CellGroup in groups:
 		if group.liberties.has(cell):
 			adjacent_groups.append(group)
+	
+	var primary_group: CellGroup
 	if adjacent_groups.size() == 0:
 		# 0 adjacent groups; start a new group
-		var group: CellGroup = CellGroup.new()
-		group.cells = [cell]
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor: Vector2i = cell + neighbor_dir
-			if get_cell(neighbor) == CELL_EMPTY:
-				group.liberties.append(neighbor)
-		groups.append(group)
+		primary_group = CellGroup.new()
+		groups.append(primary_group)
 	elif adjacent_groups.size() == 1:
 		# 1 adjacent group; expand the group
-		var group: CellGroup = adjacent_groups[0]
-		group.cells.append(cell)
-		group.liberties.erase(cell)
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor: Vector2i = cell + neighbor_dir
-			if get_cell(neighbor) == CELL_EMPTY and not group.liberties.has(neighbor):
-				group.liberties.append(neighbor)
+		primary_group = adjacent_groups[0]
 	else:
 		# 2+ adjacent groups; join the groups
-		var group: CellGroup = adjacent_groups[0]
+		primary_group = adjacent_groups[0]
 		for i in range(1, adjacent_groups.size()):
-			group.merge(adjacent_groups[i])
-			groups.erase(adjacent_groups[i])
-		group.cells.append(cell)
-		group.liberties.erase(cell)
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor: Vector2i = cell + neighbor_dir
-			if get_cell(neighbor) == CELL_EMPTY and not group.liberties.has(neighbor):
-				group.liberties.append(neighbor)
+			var adjacent_group: CellGroup = adjacent_groups[i]
+			primary_group.merge(adjacent_group)
+			groups.erase(adjacent_group)
+	primary_group.cells.append(cell)
+	primary_group.liberties.erase(cell)
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = cell + neighbor_dir
+		if get_cell(neighbor) == CELL_EMPTY and not primary_group.liberties.has(neighbor):
+			primary_group.liberties.append(neighbor)
 
 
 func _erase_liberties(groups: Array[CellGroup], cell: Vector2i) -> void:
