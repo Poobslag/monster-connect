@@ -140,6 +140,10 @@ func step(solver_pass: SolverPass = SolverPass.BIFURCATION) -> void:
 		deduce_all_walls()
 		deduce_all_island_dividers()
 	
+	# fast quirky techniques; these don't come up very frequently
+	if not deductions.has_changes() and solver_pass >= SolverPass.GLOBAL:
+		deduce_all_bubbles()
+	
 	# slow global techniques; these require building special models
 	if not deductions.has_changes() and solver_pass >= SolverPass.GLOBAL:
 		# iterate through all strategies, starting with a different one each time
