@@ -5,12 +5,12 @@ extends Node
 ## 	0: Invalid (out of bounds)
 ## 	1-255: Clue
 ## 	256: Island
-## 	257: Wall
-## 	258: Empty (unknown, either island or wall)
+## 	257: Empty (unknown, either island or wall)
+## 	258: Wall
 const CELL_INVALID := 0
 const CELL_ISLAND := 256
-const CELL_WALL := 258
 const CELL_EMPTY := 257
+const CELL_WALL := 258
 
 ## Nurikabe cell strings:
 ## 	['0'-'99']: Clue
