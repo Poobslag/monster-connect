@@ -21,6 +21,10 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 var cells: Dictionary[Vector2i, int]
 var version: int
 
+var empty_cells: Dictionary[Vector2i, int] = {}:
+	get:
+		_rebuild_groups()
+		return empty_cells
 var groups_by_cell: Dictionary[Vector2i, CellGroup] = {}:
 	get:
 		_rebuild_groups()
@@ -68,6 +72,7 @@ func duplicate() -> SolverBoard:
 	copy.cells = cells.duplicate()
 	copy.version = version
 	copy.groups_need_rebuild = groups_need_rebuild
+	copy.empty_cells = empty_cells.duplicate()
 	copy.islands.resize(islands.size())
 	for i in islands.size():
 		var island: CellGroup = islands[i]
@@ -103,13 +108,7 @@ func get_flooded_board() -> SolverBoard:
 
 
 func is_filled() -> bool:
-	return _get_cached("filled", func() -> int:
-		var result: int = true
-		for cell: Vector2i in cells:
-			if cells[cell] == CELL_EMPTY:
-				result = false
-				break
-		return result)
+	return empty_cells.is_empty()
 
 
 func get_global_reachability_map() -> GlobalReachabilityMap:
@@ -197,6 +196,7 @@ func _expand_groups(groups: Array[CellGroup], cell: Vector2i) -> void:
 		if get_cell(neighbor) == CELL_EMPTY and not primary_group.liberties.has(neighbor):
 			primary_group.liberties.append(neighbor)
 	groups_by_cell[cell] = primary_group
+	empty_cells.erase(cell)
 
 
 func _erase_liberties(groups: Array[CellGroup], cell: Vector2i) -> void:
@@ -351,9 +351,8 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 func _build_flooded_board() -> SolverBoard:
 	var flooded_board: SolverBoard = duplicate()
 	flooded_board.groups_need_rebuild = true
-	for cell: Vector2i in flooded_board.cells:
-		if flooded_board.get_cell(cell) == CELL_EMPTY:
-			flooded_board.set_cell(cell, CELL_ISLAND)
+	for cell: Vector2i in flooded_board.empty_cells:
+		flooded_board.set_cell(cell, CELL_ISLAND)
 	return flooded_board
 
 
@@ -556,6 +555,7 @@ func _rebuild_groups() -> void:
 	groups_by_cell.clear()
 	islands.clear()
 	walls.clear()
+	empty_cells.clear()
 	
 	var visited: Dictionary[Vector2i, bool] = {}
 	for cell: Vector2i in cells:
@@ -564,7 +564,9 @@ func _rebuild_groups() -> void:
 		visited[cell] = true
 		var cell_value: int = cells[cell]
 		var new_group: CellGroup
-		if NurikabeUtils.is_island(cell_value):
+		if cell_value == CELL_EMPTY:
+			empty_cells[cell] = true
+		elif NurikabeUtils.is_island(cell_value):
 			new_group = CellGroup.new()
 			new_group.cells = perform_bfs([cell], func(c: Vector2i) -> bool:
 				return NurikabeUtils.is_island(get_cell(c)))

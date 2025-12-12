@@ -433,34 +433,42 @@ func deduce_all_island_dividers() -> void:
 
 
 func deduce_all_bubbles() -> void:
-	for cell: Vector2i in board.cells:
-		if not should_deduce(board, cell):
-			continue
-		var has_empty_neighbor: bool = false
-		var has_island_neighbor: bool = false
-		var has_wall_neighbor: bool = false
+	# island bubbles
+	var island_liberties: Dictionary[Vector2i, bool] = {}
+	for island: CellGroup in board.islands:
+		for liberty: Vector2i in island.liberties:
+			if should_deduce(board, liberty):
+				island_liberties[liberty] = true
+	for cell: Vector2i in island_liberties:
+		var bubble: bool = true
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor_value: int = board.get_cell(cell + neighbor_dir)
-			if neighbor_value == CELL_INVALID:
-				pass
-			elif neighbor_value == CELL_EMPTY:
-				has_empty_neighbor = true
-			elif neighbor_value == CELL_WALL:
-				has_wall_neighbor = true
-			elif NurikabeUtils.is_island(neighbor_value):
-				has_island_neighbor = true
-		
-		if has_empty_neighbor:
-			continue
-		
-		if has_wall_neighbor and not has_island_neighbor:
-			add_deduction(cell, CELL_WALL, WALL_BUBBLE)
-		elif has_island_neighbor and not has_wall_neighbor:
+			if neighbor_value != CELL_INVALID and not NurikabeUtils.is_island(neighbor_value):
+				bubble = false
+				break
+		if bubble:
 			add_deduction(cell, CELL_ISLAND, ISLAND_BUBBLE)
+	
+	# wall bubbles
+	var wall_liberties: Dictionary[Vector2i, bool] = {}
+	for wall: CellGroup in board.walls:
+		for liberty: Vector2i in wall.liberties:
+			if should_deduce(board, liberty):
+				wall_liberties[liberty] = true
+	for cell: Vector2i in wall_liberties:
+		var bubble: bool = true
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor_value: int = board.get_cell(cell + neighbor_dir)
+			if neighbor_value != CELL_INVALID and neighbor_value != CELL_WALL:
+				bubble = false
+				break
+		
+		if bubble:
+			add_deduction(cell, CELL_WALL, WALL_BUBBLE)
 
 
 func deduce_all_unreachable_squares() -> void:
-	for cell: Vector2i in board.cells:
+	for cell: Vector2i in board.empty_cells:
 		if not should_deduce(board, cell):
 			continue
 		match board.get_global_reachability_map().get_clue_reachability(cell):
