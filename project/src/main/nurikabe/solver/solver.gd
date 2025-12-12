@@ -484,10 +484,6 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 	
 	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
 			and should_deduce(board, chokepoint):
-		deduce_island_chokepoint_tiny_pool(chokepoint)
-	
-	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
-			and should_deduce(board, chokepoint):
 		deduce_island_chokepoint_pool(chokepoint)
 
 
@@ -513,19 +509,6 @@ func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 		else:
 			add_deduction(chokepoint, CELL_ISLAND,
 				ISLAND_CHOKEPOINT, [clue_cell])
-
-
-## Deduces when a chokepoint forces a 2x2 pool in a simple 2-cell case.
-func deduce_island_chokepoint_tiny_pool(chokepoint: Vector2i) -> void:
-	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
-		return
-	
-	# Check for two empty cells leading into a dead end, which create a pool.
-	var old_deductions_size: int = deductions.size()
-	for dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
-		_check_island_chokepoint_tiny_pool(chokepoint, dir)
-		if deductions.size() > old_deductions_size:
-			break
 
 
 ## Deduces when a chokepoint forces a 2x2 pool in a complex multi-cell case.
@@ -865,48 +848,6 @@ func _check_clued_island_forced_expansion(island: CellGroup) -> void:
 					continue
 				if should_deduce(board, new_island_neighbor):
 					add_deduction(new_island_neighbor, CELL_WALL, ISLAND_MOAT, [island.cells.front()])
-
-
-## Returns true if converting the chokepoint to a wall would enclose a 2x2 pool.[br]
-## [codeblock lang=text]
-## +------
-## | 0 2
-## | c n 4
-## | 1 3
-##
-## [0,1]: Cells flanking the chokepoint (diagonals before the corridor)
-## [2,3,4]: Cells forming the dead-end pocket (forward and its sides)
-## c: Island chokepoint
-## n: Neighbor
-## [/codeblock]
-## If the dead-end pocket ([2,3,4]) is fully blocked, and one diagonal pair ([0,2] or [1,3]) are walls,
-## then turning the chokepoint into a wall would create a 2x2 pool.
-func _check_island_chokepoint_tiny_pool(chokepoint: Vector2i, dir: Vector2i) -> void:
-	if board.get_cell(chokepoint) != CELL_EMPTY:
-		return
-	if board.get_cell(chokepoint + dir) != CELL_EMPTY:
-		return
-	
-	var magic_cells: Array[Vector2i] = [
-		chokepoint + Vector2i(-dir.y, dir.x), chokepoint + Vector2i(dir.y, -dir.x),
-		chokepoint + dir + Vector2i(-dir.y, dir.x), chokepoint + dir + Vector2i(dir.y, -dir.x),
-		chokepoint + dir + dir]
-	var solid: Array[bool] = []
-	var wall: Array[bool] = []
-	for magic_cell in magic_cells:
-		var magic_value: int = board.get_cell(magic_cell)
-		solid.append(magic_value == CELL_WALL or magic_value == CELL_INVALID)
-		wall.append(magic_value == CELL_WALL)
-	
-	if (solid[2] and solid[3] and solid[4]) \
-			and (wall[0] and wall[2] or wall[1] and wall[3]):
-		var pool_cells: Array[Vector2i] = [chokepoint, chokepoint + dir]
-		if wall[0] and wall[2]:
-			pool_cells.append_array([magic_cells[0], magic_cells[2]])
-		if wall[1] and wall[3]:
-			pool_cells.append_array([magic_cells[1], magic_cells[3]])
-		pool_cells.sort()
-		add_deduction(chokepoint, CELL_ISLAND, POOL_CHOKEPOINT, pool_cells)
 
 
 func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
