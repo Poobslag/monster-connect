@@ -12,7 +12,7 @@ func test_islands_of_one() -> void:
 		"(1, 2)->## island_of_one (1, 1)",
 		"(2, 1)->## island_of_one (1, 1)",
 	]
-	assert_deductions(solver.deduce_all_islands_of_one, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
 func test_deduce_island_of_one_corners() -> void:
@@ -27,7 +27,7 @@ func test_deduce_island_of_one_corners() -> void:
 		"(1, 0)->## island_of_one (0, 0)",
 		"(1, 1)->## island_of_one (1, 2)",
 	]
-	assert_deductions(solver.deduce_all_islands_of_one, expected)
+	assert_deductions(solver.deduce_all_islands, expected)
 
 
 func test_deduce_adjacent_clues_1() -> void:
@@ -39,7 +39,7 @@ func test_deduce_adjacent_clues_1() -> void:
 	var expected: Array[String] = [
 		"(0, 1)->## adjacent_clues (0, 0) (0, 2)",
 	]
-	assert_deductions(solver.deduce_all_adjacent_clues, expected)
+	assert_deductions(solver.deduce_all_island_dividers, expected)
 
 
 func test_deduce_adjacent_clues_2() -> void:
@@ -51,7 +51,7 @@ func test_deduce_adjacent_clues_2() -> void:
 	var expected: Array[String] = [
 		"(1, 0)->## adjacent_clues (0, 0) (2, 0)",
 	]
-	assert_deductions(solver.deduce_all_adjacent_clues, expected)
+	assert_deductions(solver.deduce_all_island_dividers, expected)
 
 
 func test_deduce_diagonal_clues_1() -> void:
@@ -65,7 +65,7 @@ func test_deduce_diagonal_clues_1() -> void:
 		"(1, 2)->## adjacent_clues (1, 1) (2, 2)",
 		"(2, 1)->## adjacent_clues (1, 1) (2, 2)",
 	]
-	assert_deductions(solver.deduce_all_adjacent_clues, expected)
+	assert_deductions(solver.deduce_all_island_dividers, expected)
 
 
 func test_deduce_diagonal_clues_2() -> void:
@@ -79,7 +79,7 @@ func test_deduce_diagonal_clues_2() -> void:
 		"(2, 1)->## adjacent_clues (2, 2) (3, 1)",
 		"(3, 2)->## adjacent_clues (2, 2) (3, 1)",
 	]
-	assert_deductions(solver.deduce_all_adjacent_clues, expected)
+	assert_deductions(solver.deduce_all_island_dividers, expected)
 
 
 func test_deduce_diagonal_clues_3() -> void:
@@ -91,7 +91,7 @@ func test_deduce_diagonal_clues_3() -> void:
 	]
 	var expected: Array[String] = [
 		"(1, 2)->## adjacent_clues (1, 1) (2, 2)",
-		"(2, 1)->## adjacent_clues (1, 1) (2, 2)",
+		"(2, 1)->## adjacent_clues (1, 1) (2, 2) (3, 1)",
 		"(3, 2)->## adjacent_clues (2, 2) (3, 1)",
 	]
-	assert_deductions(solver.deduce_all_adjacent_clues, expected)
+	assert_deductions(solver.deduce_all_island_dividers, expected)

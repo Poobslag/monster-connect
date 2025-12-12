@@ -80,7 +80,6 @@ var _bifurcation_iterator: StrategyIterator = StrategyIterator.new([
 ])
 
 var _touched_cells: Dictionary[Vector2i, bool] = {}
-var _ran_starting_techniques: bool = false
 
 func add_deduction(pos: Vector2i, value: int,
 		reason: Deduction.Reason = UNKNOWN_REASON,
@@ -103,7 +102,6 @@ func apply_changes() -> void:
 func clear() -> void:
 	deductions.clear()
 	metrics.clear()
-	_ran_starting_techniques = false
 
 
 func get_changes() -> Array[Dictionary]:
@@ -135,12 +133,6 @@ func step(solver_pass: SolverPass = SolverPass.BIFURCATION) -> void:
 			deduce_pool(wall)
 		for island: CellGroup in touched_islands:
 			deduce_island(island)
-	
-	# starting techniques; we run these once when starting a puzzle
-	if not deductions.has_changes() and solver_pass >= SolverPass.GLOBAL and not _ran_starting_techniques:
-		deduce_all_islands_of_one()
-		deduce_all_adjacent_clues()
-		_ran_starting_techniques = true
 	
 	# fast global techniques; these scan the entire grid
 	if not deductions.has_changes() and solver_pass >= SolverPass.GLOBAL:
@@ -372,7 +364,6 @@ func _apply_assumptions(solver: Solver, assumptions: Dictionary[Vector2i, int]) 
 
 func _disprove_assumptions(assumptions: Dictionary[Vector2i, int]) -> bool:
 	var solver: Solver = Solver.new()
-	solver._ran_starting_techniques = true
 	if not _apply_assumptions(solver, assumptions):
 		return false
 	
@@ -424,30 +415,17 @@ func deduce_all_island_dividers() -> void:
 		var neighbors: Array[Vector2i] = []
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			neighbors.append(liberty + neighbor_dir)
-		if not _is_valid_merged_island(neighbors, 1):
-			var unique_neighbor_island_cells: Array[Vector2i] \
-					= get_unique_neighbor_island_cells(neighbors)
-			add_deduction(liberty, CELL_WALL, ISLAND_DIVIDER, unique_neighbor_island_cells)
-
-
-func deduce_all_adjacent_clues() -> void:
-	var clue_cells: Array[Vector2i] = board.cells.keys().filter(func(c: Vector2i) -> bool:
-		return NurikabeUtils.is_clue(board.get_cell(c)))
-	var adjacent_clues_by_cell: Dictionary[Vector2i, Array] = {}
-	for clue_cell: Vector2i in clue_cells:
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor: Vector2i = clue_cell + neighbor_dir
-			if not adjacent_clues_by_cell.has(neighbor):
-				adjacent_clues_by_cell[neighbor] = [] as Array[Vector2i]
-			adjacent_clues_by_cell[neighbor].append(clue_cell)
-	for neighbor: Vector2i in adjacent_clues_by_cell:
-		if not should_deduce(board, neighbor):
+		var neighbor_islands: Array[CellGroup] = _get_unique_islands(neighbors)
+		if neighbor_islands.size() < 2:
 			continue
-		var adjacent_clues: Array[Vector2i] = adjacent_clues_by_cell[neighbor]
-		if adjacent_clues.size() >= 2:
-			adjacent_clues.sort()
-			add_deduction(neighbor, CELL_WALL,
-				ADJACENT_CLUES, [adjacent_clues[0], adjacent_clues[1]] as Array[Vector2i])
+		if not _is_valid_merged_island(neighbor_islands, 1):
+			var sorted_root_cells: Array[Vector2i] = _get_sorted_root_cells(neighbor_islands)
+			var reason: int = ADJACENT_CLUES
+			for neighbor_island: CellGroup in neighbor_islands:
+				if neighbor_island.size() > 1 or neighbor_island.clue < 1:
+					reason = ISLAND_DIVIDER
+					break
+			add_deduction(liberty, CELL_WALL, reason, sorted_root_cells)
 
 
 func deduce_all_bubbles() -> void:
@@ -475,16 +453,6 @@ func deduce_all_bubbles() -> void:
 			add_deduction(cell, CELL_WALL, WALL_BUBBLE)
 		elif has_island_neighbor and not has_wall_neighbor:
 			add_deduction(cell, CELL_ISLAND, ISLAND_BUBBLE)
-
-
-func deduce_all_islands_of_one() -> void:
-	for cell: Vector2i in board.cells:
-		if board.get_cell(cell) != 1:
-			continue
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor: Vector2i = cell + neighbor_dir
-			if should_deduce(board, neighbor):
-				add_deduction(neighbor, CELL_WALL, ISLAND_OF_ONE, [cell])
 
 
 func deduce_all_unreachable_squares() -> void:
@@ -826,17 +794,6 @@ func deduce_pool(wall: CellGroup) -> void:
 				break
 
 
-func get_unique_neighbor_island_cells(island_cells: Array[Vector2i]) -> Array[Vector2i]:
-	var neighbor_islands_by_root: Dictionary[Vector2i, Vector2i] = {}
-	for island_cell: Vector2i in island_cells:
-		var island: CellGroup = board.get_island_for_cell(island_cell)
-		if island:
-			neighbor_islands_by_root[island.cells.front()] = island_cell
-	var result: Array[Vector2i] = neighbor_islands_by_root.values()
-	result.sort()
-	return result
-
-
 func should_deduce(target_board: SolverBoard, cell: Vector2i) -> bool:
 	return target_board.get_cell(cell) == CELL_EMPTY and (cell not in deductions.cells or perform_redundant_deductions)
 
@@ -864,11 +821,10 @@ func _check_corner_buffer(island: CellGroup) -> void:
 		for merged_dir in NEIGHBOR_DIRS:
 			merged_island_cells.append(diagonal + merged_dir)
 		merged_island_cells.append(island.cells.front())
-		if not _is_valid_merged_island(merged_island_cells, 2):
-			var unique_neighbor_island_cells: Array[Vector2i] \
-					= get_unique_neighbor_island_cells(merged_island_cells)
-			add_deduction(diagonal, CELL_WALL, CORNER_BUFFER,
-					unique_neighbor_island_cells)
+		var neighbor_islands: Array[CellGroup] = _get_unique_islands(merged_island_cells)
+		if not _is_valid_merged_island(neighbor_islands, 2):
+			var sorted_root_cells: Array[Vector2i] = _get_sorted_root_cells(neighbor_islands)
+			add_deduction(diagonal, CELL_WALL, CORNER_BUFFER, sorted_root_cells)
 
 
 func _check_unclued_island_forced_expansion(island: CellGroup) -> void:
@@ -883,8 +839,10 @@ func _check_unclued_island_forced_expansion(island: CellGroup) -> void:
 
 func _check_clued_island_moat(island: CellGroup) -> void:
 	for liberty: Vector2i in island.liberties:
-		if should_deduce(board, liberty):
-			add_deduction(liberty, CELL_WALL, ISLAND_MOAT, [island.cells.front()])
+		if not should_deduce(board, liberty):
+			return
+		var reason: int = ISLAND_OF_ONE if island.clue == 1 else ISLAND_MOAT
+		add_deduction(liberty, CELL_WALL, reason, [island.cells.front()])
 
 
 func _check_clued_island_forced_expansion(island: CellGroup) -> void:
@@ -951,15 +909,6 @@ func _check_island_chokepoint_tiny_pool(chokepoint: Vector2i, dir: Vector2i) -> 
 		add_deduction(chokepoint, CELL_ISLAND, POOL_CHOKEPOINT, pool_cells)
 
 
-func _find_adjacent_clues(cell: Vector2i) -> Array[Vector2i]:
-	var result: Array[Vector2i] = []
-	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-		var neighbor: Vector2i = cell + neighbor_dir
-		if NurikabeUtils.is_clue(board.get_cell(neighbor)):
-			result.append(neighbor)
-	return result
-
-
 func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 	var clued_neighbor_roots: Dictionary[Vector2i, bool] = {}
 	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
@@ -974,6 +923,24 @@ func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 	return clued_neighbor_roots.keys()
 
 
+func _get_unique_islands(cells: Array[Vector2i]) -> Array[CellGroup]:
+	var islands: Dictionary[CellGroup, bool] = {}
+	for cell: Vector2i in cells:
+		if not NurikabeUtils.is_island(board.get_cell(cell)):
+			continue
+		var island: CellGroup = board.get_island_for_cell(cell)
+		islands[island] = true
+	return islands.keys()
+
+
+func _get_sorted_root_cells(islands: Array[CellGroup]) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	for island: CellGroup in islands:
+		cells.append(island.cells.front())
+	cells.sort()
+	return cells
+
+
 func _is_border_cell(cell: Vector2i) -> bool:
 	var result: bool = false
 	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
@@ -984,21 +951,14 @@ func _is_border_cell(cell: Vector2i) -> bool:
 	return result
 
 
-func _is_valid_merged_island(island_cells: Array[Vector2i], merge_cells: int) -> bool:
-	var visited_island_roots: Dictionary[Vector2i, bool] = {}
+func _is_valid_merged_island(islands: Array[CellGroup], merge_cells: int) -> bool:
 	var total_joined_size: int = merge_cells
 	var total_clues: int = 0
 	var clue_value: int = 0
 	
 	var result: bool = true
 	
-	for island_cell: Vector2i in island_cells:
-		var island_cell_value: int = board.get_cell(island_cell)
-		if not NurikabeUtils.is_island(island_cell_value):
-			continue
-		var island: CellGroup = board.get_island_for_cell(island_cell)
-		if visited_island_roots.has(island.cells.front()):
-			continue
+	for island: CellGroup in islands:
 		total_joined_size += island.size()
 		if island.clue >= 1:
 			if clue_value > 0:
@@ -1012,6 +972,5 @@ func _is_valid_merged_island(island_cells: Array[Vector2i], merge_cells: int) ->
 		if clue_value > 0 and total_joined_size > clue_value:
 			result = false
 			break
-		visited_island_roots[island.cells.front()] = true
 	
 	return result

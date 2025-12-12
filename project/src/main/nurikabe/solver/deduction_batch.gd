@@ -32,3 +32,7 @@ func clear() -> void:
 
 func size() -> int:
 	return deductions.size()
+
+
+func _to_string() -> String:
+	return "; ".join(deductions)
