@@ -21,6 +21,10 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 var cells: Dictionary[Vector2i, int]
 var version: int
 
+var groups_by_cell: Dictionary[Vector2i, CellGroup] = {}:
+	get:
+		_rebuild_groups()
+		return groups_by_cell
 var islands: Array[CellGroup] = []:
 	get:
 		_rebuild_groups()
@@ -65,10 +69,16 @@ func duplicate() -> SolverBoard:
 	copy.version = version
 	copy.islands.resize(islands.size())
 	for i in islands.size():
-		copy.islands[i] = islands[i].duplicate()
+		var island: CellGroup = islands[i]
+		copy.islands[i] = island.duplicate()
+		for cell: Vector2i in island.cells:
+			copy.groups_by_cell[cell] = island
 	copy.walls.resize(walls.size())
 	for i in walls.size():
-		copy.walls[i] = walls[i].duplicate()
+		var wall: CellGroup = walls[i]
+		copy.walls[i] = wall.duplicate()
+		for cell: Vector2i in wall.cells:
+			copy.groups_by_cell[cell] = wall
 	copy.groups_need_rebuild = groups_need_rebuild
 	copy._cache = _cache.duplicate()
 	return copy
@@ -178,12 +188,15 @@ func _expand_groups(groups: Array[CellGroup], cell: Vector2i) -> void:
 			var adjacent_group: CellGroup = adjacent_groups[i]
 			primary_group.merge(adjacent_group)
 			groups.erase(adjacent_group)
+			for group_cell: Vector2i in adjacent_group.cells:
+				groups_by_cell[group_cell] = primary_group
 	primary_group.cells.append(cell)
 	primary_group.liberties.erase(cell)
 	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 		var neighbor: Vector2i = cell + neighbor_dir
 		if get_cell(neighbor) == CELL_EMPTY and not primary_group.liberties.has(neighbor):
 			primary_group.liberties.append(neighbor)
+	groups_by_cell[cell] = primary_group
 
 
 func _erase_liberties(groups: Array[CellGroup], cell: Vector2i) -> void:
@@ -204,25 +217,11 @@ func get_flooded_wall_group_map() -> SolverGroupMap:
 
 
 func get_island_for_cell(cell: Vector2i) -> CellGroup:
-	var cell_value: int = get_cell(cell)
-	if not NurikabeUtils.is_island(cell_value):
-		return null
-	
-	var result: CellGroup
-	for island: CellGroup in islands:
-		if island.cells.has(cell):
-			result = island
-			break
-	return result
+	return groups_by_cell.get(cell)
 
 
 func get_wall_for_cell(cell: Vector2i) -> CellGroup:
-	var result: CellGroup
-	for wall: CellGroup in walls:
-		if wall.cells.has(cell):
-			result = wall
-			break
-	return result
+	return groups_by_cell.get(cell)
 
 
 ## Sets the specified cells on the model.[br]
@@ -554,6 +553,7 @@ func _rebuild_groups() -> void:
 	
 	groups_need_rebuild = false
 	
+	groups_by_cell.clear()
 	islands.clear()
 	walls.clear()
 	
@@ -590,6 +590,10 @@ func _rebuild_groups() -> void:
 				if get_cell(neighbor) == CELL_EMPTY and not group_cell_set.has(neighbor):
 					liberties[neighbor] = true
 		new_group.liberties = liberties.keys()
+		
+		# populate groups_by_cell
+		for group_cell: Vector2i in new_group.cells:
+			groups_by_cell[group_cell] = new_group
 		
 		visited.merge(group_cell_set)
 
