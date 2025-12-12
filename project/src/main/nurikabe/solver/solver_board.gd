@@ -21,7 +21,7 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 var cells: Dictionary[Vector2i, int]
 var version: int
 
-var empty_cells: Dictionary[Vector2i, int] = {}:
+var empty_cells: Dictionary[Vector2i, bool] = {}:
 	get:
 		_rebuild_groups()
 		return empty_cells
@@ -351,7 +351,7 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 func _build_flooded_board() -> SolverBoard:
 	var flooded_board: SolverBoard = duplicate()
 	flooded_board.groups_need_rebuild = true
-	for cell: Vector2i in flooded_board.empty_cells:
+	for cell: Vector2i in empty_cells:
 		flooded_board.set_cell(cell, CELL_ISLAND)
 	return flooded_board
 
