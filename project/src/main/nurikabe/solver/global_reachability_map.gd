@@ -46,10 +46,8 @@ func get_nearest_clue_cell(cell: Vector2i) -> Vector2i:
 func _build() -> void:
 	# collect visitable cells (empty cells, or clueless islands)
 	var visitable: Dictionary[Vector2i, bool] = {}
-	for cell: Vector2i in board.cells:
-		var cell_value: int = board.get_cell(cell)
-		if cell_value == CELL_EMPTY:
-			visitable[cell] = true
+	for cell: Vector2i in board.empty_cells:
+		visitable[cell] = true
 	for island: CellGroup in board.islands:
 		if island.clue != 0:
 			continue
@@ -96,7 +94,7 @@ func _build() -> void:
 			queue.append(neighbor)
 	
 	# classify each cell into ClueReachability categories
-	for cell: Vector2i in board.cells:
+	for cell: Vector2i in visitable:
 		var reachability: ClueReachability = ClueReachability.UNKNOWN
 		if not _reach_score_by_cell.has(cell):
 			reachability = ClueReachability.IMPOSSIBLE

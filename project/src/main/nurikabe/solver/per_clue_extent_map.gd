@@ -22,10 +22,8 @@ func _init(init_board: SolverBoard) -> void:
 	board = init_board
 	
 	# collect visitable cells (empty cells, or clueless islands)
-	for cell: Vector2i in board.cells:
-		var cell_value: int = board.get_cell(cell)
-		if cell_value == CELL_EMPTY:
-			_visitable[cell] = true
+	for cell: Vector2i in board.empty_cells:
+		_visitable[cell] = true
 	for island: CellGroup in board.islands:
 		if island.clue != 0:
 			continue
@@ -74,7 +72,6 @@ func _init_extent_map(island: CellGroup) -> void:
 		extent_map[cell] = true
 	
 	_extent_map_by_clue[island.cells.front()] = extent_map
-	SplitTimer.end()
 
 
 func needs_buffer(island: CellGroup, cell: Vector2i) -> bool:

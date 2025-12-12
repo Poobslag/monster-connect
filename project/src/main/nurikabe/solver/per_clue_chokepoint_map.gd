@@ -23,10 +23,8 @@ func _init(init_board: SolverBoard) -> void:
 	board = init_board
 	
 	# collect visitable cells (empty cells, or clueless islands)
-	for cell: Vector2i in board.cells:
-		var cell_value: int = board.get_cell(cell)
-		if cell_value == CELL_EMPTY:
-			_visitable[cell] = true
+	for cell: Vector2i in board.empty_cells:
+		_visitable[cell] = true
 	for island: CellGroup in board.islands:
 		if island.clue != 0:
 			continue
@@ -119,9 +117,11 @@ func get_wall_exclusion_map(island: CellGroup) -> GroupMap:
 	for component_cell: Vector2i in get_component_cells(island):
 		component_cell_set[component_cell] = true
 	var cells: Array[Vector2i] = []
-	for cell: Vector2i in board.cells:
-		var value: int = board.get_cell(cell)
-		if value == CELL_WALL or (value == CELL_EMPTY and not cell in component_cell_set):
+	for wall: CellGroup in board.walls:
+		for cell in wall.cells:
+			cells.append(cell)
+	for cell: Vector2i in board.empty_cells:
+		if not cell in component_cell_set:
 			cells.append(cell)
 	return GroupMap.new(cells)
 
