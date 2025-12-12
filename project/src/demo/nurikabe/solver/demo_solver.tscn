@@ -7,7 +7,6 @@
 [node name="Demo" type="Node"]
 script = ExtResource("1_hjsai")
 puzzle_path = "res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_071.txt"
-log_enabled = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 anchors_preset = 15

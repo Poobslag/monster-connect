@@ -53,8 +53,6 @@ const ISLAND_STRANGLE: Deduction.Reason = Deduction.Reason.ISLAND_STRANGLE
 const WALL_STRANGLE: Deduction.Reason = Deduction.Reason.WALL_STRANGLE
 
 var verbose: bool = false
-var log_enabled: bool = false
-var perform_redundant_deductions: bool = false
 
 var deductions: DeductionBatch = DeductionBatch.new()
 var board: SolverBoard:
@@ -490,12 +488,10 @@ func deduce_island_chokepoint(chokepoint: Vector2i) -> void:
 		return
 	
 	var old_deductions_size: int = deductions.size()
-	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
-			and should_deduce(board, chokepoint):
+	if deductions.size() == old_deductions_size and should_deduce(board, chokepoint):
 		deduce_island_chokepoint_cramped(chokepoint)
 	
-	if (deductions.size() == old_deductions_size or perform_redundant_deductions) \
-			and should_deduce(board, chokepoint):
+	if deductions.size() == old_deductions_size and should_deduce(board, chokepoint):
 		deduce_island_chokepoint_pool(chokepoint)
 
 
@@ -576,10 +572,10 @@ func deduce_clue_chokepoint(island: CellGroup) -> void:
 		return
 	
 	var old_deductions_size: int = deductions.size()
-	if deductions.size() == old_deductions_size or perform_redundant_deductions:
+	if deductions.size() == old_deductions_size:
 		deduce_clue_chokepoint_loose(island)
 	
-	if deductions.size() == old_deductions_size or perform_redundant_deductions:
+	if deductions.size() == old_deductions_size:
 		deduce_clue_chokepoint_wall_weaver(island)
 
 
@@ -789,7 +785,7 @@ func deduce_pool(wall: CellGroup) -> void:
 
 
 func should_deduce(target_board: SolverBoard, cell: Vector2i) -> bool:
-	return target_board.get_cell(cell) == CELL_EMPTY and (cell not in deductions.cells or perform_redundant_deductions)
+	return target_board.get_cell(cell) == CELL_EMPTY and cell not in deductions.cells
 
 
 ## If there are two liberties, and the liberties are diagonal, any blank squares connecting those liberties

@@ -18,11 +18,6 @@ extends Node
 		puzzle_path = value
 		_refresh_puzzle_path()
 
-@export var log_enabled: bool = false:
-	set(value):
-		log_enabled = value
-		solver.log_enabled = log_enabled
-
 @export var verbose: bool = false:
 	set(value):
 		verbose = value
