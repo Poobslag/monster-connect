@@ -320,7 +320,7 @@ func _on_validate_timer_timeout() -> void:
 	var new_lowlight_cells: Dictionary[Vector2i, bool] = {}
 	for cell: Vector2i in model.cells:
 		var cell_value: int = model.get_cell(cell)
-		if NurikabeUtils.is_island_or_empty(cell_value):
+		if cell_value == CELL_ISLAND or cell_value == CELL_EMPTY or model.has_clue(cell):
 			new_lowlight_cells[cell] = true
 	for joined_island_cell: Vector2i in result_strict.joined_islands:
 		new_lowlight_cells.erase(joined_island_cell)
