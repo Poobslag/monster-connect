@@ -72,13 +72,13 @@ func duplicate() -> SolverBoard:
 		var island: CellGroup = islands[i]
 		copy.islands[i] = island.duplicate()
 		for cell: Vector2i in island.cells:
-			copy.groups_by_cell[cell] = island
+			copy.groups_by_cell[cell] = copy.islands[i]
 	copy.walls.resize(walls.size())
 	for i in walls.size():
 		var wall: CellGroup = walls[i]
 		copy.walls[i] = wall.duplicate()
 		for cell: Vector2i in wall.cells:
-			copy.groups_by_cell[cell] = wall
+			copy.groups_by_cell[cell] = copy.walls[i]
 	copy.groups_need_rebuild = groups_need_rebuild
 	copy._cache = _cache.duplicate()
 	return copy
