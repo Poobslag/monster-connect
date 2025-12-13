@@ -47,24 +47,21 @@ var groups_need_rebuild: bool = true
 var _cache: Dictionary[String, Variant] = {}
 
 func perform_bfs(start_cells: Array[Vector2i], filter: Callable) -> Array[Vector2i]:
-	var result: Array[Vector2i] = []
+	var result: Array[Vector2i] = start_cells.filter(filter)
 	var visited: Dictionary[Vector2i, bool] = {}
-	for start_cell: Vector2i in start_cells:
-		visited[start_cell] = true
-	var queue: Array[Vector2i] = start_cells.duplicate()
-	while not queue.is_empty():
-		var next_cell: Vector2i = queue.pop_front()
-		if not filter.call(next_cell):
-			continue
-		result.append(next_cell)
+	for cell: Vector2i in start_cells:
+		visited[cell] = true
+	var current_index: int = 0
+	while current_index < result.size():
+		var next_cell: Vector2i = result[current_index]
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor: Vector2i = next_cell + neighbor_dir
-			if not cells.has(neighbor):
-				continue
 			if visited.has(neighbor):
 				continue
 			visited[neighbor] = true
-			queue.append(neighbor)
+			if cells.has(neighbor) and filter.call(neighbor):
+				result.append(neighbor)
+		current_index += 1
 	return result
 
 
