@@ -172,8 +172,7 @@ func performance_test() -> void:
 			solver.metrics.get("bifurcation_duration", 0),
 		])
 	
-	for cell: Vector2i in solver.board.cells:
-		%GameBoard.set_cell(cell, solver.board.get_cell(cell))
+	copy_board_from_solver()
 
 
 func _show_message(s: String) -> void:
