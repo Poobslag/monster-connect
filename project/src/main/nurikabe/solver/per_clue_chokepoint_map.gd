@@ -118,7 +118,7 @@ func get_wall_exclusion_map(island: CellGroup) -> GroupMap:
 		component_cell_set[component_cell] = true
 	var cells: Array[Vector2i] = []
 	for wall: CellGroup in board.walls:
-		for cell in wall.cells:
+		for cell: Vector2i in wall.cells:
 			cells.append(cell)
 	for cell: Vector2i in board.empty_cells:
 		if not cell in component_cell_set:
