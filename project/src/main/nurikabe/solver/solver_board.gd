@@ -101,6 +101,14 @@ func from_game_board(game_board: NurikabeGameBoard) -> void:
 			non_empty_cells.append(cell_pos)
 
 
+func update_game_board(game_board: NurikabeGameBoard) -> void:
+	for cell: Vector2i in cells:
+		if has_clue(cell):
+			game_board.set_cell(cell, get_clue(cell))
+		else:
+			game_board.set_cell(cell, get_cell(cell))
+
+
 func get_clue(cell_pos: Vector2i) -> int:
 	return clues[cell_pos]
 

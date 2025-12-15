@@ -129,9 +129,7 @@ func step() -> void:
 
 
 func copy_board_from_solver() -> void:
-	for cell: Vector2i in solver.board.cells:
-		if not solver.board.has_clue(cell):
-			%GameBoard.set_cell(cell, solver.board.get_cell(cell))
+	solver.board.update_game_board(%GameBoard)
 
 
 func solve_until_bifurcation() -> void:
