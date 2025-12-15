@@ -8,6 +8,7 @@ const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
 var board: SolverBoard
 
@@ -73,7 +74,7 @@ func find_chokepoint_cells(island: CellGroup) -> Dictionary[Vector2i, int]:
 	
 	for chokepoint: Vector2i in chokepoint_map.chokepoints_by_cell:
 		var unchoked_cell_count: int = chokepoint_map.get_unchoked_cell_count(chokepoint, island.cells.front())
-		if unchoked_cell_count >= island.clue:
+		if unchoked_cell_count >= island.clue or island.clue == CELL_MYSTERY_CLUE:
 			continue
 		
 		if board.get_cell(chokepoint) == CELL_EMPTY:
@@ -134,7 +135,7 @@ func _init_chokepoint_map(island: CellGroup) -> void:
 	var reach_score_by_cell: Dictionary[Vector2i, int] = {}
 	var queue: Array[Vector2i] = [island.cells.front()]
 	
-	var reachability: int = island.clue - island.size()
+	var reachability: int = island.clue - island.size() if island.clue != CELL_MYSTERY_CLUE else 999999
 	for other_island_cell: Vector2i in island.cells:
 		reach_score_by_cell[other_island_cell] = reachability + 1
 	for liberty: Vector2i in island.liberties:

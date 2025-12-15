@@ -7,10 +7,12 @@ extends Node
 ## 	256: Island
 ## 	257: Empty (unknown, either island or wall)
 ## 	258: Wall
+## 	259: Clue (unknown size)
 const CELL_INVALID := 0
 const CELL_ISLAND := 256
 const CELL_EMPTY := 257
 const CELL_WALL := 258
+const CELL_MYSTERY_CLUE := 259
 
 ## Nurikabe cell strings:
 ## 	['0'-'99']: Clue
@@ -22,6 +24,7 @@ const CELL_STRING_EMPTY := ""
 const CELL_STRING_INVALID := "!"
 const CELL_STRING_ISLAND := "."
 const CELL_STRING_WALL := "##"
+const CELL_STRING_MYSTERY_CLUE := "?"
 
 const ERROR_FG_COLOR: Color = Color.WHITE
 const ERROR_BG_COLOR: Color = Color("ff5a5a")
@@ -39,7 +42,7 @@ static func pool_triplet(cell: Vector2i, dir: Vector2i) -> Array[Vector2i]:
 
 
 static func is_clue(value: int) -> int:
-	return value >= 1 and value <= 255
+	return value >= 1 and value <= 255 or value == CELL_MYSTERY_CLUE
 
 
 static func to_cell_string(value: int) -> String:
@@ -48,6 +51,7 @@ static func to_cell_string(value: int) -> String:
 		CELL_ISLAND: return CELL_STRING_ISLAND
 		CELL_WALL: return CELL_STRING_WALL
 		CELL_EMPTY: return CELL_STRING_EMPTY
+		CELL_MYSTERY_CLUE: return CELL_STRING_MYSTERY_CLUE
 		_: return str(value)
 
 
@@ -57,4 +61,5 @@ static func from_cell_string(value: String) -> int:
 		CELL_STRING_ISLAND: return CELL_ISLAND
 		CELL_STRING_WALL: return CELL_WALL
 		CELL_STRING_EMPTY: return CELL_EMPTY
+		CELL_STRING_MYSTERY_CLUE: return CELL_MYSTERY_CLUE
 		_: return value.to_int()

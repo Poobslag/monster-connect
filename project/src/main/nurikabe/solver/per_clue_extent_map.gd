@@ -9,6 +9,7 @@ const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
 var board: SolverBoard
 
@@ -65,7 +66,7 @@ func _init_extent_map(island: CellGroup) -> void:
 	for cell: Vector2i in island.cells:
 		extent_map[cell] = true
 	var extent_list: Array[Vector2i] = board.perform_bfs(island.liberties, func(cell: Vector2i) -> bool:
-		return extent_map.size() <= island.clue \
+		return (extent_map.size() <= island.clue or island.clue == CELL_MYSTERY_CLUE) \
 				and _visitable.has(cell) \
 				and (not _claimed_by_clue.has(cell) or _claimed_by_clue[cell] == island.cells.front()))
 	for cell: Vector2i in extent_list:

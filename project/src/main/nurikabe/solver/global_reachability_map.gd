@@ -16,6 +16,7 @@ const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
@@ -59,7 +60,7 @@ func _build() -> void:
 	for island: CellGroup in board.islands:
 		if island.clue == 0:
 			continue
-		var reachability: int = island.clue - island.size()
+		var reachability: int = island.clue - island.size() if island.clue != CELL_MYSTERY_CLUE else 999999
 		for liberty: Vector2i in island.liberties:
 			if _reach_score_by_cell.has(liberty):
 				# cell is adjacent to two or more islands, so no islands can reach it

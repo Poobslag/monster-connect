@@ -13,6 +13,7 @@ const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
 const NEIGHBOR_DIRS: Array[Vector2i] = NurikabeUtils.NEIGHBOR_DIRS
 
@@ -284,7 +285,7 @@ func bifurcate_all_island_releases() -> void:
 	for island: CellGroup in board.islands:
 		if island.liberties.size() != 2:
 			continue
-		if island.size() >= island.clue:
+		if island.size() >= island.clue or island.clue == CELL_MYSTERY_CLUE:
 			continue
 		var old_deductions_size: int = deductions.size()
 		for liberty: Vector2i in island.liberties:
@@ -311,7 +312,7 @@ func bifurcate_all_island_releases() -> void:
 ## Executes a bifurcation on an island which is one cell away from being complete.
 func bifurcate_all_island_strangles() -> void:
 	for island: CellGroup in board.islands:
-		if island.size() != island.clue - 1:
+		if island.size() != island.clue - 1 or island.clue == CELL_MYSTERY_CLUE:
 			continue
 		
 		var old_deductions_size: int = deductions.size()
@@ -438,7 +439,7 @@ func deduce_all_islands() -> void:
 func deduce_all_island_dividers() -> void:
 	var all_liberties: Dictionary[Vector2i, bool] = {}
 	for island: CellGroup in board.islands:
-		if island.clue < 1:
+		if island.clue == 0 or island.clue == -1:
 			# unclued/invalid island
 			continue
 		for liberty: Vector2i in island.liberties:
@@ -456,7 +457,7 @@ func deduce_all_island_dividers() -> void:
 			var sorted_root_cells: Array[Vector2i] = _get_sorted_root_cells(neighbor_islands)
 			var reason: int = ADJACENT_CLUES
 			for neighbor_island: CellGroup in neighbor_islands:
-				if neighbor_island.size() > 1 or neighbor_island.clue < 1:
+				if neighbor_island.size() > 1 or neighbor_island.clue == 0 or neighbor_island.clue == -1:
 					reason = ISLAND_DIVIDER
 					break
 			add_deduction(liberty, CELL_WALL, reason, sorted_root_cells)
@@ -540,7 +541,7 @@ func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 	var clue_value: int = board.get_clue(clue_cell)
 	var unchoked_cell_count: int = \
 			board.get_island_chokepoint_map().get_unchoked_cell_count(chokepoint, clue_cell)
-	if unchoked_cell_count < clue_value:
+	if unchoked_cell_count < clue_value and clue_value != CELL_MYSTERY_CLUE:
 		var island: CellGroup = board.get_island_for_cell(clue_cell)
 		if chokepoint in island.liberties:
 			add_deduction(chokepoint, CELL_ISLAND,
@@ -685,6 +686,8 @@ func deduce_unclued_lifeline() -> void:
 		
 		var clue_root: Vector2i = exclusive_clues_by_unclued[unclued_root]
 		var clued_island: CellGroup = board.get_island_for_cell(clue_root)
+		if clued_island.clue == CELL_MYSTERY_CLUE:
+			continue
 		
 		# calculate the minimum distance to the clued and unclued cells
 		var unclued_distance_map: Dictionary[Vector2i, int] \
@@ -717,7 +720,7 @@ func deduce_unclued_lifeline() -> void:
 
 
 func deduce_clued_island_snug(island: CellGroup) -> void:
-	if island.clue == 0 or island.clue == -1:
+	if island.clue == 0 or island.clue == -1 or island.clue == CELL_MYSTERY_CLUE:
 		return
 	if island.liberties.is_empty():
 		return
@@ -766,6 +769,8 @@ func deduce_island(island: CellGroup) -> void:
 	if island.clue == -1:
 		return
 	if island.liberties.is_empty():
+		return
+	if island.clue == CELL_MYSTERY_CLUE:
 		return
 	
 	if island.clue == 0:
@@ -868,7 +873,7 @@ func _check_clued_island_moat(island: CellGroup) -> void:
 
 
 func _check_clued_island_forced_expansion(island: CellGroup) -> void:
-	if island.liberties.size() != 1 or island.clue <= island.size():
+	if island.liberties.size() != 1 or island.clue <= island.size() or island.clue == CELL_MYSTERY_CLUE:
 		return
 	
 	var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
@@ -940,7 +945,7 @@ func _is_valid_merged_island(islands: Array[CellGroup], merge_cells: int) -> boo
 	
 	for island: CellGroup in islands:
 		total_joined_size += island.size()
-		if island.clue >= 1:
+		if island.clue >= 1 or island.clue == CELL_MYSTERY_CLUE:
 			if clue_value > 0:
 				result = false
 				break
