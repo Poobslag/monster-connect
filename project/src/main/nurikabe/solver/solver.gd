@@ -85,6 +85,38 @@ func add_deduction(pos: Vector2i, value: int,
 	deductions.add_deduction(pos, value, reason, reason_cells)
 
 
+## Use only deductions that remain valid if new clues are added.
+func set_generation_strategy() -> void:
+	_slow_strategy_iterator = StrategyIterator.new([
+		deduce_all_clued_island_snugs,
+		deduce_all_wall_chokepoints,
+		deduce_all_island_chokepoints,
+		deduce_all_clue_chokepoints,
+	])
+
+	_bifurcation_iterator = StrategyIterator.new([
+	])
+
+
+## Use all deductions, including those that may be invalidated by new clues.
+func set_solve_strategy() -> void:
+	_slow_strategy_iterator = StrategyIterator.new([
+		deduce_all_clued_island_snugs,
+		deduce_all_wall_chokepoints,
+		deduce_all_island_chokepoints,
+		deduce_all_clue_chokepoints,
+		deduce_all_unreachable_squares,
+		deduce_unclued_lifeline,
+	])
+
+	_bifurcation_iterator = StrategyIterator.new([
+		bifurcate_all_wall_strangles,
+		bifurcate_all_island_strangles,
+		bifurcate_all_island_battlegrounds,
+		bifurcate_all_island_releases,
+	])
+
+
 func apply_changes() -> void:
 	var changes: Array[Dictionary] = deductions.get_changes()
 	for change: Dictionary[String, Variant] in changes:

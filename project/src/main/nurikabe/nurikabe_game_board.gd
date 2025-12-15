@@ -186,6 +186,12 @@ func get_global_cursorable_rect() -> Rect2:
 	return %CursorableArea.get_global_transform() * %CursorableArea.cursorable_rect
 
 
+func to_generator_board() -> GeneratorBoard:
+	var board: GeneratorBoard = GeneratorBoard.new()
+	board.from_game_board(self)
+	return board
+
+
 func to_solver_board() -> SolverBoard:
 	var board: SolverBoard = SolverBoard.new()
 	board.from_game_board(self)
