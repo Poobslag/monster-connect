@@ -17,6 +17,7 @@ const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
 var clues: Dictionary[Vector2i, int]
 var cells: Dictionary[Vector2i, int]
@@ -45,6 +46,18 @@ var walls: Array[CellGroup] = []:
 var groups_need_rebuild: bool = true
 
 var _cache: Dictionary[String, Variant] = {}
+
+func clear() -> void:
+	cells.clear()
+	clues.clear()
+	version = 0
+	empty_cells.clear()
+	groups_by_cell.clear()
+	islands.clear()
+	walls.clear()
+	groups_need_rebuild = true
+	_cache.clear()
+
 
 func perform_bfs(start_cells: Array[Vector2i], filter: Callable) -> Array[Vector2i]:
 	var result: Array[Vector2i] = start_cells.filter(filter)
@@ -284,7 +297,7 @@ func print_cells() -> void:
 func surround_island(cell: Vector2i) -> Array[Dictionary]:
 	var changes: Array[Dictionary] = []
 	var island: CellGroup = get_island_for_cell(cell)
-	if not island or island.clue != island.size():
+	if not island or island.clue == CELL_MYSTERY_CLUE or island.clue != island.size():
 		return changes
 	
 	for liberty: Vector2i in island.liberties:
@@ -357,7 +370,7 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 	
 	# wrong size
 	for island: CellGroup in local_islands:
-		if island.clue == 0 or island.clue == -1:
+		if island.clue == 0 or island.clue == -1 or island.clue == CELL_MYSTERY_CLUE:
 			continue
 		
 		if island.clue < island.size():
@@ -365,7 +378,7 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 			result += "c"
 			break
 		
-		if island.liberties.is_empty() and island.clue > island.size():
+		if island.liberties.is_empty() and island.clue > island.size() and island.clue != CELL_MYSTERY_CLUE:
 			# island is too small and can't grow
 			result += "c"
 			break
@@ -514,10 +527,10 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 	
 	# wrong size
 	for island: CellGroup in islands:
-		if island.clue == 0 or island.clue == -1:
+		if island.clue == 0 or island.clue == -1 or island.clue == CELL_MYSTERY_CLUE:
 			continue
 		
-		if island.clue < island.size():
+		if island.clue < island.size() and island.clue != CELL_MYSTERY_CLUE:
 			# island is too large
 			result.wrong_size.append_array(island.cells)
 			continue
@@ -525,7 +538,7 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 		match mode:
 			VALIDATE_COMPLEX:
 				var island_max_size: int = get_per_clue_extent_map().get_extent_size(island)
-				if island.clue > island_max_size:
+				if island.clue > island_max_size and island.clue != CELL_MYSTERY_CLUE:
 					# island is too small and can't grow
 					result.wrong_size.append_array(island.cells)
 					continue
@@ -533,7 +546,7 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 				var group_map: SolverGroupMap = get_flooded_island_group_map()
 				var flooded_island_group: Array[Vector2i] \
 						= group_map.groups_by_cell.get(island.cells.front(), [] as Array[Vector2i])
-				if island.clue > flooded_island_group.size():
+				if island.clue > flooded_island_group.size() and island.clue != CELL_MYSTERY_CLUE:
 					# island is too small and can't grow
 					result.wrong_size.append_array(island.cells)
 					continue
