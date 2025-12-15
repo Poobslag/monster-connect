@@ -4,6 +4,7 @@ extends Node
 ## 	[kbd]Q[/kbd]: Solve one step.
 ## 	[kbd]Shift + Q[/kbd]: Solve five steps.
 ## 	[kbd]W[/kbd]: Test a full solution.
+## 	[kbd]R[/kbd]: Clear the board.
 ## 	[kbd]G[/kbd]: Generate a puzzle.
 
 const PUZZLE_SIZES: Array[Vector2i] = [
@@ -45,6 +46,10 @@ func _input(event: InputEvent) -> void:
 		KEY_G:
 			generator.board = %GameBoard.to_generator_board()
 			generator.generate()
+			copy_board_from_generator()
+		KEY_R:
+			generator.clear()
+			%GameBoard.reset()
 			copy_board_from_generator()
 
 
