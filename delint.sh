@@ -264,7 +264,7 @@ fi
 # arrays missing type hint
 RESULT=$(grep -R -n "\(^[^#]*Array[^\[]\|:= \[\]\)" --include="*.gd" project/src \
   | grep -v "\(Array\]\|\[Array\)" \
-  | grep -v "PackedVector2Array\|PackedStringArray\|PackedInt32Array" \
+  | grep -v "PackedFloat32Array\|PackedVector2Array\|PackedStringArray\|PackedInt32Array" \
   )
 if [ -n "$RESULT" ]; then
   echo ""
@@ -288,7 +288,7 @@ RESULT=$(grep -R -n " := " --include="*.gd" project/src \
   | grep -v " := \(true\|false\)" \
   | grep -v " := \(\"\|'\|r\"\|&\"\|^\"\)" \
   | grep -v " := \(\[\|\{\)" \
-  | grep -v " := \(Color\|Vector\|Vector2i\|PackedStringArray\)" \
+  | grep -v " := \(Color\|Vector\|Vector2i\|PackedFloat32Array\|PackedStringArray\)" \
   | grep -v " := [A-Z][A-Za-z0-9]*\.new()" \
   )
 if [ -n "$RESULT" ]; then
