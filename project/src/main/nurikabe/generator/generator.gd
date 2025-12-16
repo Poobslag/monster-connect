@@ -37,6 +37,16 @@ var solver: Solver = Solver.new()
 
 var _ran_starting_techniques: bool = false
 
+var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
+	{"callable": generate_open_island_expansion, "weight": 1.0},
+	{"callable": generate_open_island_moat, "weight": 0.5},
+	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
+	{"callable": generate_wall_guide, "weight": 1.0},
+])
+
+var _recovery_techniques: TechniqueScheduler = TechniqueScheduler.new([
+])
+
 func _init() -> void:
 	solver.set_generation_strategy()
 
@@ -54,31 +64,35 @@ func step_until_done() -> void:
 		if not placements.has_changes():
 			break
 		apply_changes()
-		solver.step_until_done()
+		while true:
+			var validation_result: SolverBoard.ValidationResult \
+					= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
+			if validation_result.error_count > 0:
+				break
+			
+			solver.step()
+			if not solver.deductions.has_changes():
+				break
+			solver.apply_changes()
+		
 		solver.apply_changes()
-
-var _basic_techniques: Array[Dictionary] = [
-	{"callable": generate_open_island_expansion, "weight": 1.0},
-	{"callable": generate_open_island_moat, "weight": 0.5},
-	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
-	{"callable": generate_wall_guide, "weight": 1.0},
-]
 
 func step() -> void:
 	if not placements.has_changes() and not _ran_starting_techniques:
 		generate_initial_open_island()
 		_ran_starting_techniques = true
 	
+	var validation_result: SolverBoard.ValidationResult \
+			= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
+	if not placements.has_changes() and validation_result.error_count > 0:
+		for recovery_technique: Callable in _recovery_techniques.next_cycle():
+			recovery_technique.call()
+			if placements.has_changes():
+				break
+	
 	if not placements.has_changes():
-		var basic_technique_weights: Array[float] = []
-		basic_technique_weights.resize(_basic_techniques.size())
-		for i in _basic_techniques.size():
-			basic_technique_weights[i] = _basic_techniques[i]["weight"]
-		var shuffled_basic_techniques: Array[Dictionary] = _basic_techniques.duplicate()
-		Utils.shuffle_weighted(shuffled_basic_techniques, basic_technique_weights)
-		
-		for basic_technique: Dictionary in shuffled_basic_techniques:
-			basic_technique["callable"].call()
+		for basic_technique: Callable in _basic_techniques.next_cycle():
+			basic_technique.call()
 			if placements.has_changes():
 				break
 
