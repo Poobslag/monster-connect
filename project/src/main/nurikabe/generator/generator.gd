@@ -23,8 +23,9 @@ const INITIAL_OPEN_ISLAND: Placement.Reason = Placement.Reason.INITIAL_OPEN_ISLA
 ## basic techniques
 const ISLAND_GUIDE: Placement.Reason = Placement.Reason.ISLAND_GUIDE
 const ISLAND_EXPANSION: Placement.Reason = Placement.Reason.ISLAND_EXPANSION
-const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
 const ISLAND_MOAT: Placement.Reason = Placement.Reason.ISLAND_MOAT
+const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
+const WALL_GUIDE: Placement.Reason = Placement.Reason.WALL_GUIDE
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var board: GeneratorBoard:
@@ -60,6 +61,7 @@ var _basic_techniques: Array[Dictionary] = [
 	{"callable": generate_open_island_expansion, "weight": 1.0},
 	{"callable": generate_open_island_moat, "weight": 0.5},
 	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
+	{"callable": generate_wall_guide, "weight": 1.0},
 ]
 
 func step() -> void:
@@ -79,6 +81,36 @@ func step() -> void:
 			basic_technique["callable"].call()
 			if placements.has_changes():
 				break
+
+
+func generate_wall_guide() -> void:
+	var open_walls: Array[CellGroup] = board.walls.filter(func(wall: CellGroup) -> bool:
+			return wall.liberties.size() == 2)
+	if open_walls.is_empty():
+		return
+	
+	open_walls.shuffle()
+	for open_wall: CellGroup in open_walls:
+		var shuffled_liberties: Array[Vector2i] = open_wall.liberties.duplicate()
+		shuffled_liberties.shuffle()
+		for liberty: Vector2i in shuffled_liberties:
+			# bifurcate; add the clue and see if there is a contradiction
+			var temp_solver: Solver = _create_temp_solver()
+			temp_solver.board.set_clue(liberty, CELL_MYSTERY_CLUE)
+			temp_solver.deduce_all_island_dividers()
+			temp_solver.apply_changes()
+			var validation_result: String = temp_solver.board.validate_local([liberty])
+			if "j" in validation_result:
+				# new clue connects to an existing clue
+				continue
+			if "s" in validation_result:
+				# new clue splits a wall
+				continue
+			
+			placements.add_placement(liberty, CELL_MYSTERY_CLUE, WALL_GUIDE)
+			break
+		if placements.has_changes():
+			break
 
 
 func generate_open_island_expansion() -> void:
@@ -105,13 +137,15 @@ func generate_open_island_moat() -> void:
 	
 	var clue_cell: Vector2i = _find_clue_cell(mystery_island)
 	var new_wall_cells: Array[Vector2i] = mystery_island.liberties.duplicate()
-	var temp_board: SolverBoard = board.solver_board.duplicate()
-	temp_board.set_clue(clue_cell, mystery_island.size())
-	for liberty: Vector2i in new_wall_cells:
-		temp_board.set_cell(liberty, CELL_WALL)
+	
+	# bifurcate; set the clue and see if there is a contradiction
+	var temp_solver: Solver = _create_temp_solver()
+	temp_solver.board.set_clue(clue_cell, mystery_island.size())
+	temp_solver.deduce_island(temp_solver.board.get_island_for_cell(clue_cell))
 	var local_cells: Array[Vector2i] = new_wall_cells.duplicate()
 	local_cells.append(clue_cell)
-	var validation_result: String = temp_board.validate_local(local_cells)
+	var validation_result: String = temp_solver.board.validate_local(local_cells)
+	
 	if "p" in validation_result:
 		pass
 	else:
@@ -156,6 +190,13 @@ func apply_changes() -> void:
 		else:
 			board.set_cell(change["pos"], change["value"])
 	placements.clear()
+
+
+func _create_temp_solver() -> Solver:
+	var temp_solver: Solver = Solver.new()
+	temp_solver.set_generation_strategy()
+	temp_solver.board = board.solver_board.duplicate()
+	return temp_solver
 
 
 func _find_clue_cell(island: CellGroup) -> Vector2i:
