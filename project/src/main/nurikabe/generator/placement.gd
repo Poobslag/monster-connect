@@ -7,8 +7,9 @@ enum Reason {
 	INITIAL_OPEN_ISLAND, # add a clue cell constrained to expand through a single open liberty
 	
 	# basic techniques
-	OPEN_ISLAND_GUIDE, # add a clue cell to constrain an open island
-	OPEN_ISLAND_EXPANSION, # add an island cell to expand an open island
+	ISLAND_GUIDE, # add a clue cell to constrain an open island
+	ISLAND_EXPANSION, # add an island cell to expand an open island
+	ISLAND_MOAT, # seal an open island with walls
 	SEALED_ISLAND_CLUE, # assign a clue number to a sealed island
 }
 
