@@ -1,4 +1,4 @@
-class_name Deduction
+class_name Deduction extends ChangeRecord
 
 enum Reason {
 	UNKNOWN,
@@ -36,25 +36,16 @@ enum Reason {
 	WALL_STRANGLE, # bifurcate options where extending an island would create a split wall
 }
 
-var pos: Vector2i
-var value: int
 var reason: Reason
-var reason_cells: Array[Vector2i]
 
 func _init(init_pos: Vector2i, init_value: int,
 		init_reason: Reason = Reason.UNKNOWN,
 		init_reason_cells: Array[Vector2i] = []) -> void:
-	pos = init_pos
-	value = init_value
+	super._init(init_pos, init_value, init_reason_cells)
 	reason = init_reason
-	reason_cells = init_reason_cells
-
-
-func to_change() -> Dictionary[String, Variant]:
-	return {"pos": pos, "value": value}
 
 
 func _to_string() -> String:
-	var cells_str: String = "" if reason_cells.is_empty() else " " + " ".join(reason_cells)
+	var cells_str: String = "" if sources.is_empty() else " " + " ".join(sources)
 	return "%s->%s %s%s" % [pos, NurikabeUtils.to_cell_string(value),
 			Utils.enum_to_snake_case(Reason, reason), cells_str]

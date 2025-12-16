@@ -4,6 +4,7 @@ const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
 const VALIDATE_STRICT: SolverBoard.ValidationMode = SolverBoard.VALIDATE_STRICT
 const VALIDATE_COMPLEX: SolverBoard.ValidationMode = SolverBoard.VALIDATE_COMPLEX
@@ -21,6 +22,32 @@ func test_islands() -> void:
 	assert_groups(board.islands, [
 		{"cells": [Vector2i(0, 0)], "clue": 3, "liberties": [Vector2i(0, 1)]},
 		{"cells": [Vector2i(2, 0)], "clue": 2, "liberties": [Vector2i(2, 1)]},
+	])
+
+
+func test_islands_mystery_clue_1() -> void:
+	grid = [
+		"   ?",
+		"## .",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.islands, [
+		{"cells": [Vector2i(1, 0), Vector2i(1, 1)], "clue": CELL_MYSTERY_CLUE, "liberties": [Vector2i(0, 0)]},
+	])
+
+
+func test_islands_mystery_clue_2() -> void:
+	grid = [
+		"    ",
+		"## .",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.islands, [
+		{"cells": [Vector2i(1, 1)], "clue": 0, "liberties": [Vector2i(1, 0)]},
+	])
+	board.set_clue(Vector2i(1, 0), CELL_MYSTERY_CLUE)
+	assert_groups(board.islands, [
+		{"cells": [Vector2i(1, 0), Vector2i(1, 1)], "clue": CELL_MYSTERY_CLUE, "liberties": [Vector2i(0, 0)]},
 	])
 
 

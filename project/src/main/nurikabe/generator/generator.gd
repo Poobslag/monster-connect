@@ -13,17 +13,46 @@ const INITIAL_OPEN_ISLAND_EDGE_WEIGHT: float = 1.5
 const INITIAL_OPEN_ISLAND_CORNER_WEIGHT: float = 0.25
 const INITIAL_OPEN_ISLAND_INTERIOR_WEIGHT: float = 0.5
 
+const UNKNOWN_REASON: Placement.Reason = Placement.Reason.UNKNOWN
+
+## starting techniques
+const INITIAL_OPEN_ISLAND: Placement.Reason = Placement.Reason.INITIAL_OPEN_ISLAND
+
+## basic techniques
+const OPEN_ISLAND_GUIDE: Placement.Reason = Placement.Reason.OPEN_ISLAND_GUIDE
+
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-var board: GeneratorBoard
+var board: GeneratorBoard:
+	set(value):
+		board = value
+		solver.board = board.solver_board
+var placements: PlacementBatch = PlacementBatch.new()
+var solver: Solver = Solver.new()
+
+func _init() -> void:
+	solver.set_generation_strategy()
+
 
 func clear() -> void:
 	board.clear()
+	placements.clear()
+	solver.clear()
 
 
-func generate() -> void:
+func step_until_done() -> void:
+	while true:
+		step()
+		if not placements.has_changes():
+			break
+		apply_changes()
+
+
+func step() -> void:
 	generate_initial_open_island()
 
 
+## Adds a new clue cell constrained to expand through a single open liberty. Most Nurikabe puzzles begin with at least
+## one such forced expansion.
 func generate_initial_open_island() -> void:
 	for _mercy in 10:
 		# island_plan keys:
@@ -35,10 +64,20 @@ func generate_initial_open_island() -> void:
 		_plan_initial_open_island_walls(island_plan)
 		
 		if island_plan.has("seed_cell") and island_plan.has("supporting_clues"):
-			board.set_clue(island_plan["seed_cell"], NurikabeUtils.CELL_MYSTERY_CLUE)
+			placements.add_placement(island_plan["seed_cell"], CELL_MYSTERY_CLUE, INITIAL_OPEN_ISLAND)
 			for other_clue: Vector2i in island_plan["supporting_clues"]:
-				board.set_clue(other_clue, NurikabeUtils.CELL_MYSTERY_CLUE)
+				placements.add_placement(other_clue, CELL_MYSTERY_CLUE, OPEN_ISLAND_GUIDE)
 			break
+
+
+func apply_changes() -> void:
+	var changes: Array[Dictionary] = placements.get_changes()
+	for change: Dictionary in changes:
+		if NurikabeUtils.is_clue(change["value"]):
+			board.set_clue(change["pos"], change["value"])
+		else:
+			board.set_cell(change["pos"], change["value"])
+	placements.clear()
 
 
 ## Selects an initial open-island candidate: a new clue cell constrained to expand through a single open liberty. Most

@@ -9,8 +9,8 @@ var cells: Dictionary[Vector2i, bool]
 ## with metrics. For cells which can be deduced many ways, it's good to know which ways work most often.
 func add_deduction(pos: Vector2i, value: int,
 		reason: Deduction.Reason = Deduction.Reason.UNKNOWN,
-		reason_cells: Array[Vector2i] = []) -> void:
-	deductions.append(Deduction.new(pos, value, reason, reason_cells))
+		sources: Array[Vector2i] = []) -> void:
+	deductions.append(Deduction.new(pos, value, reason, sources))
 	cells[pos] = true
 
 
