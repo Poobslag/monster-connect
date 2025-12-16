@@ -174,7 +174,11 @@ func get_per_clue_extent_map() -> PerClueExtentMap:
 
 func set_clue(cell_pos: Vector2i, clue: int) -> void:
 	clues[cell_pos] = clue
-	set_cell(cell_pos, CELL_ISLAND)
+	if get_cell(cell_pos) == CELL_ISLAND:
+		var island: CellGroup = get_island_for_cell(cell_pos)
+		island.clue = _clue_value_for_cells(island.cells)
+	else:
+		set_cell(cell_pos, CELL_ISLAND)
 
 
 func set_cell(cell_pos: Vector2i, value: int) -> void:

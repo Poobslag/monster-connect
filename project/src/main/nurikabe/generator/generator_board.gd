@@ -1,10 +1,28 @@
 class_name GeneratorBoard
 
+const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
+const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
+const CELL_WALL: int = NurikabeUtils.CELL_WALL
+const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
+
+var solver_board: SolverBoard = SolverBoard.new()
+
 var cells: Dictionary[Vector2i, int]:
 	get():
 		return solver_board.cells
-
-var solver_board: SolverBoard = SolverBoard.new()
+var empty_cells: Dictionary[Vector2i, bool] = {}:
+	get:
+		return solver_board.empty_cells
+var groups_by_cell: Dictionary[Vector2i, CellGroup] = {}:
+	get:
+		return solver_board.groups_by_cell
+var islands: Array[CellGroup] = []:
+	get:
+		return solver_board.islands
+var walls: Array[CellGroup] = []:
+	get:
+		return solver_board.walls
 
 func clear() -> void:
 	solver_board.clear()
@@ -15,7 +33,11 @@ func from_game_board(game_board: NurikabeGameBoard) -> void:
 
 
 func is_filled() -> bool:
-	return solver_board.is_filled()
+	var result: bool = false
+	if solver_board.is_filled():
+		result = solver_board.islands.all(func(island: CellGroup) -> bool:
+			return island.clue != CELL_MYSTERY_CLUE)
+	return result
 
 
 func set_cell(cell_pos: Vector2i, value: int) -> void:
@@ -37,3 +59,6 @@ func set_clue(cell_pos: Vector2i, value: int) -> void:
 
 func get_cell(cell_pos: Vector2i) -> int:
 	return solver_board.get_cell(cell_pos)
+
+func has_clue(cell_pos: Vector2i) -> int:
+	return solver_board.has_clue(cell_pos)
