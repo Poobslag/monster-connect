@@ -88,17 +88,27 @@ func step_generator() -> void:
 	
 	if not generator.placements.has_changes():
 		_show_message("(no changes)")
-	else:
-		for deduction_index: int in generator.placements.size():
+		return
+	
+	for placement_index: int in generator.placements.size():
+		var shown_index: int = generator.solver.board.version + placement_index
+		var placement: Placement = generator.placements.placements[placement_index]
+		_show_message("%s %s" % \
+				[shown_index, str(placement)])
+	
+	generator.apply_changes()
+	while not generator.board.is_filled():
+		generator.solver.step()
+		if not generator.solver.deductions.has_changes():
+			break
+		for deduction_index: int in generator.solver.deductions.size():
 			var shown_index: int = generator.solver.board.version + deduction_index
-			var placement: Placement = generator.placements.placements[deduction_index]
+			var deduction: Deduction = generator.solver.deductions.deductions[deduction_index]
 			_show_message("%s %s" % \
-					[shown_index, str(placement)])
-		
-		for change: Dictionary[String, Variant] in generator.placements.get_changes():
-			%GameBoard.set_cell(change["pos"], change["value"])
-		
-		generator.apply_changes()
+					[shown_index, str(deduction)])
+		generator.solver.apply_changes()
+	
+	copy_board_from_generator()
 
 
 func step_solver() -> void:

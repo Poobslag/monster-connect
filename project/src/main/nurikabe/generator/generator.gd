@@ -29,6 +29,8 @@ var board: GeneratorBoard:
 var placements: PlacementBatch = PlacementBatch.new()
 var solver: Solver = Solver.new()
 
+var _ran_starting_techniques: bool = false
+
 func _init() -> void:
 	solver.set_generation_strategy()
 
@@ -37,6 +39,7 @@ func clear() -> void:
 	board.clear()
 	placements.clear()
 	solver.clear()
+	_ran_starting_techniques = false
 
 
 func step_until_done() -> void:
@@ -45,10 +48,14 @@ func step_until_done() -> void:
 		if not placements.has_changes():
 			break
 		apply_changes()
+		solver.step_until_done()
+		solver.apply_changes()
 
 
 func step() -> void:
-	generate_initial_open_island()
+	if not _ran_starting_techniques:
+		generate_initial_open_island()
+		_ran_starting_techniques = true
 
 
 ## Adds a new clue cell constrained to expand through a single open liberty. Most Nurikabe puzzles begin with at least
