@@ -26,7 +26,7 @@ func duplicate() -> CellGroup:
 ## Merges two non-overlapping, non-adjacent groups.
 func merge(other_group: CellGroup) -> void:
 	cells.append_array(other_group.cells)
-	clue = max(clue, other_group.clue) if clue == 0 or other_group.clue == 0 else -1
+	clue = merge_clue_values(clue, other_group.clue)
 	var liberties_set: Dictionary[Vector2i, bool] = {}
 	for liberty: Vector2i in liberties:
 		liberties_set[liberty] = true
@@ -37,3 +37,7 @@ func merge(other_group: CellGroup) -> void:
 
 func size() -> int:
 	return cells.size()
+
+
+static func merge_clue_values(a: int, b: int) -> int:
+	return max(a, b) if a == 0 or b == 0 else -1

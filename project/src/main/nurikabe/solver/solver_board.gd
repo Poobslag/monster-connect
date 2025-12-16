@@ -227,6 +227,8 @@ func _expand_groups(groups: Array[CellGroup], cell: Vector2i) -> void:
 				groups_by_cell[group_cell] = primary_group
 	primary_group.cells.append(cell)
 	primary_group.liberties.erase(cell)
+	if has_clue(cell):
+		primary_group.clue = CellGroup.merge_clue_values(primary_group.clue, get_clue(cell))
 	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 		var neighbor: Vector2i = cell + neighbor_dir
 		if get_cell(neighbor) == CELL_EMPTY and not primary_group.liberties.has(neighbor):

@@ -116,7 +116,7 @@ func step() -> void:
 	if not solver.deductions.has_changes():
 		_show_message("(no changes)")
 	else:
-		for deduction_index: int in solver.deductions.deductions.size():
+		for deduction_index: int in solver.deductions.size():
 			var shown_index: int = solver.board.version + deduction_index
 			var deduction: Deduction = solver.deductions.deductions[deduction_index]
 			_show_message("%s %s" % \

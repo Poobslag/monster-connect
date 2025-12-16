@@ -82,8 +82,8 @@ var _touched_cells: Dictionary[Vector2i, bool] = {}
 
 func add_deduction(pos: Vector2i, value: int,
 		reason: Deduction.Reason = UNKNOWN_REASON,
-		reason_cells: Array[Vector2i] = []) -> void:
-	deductions.add_deduction(pos, value, reason, reason_cells)
+		sources: Array[Vector2i] = []) -> void:
+	deductions.add_deduction(pos, value, reason, sources)
 
 
 ## Use only deductions that remain valid if new clues are added.
@@ -91,7 +91,6 @@ func set_generation_strategy() -> void:
 	_slow_strategy_iterator = StrategyIterator.new([
 		deduce_all_clued_island_snugs,
 		deduce_all_wall_chokepoints,
-		deduce_all_island_chokepoints,
 		deduce_all_clue_chokepoints,
 	])
 
@@ -120,12 +119,6 @@ func set_solve_strategy() -> void:
 
 func apply_changes() -> void:
 	var changes: Array[Dictionary] = deductions.get_changes()
-	for change: Dictionary[String, Variant] in changes:
-		var history_item: Dictionary[String, Variant] = {}
-		history_item["pos"] = change["pos"]
-		history_item["value"] = change["value"]
-		history_item["tick"] = board.version
-	
 	board.set_cells(changes)
 	deductions.clear()
 

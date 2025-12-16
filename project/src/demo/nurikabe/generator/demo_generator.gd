@@ -3,9 +3,12 @@ extends Node
 ## 	[kbd][1-8][/kbd]: Set puzzle size.
 ## 	[kbd]Q[/kbd]: Solve one step.
 ## 	[kbd]Shift + Q[/kbd]: Solve five steps.
-## 	[kbd]W[/kbd]: Test a full solution.
+## 	[kbd]W[/kbd]: Completely solve a puzzle.
 ## 	[kbd]R[/kbd]: Clear the board.
-## 	[kbd]G[/kbd]: Generate a puzzle.
+## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
+## 	[kbd]G[/kbd]: Generate one step.
+## 	[kbd]Shift + G[/kbd]: Generate five steps.
+## 	[kbd]H[/kbd]: Completely generate a puzzle.
 
 const PUZZLE_SIZES: Array[Vector2i] = [
 	Vector2i(5, 5), # tutorial
@@ -19,10 +22,8 @@ const PUZZLE_SIZES: Array[Vector2i] = [
 ]
 
 var generator: Generator = Generator.new()
-var solver: Solver = Solver.new()
 
 func _ready() -> void:
-	solver.set_generation_strategy()
 	generator.board = %GameBoard.to_generator_board()
 
 
@@ -32,25 +33,36 @@ func _input(event: InputEvent) -> void:
 			var size_index: int = wrapi(Utils.key_num(event) - 1, 0, PUZZLE_SIZES.size())
 			set_puzzle_size(PUZZLE_SIZES[size_index])
 		KEY_Q:
-			solver.board = generator.board.solver_board
 			if Input.is_key_pressed(KEY_SHIFT):
 				for i in range(5):
-					step()
+					step_solver()
 			else:
-				step()
+				step_solver()
 			%GameBoard.validate()
 		KEY_W:
-			solver.board = generator.board.solver_board
-			solver.step_until_done()
+			generator.solver.step_until_done()
 			copy_board_from_generator()
+		KEY_P:
+			print_grid_string()
 		KEY_G:
+			if Input.is_key_pressed(KEY_SHIFT):
+				for i in range(5):
+					step_generator()
+			else:
+				step_generator()
+			%GameBoard.validate()
+		KEY_H:
 			generator.board = %GameBoard.to_generator_board()
-			generator.generate()
+			generator.step_until_done()
 			copy_board_from_generator()
 		KEY_R:
 			generator.clear()
 			%GameBoard.reset()
-			copy_board_from_generator()
+			generator.board = %GameBoard.to_generator_board()
+
+
+func print_grid_string() -> void:
+	%GameBoard.to_solver_board().print_cells()
 
 
 func set_puzzle_size(puzzle_size: Vector2i) -> void:
@@ -63,8 +75,8 @@ func set_puzzle_size(puzzle_size: Vector2i) -> void:
 	%GameBoard.import_grid()
 
 
-func step() -> void:
-	if solver.board.is_filled():
+func step_generator() -> void:
+	if generator.board.is_filled():
 		_show_message("--------")
 		_show_message("(no changes)")
 		return
@@ -72,21 +84,47 @@ func step() -> void:
 	if not %MessageLabel.text.is_empty():
 		_show_message("--------")
 	
-	solver.step()
+	generator.step()
 	
-	if not solver.deductions.has_changes():
+	if not generator.placements.has_changes():
 		_show_message("(no changes)")
 	else:
-		for deduction_index: int in solver.deductions.deductions.size():
-			var shown_index: int = solver.board.version + deduction_index
-			var deduction: Deduction = solver.deductions.deductions[deduction_index]
+		for deduction_index: int in generator.placements.size():
+			var shown_index: int = generator.solver.board.version + deduction_index
+			var placement: Placement = generator.placements.placements[deduction_index]
+			_show_message("%s %s" % \
+					[shown_index, str(placement)])
+		
+		for change: Dictionary[String, Variant] in generator.placements.get_changes():
+			%GameBoard.set_cell(change["pos"], change["value"])
+		
+		generator.apply_changes()
+
+
+func step_solver() -> void:
+	if generator.solver.board.is_filled():
+		_show_message("--------")
+		_show_message("(no changes)")
+		return
+	
+	if not %MessageLabel.text.is_empty():
+		_show_message("--------")
+	
+	generator.solver.step()
+	
+	if not generator.solver.deductions.has_changes():
+		_show_message("(no changes)")
+	else:
+		for deduction_index: int in generator.solver.deductions.size():
+			var shown_index: int = generator.solver.board.version + deduction_index
+			var deduction: Deduction = generator.solver.deductions.deductions[deduction_index]
 			_show_message("%s %s" % \
 					[shown_index, str(deduction)])
 		
-		for change: Dictionary[String, Variant] in solver.deductions.get_changes():
+		for change: Dictionary[String, Variant] in generator.solver.deductions.get_changes():
 			%GameBoard.set_cell(change["pos"], change["value"])
 		
-		solver.apply_changes()
+		generator.solver.apply_changes()
 
 
 func copy_board_from_generator() -> void:
