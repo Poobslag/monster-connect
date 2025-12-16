@@ -786,7 +786,8 @@ func deduce_island(island: CellGroup) -> void:
 
 
 func deduce_wall_expansion(wall: CellGroup) -> void:
-	if wall.liberties.size() == 1 and board.walls.size() >= 2:
+	@warning_ignore("integer_division")
+	if wall.liberties.size() == 1 and (board.walls.size() >= 2 or wall.size() < board.cells.size() / 2):
 		var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
 		squeeze_fill.skip_cells(wall.cells)
 		squeeze_fill.push_change(wall.liberties.front(), CELL_WALL)

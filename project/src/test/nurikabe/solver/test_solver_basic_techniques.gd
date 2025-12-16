@@ -1,10 +1,5 @@
 extends TestSolver
 
-func before_each() -> void:
-	super.before_each()
-	solver.set_solve_strategy()
-
-
 func test_deduce_all_clue_chokepoints_wall_weaver_1() -> void:
 	grid = [
 		"#### 4 .  ",
@@ -90,21 +85,6 @@ func test_deduce_all_island_chokepoints_dead_end() -> void:
 	var expected: Array[String] = [
 		"(1, 0)->. pool_chokepoint (0, 0) (0, 1) (1, 0) (1, 1)",
 	]
-	assert_deductions(solver.deduce_all_island_chokepoints, expected)
-
-
-func test_deduce_all_island_chokepoints_dead_end_generator_mode() -> void:
-	grid = [
-		"    11 .  ",
-		"######    ",
-		" 7        ",
-		"          ",
-		"          ",
-	]
-	# with generator mode active, we might add a clue in the dead end
-	var expected: Array[String] = [
-	]
-	solver.set_generation_strategy()
 	assert_deductions(solver.deduce_all_island_chokepoints, expected)
 
 
@@ -620,5 +600,17 @@ func test_deduce_all_walls_wall_expansion_1() -> void:
 	]
 	var expected: Array[String] = [
 		"(0, 1)->## wall_expansion (0, 0)",
+	]
+	assert_deductions(solver.deduce_all_walls, expected)
+
+
+func test_deduce_all_walls_wall_expansion_mystery_clue() -> void:
+	grid = [
+		"     ?",
+		"    ##",
+		"     ?",
+	]
+	var expected: Array[String] = [
+		"(1, 1)->## wall_expansion (2, 1)",
 	]
 	assert_deductions(solver.deduce_all_walls, expected)
