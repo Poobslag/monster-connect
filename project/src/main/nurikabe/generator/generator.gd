@@ -9,6 +9,8 @@ const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 const NEIGHBOR_DIRS: Array[Vector2i] = NurikabeUtils.NEIGHBOR_DIRS
 const NEIGHBOR_DIRS_WITH_SELF: Array[Vector2i] = NurikabeUtils.NEIGHBOR_DIRS_WITH_SELF
 
+const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
+
 const INITIAL_OPEN_ISLAND_EDGE_WEIGHT: float = 1.5
 const INITIAL_OPEN_ISLAND_CORNER_WEIGHT: float = 0.25
 const INITIAL_OPEN_ISLAND_INTERIOR_WEIGHT: float = 0.5
@@ -20,6 +22,8 @@ const INITIAL_OPEN_ISLAND: Placement.Reason = Placement.Reason.INITIAL_OPEN_ISLA
 
 ## basic techniques
 const OPEN_ISLAND_GUIDE: Placement.Reason = Placement.Reason.OPEN_ISLAND_GUIDE
+const OPEN_ISLAND_EXPANSION: Placement.Reason = Placement.Reason.OPEN_ISLAND_EXPANSION
+const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var board: GeneratorBoard:
@@ -56,6 +60,33 @@ func step() -> void:
 	if not _ran_starting_techniques:
 		generate_initial_open_island()
 		_ran_starting_techniques = true
+	
+	generate_open_island_expansion()
+	generate_all_sealed_mystery_island_clues()
+
+
+func generate_open_island_expansion() -> void:
+	var open_islands: Array[CellGroup] = []
+	for island: CellGroup in board.islands:
+		if island.liberties.size() == 1:
+			open_islands.append(island)
+	
+	if open_islands:
+		var open_island: CellGroup = open_islands.pick_random()
+		placements.add_placement(open_island.liberties[0], CELL_ISLAND, OPEN_ISLAND_EXPANSION)
+
+
+func generate_all_sealed_mystery_island_clues() -> void:
+	for island: CellGroup in board.islands:
+		if not island.liberties.is_empty() or island.clue != CELL_MYSTERY_CLUE:
+			continue
+		
+		var clue_cell: Vector2i = POS_NOT_FOUND
+		for cell: Vector2i in island.cells:
+			if board.has_clue(cell):
+				clue_cell = cell
+				break
+		placements.add_placement(clue_cell, island.size(), SEALED_ISLAND_CLUE)
 
 
 ## Adds a new clue cell constrained to expand through a single open liberty. Most Nurikabe puzzles begin with at least
