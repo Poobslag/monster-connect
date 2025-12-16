@@ -2,11 +2,12 @@
 class_name Utils
 ## Contains global utilities.
 
+const EPSILON = 0.0001
+
 const NUM_SCANCODES := {
 	KEY_0: 0, KEY_1: 1, KEY_2: 2, KEY_3: 3, KEY_4: 4,
 	KEY_5: 5, KEY_6: 6, KEY_7: 7, KEY_8: 8, KEY_9: 9,
 }
-
 
 ## Converts an enum value like 'LevelTriggerPhase.ROTATED_CW' to a snake case string like 'rotated_cw'.[br]
 ## [br]
@@ -134,3 +135,19 @@ static func subtract(a: Array[Variant], b: Array[Variant]) -> Array[Variant]:
 		else:
 			result.append(item)
 	return result
+
+
+## Shuffles an array with non-uniform weights.[br]
+## [br]
+## Higher weighted items are sorted to the front more frequently. Uses Efraimidis–Spirakis weighted random ordering.
+static func shuffle_weighted(array: Array[Variant], weights: PackedFloat32Array) -> void:
+	var decorated: Array[Dictionary] = []
+	for i in array.size():
+		decorated.append({
+			"value": array[i],
+			"key": pow(randf(), 1.0 / max(weights[i], EPSILON)),
+		})
+	decorated.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return a["key"] > b["key"])
+	for i in array.size():
+		array[i] = decorated[i]["value"]

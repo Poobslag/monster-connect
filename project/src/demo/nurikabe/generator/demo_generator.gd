@@ -59,6 +59,10 @@ func _input(event: InputEvent) -> void:
 			generator.clear()
 			%GameBoard.reset()
 			generator.board = %GameBoard.to_generator_board()
+		KEY_M:
+			var values: Array[String] = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+			Utils.shuffle_weighted(values, PackedFloat32Array([0, 1, 2, 3, 4, 5, 6, 7, 8]))
+			_show_message("shuffle: %s" % [values])
 
 
 func print_grid_string() -> void:

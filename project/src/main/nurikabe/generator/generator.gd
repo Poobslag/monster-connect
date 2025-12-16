@@ -21,9 +21,10 @@ const UNKNOWN_REASON: Placement.Reason = Placement.Reason.UNKNOWN
 const INITIAL_OPEN_ISLAND: Placement.Reason = Placement.Reason.INITIAL_OPEN_ISLAND
 
 ## basic techniques
-const OPEN_ISLAND_GUIDE: Placement.Reason = Placement.Reason.OPEN_ISLAND_GUIDE
-const OPEN_ISLAND_EXPANSION: Placement.Reason = Placement.Reason.OPEN_ISLAND_EXPANSION
+const ISLAND_GUIDE: Placement.Reason = Placement.Reason.ISLAND_GUIDE
+const ISLAND_EXPANSION: Placement.Reason = Placement.Reason.ISLAND_EXPANSION
 const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
+const ISLAND_MOAT: Placement.Reason = Placement.Reason.ISLAND_MOAT
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var board: GeneratorBoard:
@@ -55,25 +56,68 @@ func step_until_done() -> void:
 		solver.step_until_done()
 		solver.apply_changes()
 
+var _basic_techniques: Array[Dictionary] = [
+	{"callable": generate_open_island_expansion, "weight": 1.0},
+	{"callable": generate_open_island_moat, "weight": 0.5},
+	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
+]
 
 func step() -> void:
-	if not _ran_starting_techniques:
+	if not placements.has_changes() and not _ran_starting_techniques:
 		generate_initial_open_island()
 		_ran_starting_techniques = true
 	
-	generate_open_island_expansion()
-	generate_all_sealed_mystery_island_clues()
+	if not placements.has_changes():
+		var basic_technique_weights: Array[float] = []
+		basic_technique_weights.resize(_basic_techniques.size())
+		for i in _basic_techniques.size():
+			basic_technique_weights[i] = _basic_techniques[i]["weight"]
+		var shuffled_basic_techniques: Array[Dictionary] = _basic_techniques.duplicate()
+		Utils.shuffle_weighted(shuffled_basic_techniques, basic_technique_weights)
+		
+		for basic_technique: Dictionary in shuffled_basic_techniques:
+			basic_technique["callable"].call()
+			if placements.has_changes():
+				break
 
 
 func generate_open_island_expansion() -> void:
-	var open_islands: Array[CellGroup] = []
-	for island: CellGroup in board.islands:
-		if island.liberties.size() == 1:
-			open_islands.append(island)
+	var open_islands: Array[CellGroup] = board.islands.filter(func(island: CellGroup) -> bool:
+			return island.liberties.size() == 1)
 	
 	if open_islands:
 		var open_island: CellGroup = open_islands.pick_random()
-		placements.add_placement(open_island.liberties[0], CELL_ISLAND, OPEN_ISLAND_EXPANSION)
+		placements.add_placement(open_island.liberties[0], CELL_ISLAND, ISLAND_EXPANSION)
+
+
+func generate_open_island_moat() -> void:
+	var mystery_islands: Array[CellGroup] = board.islands.filter(func(island: CellGroup) -> bool:
+			return island.clue == CELL_MYSTERY_CLUE)
+	if not mystery_islands:
+		return
+	
+	# larger islands are chosen more frequently
+	var weights_array: Array[float] = []
+	for i in mystery_islands.size():
+		weights_array.append(mystery_islands.size() - 1)
+	Utils.shuffle_weighted(mystery_islands, weights_array)
+	var mystery_island: CellGroup = mystery_islands[0]
+	
+	var clue_cell: Vector2i = _find_clue_cell(mystery_island)
+	var new_wall_cells: Array[Vector2i] = mystery_island.liberties.duplicate()
+	var temp_board: SolverBoard = board.solver_board.duplicate()
+	temp_board.set_clue(clue_cell, mystery_island.size())
+	for liberty: Vector2i in new_wall_cells:
+		temp_board.set_cell(liberty, CELL_WALL)
+	var local_cells: Array[Vector2i] = new_wall_cells.duplicate()
+	local_cells.append(clue_cell)
+	var validation_result: String = temp_board.validate_local(local_cells)
+	if "p" in validation_result:
+		pass
+	else:
+		placements.add_placement(clue_cell, mystery_island.size(), ISLAND_MOAT)
+		for liberty: Vector2i in new_wall_cells:
+			placements.add_placement(liberty, CELL_WALL, ISLAND_MOAT)
 
 
 func generate_all_sealed_mystery_island_clues() -> void:
@@ -81,11 +125,7 @@ func generate_all_sealed_mystery_island_clues() -> void:
 		if not island.liberties.is_empty() or island.clue != CELL_MYSTERY_CLUE:
 			continue
 		
-		var clue_cell: Vector2i = POS_NOT_FOUND
-		for cell: Vector2i in island.cells:
-			if board.has_clue(cell):
-				clue_cell = cell
-				break
+		var clue_cell: Vector2i = _find_clue_cell(island)
 		placements.add_placement(clue_cell, island.size(), SEALED_ISLAND_CLUE)
 
 
@@ -104,7 +144,7 @@ func generate_initial_open_island() -> void:
 		if island_plan.has("seed_cell") and island_plan.has("supporting_clues"):
 			placements.add_placement(island_plan["seed_cell"], CELL_MYSTERY_CLUE, INITIAL_OPEN_ISLAND)
 			for other_clue: Vector2i in island_plan["supporting_clues"]:
-				placements.add_placement(other_clue, CELL_MYSTERY_CLUE, OPEN_ISLAND_GUIDE)
+				placements.add_placement(other_clue, CELL_MYSTERY_CLUE, ISLAND_GUIDE)
 			break
 
 
@@ -116,6 +156,12 @@ func apply_changes() -> void:
 		else:
 			board.set_cell(change["pos"], change["value"])
 	placements.clear()
+
+
+func _find_clue_cell(island: CellGroup) -> Vector2i:
+	var clue_cells: Array[Vector2i] = island.cells.filter(func(cell: Vector2i) -> bool:
+			return board.has_clue(cell))
+	return clue_cells[0] if clue_cells.size() == 1 else POS_NOT_FOUND
 
 
 ## Selects an initial open-island candidate: a new clue cell constrained to expand through a single open liberty. Most
