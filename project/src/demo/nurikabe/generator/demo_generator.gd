@@ -55,6 +55,7 @@ func _input(event: InputEvent) -> void:
 			generator.board = %GameBoard.to_generator_board()
 			generator.step_until_done()
 			copy_board_from_generator()
+			%GameBoard.validate()
 		KEY_R:
 			generator.clear()
 			%GameBoard.reset()
