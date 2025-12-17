@@ -40,11 +40,16 @@ func _input(event: InputEvent) -> void:
 				step_solver()
 			%GameBoard.validate()
 		KEY_W:
+			generator.log_enabled = false
 			generator.solver.step_until_done()
 			copy_board_from_generator()
 		KEY_P:
 			print_grid_string()
 		KEY_G:
+			# empty the log
+			generator.log_enabled = true
+			generator.consume_events()
+			
 			if Input.is_key_pressed(KEY_SHIFT):
 				for i in range(5):
 					step_generator()
@@ -82,38 +87,24 @@ func set_puzzle_size(puzzle_size: Vector2i) -> void:
 
 func step_generator() -> void:
 	if generator.board.is_filled():
-		_show_message("--------")
-		_show_message("(no changes)")
-		return
-	
-	if not %MessageLabel.text.is_empty():
-		_show_message("--------")
+		var validation_result: SolverBoard.ValidationResult \
+				= generator.board.solver_board.validate(SolverBoard.VALIDATE_STRICT)
+		if validation_result.error_count == 0:
+			_show_message("--------")
+			_show_message("(no changes)")
+			return
 	
 	generator.step()
 	
-	if not generator.placements.has_changes():
+	if not %MessageLabel.text.is_empty():
+		_show_message("--------")
+	var events: Array[String] = generator.consume_events()
+	if events.is_empty():
 		_show_message("(no changes)")
-		return
-	
-	for placement_index: int in generator.placements.size():
-		var shown_index: int = generator.solver.board.version + placement_index
-		var placement: Placement = generator.placements.placements[placement_index]
-		_show_message("%s %s" % \
-				[shown_index, str(placement)])
-	
-	generator.apply_changes()
-	while not generator.board.is_filled():
-		generator.solver.step()
-		if not generator.solver.deductions.has_changes():
-			break
-		for deduction_index: int in generator.solver.deductions.size():
-			var shown_index: int = generator.solver.board.version + deduction_index
-			var deduction: Deduction = generator.solver.deductions.deductions[deduction_index]
-			_show_message("%s %s" % \
-					[shown_index, str(deduction)])
-		generator.solver.apply_changes()
-	
-	copy_board_from_generator()
+	else:
+		for event: String in events:
+			_show_message(event)
+		copy_board_from_generator()
 
 
 func step_solver() -> void:

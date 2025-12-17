@@ -27,11 +27,15 @@ const ISLAND_MOAT: Placement.Reason = Placement.Reason.ISLAND_MOAT
 const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
 const WALL_GUIDE: Placement.Reason = Placement.Reason.WALL_GUIDE
 
+const MAX_CHECKPOINT_RETRIES: int = 5
+const MAX_GENERATION_FACTOR: float = 2.0
+
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var board: GeneratorBoard:
 	set(value):
 		board = value
 		solver.board = board.solver_board
+var log_enabled: bool = false
 var placements: PlacementBatch = PlacementBatch.new()
 var solver: Solver = Solver.new()
 
@@ -47,37 +51,83 @@ var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
 var _recovery_techniques: TechniqueScheduler = TechniqueScheduler.new([
 ])
 
+var _checkpoint_stack: Array[Dictionary] = []
+var _event_log: Array[String] = []
+
 func _init() -> void:
 	solver.set_generation_strategy()
+
+
+func consume_events() -> Array[String]:
+	var result: Array[String] = _event_log
+	_event_log = []
+	return result
 
 
 func clear() -> void:
 	board.clear()
 	placements.clear()
 	solver.clear()
+	_checkpoint_stack.clear()
+	_event_log.clear()
 	_ran_starting_techniques = false
 
 
 func step_until_done() -> void:
-	while true:
+	for mercy: int in solver.board.cells.size() * MAX_GENERATION_FACTOR:
 		step()
-		if not placements.has_changes():
-			break
-		apply_changes()
-		while true:
-			var validation_result: SolverBoard.ValidationResult \
-					= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
-			if validation_result.error_count > 0:
-				break
-			
-			solver.step()
-			if not solver.deductions.has_changes():
-				break
-			solver.apply_changes()
-		
-		solver.apply_changes()
+
 
 func step() -> void:
+	# mess with the clues, and run the solver
+	attempt_generation_step()
+	apply_changes()
+	step_solver_until_done()
+	if not has_validation_errors():
+		# no errors; push the checkpoint and add more clues
+		push_checkpoint()
+	else:
+		# errors; try our recovery techniques on the next loop, but roll back if they keep failing
+		if not has_remaining_retries():
+			while not has_remaining_retries():
+				pop_checkpoint()
+			load_checkpoint()
+			step_solver_until_done()
+		if not _checkpoint_stack.is_empty():
+			_checkpoint_stack.back()["retry_count"] += 1
+			if log_enabled:
+				_log_event("retry %s/%s" % [_checkpoint_stack.back()["retry_count"], MAX_CHECKPOINT_RETRIES])
+
+
+func step_solver_until_done() -> void:
+	while true:
+		if has_validation_errors():
+			break
+		solver.step()
+		if not solver.deductions.has_changes():
+			break
+		apply_solver_changes()
+	apply_solver_changes()
+
+
+func apply_solver_changes() -> void:
+	if log_enabled:
+		for i in solver.deductions.deductions.size():
+			var deduction: Deduction = solver.deductions.deductions[i]
+			_log_event("%s %s" % [board.version + i, str(deduction)])
+	
+	solver.apply_changes()
+
+
+func has_validation_errors() -> bool:
+	return solver.board.validate(SolverBoard.VALIDATE_SIMPLE).error_count > 0
+
+
+func has_remaining_retries() -> bool:
+	return _checkpoint_stack.is_empty() or _checkpoint_stack.back()["retry_count"] < MAX_CHECKPOINT_RETRIES
+
+
+func attempt_generation_step() -> void:
 	if not placements.has_changes() and not _ran_starting_techniques:
 		generate_initial_open_island()
 		_ran_starting_techniques = true
@@ -121,7 +171,7 @@ func generate_wall_guide() -> void:
 				# new clue splits a wall
 				continue
 			
-			placements.add_placement(liberty, CELL_MYSTERY_CLUE, WALL_GUIDE)
+			add_placement(liberty, CELL_MYSTERY_CLUE, WALL_GUIDE)
 			break
 		if placements.has_changes():
 			break
@@ -133,7 +183,7 @@ func generate_open_island_expansion() -> void:
 	
 	if open_islands:
 		var open_island: CellGroup = open_islands.pick_random()
-		placements.add_placement(open_island.liberties[0], CELL_ISLAND, ISLAND_EXPANSION)
+		add_placement(open_island.liberties[0], CELL_ISLAND, ISLAND_EXPANSION)
 
 
 func generate_open_island_moat() -> void:
@@ -163,9 +213,9 @@ func generate_open_island_moat() -> void:
 	if "p" in validation_result:
 		pass
 	else:
-		placements.add_placement(clue_cell, mystery_island.size(), ISLAND_MOAT)
+		add_placement(clue_cell, mystery_island.size(), ISLAND_MOAT)
 		for liberty: Vector2i in new_wall_cells:
-			placements.add_placement(liberty, CELL_WALL, ISLAND_MOAT)
+			add_placement(liberty, CELL_WALL, ISLAND_MOAT)
 
 
 func generate_all_sealed_mystery_island_clues() -> void:
@@ -174,7 +224,7 @@ func generate_all_sealed_mystery_island_clues() -> void:
 			continue
 		
 		var clue_cell: Vector2i = _find_clue_cell(island)
-		placements.add_placement(clue_cell, island.size(), SEALED_ISLAND_CLUE)
+		add_placement(clue_cell, island.size(), SEALED_ISLAND_CLUE)
 
 
 ## Adds a new clue cell constrained to expand through a single open liberty. Most Nurikabe puzzles begin with at least
@@ -190,13 +240,18 @@ func generate_initial_open_island() -> void:
 		_plan_initial_open_island_walls(island_plan)
 		
 		if island_plan.has("seed_cell") and island_plan.has("supporting_clues"):
-			placements.add_placement(island_plan["seed_cell"], CELL_MYSTERY_CLUE, INITIAL_OPEN_ISLAND)
+			add_placement(island_plan["seed_cell"], CELL_MYSTERY_CLUE, INITIAL_OPEN_ISLAND)
 			for other_clue: Vector2i in island_plan["supporting_clues"]:
-				placements.add_placement(other_clue, CELL_MYSTERY_CLUE, ISLAND_GUIDE)
+				add_placement(other_clue, CELL_MYSTERY_CLUE, ISLAND_GUIDE)
 			break
 
 
 func apply_changes() -> void:
+	if log_enabled:
+		for i in placements.size():
+			var placement: Placement = placements.placements[i]
+			_log_event("%s %s" % [board.version + i, str(placement)])
+	
 	var changes: Array[Dictionary] = placements.get_changes()
 	for change: Dictionary in changes:
 		if NurikabeUtils.is_clue(change["value"]):
@@ -204,6 +259,42 @@ func apply_changes() -> void:
 		else:
 			board.set_cell(change["pos"], change["value"])
 	placements.clear()
+
+
+func push_checkpoint() -> void:
+	_checkpoint_stack.append({
+		"clues": board.clues.duplicate(),
+		"retry_count": 0
+	})
+
+
+func load_checkpoint() -> void:
+	var occupied_cells: Array[Vector2i] = board.cells.keys()
+	board.clear()
+	placements.clear()
+	solver.clear()
+	if not _checkpoint_stack.is_empty():
+		var new_clues: Dictionary[Vector2i, int] = _checkpoint_stack.back()["clues"]
+		for cell: Vector2i in occupied_cells:
+			board.set_cell(cell, CELL_EMPTY)
+		for clue: Vector2i in new_clues:
+			board.set_clue(clue, new_clues[clue])
+	else:
+		_ran_starting_techniques = false
+	
+	if log_enabled:
+		_log_event("%s loaded checkpoint #%s" % [board.version, _checkpoint_stack.size()])
+
+
+func pop_checkpoint() -> void:
+	if not _checkpoint_stack.is_empty():
+		_checkpoint_stack.pop_back()
+
+
+func add_placement(pos: Vector2i, value: int,
+		reason: Placement.Reason = Placement.Reason.UNKNOWN,
+		sources: Array[Vector2i] = []) -> void:
+	placements.add_placement(pos, value, reason, sources)
 
 
 func _create_temp_solver() -> Solver:
@@ -356,3 +447,7 @@ func _empty_neighbor_cell_count(cell: Vector2i) -> int:
 		if neighbor_value == CELL_EMPTY:
 			count += 1
 	return count
+
+
+func _log_event(msg: String) -> void:
+	_event_log.append(msg)
