@@ -83,6 +83,8 @@ func set_puzzle_size(puzzle_size: Vector2i) -> void:
 	%GameBoard.reset()
 	%GameBoard.grid_string = new_grid_string
 	%GameBoard.import_grid()
+	generator.clear()
+	generator.board = %GameBoard.to_generator_board()
 
 
 func step_generator() -> void:
