@@ -8,9 +8,16 @@ const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
 var solver_board: SolverBoard = SolverBoard.new()
 
+var version: int:
+	get():
+		return solver_board.version
+
 var cells: Dictionary[Vector2i, int]:
 	get():
 		return solver_board.cells
+var clues: Dictionary[Vector2i, int]:
+	get():
+		return solver_board.clues
 var empty_cells: Dictionary[Vector2i, bool] = {}:
 	get:
 		return solver_board.empty_cells
@@ -59,6 +66,7 @@ func set_clue(cell_pos: Vector2i, value: int) -> void:
 
 func get_cell(cell_pos: Vector2i) -> int:
 	return solver_board.get_cell(cell_pos)
+
 
 func has_clue(cell_pos: Vector2i) -> int:
 	return solver_board.has_clue(cell_pos)
