@@ -46,6 +46,10 @@ var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": generate_open_island_moat, "weight": 0.01},
 	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
 	{"callable": generate_wall_guide, "weight": 1.0},
+	{"callable": generate_island_guide, "weight": 1.0},
+])
+
+var _advanced_techniques: TechniqueScheduler = TechniqueScheduler.new([
 ])
 
 var _recovery_techniques: TechniqueScheduler = TechniqueScheduler.new([
@@ -140,6 +144,12 @@ func attempt_generation_step() -> void:
 				break
 	
 	if not placements.has_changes():
+		for advanced_technique: Callable in _advanced_techniques.next_cycle():
+			advanced_technique.call()
+			if placements.has_changes():
+				break
+	
+	if not placements.has_changes():
 		for basic_technique: Callable in _basic_techniques.next_cycle():
 			basic_technique.call()
 			if placements.has_changes():
@@ -174,6 +184,23 @@ func generate_wall_guide() -> void:
 			break
 		if placements.has_changes():
 			break
+
+
+func generate_island_guide() -> void:
+	var open_islands: Array[CellGroup] = board.islands.filter(func(wall: CellGroup) -> bool:
+			return wall.liberties.size() == 2)
+	if open_islands.is_empty():
+		return
+	
+	open_islands.shuffle()
+	for open_island: CellGroup in open_islands:
+		var guide_cells: Array[Vector2i] = find_island_guide_cell_candidates(open_island)
+		if not guide_cells:
+			continue
+		
+		var guide_cell: Vector2i = guide_cells.pick_random()
+		add_placement(guide_cell, CELL_MYSTERY_CLUE, ISLAND_GUIDE)
+		break
 
 
 func generate_open_island_expansion() -> void:
@@ -294,6 +321,29 @@ func add_placement(pos: Vector2i, value: int,
 		reason: Placement.Reason = Placement.Reason.UNKNOWN,
 		sources: Array[Vector2i] = []) -> void:
 	placements.add_placement(pos, value, reason, sources)
+
+
+func find_island_guide_cell_candidates(island: CellGroup) -> Array[Vector2i]:
+	var guide_cell_candidates: Dictionary[Vector2i, bool] = {}
+	for liberty: Vector2i in island.liberties:
+		for neighbor_dir in NEIGHBOR_DIRS:
+			var guide_cell_candidate: Vector2i = liberty + neighbor_dir
+			var guide_cell_neighbor_islands: Array[CellGroup] = _get_neighbor_islands(guide_cell_candidate)
+			if not board.get_cell(guide_cell_candidate) == CELL_EMPTY:
+				# guide cell must be empty
+				continue
+			if not guide_cell_neighbor_islands.is_empty():
+				# guide cell can't be next to any other islands
+				continue
+			var remaining_liberties: Array[Vector2i] = []
+			for remaining_liberty: Vector2i in island.liberties:
+				if remaining_liberty.distance_to(guide_cell_candidate) > 1:
+					remaining_liberties.append(remaining_liberty)
+			if remaining_liberties.is_empty():
+				# guide cell can't constrain the island to 0 liberties
+				continue
+			guide_cell_candidates[guide_cell_candidate] = true
+	return guide_cell_candidates.keys()
 
 
 func _create_temp_solver() -> Solver:
