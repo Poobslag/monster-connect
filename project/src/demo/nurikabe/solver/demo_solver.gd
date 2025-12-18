@@ -36,10 +36,10 @@ const FUN_THINK: Deduction.FunAxis = Deduction.FunAxis.FUN_THINK
 const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
 
 const PUZZLE_PATHS: Array[String] = [
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_062.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_063.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_064.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_065.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_001.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_002.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_003.txt",
+	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_004.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_066.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_067.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_068.txt",

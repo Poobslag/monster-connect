@@ -186,7 +186,6 @@ func set_cell(cell_pos: Vector2i, value: int) -> void:
 		return
 	
 	if not groups_need_rebuild and get_cell(cell_pos) != CELL_EMPTY:
-		push_warning("set_cell called on non-empty cell")
 		groups_need_rebuild = true
 	
 	cells[cell_pos] = value
