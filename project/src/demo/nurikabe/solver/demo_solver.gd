@@ -10,6 +10,7 @@ extends Node
 ## 	[kbd]R[/kbd]: Reset the board.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 ## 	[kbd]Shift + P[/kbd]: Print available probes and bifurcation scenarios to console.
+## 	[kbd]F[/kbd]: Print the puzzle's fun.
 ## 	[kbd]H[/kbd]: Clear the solver history. Forces deductions to be rerun.
 ## 	[kbd]B[/kbd]: Print benchmark results for AggregateTimer/SplitTimer.
 
@@ -23,11 +24,16 @@ extends Node
 		verbose = value
 		solver.verbose = verbose
 
-
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+
+const FUN_TRIVIAL: Deduction.FunAxis = Deduction.FunAxis.FUN_TRIVIAL
+const FUN_FAST: Deduction.FunAxis = Deduction.FunAxis.FUN_FAST
+const FUN_NOVELTY: Deduction.FunAxis = Deduction.FunAxis.FUN_NOVELTY
+const FUN_THINK: Deduction.FunAxis = Deduction.FunAxis.FUN_THINK
+const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
 
 const PUZZLE_PATHS: Array[String] = [
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_062.txt",
@@ -90,12 +96,36 @@ func _input(event: InputEvent) -> void:
 			%GameBoard.reset()
 			solver.board = %GameBoard.to_solver_board()
 			solver.clear()
+		KEY_F:
+			_show_normalized_fun_string()
 		KEY_H:
 			solver.probe_library.clear_history()
 			_show_message("cleared history")
 		KEY_B:
 			AggregateTimer.print_results()
 			SplitTimer.print_results()
+
+
+func _show_normalized_fun_string() -> String:
+	var fun: Dictionary[Deduction.FunAxis, float] = solver.metrics.get("fun", \
+			{} as Dictionary[Deduction.FunAxis, float])
+	
+	var normalized_fun: Dictionary[Deduction.FunAxis, int] = {}
+	for key: Deduction.FunAxis in Deduction.FunAxis.values():
+		var normalized_value: int = round(100 * fun.get(key, 0.0) / solver.board.cells.size())
+		normalized_fun[key] = normalized_value
+	
+	_show_message("easy=%s (%s/%s) thinky=%s (%s/%s/%s)" % [
+		normalized_fun[FUN_TRIVIAL] + normalized_fun[FUN_FAST],
+		normalized_fun[FUN_TRIVIAL],
+		normalized_fun[FUN_FAST],
+		normalized_fun[FUN_NOVELTY] + normalized_fun[FUN_THINK] + normalized_fun[FUN_BIFURCATE],
+		normalized_fun[FUN_NOVELTY],
+		normalized_fun[FUN_THINK],
+		normalized_fun[FUN_BIFURCATE],
+	])
+	
+	return JSON.stringify(normalized_fun)
 
 
 func print_grid_string() -> void:

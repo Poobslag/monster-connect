@@ -27,9 +27,6 @@ const ISLAND_MOAT: Placement.Reason = Placement.Reason.ISLAND_MOAT
 const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
 const WALL_GUIDE: Placement.Reason = Placement.Reason.WALL_GUIDE
 
-## recovery techniques
-const FIX_POOL: Placement.Reason = Placement.Reason.FIX_POOL
-
 const MAX_CHECKPOINT_RETRIES: int = 5
 const MAX_GENERATION_FACTOR: float = 2.0
 
@@ -46,13 +43,12 @@ var _ran_starting_techniques: bool = false
 
 var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": generate_open_island_expansion, "weight": 1.0},
-	{"callable": generate_open_island_moat, "weight": 0.10},
+	{"callable": generate_open_island_moat, "weight": 0.01},
 	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
 	{"callable": generate_wall_guide, "weight": 1.0},
 ])
 
 var _recovery_techniques: TechniqueScheduler = TechniqueScheduler.new([
-	{"callable": fix_pool, "weight": 1.0},
 ])
 
 var _checkpoint_stack: Array[Dictionary] = []
@@ -247,95 +243,6 @@ func generate_initial_open_island() -> void:
 			for other_clue: Vector2i in island_plan["supporting_clues"]:
 				add_placement(other_clue, CELL_MYSTERY_CLUE, ISLAND_GUIDE)
 			break
-
-
-func fix_pool() -> void:
-	var validation_result: SolverBoard.ValidationResult \
-			= board.solver_board.validate(SolverBoard.VALIDATE_SIMPLE)
-	if validation_result.pools.is_empty():
-		return
-	
-	if not placements.has_changes():
-		var shuffled_pool_cells: Array[Vector2i] = validation_result.pools.duplicate()
-		shuffled_pool_cells.shuffle()
-		for pool_cell: Vector2i in shuffled_pool_cells:
-			attempt_pool_fix_from(pool_cell)
-
-
-## Fix pool cells which are adjacent to one numbered island by increasing that island's size.
-func attempt_pool_fix_from(pool_cell: Vector2i, dir_priority: Array[Vector2i] = []) -> void:
-	var validation_result: SolverBoard.ValidationResult \
-			= board.solver_board.validate(SolverBoard.VALIDATE_SIMPLE)
-	if validation_result.pools.is_empty():
-		return
-	
-	# Initialize the stack.
-	if dir_priority.is_empty():
-		dir_priority = NEIGHBOR_DIRS.duplicate()
-		dir_priority.shuffle()
-	var visited: Dictionary[Vector2i, bool] = {}
-	for next_pool_cell: Vector2i in validation_result.pools:
-		# Don't traverse around the pool cells; start at one and navigate outward.
-		visited[next_pool_cell] = true
-	var stack: Array[Dictionary] = []
-	
-	# Search for a path from the pool cell to a numbered island.
-	var target_island: CellGroup
-	stack.push_back({"cell": pool_cell, "dirs": dir_priority.duplicate()})
-	while not stack.is_empty():
-		var current_cell: Vector2i = stack.back()["cell"]
-		var current_dir_priority: Array[Vector2i] = stack.back()["dirs"]
-		if current_dir_priority.is_empty():
-			stack.pop_back()
-			continue
-		
-		# The first time we visit a cell, we count its neighboring islands to see if we can exit the loop.
-		if current_dir_priority == dir_priority:
-			var neighbor_islands: Array[CellGroup] = _get_neighbor_islands(current_cell)
-			match neighbor_islands.size():
-				0:
-					# zero neighbor islands; keep searching
-					pass
-				1:
-					if neighbor_islands[0].clue >= 1 and neighbor_islands[0].clue <= 255:
-						# one numbered neighbor island; can fix
-						target_island = neighbor_islands[0]
-					else:
-						# non-numbered island; can't fix
-						break
-				_:
-					# too many neighbor islands; can't fix
-					break
-		if target_island != null:
-			break
-		
-		var current_dir: Vector2i = current_dir_priority.pop_front()
-		var next_cell: Vector2i = current_cell + current_dir
-		if visited.has(next_cell):
-			continue
-		visited[next_cell] = true
-		if board.get_cell(next_cell) == CELL_WALL:
-			stack.push_back({"cell": next_cell, "dirs": dir_priority.duplicate()})
-	if target_island == null:
-		return
-	
-	# Increase the target island clue value based on the path length. Solve the puzzle from scratch with the new clue
-	# value.
-	var clue_cell: Vector2i = _find_clue_cell(target_island)
-	var new_clue_value: int = board.clues[clue_cell] + stack.size()
-	var temp_solver: Solver = _create_temp_solver()
-	temp_solver.board.set_clue(clue_cell, new_clue_value)
-	temp_solver.step_until_done()
-	if temp_solver.board.empty_cells.size() > board.empty_cells.size():
-		# Error: Solving the adjusted puzzle resulted in new empty cells.
-		return
-	var temp_validation_result: SolverBoard.ValidationResult \
-			= temp_solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
-	if temp_validation_result.split_walls.size() > validation_result.split_walls.size():
-		# Error: Solving the adjusted puzzle resulted in new split walls.
-		return
-	
-	add_placement(clue_cell, new_clue_value, FIX_POOL, validation_result.pools)
 
 
 func apply_changes() -> void:
