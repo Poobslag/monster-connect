@@ -1,5 +1,13 @@
 class_name Deduction extends ChangeRecord
 
+enum FunAxis {
+	FUN_TRIVIAL, # automatic steps, "this 1 is surrounded by walls"
+	FUN_FAST, # immediate steps, "this island has only one liberty"
+	FUN_NOVELTY, # atypical steps, "there must be a wall diagonal from this 2"
+	FUN_THINK, # structural reasoning, "this island can't be cut off here"
+	FUN_BIFURCATE, # guess and check, "there's a contradiction if the wall goes this way"
+}
+
 enum Reason {
 	UNKNOWN,
 	

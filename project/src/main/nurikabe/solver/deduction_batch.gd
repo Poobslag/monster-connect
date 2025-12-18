@@ -2,6 +2,7 @@ class_name DeductionBatch
 
 var deductions: Array[Deduction] = []
 var cells: Dictionary[Vector2i, bool]
+var fun: Dictionary[Deduction.FunAxis, float] = {}
 
 ## Adds a deduction to the batch.[br]
 ## [br]
@@ -12,6 +13,19 @@ func add_deduction(pos: Vector2i, value: int,
 		sources: Array[Vector2i] = []) -> void:
 	deductions.append(Deduction.new(pos, value, reason, sources))
 	cells[pos] = true
+
+
+func add_fun(fun_axis: Deduction.FunAxis, value: float) -> void:
+	if not fun.has(fun_axis):
+		fun[fun_axis] = 0.0
+	fun[fun_axis] += value
+
+
+func get_total_fun() -> float:
+	var total: float = 0.0
+	for value: float in fun.values():
+		total += value
+	return total
 
 
 func has_changes() -> bool:
@@ -28,6 +42,7 @@ func get_changes() -> Array[Dictionary]:
 func clear() -> void:
 	deductions.clear()
 	cells.clear()
+	fun.clear()
 
 
 func size() -> int:
