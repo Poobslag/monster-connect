@@ -50,6 +50,7 @@ var placements: PlacementBatch = PlacementBatch.new()
 var solver: Solver = Solver.new()
 
 var _ran_starting_techniques: bool = false
+var _rng_ops: RngOps = RngOps.new(rng)
 
 var _priority_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": generate_open_island_expansion.bind(true), "weight": 1.0},
@@ -76,6 +77,11 @@ var _event_log: Array[String] = []
 
 func _init() -> void:
 	solver.set_generation_strategy()
+	rng = RandomNumberGenerator.new()
+	_rng_ops.rng = rng
+	for scheduler: TechniqueScheduler in [
+			_priority_techniques, _basic_techniques, _advanced_techniques, _recovery_techniques]:
+		scheduler.rng = rng
 
 
 func consume_events() -> Array[String]:
@@ -98,7 +104,7 @@ func step_until_done() -> void:
 
 
 func step() -> void:
-	var allow_bifurcation: bool = randf() < BIFURCATION_CHANCE
+	var allow_bifurcation: bool = rng.randf() < BIFURCATION_CHANCE
 	var solver_pass: Solver.SolverPass = \
 			Solver.SolverPass.BIFURCATION if allow_bifurcation else Solver.SolverPass.GLOBAL
 	
@@ -170,6 +176,12 @@ func attempt_generation_step() -> void:
 				break
 	
 	if not placements.has_changes():
+		for priority_technique: Callable in _priority_techniques.next_cycle():
+			priority_technique.call()
+			if placements.has_changes():
+				break
+	
+	if not placements.has_changes():
 		for advanced_technique: Callable in _advanced_techniques.next_cycle():
 			advanced_technique.call()
 			if placements.has_changes():
@@ -188,10 +200,10 @@ func generate_wall_guide() -> void:
 	if open_walls.is_empty():
 		return
 	
-	open_walls.shuffle()
+	_rng_ops.shuffle(open_walls)
 	for open_wall: CellGroup in open_walls:
 		var shuffled_liberties: Array[Vector2i] = open_wall.liberties.duplicate()
-		shuffled_liberties.shuffle()
+		_rng_ops.shuffle(shuffled_liberties)
 		for liberty: Vector2i in shuffled_liberties:
 			# bifurcate; add the clue and see if there is a contradiction
 			var temp_solver: Solver = _create_temp_solver()
@@ -218,13 +230,13 @@ func generate_island_guide() -> void:
 	if open_islands.is_empty():
 		return
 	
-	open_islands.shuffle()
+	_rng_ops.shuffle(open_islands)
 	for open_island: CellGroup in open_islands:
 		var guide_cells: Array[Vector2i] = find_island_guide_cell_candidates(open_island)
 		if not guide_cells:
 			continue
 		
-		var guide_cell: Vector2i = guide_cells.pick_random()
+		var guide_cell: Vector2i = _rng_ops.pick_random(guide_cells)
 		add_placement(guide_cell, CELL_MYSTERY_CLUE, ISLAND_GUIDE)
 		break
 
@@ -236,10 +248,10 @@ func generate_open_island_expansion(apply_weights: bool = false) -> void:
 			if not apply_weights:
 				return true
 			return island.liberties.size() == 1 \
-					and randf() < pow(1.0 / island.size(), PRIORITY_EXPANSION_SMALL_ISLAND_BIAS))
+					and rng.randf() < pow(1.0 / island.size(), PRIORITY_EXPANSION_SMALL_ISLAND_BIAS))
 	
 	if open_islands:
-		var open_island: CellGroup = open_islands.pick_random()
+		var open_island: CellGroup = _rng_ops.pick_random(open_islands)
 		add_placement(open_island.liberties[0], CELL_ISLAND, ISLAND_EXPANSION)
 
 
@@ -253,7 +265,7 @@ func generate_open_island_moat() -> void:
 	var weights_array: Array[float] = []
 	for i in mystery_islands.size():
 		weights_array.append(mystery_islands.size() - 1)
-	Utils.shuffle_weighted(mystery_islands, weights_array)
+	_rng_ops.shuffle_weighted(mystery_islands, weights_array)
 	var mystery_island: CellGroup = mystery_islands[0]
 	
 	var clue_cell: Vector2i = _find_clue_cell(mystery_island)
@@ -289,7 +301,7 @@ func generate_all_sealed_unclued_island_clues() -> void:
 		if not island.liberties.is_empty() or island.clue != -1:
 			continue
 		
-		var clue_cell: Vector2i = island.cells.pick_random()
+		var clue_cell: Vector2i = _rng_ops.pick_random(island.cells)
 		add_placement(clue_cell, island.size(), SEALED_ISLAND_CLUE)
 
 
@@ -394,7 +406,7 @@ func fix_tiny_split_wall() -> void:
 	
 	var split_wall_cell: Vector2i = validation_result.split_walls[0]
 	var islands: Array[CellGroup] = _get_neighbor_islands(split_wall_cell)
-	islands.shuffle()
+	_rng_ops.shuffle(islands)
 	islands.sort_custom(func(a: CellGroup, b: CellGroup) -> bool:
 		return a.size() < b.size())
 	var erased_island: CellGroup = islands[0]
@@ -481,7 +493,7 @@ func _select_initial_open_island_candidate(island_plan: Dictionary[String, Varia
 		potential_cells = board.cells.keys()
 	if potential_cells.is_empty():
 		return
-	var seed_cell: Vector2i = potential_cells.pick_random()
+	var seed_cell: Vector2i = _rng_ops.pick_random(potential_cells)
 	
 	var potential_preserved_liberties: Array[Vector2i] = []
 	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
@@ -492,7 +504,7 @@ func _select_initial_open_island_candidate(island_plan: Dictionary[String, Varia
 	
 	if potential_preserved_liberties.is_empty():
 		return
-	var open_liberty: Vector2i = potential_preserved_liberties.pick_random()
+	var open_liberty: Vector2i = _rng_ops.pick_random(potential_preserved_liberties)
 	
 	island_plan["seed_cell"] = seed_cell
 	island_plan["open_liberty"] = open_liberty
@@ -531,7 +543,7 @@ func _plan_initial_open_island_walls(island_plan: Dictionary[String, Variant]) -
 	var remaining_wall_cells: Dictionary[Vector2i, bool] = initial_wall_cells.duplicate()
 	while not remaining_wall_cells.is_empty() and mercy < 10:
 		mercy += 1
-		var other_wall: Vector2i = remaining_wall_cells.keys().pick_random()
+		var other_wall: Vector2i = _rng_ops.pick_random(remaining_wall_cells.keys())
 		var other_clue: Vector2i = NurikabeUtils.POS_NOT_FOUND
 		for potential_other_clue_dir: Vector2i in NEIGHBOR_DIRS.duplicate():
 			var potential_other_clue: Vector2i = other_wall + potential_other_clue_dir

@@ -1,8 +1,14 @@
 class_name TechniqueScheduler
 
 var _techniques: Array[Dictionary]
+var rng: RandomNumberGenerator = RandomNumberGenerator.new():
+	set(value):
+		rng = value
+		_rng_ops.rng = rng
+var _rng_ops: RngOps
 
 func _init(init_techniques: Array[Dictionary]) -> void:
+	_rng_ops = RngOps.new(rng)
 	_techniques = init_techniques
 
 
@@ -12,7 +18,7 @@ func next_cycle() -> Array[Callable]:
 	for i in _techniques.size():
 		technique_weights[i] = _techniques[i]["weight"]
 	var shuffled_techniques: Array[Dictionary] = _techniques.duplicate()
-	Utils.shuffle_weighted(shuffled_techniques, technique_weights)
+	_rng_ops.shuffle_weighted(shuffled_techniques, technique_weights)
 	
 	var result: Array[Callable] = []
 	for shuffled_technique: Dictionary in shuffled_techniques:

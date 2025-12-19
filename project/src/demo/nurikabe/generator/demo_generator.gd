@@ -6,6 +6,8 @@ extends Node
 ## 	[kbd]W[/kbd]: Completely solve a puzzle.
 ## 	[kbd]R[/kbd]: Clear the board.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
+## 	[kbd]S[/kbd]: Assign fixed seed.
+## 	[kbd]Shift + S[/kbd]: Increment fixed seed.
 ## 	[kbd]G[/kbd]: Generate one step.
 ## 	[kbd]Shift + G[/kbd]: Generate five steps.
 ## 	[kbd]H[/kbd]: Completely generate a puzzle.
@@ -22,6 +24,7 @@ const PUZZLE_SIZES: Array[Vector2i] = [
 ]
 
 var generator: Generator = Generator.new()
+var fixed_seed: int = -1
 
 func _ready() -> void:
 	generator.board = %GameBoard.to_generator_board()
@@ -66,6 +69,15 @@ func _input(event: InputEvent) -> void:
 			generator.clear()
 			%GameBoard.reset()
 			generator.board = %GameBoard.to_generator_board()
+			if fixed_seed != -1:
+				generator.rng.seed = fixed_seed
+		KEY_S:
+			if fixed_seed == -1:
+				fixed_seed = 0
+			if Input.is_key_pressed(KEY_SHIFT):
+				fixed_seed += 1
+			generator.rng.seed = fixed_seed
+			_show_message("seed: %s" % [fixed_seed])
 		KEY_M:
 			var values: Array[String] = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 			Utils.shuffle_weighted(values, PackedFloat32Array([0, 1, 2, 3, 4, 5, 6, 7, 8]))

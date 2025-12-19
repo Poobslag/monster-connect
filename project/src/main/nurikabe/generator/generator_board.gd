@@ -78,5 +78,9 @@ func get_cell(cell_pos: Vector2i) -> int:
 	return solver_board.get_cell(cell_pos)
 
 
+func get_clue(cell_pos: Vector2i) -> int:
+	return clues[cell_pos]
+
+
 func has_clue(cell_pos: Vector2i) -> int:
 	return solver_board.has_clue(cell_pos)
