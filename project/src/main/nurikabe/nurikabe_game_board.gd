@@ -31,6 +31,8 @@ var lowlight_cells: Dictionary[Vector2i, bool] = {}:
 		lowlight_cells = value
 		_cells_dirty = true
 
+var allow_unclued_islands: bool = false
+
 var _cells_dirty: bool = false
 
 var _undo_stack: Array[UndoAction] = []
@@ -341,8 +343,9 @@ func _on_validate_timer_timeout() -> void:
 		new_error_cells[pool_cell] = true
 	for joined_island_cell: Vector2i in result_simple.joined_islands:
 		new_error_cells[joined_island_cell] = true
-	for unclued_island_cell: Vector2i in result_simple.unclued_islands:
-		new_error_cells[unclued_island_cell] = true
+	if not allow_unclued_islands:
+		for unclued_island_cell: Vector2i in result_simple.unclued_islands:
+			new_error_cells[unclued_island_cell] = true
 	for wrong_size_cell: Vector2i in result_simple.wrong_size:
 		new_error_cells[wrong_size_cell] = true
 	for split_wall_cell in result_simple.split_walls:

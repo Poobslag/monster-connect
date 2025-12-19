@@ -42,6 +42,7 @@ func clear() -> void:
 
 func from_game_board(game_board: NurikabeGameBoard) -> void:
 	solver_board.from_game_board(game_board)
+	solver_board.allow_unclued_islands = true
 
 
 func is_filled() -> bool:
