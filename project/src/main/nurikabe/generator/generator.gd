@@ -27,8 +27,17 @@ const ISLAND_MOAT: Placement.Reason = Placement.Reason.ISLAND_MOAT
 const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
 const WALL_GUIDE: Placement.Reason = Placement.Reason.WALL_GUIDE
 
-const MAX_CHECKPOINT_RETRIES: int = 5
+## repair techniques
+const FIX_TINY_SPLIT_WALL: Placement.Reason = Placement.Reason.FIX_TINY_SPLIT_WALL
+
+const MAX_CHECKPOINT_RETRIES: int = 3
 const MAX_GENERATION_FACTOR: float = 2.0
+
+## Exponent controlling bias toward priority expansion of small islands.[br]
+## 	0.0 = expand all islands[br]
+## 	1.0 = bias expansion toward smaller islands[br]
+## 	2.0 = heavily bias expansion towards smaller islands
+const PRIORITY_EXPANSION_SMALL_ISLAND_BIAS: float = 1.0
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var board: GeneratorBoard:
@@ -41,10 +50,14 @@ var solver: Solver = Solver.new()
 
 var _ran_starting_techniques: bool = false
 
+var _priority_techniques: TechniqueScheduler = TechniqueScheduler.new([
+	{"callable": generate_open_island_expansion.bind(true), "weight": 1.0},
+	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
+])
+
 var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": generate_open_island_expansion, "weight": 1.0},
-	{"callable": generate_open_island_moat, "weight": 0.01},
-	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
+	{"callable": generate_open_island_moat, "weight": 0.10},
 	{"callable": generate_wall_guide, "weight": 1.0},
 	{"callable": generate_island_guide, "weight": 1.0},
 ])
@@ -53,6 +66,7 @@ var _advanced_techniques: TechniqueScheduler = TechniqueScheduler.new([
 ])
 
 var _recovery_techniques: TechniqueScheduler = TechniqueScheduler.new([
+	{"callable": fix_tiny_split_wall, "weight": 1.0},
 ])
 
 var _checkpoint_stack: Array[Dictionary] = []
@@ -135,6 +149,12 @@ func attempt_generation_step() -> void:
 		generate_initial_open_island()
 		_ran_starting_techniques = true
 	
+	if not placements.has_changes():
+		for priority_technique: Callable in _priority_techniques.next_cycle():
+			priority_technique.call()
+			if placements.has_changes():
+				break
+	
 	var validation_result: SolverBoard.ValidationResult \
 			= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
 	if not placements.has_changes() and validation_result.error_count > 0:
@@ -203,9 +223,14 @@ func generate_island_guide() -> void:
 		break
 
 
-func generate_open_island_expansion() -> void:
+func generate_open_island_expansion(apply_weights: bool = false) -> void:
 	var open_islands: Array[CellGroup] = board.islands.filter(func(island: CellGroup) -> bool:
-			return island.liberties.size() == 1)
+			if island.liberties.size() != 1:
+				return false
+			if not apply_weights:
+				return true
+			return island.liberties.size() == 1 \
+					and randf() < pow(1.0 / island.size(), PRIORITY_EXPANSION_SMALL_ISLAND_BIAS))
 	
 	if open_islands:
 		var open_island: CellGroup = open_islands.pick_random()
@@ -344,6 +369,44 @@ func find_island_guide_cell_candidates(island: CellGroup) -> Array[Vector2i]:
 				continue
 			guide_cell_candidates[guide_cell_candidate] = true
 	return guide_cell_candidates.keys()
+
+
+func fix_tiny_split_wall() -> void:
+	var validation_result: SolverBoard.ValidationResult \
+			= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
+	if validation_result.split_walls.size() != 1:
+		return
+	
+	var split_wall_cell: Vector2i = validation_result.split_walls[0]
+	var islands: Array[CellGroup] = _get_neighbor_islands(split_wall_cell)
+	islands.shuffle()
+	islands.sort_custom(func(a: CellGroup, b: CellGroup) -> bool:
+		return a.size() < b.size())
+	var erased_island: CellGroup = islands[0]
+	var clue_cell: Vector2i = _find_clue_cell(erased_island)
+	var temp_solver: Solver = _create_temp_solver()
+	temp_solver.board.groups_need_rebuild = true
+	temp_solver.board.clues.erase(clue_cell)
+	for cell: Vector2i in board.cells:
+		if temp_solver.board.get_cell(cell) == CELL_WALL:
+			temp_solver.board.set_cell(cell, CELL_EMPTY)
+	for cell: Vector2i in erased_island.cells:
+		temp_solver.board.set_cell(cell, CELL_EMPTY)
+	temp_solver.step_until_done(Solver.SolverPass.GLOBAL)
+	while true:
+		temp_solver.step()
+		if not solver.deductions.has_changes():
+			break
+		temp_solver.apply_changes()
+	validation_result = temp_solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
+	
+	if validation_result.error_count > 0:
+		return
+	temp_solver.board.print_cells()
+	
+	for cell: Vector2i in board.cells:
+		if board.get_cell(cell) != temp_solver.board.get_cell(cell):
+			add_placement(cell, temp_solver.board.get_cell(cell), FIX_TINY_SPLIT_WALL, [split_wall_cell])
 
 
 func _create_temp_solver() -> Solver:

@@ -12,6 +12,9 @@ enum Reason {
 	ISLAND_MOAT, # seal an open island with walls
 	SEALED_ISLAND_CLUE, # assign a clue number to a sealed island
 	WALL_GUIDE, # add a clue cell to constrain an open wall
+	
+	# repair techniques
+	FIX_TINY_SPLIT_WALL, # remove a clue to fix a tiny split wall
 }
 
 var reason: Reason

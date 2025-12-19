@@ -110,7 +110,7 @@ func step_generator() -> void:
 
 
 func step_solver() -> void:
-	if generator.solver.board.is_filled():
+	if generator.solver.board.is_filled() and not generator.has_validation_errors():
 		_show_message("--------")
 		_show_message("(no changes)")
 		return
