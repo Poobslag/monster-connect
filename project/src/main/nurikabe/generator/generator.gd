@@ -32,6 +32,7 @@ const FIX_TINY_SPLIT_WALL: Placement.Reason = Placement.Reason.FIX_TINY_SPLIT_WA
 
 const MAX_CHECKPOINT_RETRIES: int = 3
 const MAX_GENERATION_FACTOR: float = 2.0
+const BIFURCATION_CHANCE: float = 0.3
 
 ## Exponent controlling bias toward priority expansion of small islands.[br]
 ## 	0.0 = expand all islands[br]
@@ -53,6 +54,7 @@ var _ran_starting_techniques: bool = false
 var _priority_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": generate_open_island_expansion.bind(true), "weight": 1.0},
 	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
+	{"callable": generate_all_sealed_unclued_island_clues, "weight": 1.0},
 ])
 
 var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
@@ -96,10 +98,14 @@ func step_until_done() -> void:
 
 
 func step() -> void:
+	var allow_bifurcation: bool = randf() < BIFURCATION_CHANCE
+	var solver_pass: Solver.SolverPass = \
+			Solver.SolverPass.BIFURCATION if allow_bifurcation else Solver.SolverPass.GLOBAL
+	
 	# mess with the clues, and run the solver
 	attempt_generation_step()
 	apply_changes()
-	step_solver_until_done()
+	step_solver_until_done(solver_pass)
 	if not has_validation_errors():
 		# no errors; push the checkpoint and add more clues
 		push_checkpoint()
@@ -109,18 +115,18 @@ func step() -> void:
 			while not has_remaining_retries():
 				pop_checkpoint()
 			load_checkpoint()
-			step_solver_until_done()
+			step_solver_until_done(solver_pass)
 		if not _checkpoint_stack.is_empty():
 			_checkpoint_stack.back()["retry_count"] += 1
 			if log_enabled:
 				_log_event("retry %s/%s" % [_checkpoint_stack.back()["retry_count"], MAX_CHECKPOINT_RETRIES])
 
 
-func step_solver_until_done() -> void:
+func step_solver_until_done(solver_pass: Solver.SolverPass = Solver.SolverPass.BIFURCATION) -> void:
 	while true:
 		if has_validation_errors():
 			break
-		solver.step()
+		solver.step(solver_pass)
 		if not solver.deductions.has_changes():
 			break
 		apply_solver_changes()
@@ -275,6 +281,15 @@ func generate_all_sealed_mystery_island_clues() -> void:
 			continue
 		
 		var clue_cell: Vector2i = _find_clue_cell(island)
+		add_placement(clue_cell, island.size(), SEALED_ISLAND_CLUE)
+
+
+func generate_all_sealed_unclued_island_clues() -> void:
+	for island: CellGroup in board.islands:
+		if not island.liberties.is_empty() or island.clue != -1:
+			continue
+		
+		var clue_cell: Vector2i = island.cells.pick_random()
 		add_placement(clue_cell, island.size(), SEALED_ISLAND_CLUE)
 
 

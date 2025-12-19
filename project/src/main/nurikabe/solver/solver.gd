@@ -109,6 +109,10 @@ func set_generation_strategy() -> void:
 	])
 
 	_bifurcation_iterator = StrategyIterator.new([
+		bifurcate_all_wall_strangles,
+		bifurcate_all_island_strangles,
+		bifurcate_all_island_battlegrounds,
+		bifurcate_all_island_releases,
 	])
 
 

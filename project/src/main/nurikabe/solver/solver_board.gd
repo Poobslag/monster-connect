@@ -19,6 +19,7 @@ const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
+var allow_unclued_islands: bool = false
 var clues: Dictionary[Vector2i, int]
 var cells: Dictionary[Vector2i, int]
 var version: int
@@ -80,6 +81,7 @@ func perform_bfs(start_cells: Array[Vector2i], filter: Callable) -> Array[Vector
 
 func duplicate() -> SolverBoard:
 	var copy: SolverBoard = SolverBoard.new()
+	copy.allow_unclued_islands = allow_unclued_islands
 	copy.cells = cells.duplicate()
 	copy.clues = clues.duplicate()
 	copy.version = version

@@ -25,6 +25,7 @@ var generator: Generator = Generator.new()
 
 func _ready() -> void:
 	generator.board = %GameBoard.to_generator_board()
+	%GameBoard.allow_unclued_islands = true
 
 
 func _input(event: InputEvent) -> void:
