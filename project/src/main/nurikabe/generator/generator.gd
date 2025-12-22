@@ -298,8 +298,6 @@ func attempt_island_buffer_from(island: CellGroup, diagonal: Vector2i, dir_prior
 		add_placement(neighbor, CELL_MYSTERY_CLUE, ISLAND_BUFFER, [island.cells.front()])
 		add_given(diagonal, CELL_WALL, ISLAND_BUFFER, [island.cells.front()])
 		var clue_cell: Vector2i = _find_clue_cell(island)
-		if clue_cell == NurikabeUtils.POS_NOT_FOUND:
-			print("294: !?")
 		add_clue_minimum_change(clue_cell, island.size() + 1)
 		break
 
