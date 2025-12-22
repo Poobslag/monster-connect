@@ -11,6 +11,7 @@ var generator: Generator = Generator.new()
 var grid: Array[String] = []
 
 func before_each() -> void:
+	generator.rng.seed = 0 # avoid randomness
 	generator.clear()
 
 

@@ -19,7 +19,10 @@ const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
+## If true, unclued islands don't break validation as long as they have one remaining liberty. Used during puzzle
+## generation.
 var allow_unclued_islands: bool = false
+
 var clues: Dictionary[Vector2i, int]
 var cells: Dictionary[Vector2i, int]
 var version: int
@@ -179,6 +182,7 @@ func set_clue(cell_pos: Vector2i, clue: int) -> void:
 	if get_cell(cell_pos) == CELL_ISLAND:
 		var island: CellGroup = get_island_for_cell(cell_pos)
 		island.clue = _clue_value_for_cells(island.cells)
+		_cache.clear()
 	else:
 		set_cell(cell_pos, CELL_ISLAND)
 
@@ -186,6 +190,9 @@ func set_clue(cell_pos: Vector2i, clue: int) -> void:
 func set_cell(cell_pos: Vector2i, value: int) -> void:
 	if get_cell(cell_pos) == value:
 		return
+	
+	if has_clue(cell_pos) and value != CELL_ISLAND:
+		clues.erase(cell_pos)
 	
 	if not groups_need_rebuild and get_cell(cell_pos) != CELL_EMPTY:
 		groups_need_rebuild = true
@@ -370,11 +377,10 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 				break
 	
 	# unclued islands
-	if not allow_unclued_islands:
-		for island: CellGroup in local_islands:
-			if island.liberties.is_empty() and island.clue == 0:
-				result += "u"
-				break
+	for island: CellGroup in local_islands:
+		if island.liberties.is_empty() and island.clue == 0:
+			result += "u"
+			break
 	
 	# wrong size
 	for island: CellGroup in local_islands:
@@ -526,13 +532,16 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 					result.split_walls.append(cell)
 	
 	# unclued islands
-	if not allow_unclued_islands:
-		for flooded_island_group: Array[Vector2i] in get_flooded_island_group_map().groups:
-			if _clue_value_for_cells(flooded_island_group) != 0:
-				continue
-			for cell: Vector2i in flooded_island_group:
-				if get_cell(cell) == CELL_ISLAND:
-					result.unclued_islands.append(cell)
+	for flooded_island_group: Array[Vector2i] in get_flooded_island_group_map().groups:
+		if _clue_value_for_cells(flooded_island_group) != 0:
+			continue
+		var unclued_islands: Dictionary[CellGroup, bool] = {}
+		for cell: Vector2i in flooded_island_group:
+			if get_cell(cell) == CELL_ISLAND:
+				unclued_islands[get_island_for_cell(cell)] = true
+		for unclued_island: CellGroup in unclued_islands.keys():
+			if unclued_island.liberties.is_empty() or not allow_unclued_islands:
+				result.unclued_islands.append_array(unclued_island.cells)
 	
 	# wrong size
 	for island: CellGroup in islands:

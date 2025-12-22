@@ -417,6 +417,25 @@ func test_unclued_islands_local() -> void:
 	assert_invalid_local([Vector2i(2, 1)], "u")
 
 
+func test_unclued_islands_allowed() -> void:
+	grid = [
+		" 1####",
+		"####  ",
+		"## .  ",
+	]
+	assert_invalid(VALIDATE_SIMPLE, {"unclued_islands": [Vector2i(1, 2)]})
+	assert_valid(VALIDATE_SIMPLE,
+		func(board: SolverBoard) -> void: board.allow_unclued_islands = true)
+	
+	grid = [
+		" 1####",
+		"#### .",
+		"## . .",
+	]
+	assert_invalid(VALIDATE_SIMPLE, {"unclued_islands": [Vector2i(1, 2), Vector2i(2, 1), Vector2i(2, 2)]},
+		func(board: SolverBoard) -> void: board.allow_unclued_islands = true)
+
+
 func test_wrong_size() -> void:
 	grid = [
 		"##   4",
@@ -522,24 +541,31 @@ func assert_groups(actual_groups: Array[CellGroup], expected_props_list: Array[D
 	assert_eq(actual_props_list, expected_props_list)
 
 
-func assert_valid(mode: SolverBoard.ValidationMode) -> void:
-	_assert_validate(mode, {})
+func assert_valid(mode: SolverBoard.ValidationMode, \
+		configure_board: Callable = Callable()) -> void:
+	_assert_validate(mode, {}, configure_board)
 
 
-func assert_valid_local(local_cells: Array[Vector2i]) -> void:
-	_assert_validate_local(local_cells, "")
+func assert_valid_local(local_cells: Array[Vector2i], \
+		configure_board: Callable = Callable()) -> void:
+	_assert_validate_local(local_cells, "", configure_board)
 
 
-func assert_invalid_local(local_cells: Array[Vector2i], expected_result: String) -> void:
-	_assert_validate_local(local_cells, expected_result)
+func assert_invalid_local(local_cells: Array[Vector2i], expected_result: String, \
+		configure_board: Callable = Callable()) -> void:
+	_assert_validate_local(local_cells, expected_result, configure_board)
 
 
-func assert_invalid(mode: SolverBoard.ValidationMode, expected_result_dict: Dictionary) -> void:
-	_assert_validate(mode, expected_result_dict)
+func assert_invalid(mode: SolverBoard.ValidationMode, expected_result_dict: Dictionary, \
+		configure_board: Callable = Callable()) -> void:
+	_assert_validate(mode, expected_result_dict, configure_board)
 
 
-func _assert_validate(mode: SolverBoard.ValidationMode, expected_result_dict: Dictionary) -> void:
+func _assert_validate(mode: SolverBoard.ValidationMode, expected_result_dict: Dictionary, \
+		configure_board: Callable = Callable()) -> void:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	if configure_board.is_valid():
+		configure_board.call(board)
 	var validation_result: SolverBoard.ValidationResult = board.validate(mode)
 	for key: String in ["joined_islands", "pools", "split_walls", "unclued_islands", "wrong_size"]:
 		var validation_result_value: Array[Vector2i] = validation_result.get(key)
@@ -547,7 +573,10 @@ func _assert_validate(mode: SolverBoard.ValidationMode, expected_result_dict: Di
 		assert_eq(expected_result_dict.get(key, []), validation_result_value, "Incorrect %s." % [key])
 
 
-func _assert_validate_local(local_cells: Array[Vector2i], expected_result: String) -> void:
+func _assert_validate_local(local_cells: Array[Vector2i], expected_result: String, \
+		configure_board: Callable = Callable()) -> void:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	if configure_board.is_valid():
+		configure_board.call(board)
 	var validation_result: String = board.validate_local(local_cells)
 	assert_eq(validation_result, expected_result)

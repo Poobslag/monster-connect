@@ -82,5 +82,9 @@ func get_clue(cell_pos: Vector2i) -> int:
 	return clues[cell_pos]
 
 
+func get_island_for_cell(cell: Vector2i) -> CellGroup:
+	return solver_board.get_island_for_cell(cell)
+
+
 func has_clue(cell_pos: Vector2i) -> int:
 	return solver_board.has_clue(cell_pos)
