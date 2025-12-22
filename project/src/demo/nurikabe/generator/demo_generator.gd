@@ -86,6 +86,13 @@ func _input(event: InputEvent) -> void:
 
 func print_grid_string() -> void:
 	%GameBoard.to_solver_board().print_cells()
+	var clue_minimum_strings: Array[String] = []
+	for clue_minimum_cell: Vector2i in generator.board.clue_minimums:
+		var string: String = "%s:%s" % [clue_minimum_cell, generator.board.clue_minimums[clue_minimum_cell]]
+		if generator.board.clues[clue_minimum_cell] < generator.board.clue_minimums[clue_minimum_cell]:
+			string = "! %s" % [string]
+		clue_minimum_strings.append(string)
+	print("clue minimums: %s" % [JSON.stringify(clue_minimum_strings)])
 
 
 func set_puzzle_size(puzzle_size: Vector2i) -> void:

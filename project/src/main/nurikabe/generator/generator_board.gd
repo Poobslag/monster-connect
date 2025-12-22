@@ -13,7 +13,7 @@ var version: int:
 		return solver_board.version
 
 var clue_minimums: Dictionary[Vector2i, int]
-var clue_maximums: Dictionary[Vector2i, int]
+var givens: Dictionary[Vector2i, int]
 
 var cells: Dictionary[Vector2i, int]:
 	get():
@@ -36,7 +36,7 @@ var walls: Array[CellGroup] = []:
 
 func clear() -> void:
 	clue_minimums.clear()
-	clue_maximums.clear()
+	givens.clear()
 	solver_board.clear()
 
 
@@ -57,8 +57,9 @@ func set_cell(cell_pos: Vector2i, value: int) -> void:
 	solver_board.set_cell(cell_pos, value)
 
 
-func set_clue_minimum(cell_pos: Vector2i, value: int) -> void:
-	clue_maximums[cell_pos] = value
+func set_given(cell_pos: Vector2i, value: int) -> void:
+	solver_board.set_cell(cell_pos, value)
+	givens[cell_pos] = value
 
 
 ## Sets the specified cells on the model.[br]
@@ -87,4 +88,4 @@ func get_island_for_cell(cell: Vector2i) -> CellGroup:
 
 
 func has_clue(cell_pos: Vector2i) -> int:
-	return solver_board.has_clue(cell_pos)
+	return clues.has(cell_pos)

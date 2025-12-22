@@ -7,6 +7,7 @@ enum Reason {
 	INITIAL_OPEN_ISLAND, # add a clue cell constrained to expand through a single open liberty
 	
 	# basic techniques
+	ISLAND_BUFFER, # add a clue cell to indirectly constrain an open island (knight's move)
 	ISLAND_GUIDE, # add a clue cell to constrain an open island (adjacent or diagonal)
 	ISLAND_EXPANSION, # add an island cell to expand an open island
 	ISLAND_MOAT, # seal an open island with walls
@@ -15,9 +16,11 @@ enum Reason {
 	
 	# repair techniques
 	FIX_TINY_SPLIT_WALL, # remove a clue to fix a tiny split wall
+	FIX_UNCLUED_ISLAND, # add a clue to fix an unclued island
 }
 
 var reason: Reason
+var given: bool = false
 
 func _init(init_pos: Vector2i, init_value: int,
 		init_reason: Reason = Reason.UNKNOWN,

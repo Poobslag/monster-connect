@@ -27,10 +27,14 @@ const ISLAND_MOAT: Placement.Reason = Placement.Reason.ISLAND_MOAT
 const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
 const WALL_GUIDE: Placement.Reason = Placement.Reason.WALL_GUIDE
 
+## advanced techniques
+const ISLAND_BUFFER: Placement.Reason = Placement.Reason.ISLAND_BUFFER
+
 ## repair techniques
 const FIX_TINY_SPLIT_WALL: Placement.Reason = Placement.Reason.FIX_TINY_SPLIT_WALL
+const FIX_UNCLUED_ISLAND: Placement.Reason = Placement.Reason.FIX_UNCLUED_ISLAND
 
-const MAX_CHECKPOINT_RETRIES: int = 3
+const MAX_CHECKPOINT_RETRIES: int = 2
 const MAX_GENERATION_FACTOR: float = 0.5
 const BIFURCATION_CHANCE: float = 0.3
 
@@ -63,6 +67,7 @@ var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": generate_open_island_moat, "weight": 0.1},
 	{"callable": generate_wall_guide, "weight": 1.0},
 	{"callable": generate_island_guide, "weight": 1.0},
+	{"callable": generate_island_buffer, "weight": 0.5},
 ])
 
 var _advanced_techniques: TechniqueScheduler = TechniqueScheduler.new([
@@ -70,6 +75,7 @@ var _advanced_techniques: TechniqueScheduler = TechniqueScheduler.new([
 
 var _recovery_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": fix_tiny_split_wall, "weight": 1.0},
+	{"callable": fix_all_unclued_islands, "weight": 1.0},
 ])
 
 var _checkpoint_stack: Array[Dictionary] = []
@@ -253,8 +259,61 @@ func generate_island_guide() -> void:
 		break
 
 
+func generate_island_buffer() -> void:
+	var open_islands: Array[CellGroup] = board.islands.filter(func(wall: CellGroup) -> bool:
+			return wall.liberties.size() == 2)
+	if open_islands.is_empty():
+		return
+	
+	_rng_ops.shuffle(open_islands)
+	for open_island: CellGroup in open_islands:
+		for diagonal_dir: Vector2i in NEIGHBOR_DIRS:
+			var diagonal: Vector2i = open_island.liberties.front() + diagonal_dir
+			if diagonal.distance_to(open_island.liberties[1]) != 1:
+				continue
+			if board.get_cell(diagonal) != CELL_EMPTY:
+				continue
+			if open_island.clue == 0 or open_island.clue == -1:
+				continue
+			attempt_island_buffer_from(open_island, diagonal)
+			if placements.has_changes():
+				break
+		if placements.has_changes():
+			break
+
+
+func attempt_island_buffer_from(island: CellGroup, diagonal: Vector2i, dir_priority: Array[Vector2i] = []) -> void:
+	if dir_priority.is_empty():
+		dir_priority = NEIGHBOR_DIRS.duplicate()
+		_rng_ops.shuffle(dir_priority)
+	
+	for neighbor_dir: Vector2i in dir_priority:
+		var neighbor: Vector2i = diagonal + neighbor_dir
+		if board.get_cell(neighbor) != CELL_EMPTY:
+			continue
+		var neighbor_islands: Array[CellGroup] = _get_neighbor_islands(neighbor)
+		if not neighbor_islands.is_empty():
+			continue
+		
+		add_placement(neighbor, CELL_MYSTERY_CLUE, ISLAND_BUFFER, [island.cells.front()])
+		add_given(diagonal, CELL_WALL, ISLAND_BUFFER, [island.cells.front()])
+		var clue_cell: Vector2i = _find_clue_cell(island)
+		if clue_cell == NurikabeUtils.POS_NOT_FOUND:
+			print("294: !?")
+		add_clue_minimum_change(clue_cell, island.size() + 1)
+		break
+
+
 func generate_open_island_expansion() -> void:
 	var open_islands: Array[CellGroup] = []
+	
+	# find islands with unfulfilled clue minimums
+	for cell: Vector2i in board.clue_minimums:
+		var island: CellGroup = board.get_island_for_cell(cell)
+		if island.liberties.size() == 1 \
+				and island.size() < board.clue_minimums[cell] \
+				and not island in open_islands:
+			open_islands.append(island)
 	
 	# find small islands which can expand
 	if open_islands.is_empty():
@@ -342,20 +401,33 @@ func apply_changes() -> void:
 		for i in placements.size():
 			var placement: Placement = placements.placements[i]
 			_log_event("%s %s" % [board.version + i, str(placement)])
+		for i in placements.clue_minimum_changes.size():
+			var clue_minimum_change: Dictionary[String, Variant] = placements.clue_minimum_changes[i]
+			_log_event("clue_minimum %s -> %s" % [clue_minimum_change["pos"], clue_minimum_change["value"]])
 	
-	var changes: Array[Dictionary] = placements.get_changes()
-	for change: Dictionary in changes:
-		if NurikabeUtils.is_clue(change["value"]):
-			board.set_clue(change["pos"], change["value"])
+	for placement: Placement in placements.placements:
+		if NurikabeUtils.is_clue(placement.value):
+			board.set_clue(placement.pos, placement.value)
+		elif placement.given:
+			board.set_given(placement.pos, placement.value)
 		else:
-			board.set_cell(change["pos"], change["value"])
+			board.set_cell(placement.pos, placement.value)
+	for clue_minimum_change: Dictionary[String, Variant] in placements.clue_minimum_changes:
+		var pos: Vector2i = clue_minimum_change["pos"]
+		var value: int = clue_minimum_change["value"]
+		if value == 0:
+			board.clue_minimums.erase(pos)
+		else:
+			board.clue_minimums[pos] = value
 	placements.clear()
 
 
 func push_checkpoint() -> void:
 	_checkpoint_stack.append({
 		"clues": board.clues.duplicate(),
-		"retry_count": 0
+		"givens": board.givens.duplicate(),
+		"clue_minimums": board.clue_minimums.duplicate(),
+		"retry_count": 0,
 	})
 
 
@@ -365,11 +437,16 @@ func load_checkpoint() -> void:
 	placements.clear()
 	solver.clear()
 	if not _checkpoint_stack.is_empty():
-		var new_clues: Dictionary[Vector2i, int] = _checkpoint_stack.back()["clues"]
 		for cell: Vector2i in occupied_cells:
 			board.set_cell(cell, CELL_EMPTY)
+		var new_clues: Dictionary[Vector2i, int] = _checkpoint_stack.back()["clues"]
 		for clue: Vector2i in new_clues:
 			board.set_clue(clue, new_clues[clue])
+		var new_givens: Dictionary[Vector2i, int] = _checkpoint_stack.back()["givens"]
+		for given: Vector2i in new_givens:
+			board.set_given(given, new_givens[given])
+		var new_clue_minimums: Dictionary[Vector2i, int] = _checkpoint_stack.back()["clue_minimums"]
+		board.clue_minimums = new_clue_minimums.duplicate()
 	else:
 		_ran_starting_techniques = false
 	
@@ -386,6 +463,17 @@ func add_placement(pos: Vector2i, value: int,
 		reason: Placement.Reason = Placement.Reason.UNKNOWN,
 		sources: Array[Vector2i] = []) -> void:
 	placements.add_placement(pos, value, reason, sources)
+
+
+func add_given(pos: Vector2i, value: int,
+		reason: Placement.Reason = Placement.Reason.UNKNOWN,
+		sources: Array[Vector2i] = []) -> void:
+	placements.add_placement(pos, value, reason, sources)
+	placements.placements.back().given = true
+
+
+func add_clue_minimum_change(pos: Vector2i, value: int) -> void:
+	placements.add_clue_minimum_change(pos, value)
 
 
 func find_island_guide_cell_candidates(island: CellGroup) -> Array[Vector2i]:
@@ -446,6 +534,25 @@ func fix_tiny_split_wall() -> void:
 	for cell: Vector2i in board.cells:
 		if board.get_cell(cell) != temp_solver.board.get_cell(cell):
 			add_placement(cell, temp_solver.board.get_cell(cell), FIX_TINY_SPLIT_WALL, [split_wall_cell])
+			if board.has_clue(cell) and not temp_solver.board.has_clue(cell):
+				add_clue_minimum_change(cell, 0)
+
+
+func fix_all_unclued_islands() -> void:
+	var validation_result: SolverBoard.ValidationResult \
+			= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
+	if validation_result.unclued_islands.size() == 0:
+		return
+	
+	var unclued_islands: Array[CellGroup] = []
+	for cell: Vector2i in validation_result.unclued_islands:
+		var unclued_island: CellGroup = board.get_island_for_cell(cell)
+		if not unclued_islands.has(unclued_island):
+			unclued_islands.append(unclued_island)
+	
+	for unclued_island: CellGroup in unclued_islands:
+		var unclued_island_cell: Vector2i = _rng_ops.pick_random(unclued_island.cells)
+		add_placement(unclued_island_cell, unclued_island.size(), FIX_UNCLUED_ISLAND)
 
 
 func _create_temp_solver() -> Solver:
