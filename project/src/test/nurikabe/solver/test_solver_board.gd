@@ -104,6 +104,34 @@ func test_set_cell_island_merge_islands() -> void:
 	])
 
 
+func test_set_cell_island_merge_islands_2() -> void:
+	grid = [
+		" 4 . .   ?",
+		"  ########",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.islands, [
+		{
+			"cells": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)],
+			"clue": 4,
+			"liberties": [Vector2i(0, 1), Vector2i(3, 0)],
+		},
+		{
+			"cells": [Vector2i(4, 0)],
+			"clue": CELL_MYSTERY_CLUE,
+			"liberties": [Vector2i(3, 0)],
+		},
+	])
+	board.set_cell(Vector2i(3, 0), CELL_ISLAND)
+	assert_groups(board.islands, [
+		{
+			"cells": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0), Vector2i(4, 0)],
+			"clue": -1,
+			"liberties": [Vector2i(0, 1)],
+		},
+	])
+
+
 func test_set_cell_wall_close_island() -> void:
 	grid = [
 		" 5    ",
