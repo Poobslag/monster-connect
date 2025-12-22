@@ -545,7 +545,7 @@ func deduce_all_unreachable_squares() -> void:
 				continue
 			GlobalReachabilityMap.ClueReachability.UNREACHABLE:
 				add_deduction(cell, CELL_WALL, UNREACHABLE_CELL,
-						[board.get_global_reachability_map().get_nearest_clue_cell(cell)])
+						[board.get_global_reachability_map().get_nearest_clued_island_cell(cell)])
 				add_fun(FUN_THINK, 1.0)
 			GlobalReachabilityMap.ClueReachability.IMPOSSIBLE:
 				add_deduction(cell, CELL_WALL, WALL_BUBBLE)
@@ -576,14 +576,13 @@ func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
 		return
 	
-	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clue_cell(chokepoint)
+	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clued_island_cell(chokepoint)
 	if clue_cell == POS_NOT_FOUND:
 		return
-	var clue_value: int = board.get_clue(clue_cell)
 	var unchoked_cell_count: int = \
 			board.get_island_chokepoint_map().get_unchoked_cell_count(chokepoint, clue_cell)
-	if unchoked_cell_count < clue_value and clue_value != CELL_MYSTERY_CLUE:
-		var island: CellGroup = board.get_island_for_cell(clue_cell)
+	var island: CellGroup = board.get_island_for_cell(clue_cell)
+	if unchoked_cell_count < island.clue and island.clue != CELL_MYSTERY_CLUE:
 		if chokepoint in island.liberties:
 			add_deduction(chokepoint, CELL_ISLAND,
 				ISLAND_EXPANSION, [clue_cell])

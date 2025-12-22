@@ -40,7 +40,7 @@ func get_clue_reachability(cell: Vector2i) -> ClueReachability:
 ## [br]
 ## Reachability accounts for clue distance, clue value, and current island size. A large nearby clue with few existing
 ## island cells ranks high, while a small distant clue with many existing island cells ranks low.
-func get_nearest_clue_cell(cell: Vector2i) -> Vector2i:
+func get_nearest_clued_island_cell(cell: Vector2i) -> Vector2i:
 	return _nearest_clue_root_by_cell.get(cell, POS_NOT_FOUND)
 
 

@@ -31,16 +31,17 @@ const WALL_GUIDE: Placement.Reason = Placement.Reason.WALL_GUIDE
 const FIX_TINY_SPLIT_WALL: Placement.Reason = Placement.Reason.FIX_TINY_SPLIT_WALL
 
 const MAX_CHECKPOINT_RETRIES: int = 3
-const MAX_GENERATION_FACTOR: float = 2.0
+const MAX_GENERATION_FACTOR: float = 0.5
 const BIFURCATION_CHANCE: float = 0.3
 
 ## Exponent controlling bias toward priority expansion of small islands.[br]
 ## 	0.0 = expand all islands[br]
 ## 	1.0 = bias expansion toward smaller islands[br]
 ## 	2.0 = heavily bias expansion towards smaller islands
-const PRIORITY_EXPANSION_SMALL_ISLAND_BIAS: float = 1.0
+const PRIORITY_EXPANSION_SMALL_ISLAND_BIAS: float = 0.8
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
 var board: GeneratorBoard:
 	set(value):
 		board = value
@@ -53,14 +54,13 @@ var _ran_starting_techniques: bool = false
 var _rng_ops: RngOps = RngOps.new(rng)
 
 var _priority_techniques: TechniqueScheduler = TechniqueScheduler.new([
-	{"callable": generate_open_island_expansion.bind(true), "weight": 1.0},
+	{"callable": generate_open_island_expansion, "weight": 1.0},
 	{"callable": generate_all_sealed_mystery_island_clues, "weight": 1.0},
 	{"callable": generate_all_sealed_unclued_island_clues, "weight": 1.0},
 ])
 
 var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
-	{"callable": generate_open_island_expansion, "weight": 1.0},
-	{"callable": generate_open_island_moat, "weight": 0.10},
+	{"callable": generate_open_island_moat, "weight": 0.1},
 	{"callable": generate_wall_guide, "weight": 1.0},
 	{"callable": generate_island_guide, "weight": 1.0},
 ])
@@ -101,6 +101,13 @@ func clear() -> void:
 func step_until_done() -> void:
 	for mercy: int in solver.board.cells.size() * MAX_GENERATION_FACTOR:
 		step()
+		if not board.is_filled():
+			continue
+		var validation_result: SolverBoard.ValidationResult \
+				= board.solver_board.validate(SolverBoard.VALIDATE_STRICT)
+		if validation_result.error_count == 0:
+			# filled with no validation errors
+			break
 
 
 func step() -> void:
@@ -112,7 +119,7 @@ func step() -> void:
 	attempt_generation_step()
 	apply_changes()
 	step_solver_until_done(solver_pass)
-	if not has_validation_errors():
+	if not has_validation_errors() and all_clues_valid():
 		# no errors; push the checkpoint and add more clues
 		push_checkpoint()
 	else:
@@ -148,6 +155,17 @@ func apply_solver_changes() -> void:
 	solver.apply_changes()
 
 
+func all_clues_valid() -> bool:
+	return board.clues.keys().all(func(clue: Vector2i) -> bool:
+		var result: bool = true
+		if board.clue_minimums.has(clue):
+			var clue_minimum: int = board.clue_minimums[clue]
+			var cell_value: int = board.clues[clue]
+			if cell_value != CELL_MYSTERY_CLUE and cell_value < clue_minimum:
+				result = false
+		return result)
+
+
 func has_validation_errors() -> bool:
 	return solver.board.validate(SolverBoard.VALIDATE_SIMPLE).error_count > 0
 
@@ -160,12 +178,6 @@ func attempt_generation_step() -> void:
 	if not placements.has_changes() and not _ran_starting_techniques:
 		generate_initial_open_island()
 		_ran_starting_techniques = true
-	
-	if not placements.has_changes():
-		for priority_technique: Callable in _priority_techniques.next_cycle():
-			priority_technique.call()
-			if placements.has_changes():
-				break
 	
 	var validation_result: SolverBoard.ValidationResult \
 			= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
@@ -241,14 +253,15 @@ func generate_island_guide() -> void:
 		break
 
 
-func generate_open_island_expansion(apply_weights: bool = false) -> void:
-	var open_islands: Array[CellGroup] = board.islands.filter(func(island: CellGroup) -> bool:
-			if island.liberties.size() != 1:
-				return false
-			if not apply_weights:
-				return true
-			return island.liberties.size() == 1 \
-					and rng.randf() < pow(1.0 / island.size(), PRIORITY_EXPANSION_SMALL_ISLAND_BIAS))
+func generate_open_island_expansion() -> void:
+	var open_islands: Array[CellGroup] = []
+	
+	# find small islands which can expand
+	if open_islands.is_empty():
+		open_islands = board.islands.filter(func(island: CellGroup) -> bool:
+				if island.liberties.size() != 1:
+					return false
+				return rng.randf() < pow(1.0 / island.size(), PRIORITY_EXPANSION_SMALL_ISLAND_BIAS))
 	
 	if open_islands:
 		var open_island: CellGroup = _rng_ops.pick_random(open_islands)
@@ -429,7 +442,6 @@ func fix_tiny_split_wall() -> void:
 	
 	if validation_result.error_count > 0:
 		return
-	temp_solver.board.print_cells()
 	
 	for cell: Vector2i in board.cells:
 		if board.get_cell(cell) != temp_solver.board.get_cell(cell):
@@ -580,7 +592,7 @@ func _plan_initial_open_island_walls(island_plan: Dictionary[String, Variant]) -
 	new_clues.append(seed_cell)
 	var bfs_walls: Array[Vector2i] = board.solver_board.perform_bfs([initial_wall_cells.keys().front()],
 		func(c: Vector2i) -> bool:
-			var cell_value: int = board.solver_board.get_cell(c)
+			var cell_value: int = board.get_cell(c)
 			return cell_value == CELL_WALL or (cell_value == CELL_EMPTY and not new_clues.has(c)))
 	if not initial_wall_cells.keys().all(
 		func(c: Vector2i) -> bool:
