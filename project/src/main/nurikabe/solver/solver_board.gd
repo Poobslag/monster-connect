@@ -370,10 +370,11 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 				break
 	
 	# unclued islands
-	for island: CellGroup in local_islands:
-		if island.liberties.is_empty() and island.clue == 0:
-			result += "u"
-			break
+	if not allow_unclued_islands:
+		for island: CellGroup in local_islands:
+			if island.liberties.is_empty() and island.clue == 0:
+				result += "u"
+				break
 	
 	# wrong size
 	for island: CellGroup in local_islands:
@@ -525,12 +526,13 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 					result.split_walls.append(cell)
 	
 	# unclued islands
-	for flooded_island_group: Array[Vector2i] in get_flooded_island_group_map().groups:
-		if _clue_value_for_cells(flooded_island_group) != 0:
-			continue
-		for cell: Vector2i in flooded_island_group:
-			if get_cell(cell) == CELL_ISLAND:
-				result.unclued_islands.append(cell)
+	if not allow_unclued_islands:
+		for flooded_island_group: Array[Vector2i] in get_flooded_island_group_map().groups:
+			if _clue_value_for_cells(flooded_island_group) != 0:
+				continue
+			for cell: Vector2i in flooded_island_group:
+				if get_cell(cell) == CELL_ISLAND:
+					result.unclued_islands.append(cell)
 	
 	# wrong size
 	for island: CellGroup in islands:
