@@ -384,7 +384,7 @@ func bifurcate_all_wall_strangles() -> void:
 			continue
 		
 		var reason: Deduction.Reason
-		if wall.liberties.any(_is_border_cell) or wall.cells.any(_is_border_cell):
+		if wall.liberties.any(_is_border_cell):
 			reason = BORDER_HUG
 		else:
 			reason = WALL_STRANGLE
