@@ -43,7 +43,7 @@ func _init(init_board: SolverBoard) -> void:
 				_visitable.erase(liberty)
 			else:
 				_adjacent_clues_by_cell[liberty] = 1
-				_claimed_by_clue[liberty] = island.cells.front()
+				_claimed_by_clue[liberty] = island.root
 
 
 func get_distance_map(island: CellGroup, start_cells: Array[Vector2i]) -> Dictionary[Vector2i, int]:
@@ -53,7 +53,7 @@ func get_distance_map(island: CellGroup, start_cells: Array[Vector2i]) -> Dictio
 func get_chokepoint_map(island: CellGroup) -> ChokepointMap:
 	if not _has_chokepoint_map(island):
 		_init_chokepoint_map(island)
-	return _chokepoint_map_by_clue.get(island.cells.front())
+	return _chokepoint_map_by_clue.get(island.root)
 
 
 ## Returns a mapping from cells to clues which can reach them.[br]
@@ -73,7 +73,7 @@ func find_chokepoint_cells(island: CellGroup) -> Dictionary[Vector2i, int]:
 	var chokepoint_map: ChokepointMap = get_chokepoint_map(island)
 	
 	for chokepoint: Vector2i in chokepoint_map.chokepoints_by_cell:
-		var unchoked_cell_count: int = chokepoint_map.get_unchoked_cell_count(chokepoint, island.cells.front())
+		var unchoked_cell_count: int = chokepoint_map.get_unchoked_cell_count(chokepoint, island.root)
 		if unchoked_cell_count >= island.clue or island.clue == CELL_MYSTERY_CLUE:
 			continue
 		
@@ -99,11 +99,11 @@ func find_chokepoint_cells(island: CellGroup) -> Dictionary[Vector2i, int]:
 
 
 func get_component_cell_count(island: CellGroup) -> int:
-	return get_chokepoint_map(island).get_component_cell_count(island.cells.front())
+	return get_chokepoint_map(island).get_component_cell_count(island.root)
 
 
 func get_component_cells(island: CellGroup) -> Array[Vector2i]:
-	return get_chokepoint_map(island).get_component_cells(island.cells.front())
+	return get_chokepoint_map(island).get_component_cells(island.root)
 
 
 ## Builds a GroupMap of all wall regions that would exist if this clue's entire reachable island area were filled
@@ -128,12 +128,12 @@ func get_wall_exclusion_map(island: CellGroup) -> GroupMap:
 
 
 func _has_chokepoint_map(island: CellGroup) -> bool:
-	return _chokepoint_map_by_clue.has(island.cells.front())
+	return _chokepoint_map_by_clue.has(island.root)
 
 
 func _init_chokepoint_map(island: CellGroup) -> void:
 	var reach_score_by_cell: Dictionary[Vector2i, int] = {}
-	var queue: Array[Vector2i] = [island.cells.front()]
+	var queue: Array[Vector2i] = [island.root]
 	
 	var reachability: int = island.clue - island.size() if island.clue != CELL_MYSTERY_CLUE else 999999
 	for other_island_cell: Vector2i in island.cells:
@@ -142,7 +142,7 @@ func _init_chokepoint_map(island: CellGroup) -> void:
 		if not _visitable.has(liberty):
 			continue
 		if _claimed_by_clue.has(liberty) \
-			and _claimed_by_clue[liberty] != island.cells.front():
+			and _claimed_by_clue[liberty] != island.root:
 				continue
 		reach_score_by_cell[liberty] = reachability
 		queue.append(liberty)
@@ -156,7 +156,7 @@ func _init_chokepoint_map(island: CellGroup) -> void:
 			if not _visitable.has(neighbor):
 				continue
 			if _claimed_by_clue.has(neighbor) \
-				and _claimed_by_clue[neighbor] != island.cells.front():
+				and _claimed_by_clue[neighbor] != island.root:
 					continue
 			if reach_score_by_cell.has(neighbor):
 				# already visited
@@ -166,7 +166,7 @@ func _init_chokepoint_map(island: CellGroup) -> void:
 			if reach_score_by_cell[neighbor] > 1:
 				queue.append(neighbor)
 	
-	_chokepoint_map_by_clue[island.cells.front()] = ChokepointMap.new(reach_score_by_cell.keys())
+	_chokepoint_map_by_clue[island.root] = ChokepointMap.new(reach_score_by_cell.keys())
 
 
 func _init_reachable_clues_by_cell() -> void:
@@ -180,10 +180,10 @@ func _init_reachable_clues_by_cell() -> void:
 		for cell: Vector2i in chokepoint_map.cells:
 			if not _reachable_clues_by_cell.has(cell):
 				_reachable_clues_by_cell[cell] = {} as Dictionary[Vector2i, bool]
-			_reachable_clues_by_cell[cell][island.cells.front()] = true
+			_reachable_clues_by_cell[cell][island.root] = true
 
 
 func needs_buffer(island: CellGroup, cell: Vector2i) -> bool:
 	return _claimed_by_clue.has(cell) \
-		and _claimed_by_clue[cell] != island.cells.front() \
+		and _claimed_by_clue[cell] != island.root \
 		and board.get_cell(cell) == CELL_EMPTY

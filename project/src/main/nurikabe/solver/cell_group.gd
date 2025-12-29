@@ -2,6 +2,10 @@ class_name CellGroup
 
 var cells: Array[Vector2i]
 
+var root: Vector2i:
+	get():
+		return cells.front() if not cells.is_empty() else NurikabeUtils.POS_NOT_FOUND
+
 ## Clue value for this group: 0=none, N=single clue, -1=multiple clues.
 var clue: int = 0
 
