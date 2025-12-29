@@ -40,4 +40,9 @@ func size() -> int:
 
 
 static func merge_clue_values(a: int, b: int) -> int:
-	return max(a, b) if a == 0 or b == 0 else -1
+	if a == 0:
+		return b
+	elif b == 0:
+		return a
+	else:
+		return -1

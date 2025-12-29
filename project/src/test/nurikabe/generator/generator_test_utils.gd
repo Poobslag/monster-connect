@@ -13,7 +13,3 @@ static func init_board(grid: Array[String]) -> GeneratorBoard:
 			else:
 				board.set_cell(cell, cell_value)
 	return board
-
-
-static func init_janko(grid: Array[String]) -> GeneratorBoard:
-	var board: GeneratorBoard = GeneratorBoard.new()

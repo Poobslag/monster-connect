@@ -119,9 +119,23 @@ func import_grid() -> void:
 	var grid_string_rows: PackedStringArray = grid_string.split("\n")
 	for y in grid_string_rows.size():
 		var row_string: String = grid_string_rows[y]
-		@warning_ignore("integer_division")
-		for x in row_string.length() / 2:
-			set_cell(Vector2i(x, y), NurikabeUtils.from_cell_string(row_string.substr(x * 2, 2).strip_edges()))
+		
+		var cell_x: int = 0
+		var accumulated: String = ""
+		for str_x: int in row_string.length():
+			accumulated += row_string[str_x]
+			if accumulated.length() == 2 and accumulated[0] != "(":
+				set_cell(
+					Vector2i(cell_x, y),
+					NurikabeUtils.from_cell_string(accumulated.strip_edges()))
+				accumulated = ""
+				cell_x += 1
+			elif accumulated.ends_with(")"):
+				set_cell(
+					Vector2i(cell_x, y),
+					NurikabeUtils.from_cell_string(accumulated.substr(1, accumulated.length() - 2)))
+				accumulated = ""
+				cell_x += 1
 	
 	_undo_stack.clear()
 	_redo_stack.clear()
