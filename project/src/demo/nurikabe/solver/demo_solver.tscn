@@ -1,12 +1,13 @@
-[gd_scene load_steps=4 format=4 uid="uid://bgn2nry857s5x"]
+[gd_scene load_steps=5 format=4 uid="uid://bgn2nry857s5x"]
 
 [ext_resource type="Script" uid="uid://ddtpj80rxs8rb" path="res://src/demo/nurikabe/solver/demo_solver.gd" id="1_hjsai"]
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="2_gilm6"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="3_jvtrg"]
+[ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/demo/nurikabe/solver/command_palette.tscn" id="4_l4fyy"]
 
 [node name="Demo" type="Node"]
 script = ExtResource("1_hjsai")
-puzzle_path = "res://assets/demo/nurikabe/puzzles/nikoli/71.txt"
+puzzle_path = "res://assets/demo/nurikabe/puzzles/nikoli/62.txt"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 anchors_preset = 15
@@ -118,6 +119,10 @@ selection_enabled = true
 unique_name_in_owner = true
 wait_time = 0.25
 
+[node name="CommandPalette" parent="." instance=ExtResource("4_l4fyy")]
+unique_name_in_owner = true
+
 [connection signal="timeout" from="PerformanceSuiteTimer" to="." method="_on_performance_suite_timer_timeout"]
+[connection signal="command_entered" from="CommandPalette" to="." method="_on_command_palette_command_entered"]
 
 [editable path="HBoxContainer/GameBoardHolder/GameBoard"]
