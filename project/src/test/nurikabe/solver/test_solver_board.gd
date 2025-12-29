@@ -550,6 +550,79 @@ func test_complex_bug() -> void:
 	assert_invalid(VALIDATE_COMPLEX, {"wrong_size": [Vector2i(2, 1), Vector2i(2, 2), Vector2i(3, 1)]})
 
 
+func test_island_chain_map_cycle() -> void:
+	grid = [
+		"   3",
+		"    ",
+		" 2  ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(0, 1)), true)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(1, 1)), true)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(0, 0)), false)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(1, 2)), false)
+
+
+func test_island_chain_map_cycle_clueless() -> void:
+	grid = [
+		"   4",
+		"    ",
+		" .  ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(0, 1)), false)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(1, 1)), false)
+
+
+func test_island_chain_map_cycle_middle() -> void:
+	grid = [
+		"            ",
+		"     9 .    ",
+		"   8   .    ",
+		"   .   .    ",
+		"       .    ",
+		"            ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 3)), true)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 4)), true)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 5)), false)
+
+
+func test_island_chain_map_cycle_middle_big() -> void:
+	grid = [
+		"              ",
+		"     5 .      ",
+		"   8   .      ",
+		"   .     5    ",
+		"       . .    ",
+		"              ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 3)), true)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 4)), true)
+
+
+func test_island_chain_map_cycle_janko_3() -> void:
+	grid = [
+		" 2 .## . . 3######  ",
+		"############ 2 .##  ",
+		"## 2 .## 2 .####    ",
+		"###### 2####        ",
+		"   .## .## .        ",
+		"      ##            ",
+		"                ## 7",
+		"       .   .## 6    ",
+		"    ## 3## .  ##    ",
+		"   . 7####   . . .10",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(4, 6)), true)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(4, 7)), true)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(6, 6)), false)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(8, 2)), false)
+
+
 func assert_groups(actual_groups: Array[CellGroup], expected_props_list: Array[Dictionary]) -> void:
 	var actual_props_list: Array[Dictionary] = []
 	for actual_group: CellGroup in actual_groups:

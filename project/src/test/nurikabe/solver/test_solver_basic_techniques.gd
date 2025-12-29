@@ -614,3 +614,16 @@ func test_deduce_all_walls_wall_expansion_mystery_clue() -> void:
 		"(1, 1)->## wall_expansion (2, 1)",
 	]
 	assert_deductions(solver.deduce_all_walls, expected)
+
+
+func test_deduce_all_island_chains() -> void:
+	grid = [
+		"     3",
+		"      ",
+		"  2   ",
+	]
+	var expected: Array[String] = [
+		"(1, 1)->## island_chain (1, 2) (2, 0)",
+		"(2, 1)->## island_chain (1, 2) (2, 0)",
+	]
+	assert_deductions(solver.deduce_all_island_chains, expected)

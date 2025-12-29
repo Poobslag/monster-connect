@@ -153,12 +153,19 @@ func get_global_reachability_map() -> GlobalReachabilityMap:
 		_build_global_reachability_map)
 
 
+func get_island_chain_map() -> IslandChainMap:
+	return _get_cached(
+		"island_chain_map",
+		_build_island_chain_map)
+
+
 func get_island_chokepoint_map() -> SolverChokepointMap:
 	return _get_cached(
 		"island_chokepoint_map",
 		_build_island_chokepoint_map)
 
 
+## This wall chokepoint map is currently unused because island-chain cycle logic is faster.
 func get_wall_chokepoint_map() -> SolverChokepointMap:
 	return _get_cached(
 		"wall_chokepoint_map",
@@ -212,6 +219,15 @@ func set_cell(cell_pos: Vector2i, value: int) -> void:
 	
 	_cache.clear()
 	version += 1
+
+
+func is_border_cell(cell: Vector2i) -> bool:
+	var result: bool = false
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		if get_cell(cell + neighbor_dir) == CELL_INVALID:
+			result = true
+			break
+	return result
 
 
 func _expand_groups(groups: Array[CellGroup], cell: Vector2i) -> void:
@@ -487,6 +503,10 @@ func _build_island_chokepoint_map() -> SolverChokepointMap:
 			return has_clue(cell))
 
 
+func _build_island_chain_map() -> IslandChainMap:
+	return IslandChainMap.new(self)
+
+
 func _build_strict_validation_result() -> ValidationResult:
 	return get_flooded_board().validate(VALIDATE_SIMPLE)
 
@@ -574,6 +594,7 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 	return result
 
 
+## This wall chokepoint map is currently unused because island-chain cycle logic is faster.
 func _build_wall_chokepoint_map() -> SolverChokepointMap:
 	return SolverChokepointMap.new(self,
 		func(cell: Vector2i) -> bool:
