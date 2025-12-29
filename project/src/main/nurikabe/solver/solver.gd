@@ -276,7 +276,7 @@ func bifurcate_all_island_battlegrounds() -> void:
 		for liberty: Vector2i in island.liberties:
 			if not clued_island_neighbors_by_empty_cell.has(liberty):
 				clued_island_neighbors_by_empty_cell[liberty] = []
-			clued_island_neighbors_by_empty_cell[liberty].append(island.cells.front())
+			clued_island_neighbors_by_empty_cell[liberty].append(island.root)
 	
 	var old_deductions_size: int = deductions.size()
 	for cell: Vector2i in clued_island_neighbors_by_empty_cell:
@@ -325,7 +325,7 @@ func bifurcate_all_island_releases() -> void:
 			squeeze_fill.fill(island.clue - island.size() - 1)
 			
 			if _disprove_assumptions(squeeze_fill.changes):
-				add_deduction(liberty, CELL_ISLAND, ISLAND_RELEASE, [island.cells.front()])
+				add_deduction(liberty, CELL_ISLAND, ISLAND_RELEASE, [island.root])
 				add_fun(FUN_BIFURCATE, _cumulative_bifurcation_fun)
 				break
 		if deductions.size() > old_deductions_size:
@@ -357,7 +357,7 @@ func bifurcate_all_island_strangles() -> void:
 				assumptions[other_liberty] = CELL_WALL
 			
 			if _disprove_assumptions(assumptions):
-				add_deduction(liberty, CELL_WALL, ISLAND_STRANGLE, [island.cells.front()])
+				add_deduction(liberty, CELL_WALL, ISLAND_STRANGLE, [island.root])
 				add_fun(FUN_BIFURCATE, _cumulative_bifurcation_fun)
 				break
 		if deductions.size() > old_deductions_size:
@@ -401,7 +401,7 @@ func bifurcate_all_wall_strangles() -> void:
 			squeeze_fill.fill()
 			
 			if _disprove_assumptions(squeeze_fill.changes):
-				add_deduction(liberty, CELL_WALL, reason, [wall.cells.front()])
+				add_deduction(liberty, CELL_WALL, reason, [wall.root])
 				add_fun(FUN_BIFURCATE, _cumulative_bifurcation_fun)
 				break
 		if deductions.size() > old_deductions_size:
@@ -672,13 +672,13 @@ func deduce_clue_chokepoint_loose(island: CellGroup) -> void:
 			continue
 		if chokepoint_cells[chokepoint] == CELL_ISLAND:
 			if chokepoint in island.liberties:
-				add_deduction(chokepoint, CELL_ISLAND, ISLAND_EXPANSION, [island.cells.front()])
+				add_deduction(chokepoint, CELL_ISLAND, ISLAND_EXPANSION, [island.root])
 				add_fun(FUN_THINK, 1.0)
 			else:
-				add_deduction(chokepoint, CELL_ISLAND, ISLAND_CHOKEPOINT, [island.cells.front()])
+				add_deduction(chokepoint, CELL_ISLAND, ISLAND_CHOKEPOINT, [island.root])
 				add_fun(FUN_THINK, 1.0)
 		else:
-			add_deduction(chokepoint, CELL_WALL, ISLAND_BUFFER, [island.cells.front()])
+			add_deduction(chokepoint, CELL_WALL, ISLAND_BUFFER, [island.root])
 			add_fun(FUN_FAST, 1.0)
 
 
@@ -713,7 +713,7 @@ func deduce_clue_chokepoint_wall_weaver(island: CellGroup) -> void:
 		var connector: Vector2i = connectors_by_wall[wall_root].front()
 		if not should_deduce(board, connector):
 			continue
-		add_deduction(connector, CELL_WALL, WALL_WEAVER, [island.cells.front()])
+		add_deduction(connector, CELL_WALL, WALL_WEAVER, [island.root])
 		add_fun(FUN_THINK, 1.0)
 
 
@@ -730,7 +730,7 @@ func deduce_unclued_lifeline() -> void:
 		var island: CellGroup = board.get_island_for_cell(unclued_cell)
 		if island.clue != 0:
 			continue
-		exclusive_clues_by_unclued[island.cells.front()] \
+		exclusive_clues_by_unclued[island.root] \
 				= reachable_clues_by_cell[unclued_cell].keys().front()
 	
 	var old_deductions_size: int = deductions.size()
@@ -784,14 +784,14 @@ func deduce_clued_island_snug(island: CellGroup) -> void:
 	
 	for extent_cell: Vector2i in board.get_per_clue_extent_map().get_extent_cells(island):
 		if should_deduce(board, extent_cell):
-			add_deduction(extent_cell, CELL_ISLAND, ISLAND_SNUG, [island.cells.front()])
+			add_deduction(extent_cell, CELL_ISLAND, ISLAND_SNUG, [island.root])
 			add_fun(FUN_THINK, 1.0)
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor: Vector2i = extent_cell + neighbor_dir
 			if not should_deduce(board, neighbor):
 				continue
 			if board.get_per_clue_extent_map().needs_buffer(island, neighbor):
-				add_deduction(neighbor, CELL_WALL, ISLAND_BUFFER, [island.cells.front()])
+				add_deduction(neighbor, CELL_WALL, ISLAND_BUFFER, [island.root])
 				add_fun(FUN_FAST, 1.0)
 
 
@@ -858,7 +858,7 @@ func deduce_wall_expansion(wall: CellGroup) -> void:
 		squeeze_fill.fill()
 		for change: Vector2i in squeeze_fill.changes:
 			if should_deduce(board, change):
-				add_deduction(change, CELL_WALL, WALL_EXPANSION, [wall.cells.front()])
+				add_deduction(change, CELL_WALL, WALL_EXPANSION, [wall.root])
 				add_fun(FUN_FAST, 1.0)
 
 
@@ -894,7 +894,7 @@ func _check_clued_island_corner(island: CellGroup) -> void:
 			continue
 		if not should_deduce(board, diagonal):
 			continue
-		add_deduction(diagonal, CELL_WALL, CORNER_ISLAND, [island.cells.front()])
+		add_deduction(diagonal, CELL_WALL, CORNER_ISLAND, [island.root])
 		add_fun(FUN_NOVELTY, 1.0)
 
 
@@ -908,7 +908,7 @@ func _check_corner_buffer(island: CellGroup) -> void:
 		var merged_island_cells: Array[Vector2i] = []
 		for merged_dir in NEIGHBOR_DIRS:
 			merged_island_cells.append(diagonal + merged_dir)
-		merged_island_cells.append(island.cells.front())
+		merged_island_cells.append(island.root)
 		var neighbor_islands: Array[CellGroup] = _get_unique_islands(merged_island_cells)
 		if not _is_valid_merged_island(neighbor_islands, 2):
 			var sorted_root_cells: Array[Vector2i] = _get_sorted_root_cells(neighbor_islands)
@@ -923,7 +923,7 @@ func _check_unclued_island_forced_expansion(island: CellGroup) -> void:
 	squeeze_fill.fill()
 	for change: Vector2i in squeeze_fill.changes:
 		if should_deduce(board, change):
-			add_deduction(change, CELL_ISLAND, ISLAND_CONNECTOR, [island.cells.front()])
+			add_deduction(change, CELL_ISLAND, ISLAND_CONNECTOR, [island.root])
 			add_fun(FUN_NOVELTY, 1.0)
 
 
@@ -932,7 +932,7 @@ func _check_clued_island_moat(island: CellGroup) -> void:
 		if not should_deduce(board, liberty):
 			return
 		var reason: int = ISLAND_OF_ONE if island.clue == 1 else ISLAND_MOAT
-		add_deduction(liberty, CELL_WALL, reason, [island.cells.front()])
+		add_deduction(liberty, CELL_WALL, reason, [island.root])
 		add_fun(FUN_TRIVIAL, 1.0)
 
 
@@ -946,7 +946,7 @@ func _check_clued_island_forced_expansion(island: CellGroup) -> void:
 	squeeze_fill.fill(island.clue - island.size() - 1)
 	for new_island_cell: Vector2i in squeeze_fill.changes:
 		if should_deduce(board, new_island_cell):
-			add_deduction(new_island_cell, CELL_ISLAND, ISLAND_EXPANSION, [island.cells.front()])
+			add_deduction(new_island_cell, CELL_ISLAND, ISLAND_EXPANSION, [island.root])
 			add_fun(FUN_FAST, 1.0)
 	
 	if squeeze_fill.changes.size() == island.clue - island.size():
@@ -956,7 +956,7 @@ func _check_clued_island_forced_expansion(island: CellGroup) -> void:
 				if new_island_neighbor in squeeze_fill.changes:
 					continue
 				if should_deduce(board, new_island_neighbor):
-					add_deduction(new_island_neighbor, CELL_WALL, ISLAND_MOAT, [island.cells.front()])
+					add_deduction(new_island_neighbor, CELL_WALL, ISLAND_MOAT, [island.root])
 					add_fun(FUN_TRIVIAL, 1.0)
 
 
@@ -970,7 +970,7 @@ func _find_clued_neighbor_roots(cell: Vector2i) -> Array[Vector2i]:
 		var island: CellGroup = board.get_island_for_cell(neighbor)
 		if island.clue == 0:
 			continue
-		clued_neighbor_roots[island.cells.front()] = true
+		clued_neighbor_roots[island.root] = true
 	return clued_neighbor_roots.keys()
 
 
@@ -987,7 +987,7 @@ func _get_unique_islands(cells: Array[Vector2i]) -> Array[CellGroup]:
 func _get_sorted_root_cells(islands: Array[CellGroup]) -> Array[Vector2i]:
 	var cells: Array[Vector2i] = []
 	for island: CellGroup in islands:
-		cells.append(island.cells.front())
+		cells.append(island.root)
 	cells.sort()
 	return cells
 

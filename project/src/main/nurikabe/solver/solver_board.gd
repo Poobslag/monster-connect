@@ -563,7 +563,7 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 			VALIDATE_SIMPLE:
 				var group_map: SolverGroupMap = get_flooded_island_group_map()
 				var flooded_island_group: Array[Vector2i] \
-						= group_map.groups_by_cell.get(island.cells.front(), [] as Array[Vector2i])
+						= group_map.groups_by_cell.get(island.root, [] as Array[Vector2i])
 				if island.clue > flooded_island_group.size() and island.clue != CELL_MYSTERY_CLUE:
 					# island is too small and can't grow
 					result.wrong_size.append_array(island.cells)

@@ -295,8 +295,8 @@ func attempt_island_buffer_from(island: CellGroup, diagonal: Vector2i, dir_prior
 		if not neighbor_islands.is_empty():
 			continue
 		
-		add_placement(neighbor, CELL_MYSTERY_CLUE, ISLAND_BUFFER, [island.cells.front()])
-		add_given(diagonal, CELL_WALL, ISLAND_BUFFER, [island.cells.front()])
+		add_placement(neighbor, CELL_MYSTERY_CLUE, ISLAND_BUFFER, [island.root])
+		add_given(diagonal, CELL_WALL, ISLAND_BUFFER, [island.root])
 		var clue_cell: Vector2i = _find_clue_cell(island)
 		add_clue_minimum_change(clue_cell, island.size() + 1)
 		break

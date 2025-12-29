@@ -42,23 +42,23 @@ func _init(init_board: SolverBoard) -> void:
 				_visitable.erase(liberty)
 			else:
 				_adjacent_clues_by_cell[liberty] = 1
-				_claimed_by_clue[liberty] = island.cells.front()
+				_claimed_by_clue[liberty] = island.root
 
 
 func get_extent_size(island: CellGroup) -> int:
 	if not _has_extent_map(island):
 		_init_extent_map(island)
-	return _extent_map_by_clue[island.cells.front()].size()
+	return _extent_map_by_clue[island.root].size()
 
 
 func get_extent_cells(island: CellGroup) -> Array[Vector2i]:
 	if not _has_extent_map(island):
 		_init_extent_map(island)
-	return _extent_map_by_clue[island.cells.front()].keys()
+	return _extent_map_by_clue[island.root].keys()
 
 
 func _has_extent_map(island: CellGroup) -> bool:
-	return _extent_map_by_clue.has(island.cells.front())
+	return _extent_map_by_clue.has(island.root)
 
 
 func _init_extent_map(island: CellGroup) -> void:
@@ -68,14 +68,14 @@ func _init_extent_map(island: CellGroup) -> void:
 	var extent_list: Array[Vector2i] = board.perform_bfs(island.liberties, func(cell: Vector2i) -> bool:
 		return (extent_map.size() <= island.clue or island.clue == CELL_MYSTERY_CLUE) \
 				and _visitable.has(cell) \
-				and (not _claimed_by_clue.has(cell) or _claimed_by_clue[cell] == island.cells.front()))
+				and (not _claimed_by_clue.has(cell) or _claimed_by_clue[cell] == island.root))
 	for cell: Vector2i in extent_list:
 		extent_map[cell] = true
 	
-	_extent_map_by_clue[island.cells.front()] = extent_map
+	_extent_map_by_clue[island.root] = extent_map
 
 
 func needs_buffer(island: CellGroup, cell: Vector2i) -> bool:
 	return _claimed_by_clue.has(cell) \
-		and _claimed_by_clue[cell] != island.cells.front() \
+		and _claimed_by_clue[cell] != island.root \
 		and board.get_cell(cell) == CELL_EMPTY

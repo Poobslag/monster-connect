@@ -69,7 +69,7 @@ func _build() -> void:
 				continue
 			
 			_reach_score_by_cell[liberty] = reachability
-			_nearest_clue_root_by_cell[liberty] = island.cells.front()
+			_nearest_clue_root_by_cell[liberty] = island.root
 			_adjacent_clues_by_cell[liberty] = 1
 			queue.append(liberty)
 	
