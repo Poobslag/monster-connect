@@ -3,16 +3,16 @@ extends Node
 
 ## Nurikabe cells:
 ## 	0: Invalid (out of bounds)
-## 	1-255: Clue
-## 	256: Island
-## 	257: Empty (unknown, either island or wall)
-## 	258: Wall
-## 	259: Clue (unknown size)
+## 	>0: Clue (any positive integer)
+## 	-1: Island
+## 	-2: Empty (unknown, either island or wall)
+## 	-3: Wall
+## 	-4: Clue (unknown size)
 const CELL_INVALID := 0
-const CELL_ISLAND := 256
-const CELL_EMPTY := 257
-const CELL_WALL := 258
-const CELL_MYSTERY_CLUE := 259
+const CELL_ISLAND := -1
+const CELL_EMPTY := -2
+const CELL_WALL := -3
+const CELL_MYSTERY_CLUE := -4
 
 ## Nurikabe cell strings:
 ## 	['0'-'99']: Clue
@@ -42,7 +42,7 @@ static func pool_triplet(cell: Vector2i, dir: Vector2i) -> Array[Vector2i]:
 
 
 static func is_clue(value: int) -> int:
-	return value >= 1 and value <= 255 or value == CELL_MYSTERY_CLUE
+	return value >= 1 or value == CELL_MYSTERY_CLUE
 
 
 static func to_cell_string(value: int) -> String:
@@ -69,13 +69,13 @@ static func load_grid_string_from_file(puzzle_path: String) -> String:
 	var s: String = FileAccess.get_file_as_string(puzzle_path)
 	var grid_string: String
 	if puzzle_path.ends_with(".janko"):
-		grid_string = _parse_janko_text(s)
+		grid_string = _parse_janko_text(puzzle_path, s)
 	else:
-		grid_string = _parse_mc_text(s)
+		grid_string = _parse_mc_text(puzzle_path, s)
 	return grid_string
 
 
-static func _parse_mc_text(file_text: String) -> String:
+static func _parse_mc_text(_puzzle_path: String, file_text: String) -> String:
 	var puzzle_lines: Array[String] = []
 	var file_lines: PackedStringArray = file_text.split("\n")
 	for file_line: String in file_lines:
@@ -87,7 +87,7 @@ static func _parse_mc_text(file_text: String) -> String:
 
 ## Test data includes Nurikabe puzzles scraped from janko.at for solver development and benchmarking. These files are
 ## not distributed with Monster Connect.
-static func _parse_janko_text(file_text: String) -> String:
+static func _parse_janko_text(puzzle_path: String, file_text: String) -> String:
 	var janko_section: String
 	var puzzle_lines: Array[String] = []
 	var janko_lines: PackedStringArray = file_text.split("\n")
@@ -107,10 +107,10 @@ static func _parse_janko_text(file_text: String) -> String:
 					continue
 				elif janko_cell == "-":
 					puzzle_cell = CELL_STRING_EMPTY
-				elif janko_cell.is_valid_int() and janko_cell.length() <= 2:
-					puzzle_cell = janko_cell
+				elif janko_cell.is_valid_int():
+					puzzle_cell = janko_cell if janko_cell.length() <= 2 else "(%s)" % [janko_cell]
 				else:
-					push_warning("Invalid cell in %s: %s" % [file_text, puzzle_cell])
+					push_warning("Invalid cell in %s: %s" % [puzzle_path, janko_cell])
 				puzzle_cells_split.append(puzzle_cell.lpad(2))
 			puzzle_lines.append("".join(puzzle_cells_split))
 	return "\n".join(PackedStringArray(puzzle_lines))

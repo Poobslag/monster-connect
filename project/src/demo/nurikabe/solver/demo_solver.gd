@@ -36,7 +36,7 @@ const FUN_THINK: Deduction.FunAxis = Deduction.FunAxis.FUN_THINK
 const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
 
 const PUZZLE_PATHS: Array[String] = [
-	"res://assets/demo/nurikabe/puzzles/janko/1.janko",
+	"res://assets/demo/nurikabe/puzzles/janko/1030.janko",
 	"res://assets/demo/nurikabe/puzzles/janko/613.janko",
 	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_007.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_008.txt",
