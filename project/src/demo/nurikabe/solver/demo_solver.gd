@@ -36,8 +36,8 @@ const FUN_THINK: Deduction.FunAxis = Deduction.FunAxis.FUN_THINK
 const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
 
 const PUZZLE_PATHS: Array[String] = [
-	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_005.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_006.txt",
+	"res://assets/demo/nurikabe/puzzles/janko/1.janko",
+	"res://assets/demo/nurikabe/puzzles/janko/613.janko",
 	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_007.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_008.txt",
 	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_066.txt",
@@ -223,14 +223,7 @@ func _refresh_puzzle_path() -> void:
 	if not is_inside_tree():
 		return
 	
-	var s: String = FileAccess.get_file_as_string(puzzle_path)
-	var file_lines: PackedStringArray = s.split("\n")
-	var puzzle_lines: Array[String] = []
-	for file_line: String in file_lines:
-		if file_line.begins_with("//"):
-			continue
-		puzzle_lines.append(file_line)
-	%GameBoard.grid_string = "\n".join(PackedStringArray(puzzle_lines))
+	%GameBoard.grid_string = NurikabeUtils.load_grid_string_from_file(puzzle_path)
 	%GameBoard.import_grid()
 
 

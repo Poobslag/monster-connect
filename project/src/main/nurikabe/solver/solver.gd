@@ -430,6 +430,7 @@ func _disprove_assumptions(assumptions: Dictionary[Vector2i, int]) -> bool:
 	if not metrics.has("bifurcation_scenarios"):
 		metrics["bifurcation_scenarios"] = 0
 	metrics["bifurcation_scenarios"] += 1
+	var bifurcation_start_time: int = Time.get_ticks_usec()
 	
 	var local_cells: Array[Vector2i] = []
 	for assumption_cell in assumptions:
@@ -458,6 +459,11 @@ func _disprove_assumptions(assumptions: Dictionary[Vector2i, int]) -> bool:
 	if assumptions_valid:
 		bifurcation_fun *= BAD_BIFURCATION_FUN_FACTOR
 	_cumulative_bifurcation_fun += bifurcation_fun
+	
+	if not metrics.has("bifurcation_duration"):
+		metrics["bifurcation_duration"] = 0
+	metrics["bifurcation_duration"] += (Time.get_ticks_usec() - bifurcation_start_time) / 1000.0
+	
 	return not assumptions_valid
 
 func deduce_all_islands() -> void:
