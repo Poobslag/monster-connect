@@ -21,6 +21,7 @@ enum Reason {
 	ISLAND_BUBBLE, # fill in an empty cell surrounded by islands
 	ISLAND_BUFFER, # add a wall to preserve space for an island to grow
 	ISLAND_CHAIN, # add a wall to avoid connecting an island chain
+	ISLAND_CHAIN_BUFFER, # add a wall to prevent a chain cycle from all reachable clues
 	ISLAND_CHOKEPOINT, # expand an island through a narrow passage
 	ISLAND_CONNECTOR, # connect a clueless island to a clued island
 	ISLAND_DIVIDER, # add a wall to keep two islands apart

@@ -1,27 +1,26 @@
-[gd_scene format=4 uid="uid://bgn2nry857s5x"]
+[gd_scene format=4 uid="uid://b16oehg4b3cg8"]
 
-[ext_resource type="Script" uid="uid://ddtpj80rxs8rb" path="res://src/demo/nurikabe/solver/demo_solver.gd" id="1_hjsai"]
-[ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="2_gilm6"]
-[ext_resource type="PackedScene" uid="uid://rpgvsnfuo7o5" path="res://src/demo/nurikabe/generator/demo_log.tscn" id="3_l4fyy"]
-[ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/demo/nurikabe/solver/command_palette.tscn" id="4_l4fyy"]
-[ext_resource type="Script" uid="uid://bvoy1f5e7f8ao" path="res://src/demo/nurikabe/solver/demo_puzzle_archive.gd" id="5_vfiik"]
+[ext_resource type="Script" uid="uid://qwccyyoqtm7y" path="res://src/demo/nurikabe/solver/demo_solver_board.gd" id="1_1oyp4"]
+[ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="2_ts2fd"]
+[ext_resource type="PackedScene" uid="uid://rpgvsnfuo7o5" path="res://src/demo/nurikabe/generator/demo_log.tscn" id="3_16nxf"]
+[ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/demo/nurikabe/solver/command_palette.tscn" id="4_ulbbn"]
+[ext_resource type="Script" uid="uid://bvoy1f5e7f8ao" path="res://src/demo/nurikabe/solver/demo_puzzle_archive.gd" id="5_ts2fd"]
 
-[node name="Demo" type="Node" unique_id=899144001]
-script = ExtResource("1_hjsai")
-puzzle_path = "res://assets/demo/nurikabe/puzzles/nikoli/62.txt"
+[node name="Demo" type="Node" unique_id=1237384723]
+script = ExtResource("1_1oyp4")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1965286464]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=156876354]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="GameBoardHolder" type="Control" parent="HBoxContainer" unique_id=58280937]
+[node name="GameBoardHolder" type="Control" parent="HBoxContainer" unique_id=1259259476]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GameBoard" parent="HBoxContainer/GameBoardHolder" unique_id=814034739 instance=ExtResource("2_gilm6")]
+[node name="GameBoard" parent="HBoxContainer/GameBoardHolder" unique_id=779353418 instance=ExtResource("2_ts2fd")]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -32,7 +31,7 @@ anchor_bottom = 0.5
 offset_left = -440.0
 offset_top = -585.0
 offset_right = 200.0
-offset_bottom = 567.0
+offset_bottom = 55.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.5, 0.5)
@@ -86,22 +85,19 @@ Vector2i(9, 10): 3
 [node name="CursorableArea" parent="HBoxContainer/GameBoardHolder/GameBoard" index="6" unique_id=1710127712]
 cursorable_rect = Rect2(0, 0, 2560, 4608)
 
-[node name="DemoLog" parent="HBoxContainer" unique_id=1851343763 instance=ExtResource("3_l4fyy")]
+[node name="DemoLog" parent="HBoxContainer" unique_id=1089654608 instance=ExtResource("3_16nxf")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="PerformanceSuiteTimer" type="Timer" parent="." unique_id=688118249]
+[node name="PerformanceSuiteTimer" type="Timer" parent="." unique_id=1520237435]
 unique_name_in_owner = true
 wait_time = 0.25
 
-[node name="CommandPalette" parent="." unique_id=904274984 instance=ExtResource("4_l4fyy")]
+[node name="CommandPalette" parent="." unique_id=1368678133 instance=ExtResource("4_ulbbn")]
 unique_name_in_owner = true
 
-[node name="PuzzleArchive" type="Node" parent="." unique_id=632844870]
+[node name="PuzzleArchive" type="Node" parent="." unique_id=226330064]
 unique_name_in_owner = true
-script = ExtResource("5_vfiik")
-
-[connection signal="timeout" from="PerformanceSuiteTimer" to="." method="_on_performance_suite_timer_timeout"]
-[connection signal="command_entered" from="CommandPalette" to="." method="_on_command_palette_command_entered"]
+script = ExtResource("5_ts2fd")
 
 [editable path="HBoxContainer/GameBoardHolder/GameBoard"]

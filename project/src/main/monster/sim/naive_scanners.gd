@@ -17,6 +17,7 @@ const CORNER_ISLAND: Deduction.Reason = Deduction.Reason.CORNER_ISLAND
 const ISLAND_BUBBLE: Deduction.Reason = Deduction.Reason.ISLAND_BUBBLE
 const ISLAND_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_BUFFER
 const ISLAND_CHAIN: Deduction.Reason = Deduction.Reason.ISLAND_CHAIN
+const ISLAND_CHAIN_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_CHAIN_BUFFER
 const ISLAND_CHOKEPOINT: Deduction.Reason = Deduction.Reason.ISLAND_CHOKEPOINT
 const ISLAND_CONNECTOR: Deduction.Reason = Deduction.Reason.ISLAND_CONNECTOR
 const ISLAND_DIVIDER: Deduction.Reason = Deduction.Reason.ISLAND_DIVIDER

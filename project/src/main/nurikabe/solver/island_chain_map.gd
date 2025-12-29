@@ -56,6 +56,25 @@ func find_chain_conflicts(cell: Vector2i, start_numbered_island_count: int = 0) 
 	return result
 
 
+func causes_chain_conflict(island: CellGroup, cell: Vector2i) -> bool:
+	var conflict: bool = false
+	var visited: Dictionary[CellGroup, bool] = {}
+	for neighbor_dir: Vector2i in NurikabeUtils.ADJACENT_DIRS:
+		var neighbor: Vector2i = cell + neighbor_dir
+		if _board.get_cell(neighbor) != CELL_ISLAND:
+			continue
+		var neighbor_island: CellGroup = _board.get_island_for_cell(neighbor)
+		if neighbor_island == island or neighbor_island in visited:
+			continue
+		visited[neighbor_island] = true
+		if _chain_id_by_island[island] != _chain_id_by_island[neighbor_island]:
+			continue
+		if _illegal_endpoint_connection(island, neighbor_island):
+			conflict = true
+			break
+	return conflict
+
+
 func _build_diagonal_island_neighbors() -> void:
 	for island: CellGroup in _board.islands:
 		_diagonal_island_neighbors[island] = []
