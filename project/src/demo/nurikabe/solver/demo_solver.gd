@@ -38,14 +38,14 @@ const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
 const PUZZLE_PATHS: Array[String] = [
 	"res://assets/demo/nurikabe/puzzles/janko/1030.janko",
 	"res://assets/demo/nurikabe/puzzles/janko/613.janko",
-	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_007.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_poobslag_008.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_066.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_067.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_068.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_069.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_070.txt",
-	"res://assets/demo/nurikabe/puzzles/puzzle_nikoli_1_071.txt",
+	"res://assets/demo/nurikabe/puzzles/poobslag/007.txt",
+	"res://assets/demo/nurikabe/puzzles/poobslag/008.txt",
+	"res://assets/demo/nurikabe/puzzles/nikoli/066.txt",
+	"res://assets/demo/nurikabe/puzzles/nikoli/067.txt",
+	"res://assets/demo/nurikabe/puzzles/nikoli/068.txt",
+	"res://assets/demo/nurikabe/puzzles/nikoli/069.txt",
+	"res://assets/demo/nurikabe/puzzles/nikoli/070.txt",
+	"res://assets/demo/nurikabe/puzzles/nikoli/071.txt",
 ]
 
 var performance_data: Dictionary[String, Variant] = {}
