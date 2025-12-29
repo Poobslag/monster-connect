@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Halflength Sleeve
+solver Rainer
+source http://hansode.sblo.jp/
+info 5368-47-3240800780738-0-132
+rows 10
+cols 10
+unit 25
+[problem]
+- - - - - - - 5 - 4 
+3 - - - 1 - - - - - 
+- - - - - - - - - - 
+6 - - - - - - - - - 
+- - - - - - - 2 - - 
+4 - - - - 2 - - - - 
+- - - - - - 4 - - - 
+4 - - - - 3 - - - - 
+- - - - - - - 2 - - 
+- - - - - - - - 3 - 

@@ -1,0 +1,15 @@
+[begin]
+puzzle nurikabe
+solver Otto Janko
+source http://www.forest.dnj.ynu.ac.jp/~mori/
+unit 25
+cols 7
+rows 7
+[problem]
+- - - 3 - 1 - 
+- - - - - - - 
+2 - - - - - - 
+- 4 - - - 2 - 
+- - - - - - 5 
+- - - - - - - 
+- 4 - 1 - - - 

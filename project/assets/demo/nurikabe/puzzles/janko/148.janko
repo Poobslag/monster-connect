@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabeinfo Pack2.9x9.08
+solver Rainer
+author Oleg Andrushko
+source http://www.puzzleprograms.narod.ru/
+author Oleg Andrushko
+unit 25
+rows 9
+cols 9
+[problem]
+5 - - - - - - - 2
+- - - 2 - 2 - - -
+- - - - - - - - -
+2 - - - - - - - 3
+- - 3 - - - 2 - -
+2 - - - - - - - 3
+- - - - - - - - -
+- - - 3 - 3 - - -
+3 - - - - - - - 2

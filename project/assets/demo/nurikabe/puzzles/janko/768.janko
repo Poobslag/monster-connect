@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Tom Collyer
+solver Rainer
+source http://tcollyer.blogspot.com/
+info 192
+unit 25
+size 10
+[problem]
+6 - - - - 2 - - - -
+- - - - - - - 2 - -
+- - - - - - 3 - - -
+- - - - - - - - - -
+- 3 - - 1 - - 5 - -
+- - 4 - - 2 - - 6 -
+- - - - - - - - - -
+- - - 1 - - - - - -
+- - 2 - - - - - - -
+- - - - 3 - - - - 1

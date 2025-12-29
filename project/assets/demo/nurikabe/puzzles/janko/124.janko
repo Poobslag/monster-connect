@@ -1,0 +1,17 @@
+[begin]
+puzzle nurikabe
+author Oleg Andrushko
+solver Jürgen Helbig
+source http://www.puzzleprograms.narod.ru/
+info Pack2.7x7.04
+unit 25
+rows 7
+cols 7
+[problem]
+- - - 3 - - -
+- - 6 - - - -
+- - - - - - -
+- - - - - - -
+- - - - - - 3
+- 3 - - - 3 -
+- - 1 - - - -

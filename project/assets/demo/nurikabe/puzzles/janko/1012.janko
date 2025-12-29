@@ -1,0 +1,16 @@
+[begin]
+puzzle nurikabe
+author @fuwa_lica_chan
+solver Rainer
+source https://puzz.link/p?nurikabe/8/5/3g1gazg4g5q
+source https://twitter.com/fuwa_lica_chan/status/1249601473433833472
+info 13.4.2020, 09:33 (3) [012]
+unit 25
+rows 5
+cols 8
+[problem]
+3 - 1 - 10 - - - 
+- - - - - - - - 
+- - - - - - - - 
+- - 4 - 5 - - - 
+- - - - - - - - 

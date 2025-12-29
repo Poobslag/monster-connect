@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Tom Collyer
+solver Jürgen Helbig
+source http://blogs.warwick.ac.uk/tcollyer/
+info 154
+unit 25
+size 10
+[problem]
+4 - - - - - - - - 4
+- - 4 - - - - - - -
+- - - - 2 - - - 4 -
+- - - - - - - - - -
+- - - - - - - 5 - -
+- - 3 - - - - - - -
+- - - - - - - - - -
+- 11 - - - 1 - - - -
+- - - - - - - 1 - -
+6 - - - - - - - - 1

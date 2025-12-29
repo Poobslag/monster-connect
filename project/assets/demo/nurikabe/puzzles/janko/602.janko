@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Toonkigou
+solver Rainer
+source https://d.hatena.ne.jp/toonkigou/
+info 011
+unit 25
+size 10
+[problem]
+- 7 - 2 - - - - - -
+- - - - - - 8 - - -
+- - - - - 5 - - - -
+- - - - - - 5 - - 1
+- - - 6 - 3 - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - 5 - - - - -
+- - - - - - - - - -
+- - 3 - - - - - - 5

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Warai Kamosika
+solver Otto Janko
+source http://homepage2.nifty.com/warai_kamosika/
+info 302
+unit 25
+size 10
+[problem]
+- - - 5 - - 1 - 4 -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - 3 - 3 - - - 2
+- - 5 - - - 5 - - -
+- - - - 2 - - - 2 -
+- - 2 - - - - - - -
+- - - - - - - - - -
+- - - - - 1 - - - -
+- 4 - - 4 - - 1 - 2

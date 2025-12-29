@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Steve C
+source http://www.zanellati.it/
+info 9x12_easy_12.txt
+unit 25
+rows 9
+cols 12
+[problem]
+9 - - - 3 - - - - - 8 -
+- - - - - - - - - - - -
+3 - - - - - - - - - - -
+- - - - - - - 3 - - - -
+- - - - 3 - 2 - - - 2 -
+- - - - - - - - - - - 3
+- - 3 - - - - - - - - -
+- - - 8 - - - - - - - -
+- - - - - - 2 - - - 6 -

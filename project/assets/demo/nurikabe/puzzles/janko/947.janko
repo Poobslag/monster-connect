@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Prasanna Seshadri
+solver Jürgen Helbig
+source http://prasannaseshadri.wordpress.com/
+info 411
+unit 25
+size 10
+[problem]
+- - 3 - - - - - - -
+- - - 7 - - - - 1 -
+- 1 - - - - - - - 2
+4 - - - - - - - - -
+- - - - 1 - - - - -
+- - - - - 7 - - - -
+- - - - - - - - - 2
+8 - - - - - - - 1 -
+- 2 - - - - 1 - - -
+- - - - - - - 2 - -

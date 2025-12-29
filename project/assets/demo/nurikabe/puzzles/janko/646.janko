@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Tom Collyer
+solver Otto Janko
+source http://tcollyer.blogspot.com/
+info 042
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+- - - - - - - - - -
+- - 6 - - - 2 - 6 -
+- - - 7 - - - - - -
+1 - - - - - - - - -
+- - 5 - - - - - - -
+- - - - 3 - - - 4 -
+- 8 - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -

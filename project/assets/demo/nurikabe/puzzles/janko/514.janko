@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author Dark Murad
+solver Rainer
+source http://www.puzzlepicnic.com/
+info 1048
+unit 25
+size 9
+[problem]
+- - 3 - - - - - 3
+- 3 - - - - 2 - -
+- - - - - - - - -
+- - - - 2 - - - -
+- - - - - - - - -
+2 - - - - - 3 - -
+- - - - - - - 8 -
+- - - 5 - - - - -
+- - - - - 1 - - -

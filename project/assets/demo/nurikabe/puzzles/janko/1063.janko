@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author Sakuhina
+source http://sky.ap.teacup.com/sakuhina/
+info 047
+unit 25
+size 10
+[problem]
+8 - 8 - - - - - - -
+- - - - - - - 13 - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - 1 - - - -
+8 - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- 8 - - - 8 - - - -
+- - - - - - 8 - - -

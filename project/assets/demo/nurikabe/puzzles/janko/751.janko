@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author Swaroop Guggilam
+solver Jürgen Helbig
+source http://swaroopg92.blogspot.com/
+info 029
+unit 25
+rows 8
+cols 9
+[problem]
+2 - - - 4 - 4 - -
+- - - - - - - - -
+- - - - - - - - 2
+- - - - - - 5 - -
+- - - - - - - - -
+2 - - - - - - - 10
+- - - - - - - - -
+- - - - - - - - 7

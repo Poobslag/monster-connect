@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Warai Kamosika
+solver Rainer
+source http://homepage2.nifty.com/warai_kamosika/
+info 358
+unit 25
+rows 10
+cols 18
+[problem]
+- - 1 - 2 - - - - - - - 7 - - - - 3
+1 - - - - - - - - - - - - 2 - - - -
+- - - - - - - 4 - 2 - - - - - 1 - 2
+- - - - - - - - - - - - - - - - - -
+- - - 3 - - - - - - - - - - - - - -
+- 6 - - - - - - - - - - - - 8 - 1 -
+- - - - - - - - - - - - - - - - - -
+- 4 - - - - 3 - - - - - - - - - - -
+- - - - - - - - - - 4 - 1 - - - - -
+- - 1 - - 5 - - - 9 - - - - 3 - - 2

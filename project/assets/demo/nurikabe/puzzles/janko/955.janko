@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Chris Green
+solver Jürgen Helbig
+source http://puzzleparade.blogspot.com/
+info 011
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+- 1 - - - 4 - 3 - -
+- - 5 - 2 - - - 6 - 
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - 3 - 6 - - - 2 -
+- 4 - - - 1 - 5 - -
+- - - - - - - - - -

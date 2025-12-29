@@ -1,0 +1,22 @@
+[begin]
+puzzle nurikabe
+author Iwa Daigeki
+solver Rainer
+source http://blog.livedoor.jp/bachelor_seal-puzzle/archives/cat_531432.html
+info 016
+unit 25
+rows 12
+cols 19
+[problem]
+- - - - - 3 - - - - 3 - - - 2 - - 5 -
+- 8 - - - - 6 - - - - - - - - - - - -
+- - - - - - - - - - - - - 6 - - - - 3
+- - - - 3 - - 6 - - - - - - - - - - -
+- - - - - - - - - - 4 - - - - - - - -
+- - - - - - - - - - - - - - 3 - - - -
+- - - - - - - 3 - - - - - - - - 1 - -
+- - - - - - 6 - 2 - - - 3 - - 2 - - -
+- - - - 1 - - - - - 4 - - - - - - - -
+4 - - - - - - - - - - - - - - - - 5 -
+- 5 - - - - - - 8 - - - - - - - - - -
+- - - - - - - - - - - - - - - - 2 - -

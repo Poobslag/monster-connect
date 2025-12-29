@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author @udoP_
+solver Groffin
+source https://puzz.link/p?nurikabe/9/7/q3o1g4mag6zo
+source https://twitter.com/udoP_/status/1249594370937905152
+info 13.4.2020, 09:04 (3) [013]
+unit 25
+rows 7
+cols 9
+[problem]
+- - - - - - - - - 
+- - 3 - - - - - - 
+- - - 1 - 4 - - - 
+- - - - 10 - 6 - - 
+- - - - - - - - - 
+- - - - - - - - - 
+- - - - - - - - - 

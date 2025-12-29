@@ -1,0 +1,25 @@
+[begin]
+puzzle nurikabe
+author Iwa Daigeki
+solver Groffin
+source https://puzz.link/p?nurikabe/24/14/h7g4h4i6n5zzg4n5n4zm4g5i4h4j5h4m5zl4t6zk5h5k6k5s4h5i4m5w5h4m4zj4k4m4j5i5i4o
+source http://blog.livedoor.jp/bachelor_seal-puzzle/archives/cat_531432.htmlarchives/81813712.html
+info 14.4.2020, 20:00 (3) [008]
+unit 25
+rows 14
+cols 24
+[problem]
+- - 7 - 4 - - 4 - - - 6 - - - - - - - - 5 - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - 4 - - - - - - - - 5 
+- - - - - - - - 4 - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - 4 - 5 - - - 4 - - 4 - - 
+- - 5 - - 4 - - - - - - - 5 - - - - - - - - - - 
+- - - - - - - - - - - - - - - - 4 - - - - - - - 
+- - - - - - - 6 - - - - - - - - - - - - - - - - 
+- - - - - - - - - 5 - - 5 - - - - - 6 - - - - - 
+5 - - - - - - - - - - - - - 4 - - 5 - - - 4 - - 
+- - - - - 5 - - - - - - - - - - - - - - - - - 5 
+- - 4 - - - - - - - 4 - - - - - - - - - - - - - 
+- - - - - - - - - - - 4 - - - - - 4 - - - - - - 
+- 4 - - - - 5 - - - 5 - - - 4 - - - - - - - - - 

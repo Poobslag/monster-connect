@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Iwa Daigeki
+solver Rainer
+source http://blog.livedoor.jp/bachelor_seal-puzzle/archives/cat_531432.html
+info 001
+unit 25
+size 10
+[problem]
+4 - 3 - - - - - - 2
+- - - - - 3 - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+3 - - 1 - 5 - - - -
+- - - - - - - 2 - 5
+- 4 - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - 3 -
+- - - 4 - - - 7 - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author John Bulten
+source https://www.gmpuzzles.com/blog/
+info 2015-07-23
+unit 25
+size 11
+[problem]
+- - - - - - - - - - -
+- - - - - - - - - - -
+- - - - - 7 - - - - -
+- - - - - - 8 - - - - 
+- - - - - 7 - - - - -
+- - - - - - 7 - - - -
+- - - - - 7 - - - - -
+- - - - - - 6 - - - -
+- - - - - 7 - - - - -
+- - - - - - - - - - -
+- - - 1 - - - - - - -

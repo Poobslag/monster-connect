@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Connect4
+solver Rainer
+source http://www.puzzlepicnic.com/
+info 1359
+unit 25
+size 10
+[problem]
+- - - 5 - - - - 4 -
+- - - - - - - - - -
+- - - - 3 - - - - -
+- - - - - - - - - 1
+- - - - 2 - - - 9 -
+- 4 - - - 2 - - - -
+8 - - - - - - - - -
+- - - - - 2 - - - -
+- - - - - - - - - -
+- 1 - - - - 1 - - -

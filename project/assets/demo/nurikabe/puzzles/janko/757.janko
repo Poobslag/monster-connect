@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Brian Chen
+solver Jürgen Helbig
+source http://betaveros.wordpress.com/
+info 004-01
+unit 25
+size 10
+[problem]
+- - 4 - - - 3 - - -
+- 8 - - - - - - - -
+- - - 5 - - - - - -
+- - - - - - - 3 - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - 7 - -
+- 3 - - - - - - 3 -
+- - 2 - - - - - - -
+- - - - - 4 - - - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Maarten Löffler
+solver Rainer
+source http://www.puzzlepicnic.com/
+info 890
+unit 25
+size 10
+[problem]
+- 4 - - - - - - - -
+- - - - 4 - - 3 - -
+5 - - - - - - - 2 -
+- - - - 5 - 8 - - -
+- - - - - - - - - -
+- 2 - - - - - - - 2
+- - - - - - - - - -
+- - - - 3 - - - - -
+- 4 - - - - 2 - - -
+- - - - - - - - - -

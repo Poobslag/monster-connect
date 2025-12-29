@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Mokuani
+solver Jürgen Helbig
+source https://d.hatena.ne.jp/mokuani/
+info 049
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+- - - - - - - - - -
+- 6 - - - - - 4 - -
+17 - - - - - - - - -
+- - - - - - - - - -
+- - - - 4 - - - - -
+- - - - - - - - - -
+4 - - - - - - - - -
+- 5 - - - - - - - -
+- - - - - - - - - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Jamie Hargrove
+solver Groffin
+source https://www.gmpuzzles.com/blog/
+info 2017-06-12
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+- 5 - - - - - - 10 -
+- - - - - - - - - -
+- - - 3 - - 6 - - - 
+- - - - 4 - - - - 2
+2 - - - - - - - - -
+- - - 3 - - 4 - - -
+- - - - - - - - - -
+- 3 - - - - - - 4 -
+- - - - - - - - - -

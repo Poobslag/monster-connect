@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Groffin
+source http://www.zanellati.it/
+info L2_i6_2_09x12_100605175712.txt
+unit 25
+rows 9
+cols 12
+[problem]
+- - 2 - 6 - - - - - - 2
+- - - - - - 3 - - 2 - -
+- - - - - - - 3 - - - -
+- - - - - - - - - - - -
+- - - 2 - 3 - - - 4 - -
+3 - - - - - - - - - - -
+- - 2 - 2 - 4 - - - - -
+- - - - - - - - - - 5 -
+- 2 - - - - 2 - - - - -

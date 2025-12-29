@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Palmer Mebane
+solver Rainer
+source http://mellowmelon.wordpress.com/
+info 268
+unit 25
+rows 10
+cols 18
+[problem]
+- - - - - - - - - - - 1 - - - - - -
+- - - - - - 3 - - - 2 - - - - - - -
+6 - - - - 5 - - - - - - - 8 - - - -
+- - - - - - - - 1 - - - 4 - - - - -
+- - - 1 - - - 4 - - - - - - - 2 - -
+- - 9 - - - - - - - 3 - - - 3 - - -
+- - - - - 4 - - - 1 - - - - - - - -
+- - - - 1 - - - - - - - 2 - - - - 5
+- - - - - - - 3 - - - 8 - - - - - -
+- - - - - - 4 - - - - - - - - - - -

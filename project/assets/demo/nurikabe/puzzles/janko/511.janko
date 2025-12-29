@@ -1,0 +1,15 @@
+[begin]
+puzzle nurikabe
+author Johan de Ruiter
+solver Jürgen Helbig
+source http://www.puzzlepicnic.com/
+info 916
+unit 25
+size 6
+[problem]
+- 4 - 6 - -
+- - - - - 2
+- - - - - -
+- - - - - -
+- 4 - - - -
+- - - 3 - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Tapio Saarinen
+solver Jürgen Helbig
+source https://www.gmpuzzles.com/blog/
+info 2015-03-09
+unit 25
+size 10
+[problem]
+- - - - 9 - 1 - 4 -
+8 - - - - - - - - -
+- - - - - - - - - -
+7 - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - 3
+- - - - - - - - - -
+- - - - - - - - - 2
+- 6 - 9 - 1 - - - -

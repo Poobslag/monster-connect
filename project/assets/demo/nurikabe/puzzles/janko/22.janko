@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Nikoli
+solver Jürgen Helbig
+source http://www.puzzle.jp/
+unit 25
+cols 10
+rows 10
+[problem]
+- - - - - - - 3 - 6 
+- 3 - - - - - - - - 
+- - - - - 2 - 2 - - 
+- 5 - 2 - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - 3 - 3 - 
+- - 3 - 3 - - - - - 
+- - - - - - - - 3 - 
+4 - 2 - - - - - - - 

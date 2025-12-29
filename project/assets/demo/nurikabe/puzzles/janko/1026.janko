@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @homerestaurant3
+solver Rainer
+source https://puzz.link/p?nurikabe/10/10/x7m6u3h2t6h7q2s74h3l
+source https://twitter.com/homerestaurant3/status/1245041724868587521
+info 31.3.2020, 19:34 (3) [035]
+unit 25
+size 10
+[problem]
+- - - - - - - - - - 
+- - - - - - - - 7 - 
+- - - - - - 6 - - - 
+- - - - - - - - - - 
+- - 3 - - 2 - - - - 
+- - - - - - - - - - 
+6 - - 7 - - - - - - 
+- - - - - 2 - - - - 
+- - - - - - - - - 7 
+4 - - 3 - - - - - - 

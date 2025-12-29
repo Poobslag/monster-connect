@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Palmer Mebane
+solver Jürgen Helbig
+source http://mellowmelon.wordpress.com/
+info 124
+unit 25
+size 10
+[problem]
+- 8 - - - - - - 1 -
+- - - 5 - - - - - -
+- - 4 - 1 - - - - -
+- - - - - - - 7 - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - 6 - - - - - - -
+- - - - - 1 - 2 - -
+- - - - - - 3 - - -
+- 1 - - - - - - 9 -

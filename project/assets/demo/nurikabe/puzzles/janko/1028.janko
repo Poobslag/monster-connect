@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @chocola02864906
+solver Steve C
+source https://puzz.link/p?nurikabe/10/10/1n4h3x2g3k5h2j3u2x2k4g5h3i4h
+source https://twitter.com/chocola02864906/status/1245002190831271940
+info 31.3.2020, 16:57 (2) [038]
+unit 25
+size 10
+[problem]
+1 - - - - - - - - 4 
+- - 3 - - - - - - - 
+- - - - - - - - - - 
+- 2 - 3 - - - - - 5 
+- - 2 - - - - 3 - - 
+- - - - - - - - - - 
+- - - 2 - - - - - - 
+- - - - - - - - - - 
+- - 2 - - - - - 4 - 
+5 - - 3 - - - 4 - - 

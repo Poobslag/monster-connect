@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @puzzle_titech
+solver Steve C
+source https://puzz.link/p?nurikabe/10/10/zh1g3g5l2g4ztcg3p4g5qch
+source https://twitter.com/puzzle_titech/status/1248090759959416832
+info 9.4.2020, 05:30 (4) [019]
+unit 25
+size 10
+[problem]
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - 1 - 3 - 5 - - - 
+- - - 2 - 4 - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+12 - 3 - - - - - - - 
+- - - 4 - 5 - - - - 
+- - - - - - - 12 - - 

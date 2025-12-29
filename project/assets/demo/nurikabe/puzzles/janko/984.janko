@@ -1,0 +1,21 @@
+[begin]
+puzzle nurikabe
+author Iwa Daigeki
+solver Groffin
+source http://blog.livedoor.jp/bachelor_seal-puzzle/archives/cat_531432.htmlinfo 025
+unit 25
+rows 12
+cols 19
+[problem]
+- - - 5 - - - 3 - - - - - - - 3 - - -
+- - - - - - - - - - - 5 - - - - - - -
+- - - - - - 2 - - - - - - - - - - 1 -
+- - 5 - - - - - - 6 - - 1 - - 2 - - -
+- - - - 1 - - - - - - - - - - - - - -
+5 - - - - - - - - 4 - - - - 3 - - - -
+- - - - - - 1 - - - - - - - - - - - 5
+4 - - - 2 - - - - - - 4 - - - 6 - - -
+- - - - - - - 2 - - - - - - - - 4 - -
+- - 3 - - - - - - - 1 - - 6 - - - - -
+- - - - - 1 - - 2 - - - - - - - - - -
+- 3 - - - - - - - - - - - - 4 - - - -

@@ -1,0 +1,16 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Rainer
+source https://www.janko.at/Raetsel/
+info L2_i6_2_07x07_090519161959.txt
+unit 25
+size 7
+[problem]
+- - - - 5 - -
+2 - - 6 - - -
+- - - - - - -
+- - - - - - -
+- - - - 2 - -
+- - - - - 6 -
+- - - 4 - - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Warai Kamosika
+solver Rainer
+source http://homepage2.nifty.com/warai_kamosika/
+info 350
+unit 25
+size 10
+[problem]
+- 2 - - - - - - - -
+- - - - - - - - - -
+- - 10 - - - - - - -
+- 3 - - - - - - - -
+- - - - - - - - - -
+- - 4 - - 6 - 2 - -
+1 - - - - - 5 - - -
+- - - 3 - - - - - -
+- - - - - - - - - -
+2 - - - - - - - 3 -

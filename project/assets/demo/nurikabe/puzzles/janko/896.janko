@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Groffin
+source http://www.zanellati.it/
+info 9x12_mediun_11.txt
+unit 25
+rows 9
+cols 12
+[problem]
+- - - - - - - - 7 - - -
+2 - - - - - - - - - - -
+- - 1 - - - - - - - - 3
+- - - 2 - - - - - - - -
+- 2 - - - 9 - - - - - 2
+- - - - - - 8 - - 2 - -
+3 - - 2 - - - - - - 3 -
+- - - - - - - - - - - -
+- 2 - - - 2 - - - - - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Antonos Lalatsas
+solver Jürgen Helbig
+source http://meanderlawn.blogspot.com/
+info 042
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+- 8 - - - - - - 30 -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- 28 - - - - - - 15 -
+- - - - - - - - - -

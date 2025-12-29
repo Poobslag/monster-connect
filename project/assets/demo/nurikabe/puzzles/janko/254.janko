@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Robert Hollenstein
+solver Rainer
+source https://www.janko.at/Raetsel/
+info 10x10_theo02
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+- - - - - - 5 - - -
+- - 5 - - - - 2 - -
+- 3 - 5 - - 1 - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - 2 - - 1 - 4 -
+- - 3 - - - - 1 - -
+- - - 9 - - - - - -
+- - - - - - - - - -

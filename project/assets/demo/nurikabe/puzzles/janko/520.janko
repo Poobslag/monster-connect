@@ -1,0 +1,21 @@
+[begin]
+puzzle nurikabe
+author Dark Murad
+solver Rainer
+source http://www.puzzlepicnic.com/
+info 1337
+unit 25
+size 12
+[problem]
+- - - 2 - - - - - - - -
+- - 5 - - - - - - - - -
+- - - - - - - - - - - -
+- - - 3 - - - - - - - -
+- - - - - - - - - - 20 -
+- - - - 2 - - - - - - -
+- - - 3 - - - - 10 - - -
+- - - - 2 - - - - - - -
+- - - - - - - 3 - - - -
+- 3 - - - - - - - - - -
+- - - - 4 - - - - - - -
+- - - - - - - - - - - -

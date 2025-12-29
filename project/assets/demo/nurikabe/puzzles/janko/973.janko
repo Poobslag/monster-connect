@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Bram de Laat 
+solver Groffin
+source http://www.puzzlepicnic.com
+info 2150
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+- - - - - - - 5 - -
+4 - - - - - - - 9 -
+- - - - - - - - - -
+- - - - - 3 - - - -
+- 12 - - - - - - - -
+- - 1 - - - - - - -
+- - - 1 - - - - - -
+- - - - 9 - - - - -
+- - - - - - - 4 - -

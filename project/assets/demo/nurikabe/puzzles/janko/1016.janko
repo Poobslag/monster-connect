@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @pencilkarasu
+solver Steve C
+source https://puzz.link/p?nurikabe/10/10/2n6q5k2n2k2l2i6l3r4h3h3h2m2o
+source https://twitter.com/pencilkarasu/status/1248166072894648321
+info 9.4.2020, 10:29 (4) [018]
+unit 25
+size 10
+[problem]
+2 - - - - - - - - 6 
+- - - - - - - - - - 
+- 5 - - - - - 2 - - 
+- - - - - - 2 - - - 
+- - 2 - - - - - - 2 
+- - - 6 - - - - - - 
+3 - - - - - - - - - 
+- - - 4 - - 3 - - 3 
+- - 2 - - - - - - - 
+2 - - - - - - - - - 
