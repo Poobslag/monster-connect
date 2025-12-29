@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+source http://www.zanellati.it/
+info 9x12_hard_8.txt
+unit 25
+rows 9
+cols 12
+[problem]
+- - - - - - - - - - - -
+2 - - - - - - - - 7 - -
+- 5 - - - - 7 - - - - 3
+- - - - - - - - - - - -
+- - - - - - - - - - - -
+- - - 2 - - - - 2 - - 3
+- - 3 - 6 - - - - 3 - -
+2 - - - - - - - - - - -
+- - - 2 - - - 3 - - - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Chris Green
+solver Groffin
+source http://puzzleparade.blogspot.com/
+info 234
+unit 25
+size 10
+[problem]
+- 4 - - 4 - - 4 - - 
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- 4 - - 4 - - 2 - -
+- - 6 - - 6 - - 8 -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - 6 - - 2 - - 4 -

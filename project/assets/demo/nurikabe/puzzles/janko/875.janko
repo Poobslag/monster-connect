@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Warai Kamosika
+solver Jürgen Helbig
+source http://homepage2.nifty.com/warai_kamosika/
+info 138
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+3 - 3 - 3 - - - - 3
+- - - - - - - - - -
+- - 3 - - - - - - -
+- - - - 3 - - 3 - -
+- - 3 - - 3 - - - -
+- - - - - - - 3 - -
+- - - - - - - - - -
+3 - - - - 3 - 3 - 3
+- - - - - - - - - -

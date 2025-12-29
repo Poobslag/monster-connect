@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @esqn999
+solver Groffin
+source https://puzz.link/p?nurikabe/10/10/3h3i3t3g3k3m3l3l3m3t3h3q3i3k
+source https://twitter.com/esqn999/status/1245872032698347520
+info 3.4.2020, 02:33 (3) [029]
+unit 25
+size 10
+[problem]
+3 - - 3 - - - 3 - - 
+- - - - - - - - - - 
+- - 3 - 3 - - - - - 
+3 - - - - - - - 3 - 
+- - - - - 3 - - - - 
+- - 3 - - - - - - - 
+3 - - - - - - - - - 
+- - - - - 3 - - 3 - 
+- - - - - - - - - - 
+3 - - - 3 - - - - - 

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Jürgen Helbig
+source https://www.janko.at/Raetsel/
+info L1_i7_2_10x10_070622053645
+unit 25
+size 10
+[problem]
+- - - - - - - 3 - -
+- 5 - 5 - - - - - -
+- - 4 - - - - - - -
+- - - - - - - - 3 -
+- - - - - - - - - 3
+- - - - 2 - - - - -
+- - - 5 - - - - - -
+- - - - - - - - 3 -
+- - - - 7 - - - - -
+- - 2 - - 3 - - - -

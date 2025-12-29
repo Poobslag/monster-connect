@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Ooya Tate Tadashi
+solver Rainer
+source http://www.h6.dion.ne.jp/~ooya/
+info Irgendwas.11
+rows 10
+cols 10
+unit 25
+[problem]
+- - - - - - - - - -
+5 - - - 2 - - - - -
+- - - 5 - 5 - - - -
+8 - - - - - - 4 - -
+- - - - - - 7 - - -
+- - 1 - - - - - - -
+- - - - - - - - - -
+- - - - 1 - - - - -
+- - - - - - - - - -
+- 3 - - - - 3 - - -

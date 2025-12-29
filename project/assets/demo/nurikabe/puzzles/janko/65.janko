@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Ooya Tate Tadashi
+solver Rainer
+source http://www.h6.dion.ne.jp/~ooya/
+unit 25
+rows 10
+cols 10
+[problem]
+- 4 - - - - - - - 6
+- - 5 - - - - - - -
+- - - - - - - - - -
+- 3 - 2 - - - - - -
+- - - - - - - - - -
+- - - 6 - - - 3 - -
+- - - - - - - - - -
+- - - 2 - - - - - -
+- - - - - - 4 - - -
+4 - 2 - - - - 6 - -

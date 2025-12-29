@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author Sasayama Takayoshi
+solver Jürgen Helbig
+source http://www3.osk.3web.ne.jp/~bs1484/
+unit 25
+size 10
+[problem]
+- - - - - - - - - - 
+- 37 - - - - - - - - 
+- - 36 - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 

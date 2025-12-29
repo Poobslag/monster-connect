@@ -1,0 +1,17 @@
+[begin]
+puzzle nurikabe
+author Chaotic IAK
+solver Groffin
+source http://chaoticiak492.wordpress.com/
+info 1-009
+unit 25
+size 8
+[problem]
+- - - - - - - -
+- - 2 - - - - -
+- 4 - - - - - -
+- - 3 - - - - -
+- - - - - 7 - -
+- - - - - - 6 -
+- - - - - 5 - -
+- - - - - - - -

@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Robert Hollenstein
+solver Rainer
+source https://www.janko.at/Raetsel/
+info 10x18_theo06
+unit 25
+rows 10
+cols 18
+[problem]
+- - - 5 - - - - - - - - - - - - - -
+- - - - - - - - - - 5 - - - - - - -
+- - - - - - 5 - - - - - - - 5 - - -
+- - 6 - - - - - - 5 - 5 - - - - - -
+- - - - - - 5 - - - - - - - - - - 4
+- - - - - - - - 5 - - - - - - - - -
+- - - - - - - - - - 5 - - - - - - -
+- - - - - 5 - 5 - - - - - - - - - -
+- - - - - - - - - - 5 - - 5 - - - -
+- - - - - 5 - - - - - - - - - - - -

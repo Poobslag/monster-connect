@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Rainer
+source https://www.janko.at/Raetsel/
+info 10x10_210002340_L2_i9_2_10x10_070622051831
+unit 25
+size 10
+[problem]
+- - - - 2 - 9 - - -
+- - 9 - - - - - - -
+- - - - - - - - - -
+- - - 3 - - - - 3 -
+- - - - 4 - - - - -
+- - - - - - - - - -
+- - - - - - - - 8 -
+2 - - 3 - 2 - 2 - -
+- - - - - - - - - -
+4 - - - - - - - - -

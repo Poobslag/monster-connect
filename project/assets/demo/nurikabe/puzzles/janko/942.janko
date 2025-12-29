@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Grant Fikes
+solver Jürgen Helbig
+source https://www.gmpuzzles.com/blog/
+info 2015-12-09
+unit 25
+size 10
+[problem]
+- - - - - - - 2 - 1
+- - 2 - - 5 - - - -
+- - - - - - - - - - 
+- 8 - - - - - - 2 -
+- - - - - - - - - - 
+- - - - - - - - - - 
+- 2 - - - - - - 6 -
+- - - - - - - - - - 
+- - - - 2 - - 7 - -
+3 - 1 - - - - - - -

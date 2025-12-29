@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Sakuhina
+solver Steve C
+source http://sky.ap.teacup.com/sakuhina/
+info 053
+unit 25
+rows 10
+cols 13
+[problem]
+- - - 4 - - - - - - - - -
+4 - - - - - - - 4 - - - 2
+- - 1 - - - - 2 - - - 2 -
+- - - - 5 - - - - - - - -
+1 - - - - 5 - - - - - 3 -
+- - - - - - - - - - - - 3
+- - 5 - - 8 - - - - - - -
+- - - - - - - - - - - - -
+3 - - - - - - 3 - - - - -
+- - 1 - - - - - - 1 - - 1

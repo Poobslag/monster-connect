@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author Chris Green
+source http://puzzleparade.blogspot.com/
+info 031
+unit 25
+size 10
+[problem]
+- - - - - - - - - -
+- - - - - - 4 - - -
+- - - 3 - - - 3 - -
+4 - - - 4 - - - - -
+- 3 - - - - - - - -
+- - - - - - - 4 - -
+- - - - - - - - 3 -
+- - 4 - - - 3 - - - 
+- 3 - - - - - 4 - -
+- - - - - - - - - -

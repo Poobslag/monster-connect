@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @kobouzu17
+solver Steve C
+source https://puzz.link/p?nurikabe/10/10/r3h3g4i3g4h3zn4h3s3k3j3n4m
+source https://twitter.com/kobouzu17/status/1245591793372184576
+info 2.4.2020, 08:00 (3) [030]
+unit 25
+size 10
+[problem]
+- - - - - - - - - - 
+- - 3 - - 3 - 4 - - 
+- 3 - 4 - - 3 - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - 4 - - 3 - 
+- - - - - - - - - - 
+- - 3 - - - - - 3 - 
+- - - 3 - - - - - - 
+- - 4 - - - - - - - 

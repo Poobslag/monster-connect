@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Thomas Snyder
+solver Jürgen Helbig
+source http://motris.livejournal.com/
+info 010
+unit 25
+size 10
+[problem]
+2 - - 2 - - 2 - - 2
+- - - - - - - - - -
+- - - - 2 - - - - -
+2 - - - - - - - - 2
+- - - - - - - - - -
+- - 2 - - - - - - -
+- - - - - - 2 - - 2
+- 2 - - - - - - - -
+- - - - - - - - - -
+2 - - 2 - - - - - 22

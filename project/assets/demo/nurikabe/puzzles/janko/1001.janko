@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @KatsudonGameAKA
+solver Groffin
+source https://puzz.link/p?nurikabe/10/10/q1zg5i2m6n3j8k4zqag7
+source https://twitter.com/KatsudonGameAKA/status/1251424048245911553
+info 18.4.2020, 10:15 [001]
+unit 25
+size 10
+[problem]
+- - - - - - - - - - 
+- 1 - - - - - - - - 
+- - - - - - - - - - 
+- - - 5 - - - 2 - - 
+- - - - - 6 - - - - 
+- - - - 3 - - - - 8 
+- - - - - 4 - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - 10 - 7 

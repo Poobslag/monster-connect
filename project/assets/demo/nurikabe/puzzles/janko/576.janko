@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Rainer
+source https://www.janko.at/Raetsel/
+info 10x15_easy_21.txt
+unit 25
+rows 10
+cols 15
+[problem]
+- 2 - - - 2 - 2 - - - - 3 - -
+- - - - - - - - - - 2 - - - -
+- - - - - - - - 3 - - - - 4 -
+3 - - - - 4 - - - - - - - - -
+- 2 - - 4 - - - - - - - - - -
+- - - - - - - - - - - - - - 4
+- - 2 - - - - - - 3 - - - - -
+- - - - 4 - - - - - - - - - -
+3 - 2 - - - - - - 2 - - - - 4
+- - - - - - - 4 - - - - 4 - -

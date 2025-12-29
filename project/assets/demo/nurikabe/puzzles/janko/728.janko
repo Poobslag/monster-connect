@@ -1,0 +1,22 @@
+[begin]
+puzzle nurikabe
+author Prasanna Seshadri
+solver Rainer
+source http://prasannaseshadri.wordpress.com/
+info 139
+unit 25
+size 13
+[problem]
+- - - - - - - - - - - - -
+- - - - - - - - - - 2 - -
+- - - - - - - - - - - 3 -
+- - - - - 6 - - - - - - -
+- - - - - - - - 4 - 7 - -
+- - - - - - - - - 3 - - -
+- - - - - - - - - - - - -
+- - - 8 - - - - - - - - -
+- - 9 - 3 - - - - - - - -
+- - - - - - - 7 - - - - -
+- 5 - - - - - - - - - - -
+- - 12 - - - - - - - - - -
+- - - - - - - - - - - - -

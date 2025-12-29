@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Koyoppz
+solver Rainer
+source http://www002.upp.so-net.ne.jp/koyoppz/
+unit 25
+cols 10
+rows 10
+[problem]
+- - - 3 - - - 5 - -
+- - 1 - - - 5 - - -
+- - - - - - - - - -
+5 - - - - - - - - -
+- - - 2 - - - - - -
+- - - - - - 2 - - -
+- - - - - - - - - -
+- - - - - - - - - -
+7 - - - - - - - - -
+- - 3 - 4 - 4 - 6 -

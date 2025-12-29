@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @semiexp
+solver Groffin
+source https://puzz.link/p?nurikabe/10/10/k7h8g1zn63j5zh6k6zi8g
+source https://twitter.com/semiexp/status/1246400323641421824
+info 4.4.2020, 13:32 (4) [028]
+unit 25
+size 10
+[problem]
+- - - - - 7 - - 8 - 
+1 - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - 6 
+3 - - - - 5 - - - - 
+- - - - - - - - - - 
+- - - - - - - - 6 - 
+- - - - 6 - - - - - 
+- - - - - - - - - - 
+- - - - - - - - 8 - 

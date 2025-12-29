@@ -1,0 +1,17 @@
+[begin]
+puzzle nurikabe
+author Jak Marshall
+solver Rainer
+source http://jakarias.livejournal.com/
+rows 8
+cols 16
+unit 25
+[problem]
+2 - - 2 - - - - - - - - 1 - - -
+- - - - - - - 3 - - - - - 3 - 5
+1 - 3 - 1 - - - - - - 1 - - - -
+- - - - - - - 1 - 4 - - - - - -
+- - - - - 3 - - - - - - - - - -
+- - 2 - - - - - - - - - 2 - - -
+- - - - - - - - - - - - - - - -
+- - - - - - - 7 - 9 - 4 - - - -

@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Dark Murad
+solver Jürgen Helbig
+source http://www.puzzlepicnic.com/
+info 1352
+unit 25
+size 11
+[problem]
+- - - - - - - - - - -
+- - - - - - - - - - -
+- - - 3 - - - - - - -
+- - - - - - - - - 7 -
+- - - - 9 - - - - - -
+- - - - - - - - - 1 -
+- - - 7 - - - - - - 1
+- - - - - - - - - - -
+8 - - - - - - - - - -
+- - - - 7 - - - - - -
+- 7 - - - - 4 - - - -

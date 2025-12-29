@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+source http://www.forest.dnj.ynu.ac.jp/~mori/
+solver Rainer
+unit 25
+cols 10
+rows 10
+[problem]
+- - - 5 - 5 - 4 - - 
+- - - - - - - - - - 
+- - 2 - - - - 1 - - 
+- - - - - - 4 - - 5 
+- - - 4 - - - - - - 
+- - - - - - - - - - 
+- - - 3 - - - 1 - - 
+- - - - 2 - - - - - 
+- - - - - - - - - 1 
+- - - 6 - - - 4 - - 

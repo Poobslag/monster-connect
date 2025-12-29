@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Warai Kamosika
+solver Jürgen Helbig
+source http://homepage2.nifty.com/warai_kamosika/
+info 142
+unit 25
+rows 10
+cols 18
+[problem]
+- 4 - - - - - - - - - - - - - - - -
+- - 6 - 4 - - - - 8 - - - - - - - -
+- - - - - - - - 3 - - - - - - - - -
+- - - - - - - - - - - - - 4 - - - -
+6 - 3 - - - 4 - - - - - - - - - - -
+- - - - - - - - - - - 3 - - - 3 - 3
+- - - - 4 - - - - - - - - - - - - -
+- - - - - - - - - 4 - - - - - - - -
+- - - - - - - - 5 - - - - 4 - 5 - -
+- - - - - - - - - - - - - - - - 4 -

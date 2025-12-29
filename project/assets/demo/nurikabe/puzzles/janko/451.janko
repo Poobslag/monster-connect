@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Grant Fikes
+solver Rainer
+source http://mathgrant.blogspot.com/
+info 005
+unit 25
+size 10
+[problem]
+- 3 - 2 - - - - - -
+- - - - - - - - - -
+- - - - - - - - 3 -
+- - - 4 - - - 4 - -
+- - - - 6 - - - - -
+- - - - - - - - - -
+- - - - - - - 3 - -
+- - - - - - 4 - - -
+- - - - - - - - - -
+- 6 - 5 - 5 - - - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Tom Collyer
+solver Jürgen Helbig
+source http://tcollyer.blogspot.com/
+info 077
+unit 25
+size 10
+[problem]
+- - - - - - 1 - - -
+- - - 4 - - - - - -
+- - - - - - 1 - - 6
+2 - - - 2 - - - - -
+- 3 - - - - - 2 - -
+- - - - - - - - - 7
+- - - - 2 - - - - -
+- 3 - - - - - - - -
+5 - - - - - - 5 - -
+- - - - - - - - - -

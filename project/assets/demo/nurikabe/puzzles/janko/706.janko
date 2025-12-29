@@ -1,0 +1,21 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Rainer
+source https://www.janko.at/Raetsel/
+info L2_i5_2_12x12_110304104800
+unit 25
+size 12
+[problem]
+- - - - - - 2 - - 3 - 3
+- - - 2 - - - - - - - -
+- - - - - - - - 2 - - -
+- 3 - - - - 3 - - - - -
+- - 2 - - - - - - - 3 -
+- 2 - - - 5 - 2 - - - -
+- - - 1 - - - - - - - -
+- - - - 2 - - - - 3 - 2
+- - 3 - - - - - - - - -
+- 4 - - - 1 - - 3 - 2 -
+- - - - - - - - - - - -
+- - 3 - - - 2 - - - - -

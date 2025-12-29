@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author Johan de Ruiter
+solver Rainer
+source http://www.puzzlepicnic.com/
+info 912
+unit 25
+rows 8
+cols 9
+[problem]
+- - - - - - - - -
+- - 5 - - - - - -
+- - - - - - - - -
+- - - 2 - 2 - - -
+- - - - - - - 7 -
+- - - - - - - - -
+- - 3 - - 3 - - -
+- - - - - - - - -

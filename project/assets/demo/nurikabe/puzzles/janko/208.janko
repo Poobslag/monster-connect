@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Ooya Tate Tadashi
+solver Otto Janko
+source Mail
+info 27
+rows 10
+cols 10
+unit 25
+[problem]
+- - - - - - - - - 3
+- - - - - 5 - - - -
+- - - - 3 - - - - 5
+- - 3 - - - - - - -
+- - - - - - - - - 1
+6 - - - - - - - - -
+- - - - - - - 1 - -
+1 - - - - 6 - - - -
+- - - - 11 - - - - -
+6 - - - - - - - - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Sakuhina
+solver Steve C
+source http://sky.ap.teacup.com/sakuhina/
+info 046
+unit 25
+size 10
+[problem]
+- - - - 2 - - - - 3
+- - - - - 2 - - - -
+4 - - 1 - - - - - 1
+- - 1 - - - - - - -
+- - - - - - - 5 - -
+- - 4 - - - - - - -
+- - - - - - - 1 - -
+4 - - - - - 3 - - 5
+- - - - 3 - - - - -
+5 - - - - 1 - - - -

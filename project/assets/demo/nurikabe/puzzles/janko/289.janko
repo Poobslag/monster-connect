@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Oleg Andrushko
+solver Rainer
+source http://www.puzzleprograms.narod.ru/
+info Pack1-025
+unit 25
+rows 10
+cols 10
+[problem]
+4 - 5 - 3 - - - - 4
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - 6 - - - 4 - - -
+- - - 4 - - - 3 - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+4 - - - - 5 - 1 - 4

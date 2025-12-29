@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Warai Kamosika
+source http://homepage2.nifty.com/warai_kamosika/
+solver Jürgen Helbig
+info 004=104
+cols 10
+rows 10
+unit 25
+[problem]
+- - - - 3 - - - - - 
+- 3 - - - - - - - - 
+- - 3 - 3 - - - 3 - 
+- - - - - - - - - 3 
+- - - - - - - - - - 
+3 - - - - - 3 - - - 
+- - - - - 3 - - 3 - 
+- - 3 - - - - - - 3 
+- - - - - - - - - - 
+3 - - - - 3 - - - - 

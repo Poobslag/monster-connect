@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Rainer
+source https://www.janko.at/Raetsel/
+info L3_i8_3_10x15_100604152147.txt
+unit 25
+rows 10
+cols 15
+[problem]
+- 2 - 5 - 3 - 3 - 2 - - 5 - 3
+- - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - -
+2 - - - - - - - - 2 - - - - -
+- - 4 - - 2 - - 2 - - 2 - - -
+2 - - - - - - - - - - - - - -
+- - - - - - - - - - - 2 - 8 -
+- 3 - - - - - - - - - - 3 - -
+- - - - - - 4 - - - - - - - -
+- - - - 3 - - - 5 - - - - - -

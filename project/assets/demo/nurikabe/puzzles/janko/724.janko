@@ -1,0 +1,22 @@
+[begin]
+puzzle nurikabe
+author Thomas Snyder
+solver Rainer
+source https://www.gmpuzzles.com/blog/
+info 011 (Dr. Sudoku Prescribes)
+unit 25
+rows 12
+cols 15
+[problem]
+- - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - -
+- - - - - - - 8 - - 9 - - - -
+13 - - - - - 7 - - - - 10 - - -
+- - - - - - - - - - - - - - -
+- - - - - - - - - - - - 11 - -
+- - - 6 - - - - - - - - - 12 -
+- - - - - - - - - - - - 1 - -
+- - - - - - - - - - - - - - -
+- - - - - - - 5 - - - 2 - - -
+- - - - - - - - 4 - 3 - - - -
+- - - - - - - - - - - - - - -

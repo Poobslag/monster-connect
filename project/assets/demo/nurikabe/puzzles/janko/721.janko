@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Thomas Snyder
+solver Rainer
+source http://motris.livejournal.com/
+info 1-162
+unit 25
+size 11
+[problem]
+- - - - - - - - - - -
+- - - - - - - - - - -
+- - - - - 9 - - - - -
+- - - - - - - - - - -
+- 1 - - - - - - - - -
+- - - - - - - - - - -
+- - - 7 - 2 - 12 - - -
+- - - - 27 - 8 - - - -
+- - - - - - - - - - -
+- - - - - - - - - - -
+- - - - - - - - - - -

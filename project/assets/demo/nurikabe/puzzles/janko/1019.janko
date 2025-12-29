@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @suiso_728660
+solver Rainer
+source https://puzz.link/p?nurikabe/10/10/7s3r3g3l3m3n3g3q3g3h3p3s3h
+source https://twitter.com/suiso_728660/status/1247495893961437187
+info 7.4.2020, 14:06 (3) [023]
+unit 25
+size 10
+[problem]
+7 - - - - - - - - - 
+- - - - 3 - - - - - 
+- - - - - - - 3 - 3 
+- - - - - - 3 - - - 
+- - - - 3 - - - - - 
+- - - 3 - 3 - - - - 
+- - - - - - - 3 - 3 
+- - 3 - - - - - - - 
+- - - 3 - - - - - - 
+- - - - - - - 3 - - 

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Rainer
+source https://www.janko.at/Raetsel/
+info 9x12_002122240_L3_i7_2_09x12_070624021319.txt
+unit 25
+rows 9
+cols 12
+[problem]
+- - 5 - - - - - - 6 - -
+- - - - - - - - - - - -
+- 4 - - - - - - - - - 2
+3 - - - - - - - - - - -
+- - - - - - - - 7 - - -
+- - - - 5 - - - - 3 - -
+- - - - - - - - - - - 7
+- 4 - - - - 2 - - - - -
+- - 2 - - - - 2 - - - -

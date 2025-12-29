@@ -1,0 +1,18 @@
+[begin]
+puzzle nurikabe
+author Oleg Andrushko
+solver Rainer
+source http://www.puzzleprograms.narod.ru/
+info Pack2.8x8.06
+unit 25
+rows 8
+cols 8
+[problem]
+- - - - - - - -
+- 1 - - - - 2 -
+- - - 2 - - - -
+- - - - - - 3 -
+- 2 - - - - - -
+- - - - 3 - - -
+- 3 - - - - 2 -
+- - - - - - - -

@@ -1,0 +1,13 @@
+[begin]
+puzzle nurikabe
+author Oleg Andrushko
+solver Otto Janko
+source http://www.puzzleprograms.narod.ru/
+info Pack2.Small.03
+unit 25
+rows 3
+cols 3
+[problem]
+1 - -
+- - -
+- 5 -

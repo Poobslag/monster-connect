@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Grant Fikes
+solver Jürgen Helbig
+source http://mathgrant.blogspot.com/
+info 389
+unit 25
+size 10
+[problem]
+3 - 7 - 8 - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - 5 - - - 3 -
+1 - - - - - - - - -
+- - - - - - - 2 - -
+2 - - - - - - - - -
+- - - - - - - - - -
+11 - - - - 5 - - - -

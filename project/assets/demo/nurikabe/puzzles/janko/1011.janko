@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @moyamoyamm
+solver Steve C
+source https://puzz.link/p?nurikabe/10/10/g5m6h4v4y48y5v6h5m5g
+source https://twitter.com/moyamoyamm/status/1249653557625860099
+info 13.4.2020, 13:00 (3) [011]
+unit 25
+size 10
+[problem]
+- 5 - - - - - - - 6 
+- - 4 - - - - - - - 
+- - - - - - - - - 4 
+- - - - - - - - - - 
+- - - - - - - - - 4 
+8 - - - - - - - - - 
+- - - - - - - - - - 
+5 - - - - - - - - - 
+- - - - - - - 6 - - 
+5 - - - - - - - 5 - 

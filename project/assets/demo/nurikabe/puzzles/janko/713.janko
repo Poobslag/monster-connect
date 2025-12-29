@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Anuraag Sahay
+solver Rainer
+source http://anuragthefirst.blogspot.com/
+info 2011-11-09
+unit 25
+size 10
+[problem]
+- - 5 - 4 - 5 - 6 -
+- - - - - - - - - -
+- - - - - - - - - -
+2 - - - - - - - - -
+- - - - - - - - - -
+5 - - - - - - - - -
+- - - - - - - - - -
+3 - - - - - - - - 5
+- - - - - - - - - -
+- - 8 - 1 - 5 - - -

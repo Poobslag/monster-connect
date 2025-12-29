@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @QUad_R_ANgle
+solver Groffin
+source https://puzz.link/p?nurikabe/10/10/4i1s3g3i7r2zj3r3i7g2s4i6
+source https://twitter.com/QUad_R_ANgle/status/1250740723911061508
+info 16.4.2020, 13:00 (3) [005]
+unit 25
+size 10
+[problem]
+4 - - - 1 - - - - - 
+- - - - - - - - 3 - 
+3 - - - 7 - - - - - 
+- - - - - - - 2 - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - 3 - - - - - - - 
+- - - - - 3 - - - 7 
+- 2 - - - - - - - - 
+- - - - - 4 - - - 6 

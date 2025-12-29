@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Connect4
+solver Groffin
+source http://www.puzzlepicnic.com
+info 1503
+unit 25
+size 10
+[problem]
+- - 5 - - - 4 - - -
+- 6 - - - - - - - -
+- - - - - - - - 5 -
+- - - - 10 - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - 5 - - - - - - -
+- - - - - - - - - 1
+5 - - - - - - - - -
+- - - - - - - - - -

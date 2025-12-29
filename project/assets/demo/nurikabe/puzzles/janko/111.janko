@@ -1,0 +1,16 @@
+[begin]
+puzzle nurikabe
+author Oleg Andrushko
+solver Jürgen Helbig
+source http://www.puzzleprograms.narod.ru/
+info Pack2.6x6.01
+unit 25
+rows 6
+cols 6
+[problem]
+- 2 - - - 2
+- - - - - -
+- - - 2 - -
+2 - - - - -
+- - - - - 2
+2 - - 2 - -

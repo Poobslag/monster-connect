@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Grant Fikes
+solver Emma
+source https://www.gmpuzzles.com/blog/
+info 2014-02-12
+unit 25
+size 10
+[problem]
+- 5 - - - - - - - -
+- - 1 - 7 - - - - -
+- - - - - 2 - 1 - - 
+- - - - - - - - 9 -
+- - - - - - - - - -
+- - - - - - - - - -
+- 6 - - - - - - - -
+- - 8 - 7 - - - - -
+- - - - - 2 - 1 - -
+- - - - - - - - 1 -

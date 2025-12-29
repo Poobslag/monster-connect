@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Antonos Lalatsas
+solver Jürgen Helbig
+source http://meanderlawn.blogspot.com/
+info 043
+unit 25
+rows 9
+cols 13
+[problem]
+1 - - - - - 3 - 7 - 1 - 1
+- - - - - - - - - - - - -
+- - - - - - - - - - - 2 -
+- - - - - - - - - - - - -
+8 - - - - - - - - - - - -
+- - - - - - - - - - - - -
+- - - - - - - - - - - - -
+- - - - - - - - - - - - -
+1 - 9 - 7 - 5 - - - 3 - 7

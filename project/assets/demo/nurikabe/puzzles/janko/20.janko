@@ -1,0 +1,16 @@
+[begin]
+puzzle nurikabe
+author Lars Huttar
+source http://www.huttar.net/
+solver Jürgen Helbig
+info 020=120
+unit 25
+rows 6
+cols 6
+[problem]
+- - - - 1 - 
+- - - - - - 
+- - 2 - - 4 
+- 4 - - - - 
+- - - 4 - - 
+- - - - - - 

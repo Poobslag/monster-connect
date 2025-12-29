@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Otto Janko
+solver Rainer
+source https://www.janko.at/Raetsel/
+info 2738-80-438673568107729-0-549
+unit 25
+size 10
+[problem]
+- - 1 - - - - - - -
+- - - - - - - 2 - -
+2 - - - 3 - - - - -
+- - 4 - - - 3 - - -
+- - - - - - - - - -
+2 - - - 3 - - 2 - -
+- - 2 - - - - - - -
+2 - - 2 - - 2 - - -
+- - - - - - - - - -
+4 - - - - 2 - - 3 -

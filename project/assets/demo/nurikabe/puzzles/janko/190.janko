@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Ooya Tate Tadashi
+solver Jürgen Helbig
+source Mail
+info 9
+rows 10
+cols 10
+unit 25
+[problem]
+5 - - - - - - - - -
+- - - - - - - - - 2
+- - 3 - - 6 - - - -
+- - - 1 - - - - - -
+- - - - - - - 6 - 4
+- - - - - - - - - -
+- - - - - 3 - - - -
+- 3 - - - - - - - -
+8 - - - - - - - - 3
+- - - - - 3 - - - -

@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Sasayama Takayoshi
+solver Rainer
+source http://www3.osk.3web.ne.jp/~bs1484/
+unit 25
+cols 10
+rows 10
+[problem]
+- - - - - - - - - - 
+4 - - - - - - - - - 
+- - - - - 4 - - - - 
+4 - - - - - - - - - 
+- - - - - - - - - 4 
+- - - - - - - 4 - - 
+4 - - - - 4 - - - - 
+- 4 - - - - - - - - 
+- - - - - 4 - - - - 
+4 - - - - - - - - 4 

@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Ooya Tate Tadashi
+solver Rainer
+source Mail
+info 24
+rows 10
+cols 10
+unit 25
+[problem]
+- - - - - - - - - 2
+3 - - - - - 2 - - -
+- - 5 - - - - - - -
+- - - - - - - - - -
+- - - - 4 - - - - -
+- - - 5 - - - - 4 -
+- - - - - - - - - -
+- - - - - - - 2 - -
+- - - - - - - - 6 -
+4 - 6 - 3 - - - - -

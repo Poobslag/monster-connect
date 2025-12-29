@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author Tom Collyer
+solver Otto Janko
+source http://tcollyer.blogspot.com/
+info 028
+unit 25
+rows 10
+cols 18
+[problem]
+- - - - - - - - - - - - - - - - - -
+- - - - - - - 3 - - 6 - - - - - - -
+- - - 25 - - - - - - - - - - - - - -
+- - - - 43 - - - 5 - - - - - - - - -
+- - - - - - 4 - - - - - - - - - - -
+- - - - 2 - - - - - - - - - - - - -
+- - - - - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - 1 - - 2

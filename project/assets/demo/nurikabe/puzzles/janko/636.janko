@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Mokuani
+solver Rainer
+source https://d.hatena.ne.jp/mokuani/
+info 026
+unit 25
+size 10
+[problem]
+- - - 1 - - - - - -
+- - 24 - - 1 - - - -
+- - - 5 - - - - - -
+- - - - - 2 - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - 1 - 3 - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -

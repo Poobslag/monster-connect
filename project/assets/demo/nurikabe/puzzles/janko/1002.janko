@@ -1,0 +1,20 @@
+[begin]
+puzzle nurikabe
+author @puzzle_titech
+solver Groffin
+source https://puzz.link/p?nurikabe/10/10/q2k5k5g2n4zp4n3g2k6k3q
+source https://twitter.com/puzzle_titech/status/1251352251311853575
+info 18.4.2020, 05:30 (3) [002]
+unit 25
+size 10
+[problem]
+- - - - - - - - - - 
+- 2 - - - - - 5 - - 
+- - - 5 - 2 - - - - 
+- - - - 4 - - - - - 
+- - - - - - - - - - 
+- - - - - - - - - - 
+- - - - - 4 - - - - 
+- - - - 3 - 2 - - - 
+- - 6 - - - - - 3 - 
+- - - - - - - - - - 

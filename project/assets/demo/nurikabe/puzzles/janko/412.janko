@@ -1,0 +1,16 @@
+[begin]
+puzzle nurikabe
+author Adolfo Zanellati
+solver Otto Janko
+source https://www.janko.at/Raetsel/
+info 7x7_003001100_L1_i7_2_07x07_070624041717.txt
+unit 25
+size 7
+[problem]
+- - 7 - - - 7
+- - - - - - -
+- 3 - - - - -
+4 - - - - - -
+- - - - 7 - -
+- - - - - - -
+- - - - - - -

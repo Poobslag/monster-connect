@@ -1,0 +1,15 @@
+[begin]
+puzzle nurikabe
+author Oleg Andrushko
+solver Jürgen Helbig
+source http://www.puzzleprograms.narod.ru/
+info Pack2.Small.05
+unit 25
+rows 5
+cols 5
+[problem]
+- - 2 - -
+- - - - -
+1 - - - 3
+- - - - -
+- - 4 - -

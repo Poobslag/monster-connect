@@ -1,0 +1,19 @@
+[begin]
+puzzle nurikabe
+author Swaroop Guggilam
+solver Groffin
+source https://www.gmpuzzles.com/blog/
+info 2014-07-10
+unit 25
+size 10
+[problem]
+- - - 4 - - - - - -
+- - - - - - - - - -
+- 6 - 6 - - - - - -
+- - - - - - - - - -
+- - - 5 - - - - - -
+- - - - - - - - - -
+- 21 - 4 - 4 - - - -
+- - - - - - - - - -
+- - - - - - - - - -
+- - - - - - - - - -
