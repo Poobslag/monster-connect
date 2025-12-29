@@ -63,3 +63,54 @@ static func from_cell_string(value: String) -> int:
 		CELL_STRING_EMPTY: return CELL_EMPTY
 		CELL_STRING_MYSTERY_CLUE: return CELL_MYSTERY_CLUE
 		_: return value.to_int()
+
+
+static func load_grid_string_from_file(puzzle_path: String) -> String:
+	var s: String = FileAccess.get_file_as_string(puzzle_path)
+	var grid_string: String
+	if puzzle_path.ends_with(".janko"):
+		grid_string = _parse_janko_text(s)
+	else:
+		grid_string = _parse_mc_text(s)
+	return grid_string
+
+
+static func _parse_mc_text(file_text: String) -> String:
+	var puzzle_lines: Array[String] = []
+	var file_lines: PackedStringArray = file_text.split("\n")
+	for file_line: String in file_lines:
+		if file_line.begins_with("//"):
+			continue
+		puzzle_lines.append(file_line)
+	return "\n".join(PackedStringArray(puzzle_lines))
+
+
+## Test data includes Nurikabe puzzles scraped from janko.at for solver development and benchmarking. These files are
+## not distributed with Monster Connect.
+static func _parse_janko_text(file_text: String) -> String:
+	var janko_section: String
+	var puzzle_lines: Array[String] = []
+	var janko_lines: PackedStringArray = file_text.split("\n")
+	for janko_line: String in janko_lines:
+		if janko_line.begins_with("["):
+			janko_section = janko_line
+		elif janko_section == "[problem]":
+			if janko_line == "":
+				# some files end with a blank line
+				continue
+			var janko_line_split: PackedStringArray = janko_line.split(" ")
+			var puzzle_cells_split: Array[String] = []
+			for janko_cell: String in janko_line_split:
+				var puzzle_cell: String = CELL_STRING_EMPTY
+				if janko_cell == "":
+					# some lines end with a blank character
+					continue
+				elif janko_cell == "-":
+					puzzle_cell = CELL_STRING_EMPTY
+				elif janko_cell.is_valid_int() and janko_cell.length() <= 2:
+					puzzle_cell = janko_cell
+				else:
+					push_warning("Invalid cell in %s: %s" % [file_text, puzzle_cell])
+				puzzle_cells_split.append(puzzle_cell.lpad(2))
+			puzzle_lines.append("".join(puzzle_cells_split))
+	return "\n".join(PackedStringArray(puzzle_lines))
