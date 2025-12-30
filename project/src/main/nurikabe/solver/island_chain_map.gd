@@ -123,32 +123,20 @@ func _illegal_endpoint_connection(island_1: CellGroup, island_2: CellGroup) -> b
 	if island_1.clue >= 1 and island_2.clue >= 1:
 		return true
 	
-	var numbered_island_count: int = 0
-	var lca: CellGroup = _find_lca(island_1, island_2)
-	numbered_island_count += 1 if lca.clue >= 1 else 0
-	for start: CellGroup in [island_1, island_2]:
-		var a: CellGroup = start
-		while a != lca:
-			numbered_island_count += 1 if a.clue >= 1 else 0
-			a = _parent_by_island[a]
-			if numbered_island_count >= 2:
-				break
-		if numbered_island_count >= 2:
-			break
-	
-	return numbered_island_count >= 2
-
-
-func _find_lca(island_1: CellGroup, island_2: CellGroup) -> CellGroup:
 	var a: CellGroup = island_1
 	var b: CellGroup = island_2
-	if _depth_by_island[b] < _depth_by_island[a]:
-		var c: CellGroup = a
-		a = b
-		b = c
-	for _i in _depth_by_island[b] - _depth_by_island[a]:
-		b = _parent_by_island[b]
+	var numbered_island_count: int = 1 if island_1.clue >= 1 or island_2.clue >= 1 else 0
 	while a != b:
-		a = _parent_by_island[a]
-		b = _parent_by_island[b]
-	return a
+		var visited: CellGroup
+		if _depth_by_island[a] > _depth_by_island[b]:
+			a = _parent_by_island[a]
+			visited = a
+		else:
+			b = _parent_by_island[b]
+			visited = b
+		if visited.clue >= 1 and a != b:
+			numbered_island_count += 1
+			if numbered_island_count >= 2:
+				break
+	
+	return numbered_island_count >= 2

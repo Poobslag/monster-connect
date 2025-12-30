@@ -623,6 +623,23 @@ func test_island_chain_map_cycle_janko_3() -> void:
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(8, 2)), false)
 
 
+func test_island_chain_map_cycle_janko_83() -> void:
+	grid = [
+		"####    #### 1####",
+		" .##    ## .## 3##",
+		" 2##    ## 3## .##",
+		"####   5## .## .##",
+		"## 1#### 1########",
+		"#### .####     .  ",
+		"#### .## .  ## 5  ",
+		"## 4 .##   . 5##  ",
+		"######            ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(4, 7)), false)
+	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(5, 6)), false)
+
+
 func assert_groups(actual_groups: Array[CellGroup], expected_props_list: Array[Dictionary]) -> void:
 	var actual_props_list: Array[Dictionary] = []
 	for actual_group: CellGroup in actual_groups:
