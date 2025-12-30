@@ -21,11 +21,11 @@ func _init(init_board: SolverBoard) -> void:
 	_build_chains()
 
 
-func has_chain_conflict(cell: Vector2i) -> bool:
-	return not find_chain_conflicts(cell).is_empty()
+func has_chain_conflict(cell: Vector2i, start_numbered_island_count: int = 0) -> bool:
+	return not find_chain_conflicts(cell, start_numbered_island_count).is_empty()
 
 
-func find_chain_conflicts(cell: Vector2i) -> Array[Vector2i]:
+func find_chain_conflicts(cell: Vector2i, start_numbered_island_count: int = 0) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 	var connected_islands: Array[CellGroup] = []
 	for neighbor_dir: Vector2i in [
@@ -38,6 +38,8 @@ func find_chain_conflicts(cell: Vector2i) -> Array[Vector2i]:
 		var connected_island: CellGroup = _board.get_island_for_cell(neighbor)
 		if not connected_islands.has(connected_island):
 			connected_islands.append(connected_island)
+	if _board.is_border_cell(cell):
+		connected_islands.append(_border_island)
 	
 	for i: int in connected_islands.size():
 		for j: int in range(i + 1, connected_islands.size()):
@@ -45,7 +47,7 @@ func find_chain_conflicts(cell: Vector2i) -> Array[Vector2i]:
 			var island_2: CellGroup = connected_islands[j]
 			if _chain_id_by_island[island_1] != _chain_id_by_island[island_2]:
 				continue
-			if _illegal_endpoint_connection(island_1, island_2):
+			if _illegal_endpoint_connection(island_1, island_2, start_numbered_island_count):
 				result = [island_1.root, island_2.root]
 				break
 		if result:
@@ -124,13 +126,15 @@ func _has_clue(island: CellGroup) -> bool:
 	return island.clue >= 1 or island.clue == CELL_MYSTERY_CLUE
 
 
-func _illegal_endpoint_connection(island_1: CellGroup, island_2: CellGroup) -> bool:
-	if _has_clue(island_1) and _has_clue(island_2):
+func _illegal_endpoint_connection(island_1: CellGroup, island_2: CellGroup, start_numbered_island_count: int = 0) -> bool:
+	var numbered_island_count: int = start_numbered_island_count
+	if _has_clue(island_1): numbered_island_count += 1
+	if _has_clue(island_2): numbered_island_count += 1
+	if numbered_island_count >= 2:
 		return true
 	
 	var a: CellGroup = island_1
 	var b: CellGroup = island_2
-	var numbered_island_count: int = 1 if _has_clue(island_1) or _has_clue(island_2) else 0
 	while a != b:
 		var visited: CellGroup
 		if _depth_by_island[a] > _depth_by_island[b]:

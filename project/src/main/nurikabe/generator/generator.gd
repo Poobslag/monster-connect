@@ -55,6 +55,7 @@ var board: GeneratorBoard:
 var log_enabled: bool = false
 var placements: PlacementBatch = PlacementBatch.new()
 var solver: Solver = Solver.new()
+var step_count: int = 0
 
 var _break_in_count: int = 0
 var _rng_ops: RngOps = RngOps.new(rng)
@@ -104,6 +105,7 @@ func clear() -> void:
 	_checkpoint_stack.clear()
 	_event_log.clear()
 	_break_in_count = 0
+	step_count = 0
 
 
 func step_until_done() -> void:
@@ -141,6 +143,7 @@ func step() -> void:
 			_checkpoint_stack.back()["retry_count"] += 1
 			if log_enabled:
 				_log_event("retry %s/%s" % [_checkpoint_stack.back()["retry_count"], MAX_CHECKPOINT_RETRIES])
+	step_count += 1
 
 
 func step_solver_until_done(solver_pass: Solver.SolverPass = Solver.SolverPass.BIFURCATION) -> void:
@@ -292,8 +295,9 @@ func attempt_island_buffer_from(island: CellGroup, diagonal: Vector2i, dir_prior
 		var neighbor: Vector2i = diagonal + neighbor_dir
 		if board.get_cell(neighbor) != CELL_EMPTY:
 			continue
-		var neighbor_islands: Array[CellGroup] = _get_neighbor_islands(neighbor)
-		if not neighbor_islands.is_empty():
+		if _has_neighbor_island(neighbor):
+			continue
+		if board.solver_board.get_island_chain_map().has_chain_conflict(neighbor, 1):
 			continue
 		
 		add_placement(neighbor, CELL_MYSTERY_CLUE, ISLAND_BUFFER, [island.root])
@@ -486,12 +490,14 @@ func find_island_guide_cell_candidates(island: CellGroup) -> Array[Vector2i]:
 	for liberty: Vector2i in island.liberties:
 		for neighbor_dir in NEIGHBOR_DIRS:
 			var guide_cell_candidate: Vector2i = liberty + neighbor_dir
-			var guide_cell_neighbor_islands: Array[CellGroup] = _get_neighbor_islands(guide_cell_candidate)
 			if not board.get_cell(guide_cell_candidate) == CELL_EMPTY:
 				# guide cell must be empty
 				continue
-			if not guide_cell_neighbor_islands.is_empty():
+			if _has_neighbor_island(guide_cell_candidate):
 				# guide cell can't be next to any other islands
+				continue
+			if board.solver_board.get_island_chain_map().has_chain_conflict(guide_cell_candidate, 1):
+				# guide cell can't form a chain
 				continue
 			var remaining_liberties: Array[Vector2i] = []
 			for remaining_liberty: Vector2i in island.liberties:
@@ -585,6 +591,17 @@ func _get_neighbor_islands(cell: Vector2i) -> Array[CellGroup]:
 	return neighbor_islands
 
 
+func _has_neighbor_island(cell: Vector2i) -> bool:
+	var has_neighbor_island: bool = false
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		var neighbor: Vector2i = cell + neighbor_dir
+		if board.get_cell(neighbor) != CELL_ISLAND:
+			continue
+		has_neighbor_island = true
+		break
+	return has_neighbor_island
+
+
 ## Selects an initial open-island candidate: a new clue cell constrained to expand through a single open liberty. Most
 ## Nurikabe puzzles begin with at least one such forced expansion.
 ## [br]
@@ -598,6 +615,8 @@ func _select_initial_open_island_candidate(island_plan: Dictionary[String, Varia
 	var interior_cells: Array[Vector2i] = []
 	for cell: Vector2i in board.empty_cells:
 		if _has_neighbor_island(cell):
+			continue
+		if board.solver_board.get_island_chain_map().has_chain_conflict(cell, 1):
 			continue
 		
 		var empty_neighbor_cell_count: int = _empty_neighbor_cell_count(cell)
@@ -682,6 +701,8 @@ func _plan_initial_open_island_walls(island_plan: Dictionary[String, Variant]) -
 				continue
 			if _has_neighbor_island(potential_other_clue):
 				continue
+			if board.solver_board.get_island_chain_map().has_chain_conflict(potential_other_clue, 1):
+				continue
 			var adjacent_other_wall_count: int = 0
 			for adjacent_other_wall_dir: Vector2i in NEIGHBOR_DIRS:
 				var adjacent_other_wall: Vector2i = potential_other_clue + adjacent_other_wall_dir
@@ -729,14 +750,5 @@ func _empty_neighbor_cell_count(cell: Vector2i) -> int:
 	return count
 
 
-func _has_neighbor_island(cell: Vector2i) -> bool:
-	var has_neighbor_island: bool = false
-	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-		if board.get_cell(cell + neighbor_dir) == CELL_ISLAND:
-			has_neighbor_island = true
-			break
-	return has_neighbor_island
-
-
 func _log_event(msg: String) -> void:
-	_event_log.append(msg)
+	_event_log.append("%s-%s" % [step_count, msg])
