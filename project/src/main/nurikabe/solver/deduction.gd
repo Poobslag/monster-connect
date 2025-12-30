@@ -20,6 +20,7 @@ enum Reason {
 	CORNER_ISLAND, # add a wall diagonally from an island with only two liberties
 	ISLAND_BUBBLE, # fill in an empty cell surrounded by islands
 	ISLAND_BUFFER, # add a wall to preserve space for an island to grow
+	ISLAND_CHAIN, # add a wall to avoid connecting an island chain
 	ISLAND_CHOKEPOINT, # expand an island through a narrow passage
 	ISLAND_CONNECTOR, # connect a clueless island to a clued island
 	ISLAND_DIVIDER, # add a wall to keep two islands apart
@@ -34,10 +35,10 @@ enum Reason {
 	WALL_CONNECTOR, # connect two walls through a chokepoint
 	WALL_EXPANSION, # expand a wall in the only possible direction
 	WALL_WEAVER, # finish an island in a way which preserves wall connectivity
-	BORDER_HUG,
 	
 	# advanced techniques
 	ASSUMPTION, # unproven assumption made when bifurcating
+	BORDER_HUG, # bifurcate options where extending an island along the border would create a split wall
 	ISLAND_BATTLEGROUND, # bifurcate two clues with adjacent liberties
 	ISLAND_RELEASE, # bifurcate options for walling in an island
 	ISLAND_STRANGLE, # bifurcate options for completing an island, walling off impossible ones

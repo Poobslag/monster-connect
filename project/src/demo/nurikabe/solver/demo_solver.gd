@@ -44,11 +44,13 @@ var solver: Solver = Solver.new()
 var performance_suite_queue: Array[String] = []
 
 var _puzzle_paths: Array[String] = []
+var _performance_test_start_index: int = -1
 
 func _ready() -> void:
 	_load_puzzle_paths()
 	_refresh_puzzle_path()
 	solver.board = %GameBoard.to_solver_board()
+	_performance_test_start_index = _puzzle_paths.find(puzzle_path)
 
 
 func _load_puzzle_paths() -> void:
@@ -80,13 +82,13 @@ func _input(event: InputEvent) -> void:
 		KEY_W:
 			performance_data.clear()
 			if Input.is_key_pressed(KEY_SHIFT):
-				var start_index: int = _puzzle_paths.find(puzzle_path)
-				if start_index == -1:
+				if _performance_test_start_index == -1:
 					push_error("Puzzle not found: %s" % [puzzle_path])
 					return
 				performance_suite_queue.clear()
 				for i in 10:
-					performance_suite_queue.append(_puzzle_paths[(start_index + i) % _puzzle_paths.size()])
+					var performance_text_index: int = (_performance_test_start_index + i) % _puzzle_paths.size()
+					performance_suite_queue.append(_puzzle_paths[performance_text_index])
 				if not %MessageLabel.text.is_empty():
 					_show_message("--------")
 				_show_message("performance suite start (%s)" % [performance_suite_queue.size()])
@@ -303,7 +305,7 @@ func _on_command_palette_command_entered(command: String) -> void:
 			var puzzle_path_pattern: String
 			match command.substr(0, 1):
 				"j": puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/janko/%s.janko"
-				"n": puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/nurikabe/%s.txt"
+				"n": puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/nikoli/%s.txt"
 				"p": puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/poobslag/%s.txt"
 				_: puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/%s.txt"
 			var new_puzzle_path: String = puzzle_path_pattern % [command.substr(1)]
@@ -311,5 +313,6 @@ func _on_command_palette_command_entered(command: String) -> void:
 				_show_message("File not found: %s" % [new_puzzle_path])
 				return
 			load_puzzle(new_puzzle_path)
+			_performance_test_start_index = _puzzle_paths.find(puzzle_path)
 		_:
 			_show_message("Invalid command: %s" % [command.substr(1)])
