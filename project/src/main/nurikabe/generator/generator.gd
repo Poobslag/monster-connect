@@ -15,6 +15,8 @@ const INITIAL_OPEN_ISLAND_EDGE_WEIGHT: float = 1.5
 const INITIAL_OPEN_ISLAND_CORNER_WEIGHT: float = 0.25
 const INITIAL_OPEN_ISLAND_INTERIOR_WEIGHT: float = 0.5
 
+const TARGET_BREAK_IN_COUNT: int = 2
+
 const UNKNOWN_REASON: Placement.Reason = Placement.Reason.UNKNOWN
 
 ## starting techniques
@@ -54,7 +56,7 @@ var log_enabled: bool = false
 var placements: PlacementBatch = PlacementBatch.new()
 var solver: Solver = Solver.new()
 
-var _ran_starting_techniques: bool = false
+var _break_in_count: int = 0
 var _rng_ops: RngOps = RngOps.new(rng)
 
 var _priority_techniques: TechniqueScheduler = TechniqueScheduler.new([
@@ -101,7 +103,7 @@ func clear() -> void:
 	solver.clear()
 	_checkpoint_stack.clear()
 	_event_log.clear()
-	_ran_starting_techniques = false
+	_break_in_count = 0
 
 
 func step_until_done() -> void:
@@ -181,9 +183,8 @@ func has_remaining_retries() -> bool:
 
 
 func attempt_generation_step() -> void:
-	if not placements.has_changes() and not _ran_starting_techniques:
-		generate_initial_open_island()
-		_ran_starting_techniques = true
+	if not placements.has_changes() and _break_in_count < TARGET_BREAK_IN_COUNT:
+		generate_break_in()
 	
 	var validation_result: SolverBoard.ValidationResult \
 			= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
@@ -377,7 +378,7 @@ func generate_all_sealed_unclued_island_clues() -> void:
 
 ## Adds a new clue cell constrained to expand through a single open liberty. Most Nurikabe puzzles begin with at least
 ## one such forced expansion.
-func generate_initial_open_island() -> void:
+func generate_break_in() -> void:
 	for _mercy in 10:
 		# island_plan keys:
 		# - seed_cell: Vector2i
@@ -389,6 +390,7 @@ func generate_initial_open_island() -> void:
 		
 		if island_plan.has("seed_cell") and island_plan.has("supporting_clues"):
 			add_placement(island_plan["seed_cell"], CELL_MYSTERY_CLUE, INITIAL_OPEN_ISLAND)
+			placements.placements.back().break_in = true
 			for other_clue: Vector2i in island_plan["supporting_clues"]:
 				add_placement(other_clue, CELL_MYSTERY_CLUE, ISLAND_GUIDE)
 			break
@@ -410,6 +412,8 @@ func apply_changes() -> void:
 			board.set_given(placement.pos, placement.value)
 		else:
 			board.set_cell(placement.pos, placement.value)
+		if placement.break_in:
+			_break_in_count += 1
 	for clue_minimum_change: Dictionary[String, Variant] in placements.clue_minimum_changes:
 		var pos: Vector2i = clue_minimum_change["pos"]
 		var value: int = clue_minimum_change["value"]
@@ -422,6 +426,7 @@ func apply_changes() -> void:
 
 func push_checkpoint() -> void:
 	_checkpoint_stack.append({
+		"break_in_count": _break_in_count,
 		"clues": board.clues.duplicate(),
 		"givens": board.givens.duplicate(),
 		"clue_minimums": board.clue_minimums.duplicate(),
@@ -445,8 +450,10 @@ func load_checkpoint() -> void:
 			board.set_given(given, new_givens[given])
 		var new_clue_minimums: Dictionary[Vector2i, int] = _checkpoint_stack.back()["clue_minimums"]
 		board.clue_minimums = new_clue_minimums.duplicate()
+		var new_break_in_count: int = _checkpoint_stack.back()["break_in_count"]
+		_break_in_count = new_break_in_count
 	else:
-		_ran_starting_techniques = false
+		_break_in_count = 0
 	
 	if log_enabled:
 		_log_event("%s loaded checkpoint #%s" % [board.version, _checkpoint_stack.size()])
@@ -589,7 +596,10 @@ func _select_initial_open_island_candidate(island_plan: Dictionary[String, Varia
 	var corner_cells: Array[Vector2i] = []
 	var edge_cells: Array[Vector2i] = []
 	var interior_cells: Array[Vector2i] = []
-	for cell: Vector2i in board.cells:
+	for cell: Vector2i in board.empty_cells:
+		if _has_neighbor_island(cell):
+			continue
+		
 		var empty_neighbor_cell_count: int = _empty_neighbor_cell_count(cell)
 		match empty_neighbor_cell_count:
 			2: corner_cells.append(cell)
@@ -670,6 +680,8 @@ func _plan_initial_open_island_walls(island_plan: Dictionary[String, Variant]) -
 				continue
 			if board.get_cell(potential_other_clue) != CELL_EMPTY:
 				continue
+			if _has_neighbor_island(potential_other_clue):
+				continue
 			var adjacent_other_wall_count: int = 0
 			for adjacent_other_wall_dir: Vector2i in NEIGHBOR_DIRS:
 				var adjacent_other_wall: Vector2i = potential_other_clue + adjacent_other_wall_dir
@@ -715,6 +727,15 @@ func _empty_neighbor_cell_count(cell: Vector2i) -> int:
 		if neighbor_value == CELL_EMPTY:
 			count += 1
 	return count
+
+
+func _has_neighbor_island(cell: Vector2i) -> bool:
+	var has_neighbor_island: bool = false
+	for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+		if board.get_cell(cell + neighbor_dir) == CELL_ISLAND:
+			has_neighbor_island = true
+			break
+	return has_neighbor_island
 
 
 func _log_event(msg: String) -> void:
