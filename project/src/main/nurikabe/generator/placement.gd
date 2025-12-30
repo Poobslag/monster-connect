@@ -21,6 +21,7 @@ enum Reason {
 
 var reason: Reason
 var given: bool = false
+var break_in: bool = false
 
 func _init(init_pos: Vector2i, init_value: int,
 		init_reason: Reason = Reason.UNKNOWN,
