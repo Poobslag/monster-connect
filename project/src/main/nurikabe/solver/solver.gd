@@ -235,6 +235,7 @@ func deduce_all_island_chains() -> void:
 		if not chain_conflicts:
 			continue
 		add_deduction(cell, CELL_WALL, ISLAND_CHAIN, chain_conflicts)
+		add_fun(FUN_THINK, 1.0)
 
 
 func deduce_all_island_chokepoints() -> void:

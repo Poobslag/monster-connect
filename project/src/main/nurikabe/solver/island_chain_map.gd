@@ -4,6 +4,7 @@ const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
+const CELL_MYSTERY_CLUE: int = NurikabeUtils.CELL_MYSTERY_CLUE
 
 ## Virtual root node for islands touching the puzzle border.
 var _border_island: CellGroup = CellGroup.new()
@@ -119,13 +120,17 @@ func _expand_chain(start_island: CellGroup) -> void:
 			queue.append(neighbor_island)
 
 
+func _has_clue(island: CellGroup) -> bool:
+	return island.clue >= 1 or island.clue == CELL_MYSTERY_CLUE
+
+
 func _illegal_endpoint_connection(island_1: CellGroup, island_2: CellGroup) -> bool:
-	if island_1.clue >= 1 and island_2.clue >= 1:
+	if _has_clue(island_1) and _has_clue(island_2):
 		return true
 	
 	var a: CellGroup = island_1
 	var b: CellGroup = island_2
-	var numbered_island_count: int = 1 if island_1.clue >= 1 or island_2.clue >= 1 else 0
+	var numbered_island_count: int = 1 if _has_clue(island_1) or _has_clue(island_2) else 0
 	while a != b:
 		var visited: CellGroup
 		if _depth_by_island[a] > _depth_by_island[b]:
@@ -134,7 +139,7 @@ func _illegal_endpoint_connection(island_1: CellGroup, island_2: CellGroup) -> b
 		else:
 			b = _parent_by_island[b]
 			visited = b
-		if visited.clue >= 1 and a != b:
+		if _has_clue(visited) and a != b:
 			numbered_island_count += 1
 			if numbered_island_count >= 2:
 				break

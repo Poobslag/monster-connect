@@ -35,7 +35,7 @@ const FIX_TINY_SPLIT_WALL: Placement.Reason = Placement.Reason.FIX_TINY_SPLIT_WA
 const FIX_UNCLUED_ISLAND: Placement.Reason = Placement.Reason.FIX_UNCLUED_ISLAND
 
 const MAX_CHECKPOINT_RETRIES: int = 2
-const MAX_GENERATION_FACTOR: float = 0.5
+const MAX_GENERATION_FACTOR: float = 0.9
 const BIFURCATION_CHANCE: float = 0.3
 
 ## Exponent controlling bias toward priority expansion of small islands.[br]
