@@ -7,12 +7,14 @@ enum Reason {
 	INITIAL_OPEN_ISLAND, # add a clue cell constrained to expand through a single open liberty
 	
 	# basic techniques
-	ISLAND_BUFFER, # add a clue cell to indirectly constrain an open island (knight's move)
 	ISLAND_GUIDE, # add a clue cell to constrain an open island (adjacent or diagonal)
 	ISLAND_EXPANSION, # add an island cell to expand an open island
 	ISLAND_MOAT, # seal an open island with walls
 	SEALED_ISLAND_CLUE, # assign a clue number to a sealed island
 	WALL_GUIDE, # add a clue cell to constrain an open wall
+	
+	# advanced techniques
+	ISLAND_BUFFER, # add a clue cell to indirectly constrain an open island (knight's move)
 	
 	# repair techniques
 	FIX_TINY_SPLIT_WALL, # remove a clue to fix a tiny split wall

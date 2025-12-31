@@ -14,7 +14,7 @@ extends Node
 ## 	[kbd]B[/kbd]: Print benchmark results for AggregateTimer/SplitTimer.
 ##
 ## [b]Commands:[/b][br]
-## 	[kbd]/j<n>[/kbd]: Load Kanko puzzle <n>.
+## 	[kbd]/j<n>[/kbd]: Load Janko puzzle <n>.
 ## 	[kbd]/n<n>[/kbd]: Load Nikoli puzzle <n>.
 ## 	[kbd]/p<n>[/kbd]: Load Poobslag puzzle <n>.
 
