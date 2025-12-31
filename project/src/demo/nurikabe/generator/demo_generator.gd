@@ -108,12 +108,12 @@ func set_puzzle_size(puzzle_size: Vector2i) -> void:
 
 
 func step_generator() -> void:
-	if generator.board.is_filled():
+	if generator.is_done():
 		var validation_result: SolverBoard.ValidationResult \
 				= generator.board.solver_board.validate(SolverBoard.VALIDATE_STRICT)
 		if validation_result.error_count == 0:
 			_show_message("--------")
-			_show_message("(no changes)")
+			_show_message("(finished)")
 			return
 	
 	generator.step()
@@ -132,7 +132,7 @@ func step_generator() -> void:
 func step_solver() -> void:
 	if generator.solver.board.is_filled() and not generator.has_validation_errors():
 		_show_message("--------")
-		_show_message("(no changes)")
+		_show_message("(finished)")
 		return
 	
 	if not %MessageLabel.text.is_empty():

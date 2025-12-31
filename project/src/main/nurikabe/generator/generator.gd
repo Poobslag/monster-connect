@@ -16,6 +16,8 @@ const INITIAL_OPEN_ISLAND_CORNER_WEIGHT: float = 0.25
 const INITIAL_OPEN_ISLAND_INTERIOR_WEIGHT: float = 0.5
 
 const TARGET_BREAK_IN_COUNT: int = 2
+const TARGET_MUTATE_STEPS: int = 10
+const ALMOST_FILLED_THRESHOLD: int = 10
 
 const UNKNOWN_REASON: Placement.Reason = Placement.Reason.UNKNOWN
 
@@ -35,6 +37,9 @@ const ISLAND_BUFFER: Placement.Reason = Placement.Reason.ISLAND_BUFFER
 ## repair techniques
 const FIX_TINY_SPLIT_WALL: Placement.Reason = Placement.Reason.FIX_TINY_SPLIT_WALL
 const FIX_UNCLUED_ISLAND: Placement.Reason = Placement.Reason.FIX_UNCLUED_ISLAND
+
+## mutation techniques
+const MUTATION: Placement.Reason = Placement.Reason.MUTATION
 
 const MAX_CHECKPOINT_RETRIES: int = 2
 const MAX_GENERATION_FACTOR: float = 0.9
@@ -58,6 +63,7 @@ var solver: Solver = Solver.new()
 var step_count: int = 0
 
 var _break_in_count: int = 0
+var _mutate_steps: int = 0
 var _rng_ops: RngOps = RngOps.new(rng)
 
 var _priority_techniques: TechniqueScheduler = TechniqueScheduler.new([
@@ -83,11 +89,10 @@ var _recovery_techniques: TechniqueScheduler = TechniqueScheduler.new([
 
 var _checkpoint_stack: Array[Dictionary] = []
 var _event_log: Array[String] = []
+var _mutator: PuzzleMutator
 
 func _init() -> void:
 	solver.set_generation_strategy()
-	rng = RandomNumberGenerator.new()
-	_rng_ops.rng = rng
 	for scheduler: TechniqueScheduler in [
 			_priority_techniques, _basic_techniques, _advanced_techniques, _recovery_techniques]:
 		scheduler.rng = rng
@@ -105,19 +110,25 @@ func clear() -> void:
 	_checkpoint_stack.clear()
 	_event_log.clear()
 	_break_in_count = 0
+	_mutate_steps = 0
+	_mutator = null
 	step_count = 0
 
 
 func step_until_done() -> void:
 	for mercy: int in solver.board.cells.size() * MAX_GENERATION_FACTOR:
 		step()
-		if not board.is_filled():
+		if not is_done():
 			continue
 		var validation_result: SolverBoard.ValidationResult \
 				= board.solver_board.validate(SolverBoard.VALIDATE_STRICT)
 		if validation_result.error_count == 0:
 			# filled with no validation errors
 			break
+
+
+func is_done() -> bool:
+	return board.is_filled() and not has_validation_errors() and _mutate_steps >= TARGET_MUTATE_STEPS
 
 
 func step() -> void:
@@ -129,7 +140,11 @@ func step() -> void:
 	attempt_generation_step()
 	apply_changes()
 	step_solver_until_done(solver_pass)
-	if not has_validation_errors() and all_clues_valid():
+	
+	if _mutate_steps >= 1:
+		# mutating; checkpoints no longer apply
+		pass
+	elif not has_validation_errors() and all_clues_valid():
 		# no errors; push the checkpoint and add more clues
 		push_checkpoint()
 	else:
@@ -189,9 +204,12 @@ func attempt_generation_step() -> void:
 	if not placements.has_changes() and _break_in_count < TARGET_BREAK_IN_COUNT:
 		generate_break_in()
 	
-	var validation_result: SolverBoard.ValidationResult \
-			= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
-	if not placements.has_changes() and validation_result.error_count > 0:
+	if not placements.has_changes() \
+			and (_mutate_steps >= 1 or board.solver_board.empty_cells.size() <= ALMOST_FILLED_THRESHOLD) \
+			and not is_done():
+		generate_mutation()
+	
+	if not placements.has_changes() and has_validation_errors():
 		for recovery_technique: Callable in _recovery_techniques.next_cycle():
 			recovery_technique.call()
 			if placements.has_changes():
@@ -417,6 +435,8 @@ func apply_changes() -> void:
 				board.unset_given(placement.pos)
 			else:
 				board.set_given(placement.pos, placement.value)
+		elif board.has_clue(placement.pos) and placement.value == CELL_ISLAND:
+			board.set_clue(placement.pos, 0)
 		else:
 			board.set_cell(placement.pos, placement.value)
 		if placement.break_in:
@@ -565,8 +585,54 @@ func fix_all_unclued_islands() -> void:
 			unclued_islands.append(unclued_island)
 	
 	for unclued_island: CellGroup in unclued_islands:
-		var unclued_island_cell: Vector2i = _rng_ops.pick_random(unclued_island.cells)
+		var unclued_island_cells: Array[Vector2i] = \
+				GeneratorUtils.best_clue_cells_for_unclued_island(board.solver_board, unclued_island)
+		var unclued_island_cell: Vector2i = _rng_ops.pick_random(unclued_island_cells)
 		add_placement(unclued_island_cell, unclued_island.size(), FIX_UNCLUED_ISLAND)
+
+
+func generate_mutation() -> void:
+	if _mutator == null:
+		# initialize the mutator and strip generator-only constraints
+		if board.givens or board.clue_minimums:
+			for given: Vector2i in board.givens:
+				add_given_change(given, CELL_EMPTY, MUTATION)
+			for clue_minimum: Vector2i in board.clue_minimums:
+				add_clue_minimum_change(clue_minimum, 0)
+		var prepared_board: SolverBoard = prepare_board_for_mutation()
+		_mutator = PuzzleMutator.new(prepared_board)
+		_mutator.rng = rng
+	
+	# advance the mutator one step
+	_mutator.step()
+	_mutate_steps += 1
+	var mutated_board: SolverBoard = _mutator.get_best_board()
+	
+	# apply the results
+	for cell: Vector2i in board.cells:
+		if mutated_board.has_clue(cell) and mutated_board.get_clue(cell) != board.get_clue(cell):
+			add_placement(cell, mutated_board.get_clue(cell), MUTATION)
+		elif mutated_board.get_cell(cell) != board.get_cell(cell):
+			add_placement(cell, mutated_board.get_cell(cell), MUTATION)
+		elif board.has_clue(cell) and not mutated_board.has_clue(cell):
+			add_placement(cell, CELL_ISLAND, MUTATION)
+
+
+func prepare_board_for_mutation() -> SolverBoard:
+	# expand islands to fill their liberties
+	var prepared_board: SolverBoard = board.solver_board.get_flooded_board()
+	
+	# renumber islands to match their size
+	for island: CellGroup in prepared_board.islands:
+		if island.clue == 0 or island.clue == -1:
+			continue
+		if island.clue == island.size():
+			continue
+		for cell: Vector2i in island.cells:
+			if prepared_board.has_clue(cell):
+				prepared_board.set_clue(cell, island.size())
+	
+	return prepared_board
 
 
 func _create_temp_solver() -> Solver:

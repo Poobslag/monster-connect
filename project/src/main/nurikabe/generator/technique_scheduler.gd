@@ -5,10 +5,9 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new():
 	set(value):
 		rng = value
 		_rng_ops.rng = rng
-var _rng_ops: RngOps
+var _rng_ops: RngOps = RngOps.new(rng)
 
 func _init(init_techniques: Array[Dictionary]) -> void:
-	_rng_ops = RngOps.new(rng)
 	_techniques = init_techniques
 
 
