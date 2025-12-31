@@ -146,8 +146,8 @@ func step_solver() -> void:
 		for deduction_index: int in generator.solver.deductions.size():
 			var shown_index: int = generator.solver.board.version + deduction_index
 			var deduction: Deduction = generator.solver.deductions.deductions[deduction_index]
-			_show_message("%s %s" % \
-					[shown_index, str(deduction)])
+			_show_message("%s-%s %s" % \
+					[generator.step_count, shown_index, str(deduction)])
 		
 		for change: Dictionary[String, Variant] in generator.solver.deductions.get_changes():
 			%GameBoard.set_cell(change["pos"], change["value"])
