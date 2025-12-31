@@ -23,9 +23,9 @@ func shuffle(arr: Array[Variant]) -> void:
 		arr[j] = tmp
 
 
-## Shuffles the array in place using the Fisher–Yates algorithm.[br]
+## Shuffles an array with non-uniform weights.[br]
 ## [br]
-## Uses the injected RNG for deterministic behavior when seeded.
+## Higher weighted items are sorted to the front more frequently. Uses Efraimidis–Spirakis weighted random ordering.
 func shuffle_weighted(arr: Array[Variant], weights: PackedFloat32Array) -> void:
 	var decorated: Array[Dictionary] = []
 	for i in arr.size():

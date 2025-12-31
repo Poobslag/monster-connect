@@ -65,6 +65,26 @@ static func from_cell_string(value: String) -> int:
 		_: return value.to_int()
 
 
+static func cells_from_grid_string(grid_string: String) -> Dictionary[Vector2i, int]:
+	var cells: Dictionary[Vector2i, int] = {}
+	var grid_string_rows: PackedStringArray = grid_string.split("\n")
+	for y in grid_string_rows.size():
+		var row_string: String = grid_string_rows[y]
+		var cell_x: int = 0
+		var accumulated: String = ""
+		for str_x: int in row_string.length():
+			accumulated += row_string[str_x]
+			if accumulated.length() == 2 and accumulated[0] != "(":
+				cells[Vector2i(cell_x, y)] = NurikabeUtils.from_cell_string(accumulated.strip_edges())
+				accumulated = ""
+				cell_x += 1
+			elif accumulated.ends_with(")"):
+				cells[Vector2i(cell_x, y)] = NurikabeUtils.from_cell_string(accumulated.substr(1, accumulated.length() - 2))
+				accumulated = ""
+				cell_x += 1
+	return cells
+
+
 static func load_grid_string_from_file(puzzle_path: String) -> String:
 	var s: String = FileAccess.get_file_as_string(puzzle_path)
 	var grid_string: String

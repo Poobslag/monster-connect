@@ -62,6 +62,10 @@ func set_given(cell_pos: Vector2i, value: int) -> void:
 	givens[cell_pos] = value
 
 
+func unset_given(cell_pos: Vector2i) -> void:
+	givens.erase(cell_pos)
+
+
 ## Sets the specified cells on the model.[br]
 ## [br]
 ## Accepts a dictionary with the following keys:[br]

@@ -301,7 +301,7 @@ func attempt_island_buffer_from(island: CellGroup, diagonal: Vector2i, dir_prior
 			continue
 		
 		add_placement(neighbor, CELL_MYSTERY_CLUE, ISLAND_BUFFER, [island.root])
-		add_given(diagonal, CELL_WALL, ISLAND_BUFFER, [island.root])
+		add_given_change(diagonal, CELL_WALL, ISLAND_BUFFER, [island.root])
 		var clue_cell: Vector2i = _find_clue_cell(island)
 		add_clue_minimum_change(clue_cell, island.size() + 1)
 		break
@@ -327,7 +327,7 @@ func generate_open_island_expansion() -> void:
 	
 	if open_islands:
 		var open_island: CellGroup = _rng_ops.pick_random(open_islands)
-		add_placement(open_island.liberties[0], CELL_ISLAND, ISLAND_EXPANSION)
+		add_given_change(open_island.liberties[0], CELL_ISLAND, ISLAND_EXPANSION)
 
 
 func generate_open_island_moat() -> void:
@@ -413,7 +413,10 @@ func apply_changes() -> void:
 		if NurikabeUtils.is_clue(placement.value):
 			board.set_clue(placement.pos, placement.value)
 		elif placement.given:
-			board.set_given(placement.pos, placement.value)
+			if placement.value == CELL_EMPTY:
+				board.unset_given(placement.pos)
+			else:
+				board.set_given(placement.pos, placement.value)
 		else:
 			board.set_cell(placement.pos, placement.value)
 		if placement.break_in:
@@ -474,7 +477,7 @@ func add_placement(pos: Vector2i, value: int,
 	placements.add_placement(pos, value, reason, sources)
 
 
-func add_given(pos: Vector2i, value: int,
+func add_given_change(pos: Vector2i, value: int,
 		reason: Placement.Reason = Placement.Reason.UNKNOWN,
 		sources: Array[Vector2i] = []) -> void:
 	placements.add_placement(pos, value, reason, sources)
@@ -574,9 +577,7 @@ func _create_temp_solver() -> Solver:
 
 
 func _find_clue_cell(island: CellGroup) -> Vector2i:
-	var clue_cells: Array[Vector2i] = island.cells.filter(func(cell: Vector2i) -> bool:
-			return board.has_clue(cell))
-	return clue_cells[0] if clue_cells.size() == 1 else POS_NOT_FOUND
+	return board.solver_board.find_clue_cell(island)
 
 
 func _get_neighbor_islands(cell: Vector2i) -> Array[CellGroup]:

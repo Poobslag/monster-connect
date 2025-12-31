@@ -108,15 +108,23 @@ func duplicate() -> SolverBoard:
 
 func from_game_board(game_board: NurikabeGameBoard) -> void:
 	groups_need_rebuild = true
-	var non_empty_cells: Array[Vector2i] = []
 	for cell_pos: Vector2i in game_board.get_used_cells():
 		var cell_value: int = game_board.get_cell(cell_pos)
 		if NurikabeUtils.is_clue(cell_value):
 			set_clue(cell_pos, cell_value)
 		else:
 			set_cell(cell_pos, cell_value)
-		if cell_value != CELL_EMPTY:
-			non_empty_cells.append(cell_pos)
+
+
+func from_grid_string(grid_string: String) -> void:
+	groups_need_rebuild = true
+	var loaded_cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)
+	for cell_pos: Vector2i in loaded_cells:
+		var cell_value: int = loaded_cells[cell_pos]
+		if NurikabeUtils.is_clue(cell_value):
+			set_clue(cell_pos, cell_value)
+		else:
+			set_cell(cell_pos, cell_value)
 
 
 func update_game_board(game_board: NurikabeGameBoard) -> void:
@@ -125,6 +133,12 @@ func update_game_board(game_board: NurikabeGameBoard) -> void:
 			game_board.set_cell(cell, get_clue(cell))
 		else:
 			game_board.set_cell(cell, get_cell(cell))
+
+
+func find_clue_cell(island: CellGroup) -> Vector2i:
+	var clue_cells: Array[Vector2i] = island.cells.filter(func(cell: Vector2i) -> bool:
+			return has_clue(cell))
+	return clue_cells[0] if clue_cells.size() == 1 else POS_NOT_FOUND
 
 
 func get_clue(cell_pos: Vector2i) -> int:
