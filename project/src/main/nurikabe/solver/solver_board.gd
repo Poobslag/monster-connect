@@ -483,14 +483,11 @@ func _build_group_neighbors(group: Array[Vector2i]) -> Array[Vector2i]:
 
 
 func _build_island_group_map() -> SolverGroupMap:
-	var result: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return value == CELL_ISLAND)
-	return result
+	return SolverGroupMap.new(self, [CELL_ISLAND])
 
 
 func _build_flooded_island_group_map() -> SolverGroupMap:
-	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return value == CELL_ISLAND or value == CELL_EMPTY)
+	var group_map: SolverGroupMap = SolverGroupMap.new(self, [CELL_EMPTY, CELL_ISLAND])
 	for group: Array[Vector2i] in group_map.groups:
 		if group.all(func(cell: Vector2i) -> bool:
 				return cells[cell] == CELL_EMPTY):
@@ -499,8 +496,7 @@ func _build_flooded_island_group_map() -> SolverGroupMap:
 
 
 func _build_flooded_wall_group_map() -> SolverGroupMap:
-	var group_map: SolverGroupMap = SolverGroupMap.new(self, func(value: int) -> bool:
-		return value == CELL_EMPTY or value == CELL_WALL)
+	var group_map: SolverGroupMap = SolverGroupMap.new(self, [CELL_EMPTY, CELL_WALL])
 	for group: Array[Vector2i] in group_map.groups:
 		if group.all(func(cell: Vector2i) -> bool:
 				return cells[cell] == CELL_EMPTY):
@@ -509,10 +505,7 @@ func _build_flooded_wall_group_map() -> SolverGroupMap:
 
 
 func _build_island_chokepoint_map() -> SolverChokepointMap:
-	return SolverChokepointMap.new(self,
-		func(cell: Vector2i) -> bool:
-			var value: int = get_cell(cell)
-			return value == CELL_ISLAND or value == CELL_EMPTY,
+	return SolverChokepointMap.new(self, [CELL_EMPTY, CELL_ISLAND],
 		func(cell: Vector2i) -> bool:
 			return has_clue(cell))
 
@@ -610,10 +603,7 @@ func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 
 ## This wall chokepoint map is currently unused because island-chain cycle logic is faster.
 func _build_wall_chokepoint_map() -> SolverChokepointMap:
-	return SolverChokepointMap.new(self,
-		func(cell: Vector2i) -> bool:
-			var value: int = get_cell(cell)
-			return value == CELL_EMPTY or value == CELL_WALL,
+	return SolverChokepointMap.new(self, [CELL_EMPTY, CELL_WALL],
 		func(cell: Vector2i) -> bool:
 			return get_cell(cell) == CELL_WALL)
 
@@ -627,8 +617,7 @@ func _build_per_clue_extent_map() -> PerClueExtentMap:
 
 
 func _build_wall_group_map() -> SolverGroupMap:
-	return SolverGroupMap.new(self, func(value: int) -> bool:
-		return value == CELL_WALL)
+	return SolverGroupMap.new(self, [CELL_WALL])
 
 
 func _get_cached(cache_key: String, builder: Callable) -> Variant:
