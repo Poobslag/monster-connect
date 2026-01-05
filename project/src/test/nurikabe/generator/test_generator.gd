@@ -1,6 +1,6 @@
 class_name TestGenerator
 extends GutTest
-## Framework for testing the Solver.
+## Framework for testing the Generator.
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
