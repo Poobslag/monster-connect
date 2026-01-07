@@ -126,7 +126,8 @@ func _has_clue(island: CellGroup) -> bool:
 	return island.clue >= 1 or island.clue == CELL_MYSTERY_CLUE
 
 
-func _illegal_endpoint_connection(island_1: CellGroup, island_2: CellGroup, start_numbered_island_count: int = 0) -> bool:
+func _illegal_endpoint_connection(
+		island_1: CellGroup, island_2: CellGroup, start_numbered_island_count: int = 0) -> bool:
 	var numbered_island_count: int = start_numbered_island_count
 	if _has_clue(island_1): numbered_island_count += 1
 	if _has_clue(island_2): numbered_island_count += 1

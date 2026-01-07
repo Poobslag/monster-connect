@@ -79,7 +79,8 @@ static func cells_from_grid_string(grid_string: String) -> Dictionary[Vector2i, 
 				accumulated = ""
 				cell_x += 1
 			elif accumulated.ends_with(")"):
-				cells[Vector2i(cell_x, y)] = NurikabeUtils.from_cell_string(accumulated.substr(1, accumulated.length() - 2))
+				cells[Vector2i(cell_x, y)] = NurikabeUtils.from_cell_string(
+						accumulated.substr(1, accumulated.length() - 2))
 				accumulated = ""
 				cell_x += 1
 	return cells
