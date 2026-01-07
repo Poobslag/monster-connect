@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3 uid="uid://dvdhie7s6kaxx"]
+
+[ext_resource type="Script" uid="uid://drmqsr5yesuf5" path="res://src/demo/nurikabe/generator/demo_mutator.gd" id="1_3o16x"]
+
+[node name="Demo" type="Node"]
+script = ExtResource("1_3o16x")
+grid_string = " . 2###### . . . . 5## 4
+###### . 5############ .
+## . . .## . . . . 5## .
+###################### .
+## 1## . . . . . .10####
+#### . .############ . .
+###### .## . . . .#### .
+## . 2########## . .## .
+######## 1## . 2## .## .
+ . 2## .########## 8## .
+###### . . . . . .#### 7
+## 1############ . 9####
+#### . . . . 5###### . 2
+ .############ . . 5####
+ .## .## .## . .###### 4
+ 3## 2## 2######## . . .
+"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Canvas" type="Control" parent="ScrollContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(768, 1224)
+layout_mode = 2
+
+[node name="GameBoards" type="Control" parent="ScrollContainer/Canvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Labels" type="Control" parent="ScrollContainer/Canvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

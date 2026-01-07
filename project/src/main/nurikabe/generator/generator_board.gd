@@ -84,7 +84,7 @@ func get_cell(cell_pos: Vector2i) -> int:
 
 
 func get_clue(cell_pos: Vector2i) -> int:
-	return clues[cell_pos]
+	return clues.get(cell_pos, 0)
 
 
 func get_island_for_cell(cell: Vector2i) -> CellGroup:

@@ -285,6 +285,7 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 	%TileMapIsland.set_cell(cell_pos, island_id, Vector2.ZERO)
 	
 	%CursorableArea.set_cell(cell_pos)
+	size = %CursorableArea.cursorable_rect.size * %CursorableArea.scale
 	
 	if not Engine.is_editor_hint():
 		error_cells.erase(cell_pos)

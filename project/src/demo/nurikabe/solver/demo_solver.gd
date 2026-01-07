@@ -48,7 +48,6 @@ var _performance_test_start_index: int = -1
 
 func _ready() -> void:
 	_load_puzzle_paths()
-	_refresh_puzzle_path()
 	solver.board = %GameBoard.to_solver_board()
 	_performance_test_start_index = _puzzle_paths.find(puzzle_path)
 
@@ -151,7 +150,7 @@ func print_grid_string() -> void:
 func step() -> void:
 	if solver.board.is_filled():
 		_show_message("--------")
-		_show_message("(no changes)")
+		_show_message("(finished)")
 		return
 	
 	if not %MessageLabel.text.is_empty():

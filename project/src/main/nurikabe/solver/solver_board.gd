@@ -7,6 +7,7 @@ enum ValidationMode {
 }
 
 const NEIGHBOR_DIRS: Array[Vector2i] = NurikabeUtils.NEIGHBOR_DIRS
+const ADJACENT_DIRS: Array[Vector2i] = NurikabeUtils.ADJACENT_DIRS
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
 const VALIDATE_COMPLEX: ValidationMode = ValidationMode.COMPLEX
@@ -106,6 +107,13 @@ func duplicate() -> SolverBoard:
 	return copy
 
 
+func erase_solution_cells() -> void:
+	groups_need_rebuild = true
+	for cell: Vector2i in cells:
+		if not has_clue(cell):
+			set_cell(cell, CELL_EMPTY)
+
+
 func from_game_board(game_board: NurikabeGameBoard) -> void:
 	groups_need_rebuild = true
 	for cell_pos: Vector2i in game_board.get_used_cells():
@@ -127,6 +135,24 @@ func from_grid_string(grid_string: String) -> void:
 			set_cell(cell_pos, cell_value)
 
 
+func to_grid_string() -> String:
+	var rect: Rect2i = Rect2i(cells.keys()[0].x, cells.keys()[0].y, 0, 0)
+	for cell: Vector2i in cells:
+		rect = rect.expand(cell)
+	
+	var grid_lines: Array[String] = []
+	for y: int in range(rect.position.y, rect.end.y + 1):
+		var line: String = ""
+		for x: int in range(rect.position.x, rect.end.x + 1):
+			var cell: Vector2i = Vector2i(x, y)
+			var cell_value: int = get_clue(cell) if has_clue(cell) else get_cell(cell)
+			var cell_string: String = NurikabeUtils.to_cell_string(cell_value)
+			line += cell_string.lpad(2, " ") if cell_string.length() <= 2 else "(%s)" % cell_string
+		grid_lines.append(line)
+	
+	return "\n".join(grid_lines)
+
+
 func update_game_board(game_board: NurikabeGameBoard) -> void:
 	for cell: Vector2i in cells:
 		if has_clue(cell):
@@ -142,10 +168,10 @@ func find_clue_cell(island: CellGroup) -> Vector2i:
 
 
 func get_clue(cell_pos: Vector2i) -> int:
-	return clues[cell_pos]
+	return clues.get(cell_pos, 0)
 
 
-func has_clue(cell_pos: Vector2i) -> int:
+func has_clue(cell_pos: Vector2i) -> bool:
 	return clues.has(cell_pos)
 
 
@@ -199,7 +225,15 @@ func get_per_clue_extent_map() -> PerClueExtentMap:
 
 
 func set_clue(cell_pos: Vector2i, clue: int) -> void:
-	clues[cell_pos] = clue
+	if cell_pos == POS_NOT_FOUND:
+		push_error("set_clue: invalid cell_pos (%s)" % [cell_pos])
+		return
+	
+	if clue == 0:
+		clues.erase(cell_pos)
+	else:
+		clues[cell_pos] = clue
+	
 	if get_cell(cell_pos) == CELL_ISLAND:
 		var island: CellGroup = get_island_for_cell(cell_pos)
 		island.clue = _clue_value_for_cells(island.cells)
@@ -210,6 +244,9 @@ func set_clue(cell_pos: Vector2i, clue: int) -> void:
 
 func set_cell(cell_pos: Vector2i, value: int) -> void:
 	if get_cell(cell_pos) == value:
+		return
+	if cell_pos == POS_NOT_FOUND:
+		push_error("set_cell: invalid cell_pos (%s)" % [cell_pos])
 		return
 	
 	if has_clue(cell_pos) and value != CELL_ISLAND:
@@ -328,14 +365,9 @@ func print_cells() -> void:
 		header_line += "--"
 	print(header_line)
 	
-	for y: int in range(rect.position.y, rect.end.y + 1):
-		var line: String = "| "
-		for x: int in range(rect.position.x, rect.end.x + 1):
-			var cell: Vector2i = Vector2i(x, y)
-			var cell_value: int = get_clue(cell) if has_clue(cell) else get_cell(cell)
-			var cell_string: String = NurikabeUtils.to_cell_string(cell_value)
-			line += cell_string.lpad(2, " ")
-		print(line)
+	var lines: PackedStringArray = to_grid_string().split("\n")
+	for line: String in lines:
+		print("| %s" % [line])
 
 
 func surround_island(cell: Vector2i) -> Array[Dictionary]:

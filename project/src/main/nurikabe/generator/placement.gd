@@ -19,6 +19,9 @@ enum Reason {
 	# repair techniques
 	FIX_TINY_SPLIT_WALL, # remove a clue to fix a tiny split wall
 	FIX_UNCLUED_ISLAND, # add a clue to fix an unclued island
+	
+	# mutation techniques
+	MUTATION, # apply random changes to improve the puzzle
 }
 
 var reason: Reason
