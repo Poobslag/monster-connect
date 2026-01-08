@@ -36,6 +36,17 @@ func test_islands_mystery_clue_1() -> void:
 	])
 
 
+func test_islands_mystery_clue_joined() -> void:
+	grid = [
+		" ? .",
+		"## ?",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_groups(board.islands, [
+		{"cells": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)], "clue": -1, "liberties": []},
+	])
+
+
 func test_islands_mystery_clue_2() -> void:
 	grid = [
 		"    ",

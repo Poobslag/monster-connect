@@ -626,7 +626,7 @@ func prepare_board_for_mutation() -> SolverBoard:
 	
 	# renumber islands to match their size
 	for island: CellGroup in prepared_board.islands:
-		if island.clue == 0 or island.clue == -1:
+		if island.clue == 0:
 			continue
 		if island.clue == island.size():
 			continue
