@@ -800,10 +800,16 @@ func deduce_clued_island_snug(island: CellGroup) -> void:
 	if extent_size != island.clue:
 		return
 	
+	# diminishing fun returns for large blobs
+	var deducable_extent_cells: Array[Vector2i] = []
 	for extent_cell: Vector2i in board.get_per_clue_extent_map().get_extent_cells(island):
 		if should_deduce(board, extent_cell):
-			add_deduction(extent_cell, CELL_ISLAND, ISLAND_SNUG, [island.root])
-			add_fun(FUN_THINK, 1.0)
+			deducable_extent_cells.append(extent_cell)
+	var fun_per_cell: float = 1.0 if deducable_extent_cells.is_empty() else 1.0 / sqrt(deducable_extent_cells.size())
+	
+	for extent_cell: Vector2i in deducable_extent_cells:
+		add_deduction(extent_cell, CELL_ISLAND, ISLAND_SNUG, [island.root])
+		add_fun(FUN_THINK, fun_per_cell)
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor: Vector2i = extent_cell + neighbor_dir
 			if not should_deduce(board, neighbor):
