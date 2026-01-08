@@ -26,7 +26,6 @@ func test_carve_wall_cells() -> void:
 	board.from_grid_string("\n".join(grid))
 	mutation_library.carve_wall_cells(board, Vector2i(0, 1))
 	
-	board.print_cells()
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 12)
 	assert_eq(12, board.get_clue(Vector2i(0, 2)))
 	assert_eq(board.get_cell(Vector2i(0, 1)), CELL_ISLAND)
