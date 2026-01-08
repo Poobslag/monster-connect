@@ -159,6 +159,7 @@ func mutate_fix_unfinished(solver: Solver) -> bool:
 		var mutate_option: Callable = _rng_ops.pick_random(mutate_options)
 		if mutate_option.bind(solver.board).call():
 			did_mutate = true
+			break
 	return did_mutate
 
 
