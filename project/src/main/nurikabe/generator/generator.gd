@@ -201,13 +201,15 @@ func has_remaining_retries() -> bool:
 
 
 func attempt_generation_step() -> void:
+	if _mutate_steps >= 1 or board.solver_board.empty_cells.size() <= ALMOST_FILLED_THRESHOLD:
+		attempt_mutation_step()
+	else:
+		attempt_construction_step()
+
+
+func attempt_construction_step() -> void:
 	if not placements.has_changes() and _break_in_count < TARGET_BREAK_IN_COUNT:
 		generate_break_in()
-	
-	if not placements.has_changes() \
-			and (_mutate_steps >= 1 or board.solver_board.empty_cells.size() <= ALMOST_FILLED_THRESHOLD) \
-			and not is_done():
-		generate_mutation()
 	
 	if not placements.has_changes() and has_validation_errors():
 		for recovery_technique: Callable in _recovery_techniques.next_cycle():
@@ -591,7 +593,7 @@ func fix_all_unclued_islands() -> void:
 		add_placement(unclued_island_cell, unclued_island.size(), FIX_UNCLUED_ISLAND)
 
 
-func generate_mutation() -> void:
+func attempt_mutation_step() -> void:
 	if _mutator == null:
 		# initialize the mutator and strip generator-only constraints
 		if board.givens or board.clue_minimums:
