@@ -491,7 +491,7 @@ func _clue_value_for_cells(island: Array[Vector2i]) -> int:
 		if not has_clue(cell):
 			continue
 		var clue_value: int = get_clue(cell)
-		if total_clue_value > 0:
+		if total_clue_value > 0 or total_clue_value == CELL_MYSTERY_CLUE:
 			total_clue_value = -1
 			break
 		total_clue_value = clue_value
