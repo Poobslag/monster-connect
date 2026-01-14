@@ -281,7 +281,7 @@ func fix_joined_island(board: SolverBoard, island: CellGroup) -> void:
 	for old_clue_cell: Vector2i in old_clue_cells:
 		var clue_cell_wrapped: Dictionary[String, Variant] = {
 			"cell": old_clue_cell,
-			"distance": nearest_clue_distance_map[old_clue_cell]}
+			"distance": nearest_clue_distance_map.get(old_clue_cell, 999999)}
 		clue_cells_wrapped.append(clue_cell_wrapped)
 	_rng_ops.shuffle(clue_cells_wrapped)
 	clue_cells_wrapped.sort_custom(func(a: Dictionary[String, Variant], b: Dictionary[String, Variant]) -> bool:
@@ -376,7 +376,7 @@ func move_clue(board: SolverBoard, island: CellGroup) -> void:
 	var weights: Array[float] = []
 	weights.resize(cell_candidates.size())
 	for i in cell_candidates.size():
-		weights[i] = 1.0 / nearest_clue_distance_map[cell_candidates[i]]
+		weights[i] = 1.0 / nearest_clue_distance_map.get(cell_candidates[i], 999999)
 	var new_clue_cell: Vector2i = cell_candidates[rng.rand_weighted(weights)]
 	
 	# set the new clue
