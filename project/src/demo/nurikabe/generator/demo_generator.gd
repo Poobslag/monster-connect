@@ -25,6 +25,7 @@ const PUZZLE_SIZES: Array[Vector2i] = [
 
 var generator: Generator = Generator.new()
 var fixed_seed: int = -1
+var generator_running: bool = false
 
 func _ready() -> void:
 	generator.board = %GameBoard.to_generator_board()
@@ -32,6 +33,10 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if generator_running:
+		# ignore input until the generator is done running
+		return
+	
 	match Utils.key_press(event):
 		KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9:
 			var size_index: int = wrapi(Utils.key_num(event) - 1, 0, PUZZLE_SIZES.size())
@@ -84,6 +89,21 @@ func _input(event: InputEvent) -> void:
 			_show_message("shuffle: %s" % [values])
 
 
+func _process(_delta: float) -> void:
+	if generator_running:
+		generator.step()
+		copy_board_from_generator()
+		show_generator_messages()
+		if generator.is_done():
+			var validation_result: SolverBoard.ValidationResult \
+					= generator.board.solver_board.validate(SolverBoard.VALIDATE_STRICT)
+			if validation_result.error_count == 0:
+				# filled with no validation errors
+				generator_running = false
+				%GameBoard.validate()
+				_show_message("(finished)")
+
+
 func print_grid_string() -> void:
 	%GameBoard.to_solver_board().print_cells()
 	var clue_minimum_strings: Array[String] = []
@@ -117,10 +137,15 @@ func step_generator() -> void:
 			return
 	
 	generator.step()
-	
+	show_generator_messages()
+
+
+func show_generator_messages() -> void:
 	if not %MessageLabel.text.is_empty():
 		_show_message("--------")
 	var events: Array[String] = generator.consume_events()
+	if generator.mutate_steps >= 1:
+		_show_message("(mutate %s/%s)" % [generator.mutate_steps, Generator.TARGET_MUTATE_STEPS])
 	if events.is_empty():
 		_show_message("(no changes)")
 	else:
