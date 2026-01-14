@@ -72,6 +72,20 @@ func test_mutate_fix_joined_islands() -> void:
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 8)
 
 
+func test_mutate_fix_joined_islands_single() -> void:
+	var grid: Array[String] = [
+		" . 2######",
+		"## .## .##",
+		" 5 . . .##",
+	]
+	var board: SolverBoard = SolverBoard.new()
+	board.from_grid_string("\n".join(grid))
+	mutation_library.mutate_fix_joined_islands(board)
+	
+	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).size(), 8)
+	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 8)
+
+
 func test_mutate_fix_pools() -> void:
 	var grid: Array[String] = [
 		" . 2######",

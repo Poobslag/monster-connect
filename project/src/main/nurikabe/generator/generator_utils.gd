@@ -17,7 +17,7 @@ static func best_clue_cells_for_unclued_island(board: SolverBoard, island: CellG
 	for island_cell: Vector2i in island.cells:
 		var island_cell_wrapped: Dictionary[String, Variant] = {
 			"cell": island_cell,
-			"distance": nearest_clue_distance_map[island_cell]}
+			"distance": nearest_clue_distance_map.get(island_cell, 999999)}
 		island_cells_wrapped.append(island_cell_wrapped)
 	island_cells_wrapped.sort_custom(func(a: Dictionary[String, Variant], b: Dictionary[String, Variant]) -> bool:
 		return a["distance"] < b["distance"])

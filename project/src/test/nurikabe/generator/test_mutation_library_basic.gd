@@ -200,5 +200,18 @@ func test_move_clue() -> void:
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 5)
 
 
+func test_move_clue_single() -> void:
+	var grid: Array[String] = [
+		"##########",
+		" 4 . . .##",
+	]
+	var board: SolverBoard = SolverBoard.new()
+	board.from_grid_string("\n".join(grid))
+	var island: CellGroup = board.get_island_for_cell(Vector2i(0, 1))
+	mutation_library.move_clue(board, island)
+	assert_eq(board.has_clue(Vector2i(0, 1)), false)
+	assert_eq(board.get_island_for_cell(Vector2i(0, 1)).clue, 4)
+
+
 func assert_board(board: SolverBoard, expected: Array[String]) -> void:
 	assert_eq(board.to_grid_string().split("\n"), PackedStringArray(expected))
