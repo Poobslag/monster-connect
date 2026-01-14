@@ -171,23 +171,31 @@ func calculate_fitness(solver: Solver) -> float:
 	for fun_axis: Deduction.FunAxis in fun_weights:
 		fitness += fun.get(fun_axis, 0.0) * fun_weights[fun_axis]
 	
-	var penalty: float = 0
+	# puzzles with huge empty spaces are penalized
+	var blob_penalty: float = 0
+	for island: CellGroup in solver.board.islands:
+		blob_penalty += max(0, island.size() - solver.board.cells.size() * 0.25)
+	if blob_penalty == 0:
+		pass
+	else:
+		fitness *= 10.0 / (blob_penalty + 10.0)
 	
+	# invalid/unfinished puzzles are penalized
+	var validation_penalty: float = 0
 	var validation_result: SolverBoard.ValidationResult \
 			= solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
-	penalty += validation_result.joined_islands.size()
-	penalty += validation_result.pools.size()
+	validation_penalty += validation_result.joined_islands.size()
+	validation_penalty += validation_result.pools.size()
 	if validation_result.split_walls:
-		penalty += solver.board.walls.size()
-	penalty += validation_result.unclued_islands.size()
-	penalty += validation_result.wrong_size.size()
-	
-	penalty += solver.board.validate(SolverBoard.VALIDATE_SIMPLE).error_count
-	penalty += solver.board.empty_cells.size()
-	if penalty == 0:
+		validation_penalty += solver.board.walls.size()
+	validation_penalty += validation_result.unclued_islands.size()
+	validation_penalty += validation_result.wrong_size.size()
+	validation_penalty += solver.board.validate(SolverBoard.VALIDATE_SIMPLE).error_count
+	validation_penalty += solver.board.empty_cells.size()
+	if validation_penalty == 0:
 		fitness += 5 * solver.board.cells.size()
 	else:
-		fitness *= 10.0 / (penalty + 10)
+		fitness *= 10.0 / (validation_penalty + 10)
 	
 	return fitness
 
