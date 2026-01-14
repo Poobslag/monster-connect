@@ -66,10 +66,10 @@ func _input(event: InputEvent) -> void:
 				step_generator()
 			%GameBoard.validate()
 		KEY_H:
+			generator.log_enabled = true
+			generator.consume_events()
 			generator.board = %GameBoard.to_generator_board()
-			generator.step_until_done()
-			copy_board_from_generator()
-			%GameBoard.validate()
+			generator_running = true
 		KEY_R:
 			generator.clear()
 			%GameBoard.reset()

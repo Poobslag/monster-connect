@@ -128,6 +128,7 @@ func step_until_done() -> void:
 
 
 func max_steps() -> int:
+	@warning_ignore("narrowing_conversion")
 	return solver.board.cells.size() * MAX_GENERATION_FACTOR
 
 
