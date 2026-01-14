@@ -22,16 +22,58 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new():
 		_rng_ops.rng = rng
 		_mutation_library.rng = rng
 var candidates: Array[Solver] = []
+var difficulty: float = 0.5:
+	set(value):
+		difficulty = value
+		_refresh_difficulty()
 
 var _mutation_library: MutationLibrary = MutationLibrary.new()
 var _rng_ops: RngOps = RngOps.new(rng)
 
+var fun_weights_by_difficulty: Array[Dictionary] = [
+	{
+		# trivial difficulty, very few techniques required
+		Deduction.FunAxis.FUN_TRIVIAL: 0.0,
+		Deduction.FunAxis.FUN_FAST: 4.0,
+		Deduction.FunAxis.FUN_NOVELTY: 0.0,
+		Deduction.FunAxis.FUN_THINK: -1.0,
+		Deduction.FunAxis.FUN_BIFURCATE: -1.0,
+	},
+	{
+		# easy difficulty, basic techniques required
+		Deduction.FunAxis.FUN_TRIVIAL: 0.0,
+		Deduction.FunAxis.FUN_FAST: 2.0,
+		Deduction.FunAxis.FUN_NOVELTY: 1.5,
+		Deduction.FunAxis.FUN_THINK: -0.5,
+		Deduction.FunAxis.FUN_BIFURCATE: -1.0,
+	},
+	{
+		# moderate difficulty, advanced techniques required
+		Deduction.FunAxis.FUN_TRIVIAL: -1.0,
+		Deduction.FunAxis.FUN_FAST: 1.0,
+		Deduction.FunAxis.FUN_NOVELTY: 1.5,
+		Deduction.FunAxis.FUN_THINK: 1.0,
+		Deduction.FunAxis.FUN_BIFURCATE: -0.5,
+	},
+	{
+		# hard difficulty, bifurcation required
+		Deduction.FunAxis.FUN_TRIVIAL: -1.0,
+		Deduction.FunAxis.FUN_FAST: 0.0,
+		Deduction.FunAxis.FUN_NOVELTY: 1.0,
+		Deduction.FunAxis.FUN_THINK: 1.5,
+		Deduction.FunAxis.FUN_BIFURCATE: 1.0,
+	},
+	{
+		# extreme difficulty, tons of bifurcation
+		Deduction.FunAxis.FUN_TRIVIAL: -1.0,
+		Deduction.FunAxis.FUN_FAST: -1.0,
+		Deduction.FunAxis.FUN_NOVELTY: 0.5,
+		Deduction.FunAxis.FUN_THINK: 1.5,
+		Deduction.FunAxis.FUN_BIFURCATE: 2.0,
+	}
+]
+
 var fun_weights: Dictionary[Deduction.FunAxis, float] = {
-	Deduction.FunAxis.FUN_TRIVIAL: -1.0,
-	Deduction.FunAxis.FUN_FAST: 0.0,
-	Deduction.FunAxis.FUN_NOVELTY: 1.0,
-	Deduction.FunAxis.FUN_THINK: 1.0,
-	Deduction.FunAxis.FUN_BIFURCATE: 1.0,
 }
 
 func _init(start_board: SolverBoard) -> void:
@@ -42,6 +84,8 @@ func _init(start_board: SolverBoard) -> void:
 	solver.board.erase_solution_cells()
 	solver.step_until_done(Solver.SolverPass.BIFURCATION)
 	candidates.append(solver)
+	
+	_refresh_difficulty()
 
 
 func duplicate_candidate(candidate_index: int) -> Solver:
@@ -198,6 +242,19 @@ func calculate_fitness(solver: Solver) -> float:
 		fitness *= 10.0 / (validation_penalty + 10)
 	
 	return fitness
+
+
+func _refresh_difficulty() -> void:
+	var band_pos: float = difficulty * (fun_weights_by_difficulty.size() - 1)
+	var band_index_low: int = clampi(floori(band_pos), 0, fun_weights_by_difficulty.size() - 2)
+	var band_index_high: int = clampi(ceili(band_pos), 1, fun_weights_by_difficulty.size() - 1)
+
+	var low_weights: Dictionary = fun_weights_by_difficulty[band_index_low]
+	var high_weights: Dictionary = fun_weights_by_difficulty[band_index_high]
+	var band_lerp: float = band_pos - band_index_low
+
+	for axis: Deduction.FunAxis in Deduction.FunAxis.values():
+		fun_weights[axis] = lerp(low_weights[axis], high_weights[axis], band_lerp)
 
 
 class MutationPicker:

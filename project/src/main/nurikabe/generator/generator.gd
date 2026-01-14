@@ -62,6 +62,7 @@ var placements: PlacementBatch = PlacementBatch.new()
 var solver: Solver = Solver.new()
 var step_count: int = 0
 var mutate_steps: int = 0
+var difficulty: float = 0.5
 
 var _break_in_count: int = 0
 var _rng_ops: RngOps = RngOps.new(rng)
@@ -609,6 +610,7 @@ func attempt_mutation_step() -> void:
 		var prepared_board: SolverBoard = prepare_board_for_mutation()
 		_mutator = PuzzleMutator.new(prepared_board)
 		_mutator.rng = rng
+	_mutator.difficulty = difficulty
 	
 	# advance the mutator one step
 	_mutator.step()
