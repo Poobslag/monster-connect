@@ -61,9 +61,9 @@ var log_enabled: bool = false
 var placements: PlacementBatch = PlacementBatch.new()
 var solver: Solver = Solver.new()
 var step_count: int = 0
+var mutate_steps: int = 0
 
 var _break_in_count: int = 0
-var _mutate_steps: int = 0
 var _rng_ops: RngOps = RngOps.new(rng)
 
 var _priority_techniques: TechniqueScheduler = TechniqueScheduler.new([
@@ -110,13 +110,13 @@ func clear() -> void:
 	_checkpoint_stack.clear()
 	_event_log.clear()
 	_break_in_count = 0
-	_mutate_steps = 0
+	mutate_steps = 0
 	_mutator = null
 	step_count = 0
 
 
 func step_until_done() -> void:
-	for mercy: int in solver.board.cells.size() * MAX_GENERATION_FACTOR:
+	for mercy: int in max_steps():
 		step()
 		if not is_done():
 			continue
@@ -127,8 +127,12 @@ func step_until_done() -> void:
 			break
 
 
+func max_steps() -> int:
+	return solver.board.cells.size() * MAX_GENERATION_FACTOR
+
+
 func is_done() -> bool:
-	return board.is_filled() and not has_validation_errors() and _mutate_steps >= TARGET_MUTATE_STEPS
+	return board.is_filled() and not has_validation_errors() and mutate_steps >= TARGET_MUTATE_STEPS
 
 
 func step() -> void:
@@ -141,7 +145,7 @@ func step() -> void:
 	apply_changes()
 	step_solver_until_done(solver_pass)
 	
-	if _mutate_steps >= 1:
+	if mutate_steps >= 1:
 		# mutating; checkpoints no longer apply
 		pass
 	elif not has_validation_errors() and all_clues_valid():
@@ -201,7 +205,7 @@ func has_remaining_retries() -> bool:
 
 
 func attempt_generation_step() -> void:
-	if _mutate_steps >= 1 or board.solver_board.empty_cells.size() <= ALMOST_FILLED_THRESHOLD:
+	if mutate_steps >= 1 or board.solver_board.empty_cells.size() <= ALMOST_FILLED_THRESHOLD:
 		attempt_mutation_step()
 	else:
 		attempt_construction_step()
@@ -607,7 +611,7 @@ func attempt_mutation_step() -> void:
 	
 	# advance the mutator one step
 	_mutator.step()
-	_mutate_steps += 1
+	mutate_steps += 1
 	var mutated_board: SolverBoard = _mutator.get_best_board()
 	
 	# apply the results
@@ -630,9 +634,10 @@ func prepare_board_for_mutation() -> SolverBoard:
 			continue
 		if island.clue == island.size():
 			continue
-		for cell: Vector2i in island.cells:
-			if prepared_board.has_clue(cell):
-				prepared_board.set_clue(cell, island.size())
+		var clue_cells: Array[Vector2i] = island.cells.filter(func(cell: Vector2i) -> bool:
+			return prepared_board.has_clue(cell))
+		for cell: Vector2i in clue_cells:
+			prepared_board.set_clue(cell, island.size())
 	
 	return prepared_board
 
