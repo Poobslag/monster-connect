@@ -18,6 +18,7 @@ const INITIAL_OPEN_ISLAND_INTERIOR_WEIGHT: float = 0.5
 const TARGET_BREAK_IN_COUNT: int = 2
 const TARGET_MUTATE_STEPS: int = 10
 const ALMOST_FILLED_THRESHOLD: int = 10
+const MAX_STUCK_COUNT: int = 25
 
 const UNKNOWN_REASON: Placement.Reason = Placement.Reason.UNKNOWN
 
@@ -66,6 +67,7 @@ var difficulty: float = 0.5
 
 var _break_in_count: int = 0
 var _rng_ops: RngOps = RngOps.new(rng)
+var _successfully_mutated: bool = false
 
 var _priority_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": generate_open_island_expansion, "weight": 1.0},
@@ -117,8 +119,14 @@ func clear() -> void:
 
 
 func step_until_done() -> void:
-	for mercy: int in max_steps():
+	var stuck_state: Dictionary[String, Variant] = {}
+	
+	while true:
 		step()
+		
+		if check_stuck(stuck_state):
+			break
+		
 		if not is_done():
 			continue
 		var validation_result: SolverBoard.ValidationResult \
@@ -126,6 +134,35 @@ func step_until_done() -> void:
 		if validation_result.error_count == 0:
 			# filled with no validation errors
 			break
+
+
+func check_stuck(stuck_state: Dictionary[String, Variant]) -> bool:
+	if not stuck_state.has("steps"):
+		stuck_state["steps"] = 0
+	if not stuck_state.has("min_empty_cells"):
+		stuck_state["min_empty_cells"] = 999999
+	if not stuck_state.has("stuck_count"):
+		stuck_state["stuck_count"] = 0
+	
+	var result: bool = false
+	
+	stuck_state["steps"] += 1
+	if stuck_state["steps"] >= max_steps():
+		result = true
+	elif board.empty_cells.size() < stuck_state["min_empty_cells"]:
+		stuck_state["stuck_count"] = 0
+		stuck_state["min_empty_cells"] = board.empty_cells.size()
+	elif _successfully_mutated:
+		stuck_state["stuck_count"] = 0
+	else:
+		stuck_state["stuck_count"] += 1
+		@warning_ignore("integer_division")
+		if stuck_state["stuck_count"] > MAX_STUCK_COUNT / 2:
+			_log_event("stuck (%s/%s)" % [stuck_state["stuck_count"], MAX_STUCK_COUNT])
+		if stuck_state["stuck_count"] > MAX_STUCK_COUNT:
+			result = true
+	
+	return result
 
 
 func max_steps() -> int:
@@ -138,6 +175,8 @@ func is_done() -> bool:
 
 
 func step() -> void:
+	_successfully_mutated = false
+	
 	var allow_bifurcation: bool = rng.randf() < BIFURCATION_CHANCE
 	var solver_pass: Solver.SolverPass = \
 			Solver.SolverPass.BIFURCATION if allow_bifurcation else Solver.SolverPass.GLOBAL
@@ -150,7 +189,7 @@ func step() -> void:
 	if mutate_steps >= 1:
 		# mutating; checkpoints no longer apply
 		pass
-	elif not has_validation_errors() and all_clues_valid():
+	elif not has_validation_errors():
 		# no errors; push the checkpoint and add more clues
 		push_checkpoint()
 	else:
@@ -185,17 +224,6 @@ func apply_solver_changes() -> void:
 			_log_event("%s %s" % [board.version + i, str(deduction)])
 	
 	solver.apply_changes()
-
-
-func all_clues_valid() -> bool:
-	return board.clues.keys().all(func(clue: Vector2i) -> bool:
-		var result: bool = true
-		if board.clue_minimums.has(clue):
-			var clue_minimum: int = board.clue_minimums[clue]
-			var cell_value: int = board.clues[clue]
-			if cell_value != CELL_MYSTERY_CLUE and cell_value < clue_minimum:
-				result = false
-		return result)
 
 
 func has_validation_errors() -> bool:
@@ -625,6 +653,7 @@ func attempt_mutation_step() -> void:
 			add_placement(cell, mutated_board.get_cell(cell), MUTATION)
 		elif board.has_clue(cell) and not mutated_board.has_clue(cell):
 			add_placement(cell, CELL_ISLAND, MUTATION)
+	solver.metrics = _mutator.get_best_solver().metrics.duplicate(true)
 
 
 func prepare_board_for_mutation() -> SolverBoard:

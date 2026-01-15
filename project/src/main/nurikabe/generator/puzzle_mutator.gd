@@ -140,6 +140,10 @@ func get_best_board() -> SolverBoard:
 	return candidates.front().board
 
 
+func get_best_solver() -> Solver:
+	return candidates.front()
+
+
 func mutate(solver: Solver) -> void:
 	# populate the mutation picker
 	var picker: MutationPicker = MutationPicker.new()
