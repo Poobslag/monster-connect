@@ -847,7 +847,7 @@ func get_measured_difficulty() -> float:
 	unscaled = log(unscaled + 1.0) / log(1.5)
 	
 	var scaled: float = inverse_lerp(UNSCALED_DIFFICULTY_EASY, UNSCALED_DIFFICULTY_HARD, unscaled)
-	scaled = lerp(1.0, 10.0, scaled)
+	scaled = lerp(2.5, 10.0, scaled)
 	scaled = clamp(scaled, 0.0, 20.0)
 	return scaled
 
