@@ -368,7 +368,3 @@ class UndoAction:
 			"old_values": old_values,
 			"new_values": new_values,
 		})
-
-
-func _on_results_overlay_next_level_button_pressed() -> void:
-	reset()
