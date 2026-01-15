@@ -1,8 +1,13 @@
-[gd_scene load_steps=4 format=4 uid="uid://ck4sekpb0rqx3"]
+[gd_scene load_steps=9 format=3 uid="uid://mcir660yfag2"]
 
 [ext_resource type="Script" uid="uid://dbbofwi6kvo1s" path="res://src/demo/nurikabe/generator/bulk_generator.gd" id="1_7nk3a"]
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_o1grh"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="2_7nk3a"]
+[ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="4_whffh"]
+[ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="5_0ugav"]
+[ext_resource type="Script" uid="uid://0pb3o0nnfm07" path="res://src/demo/nurikabe/generator/bulk_generator_idle_state.gd" id="6_0ugav"]
+[ext_resource type="Script" uid="uid://54j48jtfkdq" path="res://src/demo/nurikabe/generator/bulk_generator_generate_state.gd" id="6_nmkj7"]
+[ext_resource type="Script" uid="uid://cy1dkfhepugpp" path="res://src/demo/nurikabe/generator/bulk_generator_analyze_state.gd" id="7_nmkj7"]
 
 [node name="BulkGenerator" type="Node"]
 script = ExtResource("1_7nk3a")
@@ -42,12 +47,6 @@ grid_string = "
           
 "
 
-[node name="TileMapGround" parent="HBoxContainer/GameBoardHolder/GameBoard" index="0"]
-tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAACAAAAAAAAAAAAAAADAAAAAQAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAAAAAAAAAAACAAEAAQAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAQAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAQAAAAAAAAACAAIAAAAAAAAAAAADAAIAAQAAAAAAAAAEAAIAAAAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAAAAAAAAAAACAAMAAQAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAQAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAQAAAAAAAAACAAQAAAAAAAAAAAADAAQAAQAAAAAAAAAEAAQAAAAAAAAAAAA=")
-
-[node name="CursorableArea" parent="HBoxContainer/GameBoardHolder/GameBoard" index="5"]
-cursorable_rect = Rect2(0, 0, 1280, 1280)
-
 [node name="MessageLabel" type="RichTextLabel" parent="HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -58,4 +57,14 @@ theme_override_font_sizes/normal_font_size = 32
 scroll_following = true
 selection_enabled = true
 
-[editable path="HBoxContainer/GameBoardHolder/GameBoard"]
+[node name="StateMachine" parent="." instance=ExtResource("4_whffh")]
+unique_name_in_owner = true
+
+[node name="Idle" parent="StateMachine" instance=ExtResource("5_0ugav")]
+script = ExtResource("6_0ugav")
+
+[node name="Analyze" parent="StateMachine" instance=ExtResource("5_0ugav")]
+script = ExtResource("7_nmkj7")
+
+[node name="Generate" parent="StateMachine" instance=ExtResource("5_0ugav")]
+script = ExtResource("6_nmkj7")

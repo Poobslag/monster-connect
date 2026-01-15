@@ -145,7 +145,7 @@ func _fill_audio_stream_player_pool() -> void:
 
 ## Recursively loads all .wav files from [constant BASE_DIR] into the [member sounds] cache.
 func _fill_sounds_cache() -> void:
-	var sfx_paths: Array[String] = Utils.find_files(BASE_DIR, "wav")
+	var sfx_paths: Array[String] = Utils.find_imported_files(BASE_DIR, "wav")
 	
 	for sfx_path: String in sfx_paths:
 		var source_key: String = sfx_path

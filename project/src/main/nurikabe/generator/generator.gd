@@ -110,12 +110,14 @@ func consume_events() -> Array[String]:
 func clear() -> void:
 	placements.clear()
 	solver.clear()
-	_checkpoint_stack.clear()
-	_event_log.clear()
-	_break_in_count = 0
-	mutate_steps = 0
-	_mutator = null
 	step_count = 0
+	mutate_steps = 0
+	
+	_checkpoint_stack.clear()
+	_break_in_count = 0
+	_event_log.clear()
+	_successfully_mutated = false
+	_mutator = null
 
 
 func step_until_done() -> void:
