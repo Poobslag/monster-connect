@@ -38,17 +38,6 @@ func handle(event: InputEvent) -> void:
 		if player.current_game_board == null:
 			target_player_position = player.to_local(
 						get_viewport().get_camera_2d().get_global_mouse_position())
-		else:
-			var local_puzzle_rect_with_buffer: Rect2 = \
-					player.get_global_transform().affine_inverse() \
-					* player.current_game_board.get_global_cursorable_rect() \
-					.grow_individual(
-						PUZZLE_APPROACH_LEFT, PUZZLE_APPROACH_TOP, PUZZLE_APPROACH_RIGHT, PUZZLE_APPROACH_BOTTOM)
-		
-			if dist_to_rect(local_puzzle_rect_with_buffer, Vector2.ZERO) <= MOUSE_STOP_DISTANCE:
-				target_player_position = Vector2.ZERO
-			else:
-				target_player_position = nearest_point_on_rect(local_puzzle_rect_with_buffer, Vector2.ZERO)
 		
 		_mouse_target = player.position + target_player_position
 		_mouse_dir = (_mouse_target - player.position).normalized()

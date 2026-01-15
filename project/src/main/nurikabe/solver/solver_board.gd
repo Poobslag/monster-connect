@@ -136,21 +136,12 @@ func from_grid_string(grid_string: String) -> void:
 
 
 func to_grid_string() -> String:
-	var rect: Rect2i = Rect2i(cells.keys()[0].x, cells.keys()[0].y, 0, 0)
+	var cells_and_clues: Dictionary[Vector2i, int] = {}
 	for cell: Vector2i in cells:
-		rect = rect.expand(cell)
-	
-	var grid_lines: Array[String] = []
-	for y: int in range(rect.position.y, rect.end.y + 1):
-		var line: String = ""
-		for x: int in range(rect.position.x, rect.end.x + 1):
-			var cell: Vector2i = Vector2i(x, y)
-			var cell_value: int = get_clue(cell) if has_clue(cell) else get_cell(cell)
-			var cell_string: String = NurikabeUtils.to_cell_string(cell_value)
-			line += cell_string.lpad(2, " ") if cell_string.length() <= 2 else "(%s)" % cell_string
-		grid_lines.append(line)
-	
-	return "\n".join(grid_lines)
+		cells_and_clues[cell] = cells[cell]
+	for clue: Vector2i in clues:
+		cells_and_clues[clue] = clues[clue]
+	return NurikabeUtils.grid_string_from_cells(cells_and_clues)
 
 
 func update_game_board(game_board: NurikabeGameBoard) -> void:

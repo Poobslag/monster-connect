@@ -89,6 +89,24 @@ static func cells_from_grid_string(grid_string: String) -> Dictionary[Vector2i, 
 	return cells
 
 
+static func grid_string_from_cells(cells: Dictionary[Vector2i, int]) -> String:
+	var rect: Rect2i = Rect2i(cells.keys()[0].x, cells.keys()[0].y, 0, 0)
+	for cell: Vector2i in cells:
+		rect = rect.expand(cell)
+	
+	var grid_lines: Array[String] = []
+	for y: int in range(rect.position.y, rect.end.y + 1):
+		var line: String = ""
+		for x: int in range(rect.position.x, rect.end.x + 1):
+			var cell: Vector2i = Vector2i(x, y)
+			var cell_value: int = cells[cell]
+			var cell_string: String = NurikabeUtils.to_cell_string(cell_value)
+			line += cell_string.lpad(2, " ") if cell_string.length() <= 2 else "(%s)" % cell_string
+		grid_lines.append(line)
+	
+	return "\n".join(grid_lines)
+
+
 static func load_grid_string_from_file(puzzle_path: String) -> String:
 	var s: String = FileAccess.get_file_as_string(puzzle_path)
 	var grid_string: String
@@ -138,3 +156,59 @@ static func _parse_janko_text(puzzle_path: String, file_text: String) -> String:
 				puzzle_cells_split.append(puzzle_cell.lpad(2))
 			puzzle_lines.append("".join(puzzle_cells_split))
 	return "\n".join(PackedStringArray(puzzle_lines))
+
+
+static func mirror_grid_string(grid_string: String) -> String:
+	var cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)
+	cells = _mirror_cells(cells)
+	cells = _normalize_cells(cells)
+	return grid_string_from_cells(cells)
+
+
+static func rotate_grid_string(grid_string: String, turns: int = 0) -> String:
+	var cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)
+	cells = _rotate_cells(cells, turns)
+	cells = _normalize_cells(cells)
+	return grid_string_from_cells(cells)
+
+
+static func _mirror_cells(cells: Dictionary[Vector2i, int]) -> Dictionary[Vector2i, int]:
+	var result: Dictionary[Vector2i, int] = {}
+	for cell: Vector2i in cells:
+		result[Vector2i(-cell.x, cell.y)] = cells[cell]
+	return result
+
+
+static func _rotate_cells(cells: Dictionary[Vector2i, int], turns: int) -> Dictionary[Vector2i, int]:
+	if turns == 0:
+		return cells.duplicate()
+	
+	var result: Dictionary[Vector2i, int] = {}
+	for cell: Vector2i in cells:
+		var target_cell: Vector2i
+		match wrapi(turns, 0, 4):
+			0: target_cell = cell
+			1: target_cell = Vector2i(-cell.y, cell.x)
+			2: target_cell = Vector2i(-cell.x, -cell.y)
+			3: target_cell = Vector2i(cell.y, -cell.x)
+		result[target_cell] = cells[cell]
+	return result
+
+
+static func _normalize_cells(cells: Dictionary[Vector2i, int]) -> Dictionary[Vector2i, int]:
+	var result: Dictionary[Vector2i, int] = {}
+	var bounds: Rect2i = _bounds(cells)
+	for cell: Vector2i in cells:
+		result[cell - bounds.position] = cells[cell]
+	return result
+
+
+static func _bounds(cells: Dictionary[Vector2i, int]) -> Rect2i:
+	if not cells:
+		return Rect2i(Vector2i.ZERO, Vector2i.ZERO)
+	
+	var result: Rect2i = Rect2i(cells.keys()[0], Vector2i.ZERO)
+	for cell: Vector2i in cells:
+		result = result.expand(cell)
+	result.size += Vector2i.ONE
+	return result
