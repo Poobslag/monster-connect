@@ -9,6 +9,7 @@ extends Node
 ## 	[kbd]R[/kbd]: Reset the board.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 ## 	[kbd]Shift + P[/kbd]: Print available probes and bifurcation scenarios to console.
+## 	[kbd]D[/kbd]: Print the puzzle's measured difficulty.
 ## 	[kbd]F[/kbd]: Print the puzzle's fun.
 ## 	[kbd]H[/kbd]: Clear the solver history. Forces deductions to be rerun.
 ## 	[kbd]B[/kbd]: Print benchmark results for AggregateTimer/SplitTimer.
@@ -111,6 +112,9 @@ func _input(event: InputEvent) -> void:
 			%GameBoard.reset()
 			solver.board = %GameBoard.to_solver_board()
 			solver.clear()
+		KEY_D:
+			var difficulty: float = solver.get_measured_difficulty()
+			_show_message("difficulty: %0.2f" % [difficulty])
 		KEY_F:
 			_show_normalized_fun_string()
 		KEY_B:

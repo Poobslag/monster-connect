@@ -60,8 +60,27 @@ const FUN_NOVELTY: Deduction.FunAxis = Deduction.FunAxis.FUN_NOVELTY
 const FUN_THINK: Deduction.FunAxis = Deduction.FunAxis.FUN_THINK
 const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
 
-## how unfun is it to bifurcate incorrectly? 0.0 = no fun; 1.0 = as fun as bifurcating correctly
+## ============================================================================
+## Difficulty tuning constants
+
+## How fun is it to bifurcate incorrectly? 0.0 = no fun; 1.0 = as fun as bifurcating correctly
 const BAD_BIFURCATION_FUN_FACTOR: float = 0.25
+
+## Calibration bounds for easy and hard puzzles. Derived from puzzles #1 and #96 from Nikoli's "Nurikabe 1".
+const UNSCALED_DIFFICULTY_EASY: float = 4.84
+const UNSCALED_DIFFICULTY_HARD: float = 9.22
+
+## Size scaling exponent; controls how much harder puzzles feel as the size doubles.[br]
+## 1.0 = 0% harder, 0.7 = 23% harder, 0.5 = 41% harder, 0.0 = 100% harder.
+const SIZE_DIFFICULTY_EXPONENT: float = 0.70711
+
+const DIFFICULTY_PER_FUN_AXIS: Dictionary[Deduction.FunAxis, float] = {
+	FUN_TRIVIAL: 0.0,
+	FUN_FAST: 1.0,
+	FUN_NOVELTY: 10.0,
+	FUN_THINK: 20.0,
+	FUN_BIFURCATE: 30.0,
+}
 
 var verbose: bool = false
 
@@ -817,6 +836,20 @@ func deduce_clued_island_snug(island: CellGroup) -> void:
 			if board.get_per_clue_extent_map().needs_buffer(island, neighbor):
 				add_deduction(neighbor, CELL_WALL, ISLAND_BUFFER, [island.root])
 				add_fun(FUN_FAST, 1.0)
+
+
+func get_measured_difficulty() -> float:
+	var unscaled: float = 0.0
+	var fun: Dictionary[Deduction.FunAxis, float] = metrics.get("fun", {} as Dictionary[Deduction.FunAxis, float])
+	for fun_axis: Deduction.FunAxis in fun:
+		unscaled += fun[fun_axis] * DIFFICULTY_PER_FUN_AXIS[fun_axis]
+	unscaled = unscaled / pow(board.cells.size(), SIZE_DIFFICULTY_EXPONENT)
+	unscaled = log(unscaled + 1.0) / log(1.5)
+	
+	var scaled: float = inverse_lerp(UNSCALED_DIFFICULTY_EASY, UNSCALED_DIFFICULTY_HARD, unscaled)
+	scaled = lerp(1.0, 10.0, scaled)
+	scaled = clamp(scaled, 0.0, 20.0)
+	return scaled
 
 
 ## Determines if the specified chokepoint would create a split wall if it became an island cell.[br]

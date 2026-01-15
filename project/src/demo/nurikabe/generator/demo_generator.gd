@@ -6,8 +6,8 @@ extends Node
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 ## 	[kbd]S[/kbd]: Assign fixed seed.
 ## 	[kbd]Shift + S[/kbd]: Increment fixed seed.
-## 	[kbd]D[/kbd]: Increase puzzle difficulty.
-## 	[kbd]Shift + D[/kbd]: Decrease puzzle difficulty.
+## 	[kbd]D[/kbd]: Increase target difficulty.
+## 	[kbd]Shift + D[/kbd]: Decrease target difficulty.
 ## 	[kbd]G[/kbd]: Generate one step.
 ## 	[kbd]Shift + G[/kbd]: Generate five steps.
 ## 	[kbd]H[/kbd]: Completely generate a puzzle.
@@ -85,11 +85,11 @@ func _input(event: InputEvent) -> void:
 			_show_message("seed: %s" % [fixed_seed])
 		KEY_D:
 			if Input.is_key_pressed(KEY_SHIFT):
-				generator.difficulty -= 0.1
+				generator.target_difficulty -= 0.1
 			else:
-				generator.difficulty += 0.1
-			generator.difficulty = clamp(generator.difficulty, 0.0, 1.0)
-			_show_message("difficulty: %s" % [generator.difficulty])
+				generator.target_difficulty += 0.1
+			generator.target_difficulty = clamp(generator.target_difficulty, 0.0, 1.0)
+			_show_message("target_difficulty: %s" % [generator.target_difficulty])
 		KEY_M:
 			var values: Array[String] = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 			Utils.shuffle_weighted(values, PackedFloat32Array([0, 1, 2, 3, 4, 5, 6, 7, 8]))

@@ -27,6 +27,7 @@ var difficulty: float = 0.5:
 		difficulty = value
 		_refresh_difficulty()
 
+var _best_fitness: float = 0.0
 var _mutation_library: MutationLibrary = MutationLibrary.new()
 var _rng_ops: RngOps = RngOps.new(rng)
 
@@ -134,6 +135,7 @@ func step() -> void:
 		new_candidates[i] = wrapped_candidates[i]["candidate"]
 	
 	candidates = new_candidates
+	_best_fitness = wrapped_candidates[0]["fitness"]
 
 
 func get_best_board() -> SolverBoard:
@@ -142,6 +144,10 @@ func get_best_board() -> SolverBoard:
 
 func get_best_solver() -> Solver:
 	return candidates.front()
+
+
+func get_best_fitness() -> float:
+	return _best_fitness
 
 
 func mutate(solver: Solver) -> void:
