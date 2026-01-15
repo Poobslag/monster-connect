@@ -654,6 +654,10 @@ func attempt_mutation_step() -> void:
 		elif board.has_clue(cell) and not mutated_board.has_clue(cell):
 			add_placement(cell, CELL_ISLAND, MUTATION)
 	solver.metrics = _mutator.get_best_solver().metrics.duplicate(true)
+	
+	if placements.size() > 0:
+		_successfully_mutated = true
+		_log_event("fitness->%0.1f" % [_mutator.get_best_fitness()])
 
 
 func prepare_board_for_mutation() -> SolverBoard:
