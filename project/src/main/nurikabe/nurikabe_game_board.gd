@@ -267,7 +267,7 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 	%TileMapWall.set_cell(cell_pos, wall_id, Vector2.ZERO)
 	
 	if not Engine.is_editor_hint():
-		if wall_id != 1:
+		if wall_id != -1:
 			%SteppableTiles.set_cell(cell_pos)
 		else:
 			%SteppableTiles.erase_cell(cell_pos)
