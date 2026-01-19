@@ -97,6 +97,16 @@ static func find_data_files(path: String, file_extension: String) -> Array[Strin
 	return found_files
 
 
+## Finds the first ancestor of this node whose type matches [param type], returning null if no match is found.
+static func find_parent_of_type(node: Node, type: Variant) -> Node:
+	var curr: Node = node.get_parent()
+	while curr != null:
+		if is_instance_of(curr, type):
+			break
+		curr = curr.get_parent()
+	return curr
+
+
 ## Returns [0-9] for a number key event, or -1 if the event is not a number key event.
 static func key_num(event: InputEvent) -> int:
 	return NUM_SCANCODES.get(key_press(event), -1)

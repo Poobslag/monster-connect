@@ -58,7 +58,7 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
-text = "Next Level"
+text = "Cool :)"
 
 [node name="ButtonClickEffect" parent="Panel/MarginContainer/VBoxContainer/Button" instance=ExtResource("3_trb17")]
 

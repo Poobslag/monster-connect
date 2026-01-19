@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://b06aw2k2o1thk"]
+[gd_scene load_steps=39 format=3 uid="uid://b06aw2k2o1thk"]
 
 [ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe/nurikabe_game_board.gd" id="1_7bv3k"]
 [ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/nurikabe/tile_blank_1.png" id="2_j45ic"]
@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://dn3d3m8il6qqm" path="res://src/main/nurikabe/cursorable_area.tscn" id="17_coiav"]
 [ext_resource type="PackedScene" uid="uid://bjksq0yxrx6cq" path="res://src/main/nurikabe/nurikabe_cursor.tscn" id="18_85sqx"]
 [ext_resource type="Script" uid="uid://bo2x55tn0h5yl" path="res://src/main/world/steppable_tiles.gd" id="19_7bs1t"]
+[ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://assets/main/ui/kenney/kenney_ui.tres" id="20_j45ic"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ccndg"]
 texture = ExtResource("2_j45ic")
@@ -118,7 +119,7 @@ sources/1 = SubResource("TileSetAtlasSource_vr7lx")
 sources/2 = SubResource("TileSetAtlasSource_m1d6t")
 sources/3 = SubResource("TileSetAtlasSource_pyfk6")
 
-[node name="GameBoard" type="Control"]
+[node name="GameBoard" type="Control" groups=["game_boards"]]
 y_sort_enabled = true
 layout_mode = 3
 anchors_preset = 0
@@ -128,6 +129,18 @@ offset_right = 772.0
 offset_bottom = 320.0
 mouse_filter = 2
 script = ExtResource("1_7bv3k")
+
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 23)
+layout_mode = 1
+anchors_preset = -1
+offset_left = 12.0
+offset_top = -40.0
+offset_right = 212.0
+theme = ExtResource("20_j45ic")
+theme_override_font_sizes/font_size = 32
+text = "Medium"
 
 [node name="TileMapGround" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
