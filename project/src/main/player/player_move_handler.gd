@@ -29,18 +29,6 @@ func handle(event: InputEvent) -> void:
 			or event.is_action_pressed("move_up") \
 			or event.is_action_pressed("move_down"):
 		_last_input_method = InputMethod.KEYBOARD
-	
-	# pressing/dragging the left mouse button, not on a puzzle
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed \
-			or (event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)):
-		_last_input_method = InputMethod.MOUSE
-		var target_player_position: Vector2
-		if player.current_game_board == null:
-			target_player_position = player.to_local(
-						get_viewport().get_camera_2d().get_global_mouse_position())
-		
-		_mouse_target = player.position + target_player_position
-		_mouse_dir = (_mouse_target - player.position).normalized()
 
 
 func update() -> void:
