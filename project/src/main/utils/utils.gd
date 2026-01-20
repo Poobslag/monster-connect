@@ -107,6 +107,20 @@ static func find_parent_of_type(node: Node, type: Variant) -> Node:
 	return curr
 
 
+## Returns a list of group members within the specified parent node.
+static func get_subtree_members(parent: Node, group: String) -> Array[Node]:
+	if not parent:
+		return []
+	if not parent.is_inside_tree():
+		return []
+	
+	var child_members: Array[Node] = []
+	for member: Node in parent.get_tree().get_nodes_in_group(group):
+		if parent.is_ancestor_of(member) or parent == member:
+			child_members.append(member)
+	return child_members
+
+
 ## Returns [0-9] for a number key event, or -1 if the event is not a number key event.
 static func key_num(event: InputEvent) -> int:
 	return NUM_SCANCODES.get(key_press(event), -1)

@@ -119,7 +119,7 @@ sources/1 = SubResource("TileSetAtlasSource_vr7lx")
 sources/2 = SubResource("TileSetAtlasSource_m1d6t")
 sources/3 = SubResource("TileSetAtlasSource_pyfk6")
 
-[node name="GameBoard" type="Control" groups=["game_boards"]]
+[node name="GameBoard" type="Control" groups=["game_boards", "world_occupants"]]
 y_sort_enabled = true
 layout_mode = 3
 anchors_preset = 0
