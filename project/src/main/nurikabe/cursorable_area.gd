@@ -1,4 +1,5 @@
 @tool
+class_name CursorableArea
 extends Area2D
 
 @export var cursor_scene: PackedScene
@@ -90,8 +91,8 @@ func set_cell(cell: Vector2i) -> void:
 
 
 func _find_game_board() -> NurikabeGameBoard:
-	return find_parent("*GameBoard")
+	return Utils.find_parent_of_type(self, NurikabeGameBoard)
 
 
 func _find_player_for_cursor(area: Area2D) -> Player:
-	return area.find_parent("Player")
+	return Utils.find_parent_of_type(area, Player)

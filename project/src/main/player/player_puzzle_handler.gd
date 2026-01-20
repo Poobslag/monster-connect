@@ -17,9 +17,13 @@ var _last_set_cell: int = CELL_INVALID
 var _prev_cell: Vector2i = Vector2i(-577218, -577218)
 
 @onready var input_handler: PlayerInputHandler = get_parent()
-@onready var player: Player = find_parent("Player")
+@onready var player: Player = Utils.find_parent_of_type(self, Player)
 
 func handle(event: InputEvent) -> void:
+	if game_board.is_finished():
+		# cannot interact with finished game board
+		return
+	
 	_input_sfx = ""
 	
 	if event is InputEventMouseMotion:

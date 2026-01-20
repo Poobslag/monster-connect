@@ -33,10 +33,17 @@ var lowlight_cells: Dictionary[Vector2i, bool] = {}:
 
 var allow_unclued_islands: bool = false
 
+var label_text: String = "":
+	set(value):
+		label_text = value
+		%Label.text = value
+		%Label.visible = true if label_text else false
+
 var _cells_dirty: bool = false
 
 var _undo_stack: Array[UndoAction] = []
 var _redo_stack: Array[UndoAction] = []
+var _finished: bool = false
 
 func _ready() -> void:
 	if not Engine.is_editor_hint():
@@ -50,6 +57,20 @@ func _process(_delta: float) -> void:
 
 func reset() -> void:
 	import_grid()
+
+
+func is_started() -> bool:
+	var result: bool = false
+	for cell: Vector2i in get_used_cells():
+		var cell_value: int = get_cell(cell)
+		if cell_value == CELL_ISLAND or cell_value == CELL_WALL:
+			result = true
+			break
+	return result
+
+
+func is_finished() -> bool:
+	return _finished
 
 
 func clear_half_cells(player_id: int) -> void:
@@ -321,6 +342,13 @@ func _on_validate_timer_timeout() -> void:
 	var result_strict: SolverBoard.ValidationResult = model.validate(SolverBoard.VALIDATE_STRICT)
 	
 	if result_strict.error_count == 0:
+		_finished = true
+		
+		# fill remaining empty island cells on completion
+		for cell: Vector2i in model.cells:
+			if model.get_cell(cell) == CELL_EMPTY:
+				set_cell(cell, CELL_ISLAND)
+		
 		puzzle_finished.emit()
 	
 	# update lowlight cells if the player isn't finished

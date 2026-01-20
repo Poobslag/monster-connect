@@ -20,7 +20,7 @@ var _last_input_method: InputMethod = InputMethod.NONE
 var _mouse_target: Vector2
 var _mouse_dir: Vector2
 
-@onready var player: Player = find_parent("Player")
+@onready var player: Player = Utils.find_parent_of_type(self, Player)
 
 func handle(event: InputEvent) -> void:
 	# wasd
