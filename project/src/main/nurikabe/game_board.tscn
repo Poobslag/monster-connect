@@ -132,6 +132,7 @@ script = ExtResource("1_7bv3k")
 
 [node name="Label" type="Label" parent="."]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(200, 23)
 layout_mode = 1
 anchors_preset = -1
