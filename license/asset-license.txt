@@ -21,14 +21,18 @@ project/assets/main/ui/baloo2.ttf Baloo2 by Ek Type
 Images
 --------------------------------------------------------------------------------
 project/assets/main/characters/character_purple_* character_purple_* by Kenney (New Platformer Pack)
+project/assets/main/refresher_a.png flag_green_a by Kenney (New Platformer Pack)
+project/assets/main/refresher_b.png flag_green_b by Kenney (New Platformer Pack)
 project/assets/main/ui/kenney/* UI Pack by Kenney; Kenney's UI Theme for Godot 4.x by azagaya
 
 Sounds
 --------------------------------------------------------------------------------
 project/assets/main/sfx/button_click.wav click_003 by Kenney (Interface Sounds)
+project/assets/main/sfx/button_hover.wav click_003 by Kenney (Interface Sounds)
 project/assets/main/sfx/cursor_move.wav click_003 by Kenney (Interface Sounds)
 project/assets/main/sfx/drop_island_press.wav glass_002 by Kenney (Interface Sounds)
 project/assets/main/sfx/drop_wall_press.wav drop_002 by Kenney (Interface Sounds)
+project/assets/main/sfx/refresh_puzzles.wav maximize_004 by Kenney (Interface Sounds)
 project/assets/main/sfx/reset.wav scratch_001 by Kenney (Interface Sounds)
 project/assets/main/sfx/rule_broken.wav pluck_002 by Kenney (Interface Sounds)
 project/assets/main/sfx/surround_island_fail.wav back_003 by Kenney (Interface Sounds)

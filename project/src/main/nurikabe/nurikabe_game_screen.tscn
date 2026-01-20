@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://c1ikxk7sf1v"]
+[gd_scene load_steps=6 format=3 uid="uid://c1ikxk7sf1v"]
 
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_0ph7c"]
 [ext_resource type="Script" uid="uid://dkfhvt7xta6qi" path="res://src/main/nurikabe/nurikabe_game_screen.gd" id="1_nc88o"]
+[ext_resource type="PackedScene" uid="uid://dtev03a35ehu4" path="res://src/main/nurikabe/refresher.tscn" id="3_1cqpy"]
 [ext_resource type="PackedScene" uid="uid://dbd72lfv4xjdr" path="res://src/main/player/player.tscn" id="7_21uqv"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="16_2bf7t"]
 
@@ -40,8 +41,15 @@ grid_string = " 2                 2
                     
    1         2   4  "
 
+[node name="Refresher" parent="." instance=ExtResource("3_1cqpy")]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 300.0
+offset_bottom = 200.0
+
 [node name="Player" parent="." instance=ExtResource("7_21uqv")]
-position = Vector2(1444, 630)
+position = Vector2(961, 540)
 collision_mask = 2
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
@@ -52,3 +60,4 @@ unique_name_in_owner = true
 visible = false
 
 [connection signal="puzzle_finished" from="GameBoards/GameBoard" to="ResultsOverlay" method="_on_game_board_puzzle_finished"]
+[connection signal="refresh_requested" from="Refresher" to="." method="_on_refresher_refresh_requested"]

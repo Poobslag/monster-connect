@@ -25,6 +25,9 @@ const BASE_DIR := "res://assets/main/sfx"
 ## - "volume_db" (float): Volume in decibels (0.0 = normal volume)[br]
 ## - "volume_db_randomness" (float): Random volume variation. 1.0 = up to -1.0 dB added to volume.
 const SOUND_CONFIGS: Dictionary[String, Dictionary] = {
+	"button_hover": {
+		"pitch_scale": 0.8,
+	},
 	"cursor_move": {
 		"volume_db": -12.0,
 	},
