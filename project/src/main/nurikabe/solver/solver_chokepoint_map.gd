@@ -15,14 +15,14 @@ var chokepoints_by_cell: Dictionary[Vector2i, bool]:
 			_build_chokepoint_map()
 		return _chokepoint_map.chokepoints_by_cell
 
-var _board: SolverBoard
+var board: SolverBoard
 var _included_types: Array[int]
 var _special_cell_filter: Callable
 var _chokepoint_map: ChokepointMap
 
 func _init(init_board: SolverBoard, init_included_types: Array[int], \
 		init_special_cell_filter: Callable = Callable()) -> void:
-	_board = init_board
+	board = init_board
 	_included_types = init_included_types
 	_special_cell_filter = init_special_cell_filter
 
@@ -78,11 +78,11 @@ func get_unchoked_special_count(chokepoint: Vector2i, cell: Vector2i) -> int:
 func _build_chokepoint_map() -> void:
 	var cells: Array[Vector2i] = []
 	if CELL_EMPTY in _included_types:
-		cells.append_array(_board.empty_cells.keys())
+		cells.append_array(board.empty_cells.keys())
 	if CELL_WALL in _included_types:
-		for wall: CellGroup in _board.walls:
+		for wall: CellGroup in board.walls:
 			cells.append_array(wall.cells)
 	if CELL_ISLAND in _included_types:
-		for island: CellGroup in _board.islands:
+		for island: CellGroup in board.islands:
 			cells.append_array(island.cells)
 	_chokepoint_map = ChokepointMap.new(cells, _special_cell_filter)

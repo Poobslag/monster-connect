@@ -110,6 +110,7 @@ func consume_events() -> Array[String]:
 func clear() -> void:
 	placements.clear()
 	solver.clear()
+	solver.board.clear()
 	step_count = 0
 	mutate_steps = 0
 	
@@ -117,7 +118,10 @@ func clear() -> void:
 	_break_in_count = 0
 	_event_log.clear()
 	_successfully_mutated = false
-	_mutator = null
+	
+	if _mutator:
+		_mutator.cleanup()
+		_mutator = null
 
 
 func step_until_done() -> void:
@@ -289,6 +293,7 @@ func generate_wall_guide() -> void:
 			temp_solver.deduce_all_island_dividers()
 			temp_solver.apply_changes()
 			var validation_result: String = temp_solver.board.validate_local([liberty])
+			temp_solver.board.cleanup()
 			if "j" in validation_result:
 				# new clue connects to an existing clue
 				continue
@@ -409,6 +414,7 @@ func generate_open_island_moat() -> void:
 	var local_cells: Array[Vector2i] = new_wall_cells.duplicate()
 	local_cells.append(clue_cell)
 	var validation_result: String = temp_solver.board.validate_local(local_cells)
+	temp_solver.board.cleanup()
 	
 	if "p" in validation_result:
 		pass
@@ -599,6 +605,7 @@ func fix_tiny_split_wall() -> void:
 			break
 		temp_solver.apply_changes()
 	validation_result = temp_solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
+	temp_solver.board.cleanup()
 	
 	if validation_result.error_count > 0:
 		return
@@ -639,6 +646,7 @@ func attempt_mutation_step() -> void:
 				add_clue_minimum_change(clue_minimum, 0)
 		var prepared_board: SolverBoard = prepare_board_for_mutation()
 		_mutator = PuzzleMutator.new(prepared_board)
+		prepared_board.cleanup()
 		_mutator.rng = rng
 	_mutator.difficulty = difficulty
 	
@@ -840,6 +848,8 @@ func _plan_initial_open_island_walls(island_plan: Dictionary[String, Variant]) -
 	var new_clues: Array[Vector2i] = []
 	new_clues.append_array(supporting_clues.keys())
 	new_clues.append(seed_cell)
+	if initial_wall_cells.is_empty():
+		return
 	var bfs_walls: Array[Vector2i] = board.solver_board.perform_bfs([initial_wall_cells.keys().front()],
 		func(c: Vector2i) -> bool:
 			var cell_value: int = board.get_cell(c)

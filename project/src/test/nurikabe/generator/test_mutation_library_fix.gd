@@ -16,6 +16,7 @@ func test_mutate_fix_enclosed_walls() -> void:
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 12)
 	assert_eq(board.get_cell(Vector2i(1, 1)), CELL_ISLAND)
 	assert_eq(board.get_cell(Vector2i(3, 0)), CELL_ISLAND)
+	board.cleanup()
 
 
 func test_mutate_fix_enclosed_walls_complex() -> void:
@@ -35,6 +36,7 @@ func test_mutate_fix_enclosed_walls_complex() -> void:
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 16)
 	assert_eq(board.get_cell(Vector2i(1, 1)), CELL_ISLAND)
 	assert_eq(board.get_cell(Vector2i(3, 0)), CELL_ISLAND)
+	board.cleanup()
 
 
 func test_mutate_fix_enclosed_walls_ok() -> void:
@@ -54,6 +56,7 @@ func test_mutate_fix_enclosed_walls_ok() -> void:
 	board.from_grid_string("\n".join(grid))
 	mutation_library.mutate_fix_enclosed_walls(board)
 	assert_eq(board.to_grid_string(), "\n".join(grid))
+	board.cleanup()
 
 
 func test_mutate_fix_joined_islands() -> void:
@@ -70,6 +73,7 @@ func test_mutate_fix_joined_islands() -> void:
 	
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).size(), 8)
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 8)
+	board.cleanup()
 
 
 func test_mutate_fix_joined_islands_single() -> void:
@@ -84,6 +88,7 @@ func test_mutate_fix_joined_islands_single() -> void:
 	
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).size(), 8)
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 8)
+	board.cleanup()
 
 
 func test_mutate_fix_pools() -> void:
@@ -100,6 +105,7 @@ func test_mutate_fix_pools() -> void:
 	
 	var validation_errors: SolverBoard.ValidationResult = board.validate(SolverBoard.VALIDATE_SIMPLE)
 	assert_eq([], validation_errors.pools)
+	board.cleanup()
 
 
 func test_mutate_fix_split_walls() -> void:
@@ -116,6 +122,7 @@ func test_mutate_fix_split_walls() -> void:
 	
 	var validation_errors: SolverBoard.ValidationResult = board.validate(SolverBoard.VALIDATE_SIMPLE)
 	assert_eq([], validation_errors.split_walls)
+	board.cleanup()
 
 
 func test_mutate_fix_split_walls_wide() -> void:
@@ -132,6 +139,7 @@ func test_mutate_fix_split_walls_wide() -> void:
 	
 	var validation_errors: SolverBoard.ValidationResult = board.validate(SolverBoard.VALIDATE_SIMPLE)
 	assert_eq([], validation_errors.split_walls)
+	board.cleanup()
 
 
 func test_mutate_fix_unclued_islands_clue() -> void:
@@ -148,6 +156,7 @@ func test_mutate_fix_unclued_islands_clue() -> void:
 	
 	var validation_errors: SolverBoard.ValidationResult = board.validate(SolverBoard.VALIDATE_SIMPLE)
 	assert_eq([], validation_errors.unclued_islands)
+	board.cleanup()
 
 
 func test_mutate_fix_unclued_islands_join() -> void:
@@ -164,6 +173,7 @@ func test_mutate_fix_unclued_islands_join() -> void:
 	
 	var validation_errors: SolverBoard.ValidationResult = board.validate(SolverBoard.VALIDATE_SIMPLE)
 	assert_eq([], validation_errors.unclued_islands)
+	board.cleanup()
 
 
 func test_mutate_fix_wrong_size() -> void:
@@ -180,3 +190,4 @@ func test_mutate_fix_wrong_size() -> void:
 	
 	var validation_errors: SolverBoard.ValidationResult = board.validate(SolverBoard.VALIDATE_SIMPLE)
 	assert_eq([], validation_errors.wrong_size)
+	board.cleanup()

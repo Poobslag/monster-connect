@@ -62,6 +62,7 @@ func test_get_possible_island_splits() -> void:
 		"vertical (2, 0)",
 		"vertical (3, 0)",
 		])
+	board.cleanup()
 
 
 func test_split_island_cell() -> void:
@@ -86,6 +87,7 @@ func test_split_island_cell() -> void:
 			" . . . . .",
 			" . . . . .",
 		])
+	board.cleanup()
 
 
 func test_split_island_horizontal() -> void:
@@ -110,6 +112,7 @@ func test_split_island_horizontal() -> void:
 			" . .10 . .",
 			" . . . . .",
 		])
+	board.cleanup()
 
 
 func test_split_island_vertical() -> void:
@@ -134,6 +137,7 @@ func test_split_island_vertical() -> void:
 			" .## 9 . .",
 			" .## . . .",
 		])
+	board.cleanup()
 
 
 func test_mutate_break_wall_loop() -> void:
@@ -149,6 +153,7 @@ func test_mutate_break_wall_loop() -> void:
 	mutation_library.mutate_break_wall_loop(board)
 	var cuttable_loop_cells: Array[Vector2i] = mutation_library.find_cuttable_loop_cells(board)
 	assert_eq(cuttable_loop_cells, [])
+	board.cleanup()
 
 
 func test_find_cuttable_loop_cells() -> void:
@@ -169,6 +174,7 @@ func test_find_cuttable_loop_cells() -> void:
 			Vector2i(3, 0), Vector2i(3, 3),
 			Vector2i(4, 0), Vector2i(4, 1), Vector2i(4, 2), Vector2i(4, 3),
 		])
+	board.cleanup()
 
 
 func test_mutate_rebalance_neighbor_islands() -> void:
@@ -182,6 +188,7 @@ func test_mutate_rebalance_neighbor_islands() -> void:
 	mutation_library.mutate_rebalance_neighbor_islands(board)
 	assert_ne(board.get_clue(Vector2i(0, 0)), 3)
 	assert_ne(board.get_clue(Vector2i(0, 2)), 7)
+	board.cleanup()
 
 
 func test_move_clue() -> void:
@@ -198,6 +205,7 @@ func test_move_clue() -> void:
 	mutation_library.move_clue(board, island)
 	assert_eq(board.has_clue(Vector2i(0, 2)), false)
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 5)
+	board.cleanup()
 
 
 func test_move_clue_single() -> void:
@@ -211,6 +219,7 @@ func test_move_clue_single() -> void:
 	mutation_library.move_clue(board, island)
 	assert_eq(board.has_clue(Vector2i(0, 1)), false)
 	assert_eq(board.get_island_for_cell(Vector2i(0, 1)).clue, 4)
+	board.cleanup()
 
 
 func assert_board(board: SolverBoard, expected: Array[String]) -> void:

@@ -7,11 +7,15 @@ const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
-var solver: Solver = Solver.new()
+var solver: Solver
 var grid: Array[String] = []
 
 func before_each() -> void:
-	solver.clear()
+	solver = Solver.new()
+
+
+func after_each() -> void:
+	solver.board.cleanup()
 
 
 func assert_deductions(callable: Callable, expected_str_array: Array[String]) -> void:

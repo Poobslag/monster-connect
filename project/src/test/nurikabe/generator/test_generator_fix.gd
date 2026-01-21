@@ -80,6 +80,7 @@ func test_prepare_board_for_mutation() -> void:
 			" .## .## .## . .###### 4",
 			" 3## 2## 2######## . . .",
 		])
+	generator.board.cleanup()
 
 
 func test_prepare_board_for_mutation_2() -> void:
@@ -109,6 +110,7 @@ func test_prepare_board_for_mutation_2() -> void:
 			" .#### . . .########",
 			" . . . . . .15## 2 .",
 		])
+	generator.board.cleanup()
 
 
 func assert_board(board: SolverBoard, expected: Array[String]) -> void:

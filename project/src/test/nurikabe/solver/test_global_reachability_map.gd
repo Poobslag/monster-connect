@@ -15,6 +15,7 @@ func test_get_clue_reachability() -> void:
 	assert_eq(grm.get_clue_reachability(Vector2(1, 2)), GlobalReachabilityMap.ClueReachability.CONFLICT)
 	assert_eq(grm.get_clue_reachability(Vector2(2, 0)), GlobalReachabilityMap.ClueReachability.UNKNOWN)
 	assert_eq(grm.get_clue_reachability(Vector2(3, 0)), GlobalReachabilityMap.ClueReachability.IMPOSSIBLE)
+	grm.board.cleanup()
 
 
 func test_get_nearest_clued_island_cell() -> void:
@@ -27,6 +28,7 @@ func test_get_nearest_clued_island_cell() -> void:
 	assert_eq(grm.get_nearest_clued_island_cell(Vector2(1, 1)), Vector2i(0, 1))
 	assert_eq(grm.get_nearest_clued_island_cell(Vector2(2, 0)), Vector2i(2, 2))
 	assert_eq(grm.get_nearest_clued_island_cell(Vector2(2, 1)), Vector2i(2, 2))
+	grm.board.cleanup()
 
 
 func init_global_reachability_map() -> GlobalReachabilityMap:

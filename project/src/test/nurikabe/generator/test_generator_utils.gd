@@ -14,6 +14,7 @@ func test_best_clue_cells_for_unclued_island() -> void:
 	var clue_cells: Array[Vector2i] = \
 			GeneratorUtils.best_clue_cells_for_unclued_island(board, island)
 	assert_eq(clue_cells, [Vector2i(4, 0)])
+	board.cleanup()
 
 
 func test_best_clue_cells_for_unclued_island_single() -> void:
@@ -30,3 +31,4 @@ func test_best_clue_cells_for_unclued_island_single() -> void:
 			Vector2i(1, 0), Vector2i(1, 1),
 			Vector2i(2, 0), Vector2i(2, 1),
 		])
+	board.cleanup()

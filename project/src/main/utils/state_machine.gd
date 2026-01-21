@@ -1,6 +1,6 @@
 @tool
-extends Node
 class_name StateMachine
+extends Node
 ## Implementation of the finite state machine pattern.
 ##
 ## State nodes can be added to this node as children. This class provides logic for switching between its child states,

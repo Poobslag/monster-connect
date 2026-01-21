@@ -7,6 +7,8 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _stuck_state: Dictionary[String, Variant] = {}
 
 func enter() -> void:
+	if generator.board:
+		generator.board.solver_board.cleanup()
 	generator.board = %GameBoard.to_generator_board()
 	create_board()
 
@@ -94,6 +96,7 @@ func output_board() -> void:
 			% [puzzle_num, path, info_json["difficulty"]])
 	
 	puzzle_num += 1
+	board.cleanup()
 
 
 func set_puzzle_size(puzzle_size: Vector2i) -> void:
@@ -105,6 +108,8 @@ func set_puzzle_size(puzzle_size: Vector2i) -> void:
 	%GameBoard.grid_string = new_grid_string
 	%GameBoard.import_grid()
 	generator.clear()
+	if generator.board:
+		generator.board.solver_board.cleanup()
 	generator.board = %GameBoard.to_generator_board()
 
 

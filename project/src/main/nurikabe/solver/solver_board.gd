@@ -453,6 +453,17 @@ func validate_local(local_cells: Array[Vector2i]) -> String:
 	return result
 
 
+## Call this when finished with a SolverBoard to prevent memory leaks.[br]
+## [br]
+## Workaround for Godot https://github.com/godotengine/godot/issues/101830: Circular references in GDScript
+## code may lead to leaks.
+func cleanup() -> void:
+	for value: Variant in _cache.values():
+		if value is SolverBoard:
+			value.cleanup()
+	clear()
+
+
 func _build_flooded_board() -> SolverBoard:
 	var flooded_board: SolverBoard = duplicate()
 	flooded_board.groups_need_rebuild = true
@@ -543,6 +554,8 @@ func _build_strict_validation_result() -> ValidationResult:
 
 func _build_validation_result(mode: ValidationMode) -> ValidationResult:
 	var result: ValidationResult = ValidationResult.new()
+	
+	get_flooded_island_group_map()
 	
 	# joined islands
 	for island: CellGroup in islands:

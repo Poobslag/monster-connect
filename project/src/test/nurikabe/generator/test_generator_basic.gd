@@ -12,6 +12,7 @@ func test_find_island_guide_cell_candidates() -> void:
 	var candidates: Array[Vector2i] = generator.find_island_guide_cell_candidates(island)
 	candidates.sort()
 	assert_eq(candidates, [Vector2i(1, 3), Vector2i(3, 1)])
+	generator.board.cleanup()
 
 
 func test_attempt_island_buffer_from() -> void:
@@ -32,3 +33,4 @@ func test_attempt_island_buffer_from() -> void:
 			island, Vector2i(3, 2), [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT] as Array[Vector2i])
 	assert_placements(callable, expected)
 	assert_clue_minimum_changes(["{ \"pos\": (1, 1), \"value\": 3 }"])
+	generator.board.cleanup()

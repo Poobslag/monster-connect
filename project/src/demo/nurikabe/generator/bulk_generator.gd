@@ -1,6 +1,7 @@
 class_name BulkGenerator
 extends Node
 ## [b]Keys:[/b][br]
+## 	[kbd]O[/kbd]: Print memory usage statistics.
 ## 	[kbd]G[/kbd]: Toggle generator, continuously writes new puzzles to GENERATED_PUZZLE_DIR.
 ## 	[kbd]A[/kbd]: Toggle analyzer; analyzes puzzles in PUZZLE_DIR and writes .info files.
 
@@ -85,6 +86,8 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):
+		KEY_O:
+			Utils.print_memory_stats()
 		KEY_G:
 			toggle_state("generate")
 		KEY_A:
