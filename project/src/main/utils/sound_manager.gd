@@ -18,34 +18,40 @@ const BASE_DIR := "res://assets/main/sfx"
 ## Optional per-sound configuration.[br]
 ## [br]
 ## Supports keys:[br]
-## - "pitch_scale" (float): Pitch multiplier (1.0 = normal pitch)[br]
-## - "pitch_scale_randomness" (float): Random pitch variation. 0.04 = +/-0.04 added to the base pitch scale.
+## - "semitones" (float): Semitones adjustment (0.0 = normal pitch)[br]
+## - "semitones_randomness" (float): Random semitones variation. 2.0 = up to +/-2.0 semitones.[br]
 ## - "source" (String): Asset path. Lets multiple sounds reuse the same asset[br]
 ## - "suppress_msec" (int): Minimum milliseconds between repeated plays[br]
 ## - "volume_db" (float): Volume in decibels (0.0 = normal volume)[br]
 ## - "volume_db_randomness" (float): Random volume variation. 1.0 = up to -1.0 dB added to volume.
 const SOUND_CONFIGS: Dictionary[String, Dictionary] = {
 	"button_hover": {
-		"pitch_scale": 0.8,
+		"source": "button_click",
+		"semitones": -2.0,
 	},
 	"cursor_move": {
+		"source": "button_click",
 		"volume_db": -16.0,
 	},
 	"drop_island_press": {
 		"volume_db": -8.0,
 	},
 	"drop_island_release": {
-		"pitch_scale": 1.2,
+		"semitones": 2.0,
 		"source": "drop_island_press",
 		"volume_db": -8.0,
 	},
 	"drop_wall_release": {
-		"pitch_scale": 1.2,
+		"semitones": 2.0,
 		"source": "drop_wall_press",
 	},
 	"redo": {
 		"source": "undo",
-		"pitch_scale": 1.2,
+		"semitones": 2.0,
+	},
+	"surround_island_fail": {
+		"source": "rule_broken",
+		"semitones": -2.0,
 	},
 	"surround_island_press": {
 		"source": "drop_wall_press",
@@ -112,10 +118,11 @@ func play_sfx(sound_key: String) -> AudioStreamPlayer:
 	if config.has("volume_db_randomness"):
 		var volume_db_randomness: float = config.get("volume_db_randomness")
 		player.volume_db += randf_range(0, -volume_db_randomness)
-	player.pitch_scale = config.get("pitch_scale", 1.0)
-	if config.has("pitch_scale_randomness"):
-		var pitch_scale_randomness: float = config.get("pitch_scale_randomness")
-		player.pitch_scale += randf_range(-pitch_scale_randomness, pitch_scale_randomness)
+	var base_semitones: float = config.get("semitones", 0.0)
+	if config.has("semitones_randomness"):
+		var semitones_randomness: float = config.get("semitones_randomness")
+		base_semitones += randf_range(-semitones_randomness, semitones_randomness)
+	player.pitch_scale = pow(2.0, base_semitones / 12.0)
 	player.stream = sound
 	player.play()
 	
