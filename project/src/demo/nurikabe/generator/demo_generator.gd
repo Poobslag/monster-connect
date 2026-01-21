@@ -3,6 +3,7 @@ extends Node
 ## 	[kbd][1-8][/kbd]: Set puzzle size.
 ## 	[kbd]W[/kbd]: Completely solve a puzzle.
 ## 	[kbd]R[/kbd]: Clear the board.
+## 	[kbd]O[/kbd]: Print memory usage statistics.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 ## 	[kbd]S[/kbd]: Assign fixed seed.
 ## 	[kbd]Shift + S[/kbd]: Increment fixed seed.
@@ -52,6 +53,8 @@ func _input(event: InputEvent) -> void:
 			generator.log_enabled = false
 			generator.solver.step_until_done()
 			copy_board_from_generator()
+		KEY_O:
+			Utils.print_memory_stats()
 		KEY_P:
 			print_grid_string()
 		KEY_G:

@@ -7,6 +7,7 @@ extends Node
 ## 	[kbd]Shift + W[/kbd]: Performance test next 10 puzzles in sequence.
 ## 	[kbd]E[/kbd]: Solve until bifurcation is necessary.
 ## 	[kbd]R[/kbd]: Reset the board.
+## 	[kbd]O[/kbd]: Print memory usage statistics.
 ## 	[kbd]P[/kbd]: Print partially solved puzzle to console.
 ## 	[kbd]Shift + P[/kbd]: Print available probes and bifurcation scenarios to console.
 ## 	[kbd]D[/kbd]: Print the puzzle's measured difficulty.
@@ -102,6 +103,8 @@ func _input(event: InputEvent) -> void:
 		KEY_E:
 			solve_until_bifurcation()
 			%GameBoard.validate()
+		KEY_O:
+			Utils.print_memory_stats()
 		KEY_P:
 			if Input.is_key_pressed(KEY_SHIFT):
 				solver.probe_library.print_available_probes()
