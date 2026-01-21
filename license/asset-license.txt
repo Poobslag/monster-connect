@@ -28,14 +28,11 @@ project/assets/main/ui/kenney/* UI Pack by Kenney; Kenney's UI Theme for Godot 4
 Sounds
 --------------------------------------------------------------------------------
 project/assets/main/sfx/button_click.wav click_003 by Kenney (Interface Sounds)
-project/assets/main/sfx/button_hover.wav click_003 by Kenney (Interface Sounds)
-project/assets/main/sfx/cursor_move.wav click_003 by Kenney (Interface Sounds)
 project/assets/main/sfx/drop_island_press.wav glass_002 by Kenney (Interface Sounds)
 project/assets/main/sfx/drop_wall_press.wav drop_002 by Kenney (Interface Sounds)
 project/assets/main/sfx/refresh_puzzles.wav maximize_004 by Kenney (Interface Sounds)
 project/assets/main/sfx/reset.wav scratch_001 by Kenney (Interface Sounds)
-project/assets/main/sfx/rule_broken.wav pluck_002 by Kenney (Interface Sounds)
-project/assets/main/sfx/surround_island_fail.wav back_003 by Kenney (Interface Sounds)
+project/assets/main/sfx/rule_broken.wav back_003 by Kenney (Interface Sounds)
 project/assets/main/sfx/surround_island_release.wav confirmation_001 by Kenney (Interface Sounds)
 project/assets/main/sfx/undo.wav back_003 by Kenney (Interface Sounds)
 project/assets/main/sfx/win.wav SUCCESS TUNE Win Complete 03 by GameBurp (2000 Game SFX Collection)
