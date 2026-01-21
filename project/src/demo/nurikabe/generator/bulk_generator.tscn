@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dbbofwi6kvo1s" path="res://src/demo/nurikabe/generator/bulk_generator.gd" id="1_7nk3a"]
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_o1grh"]
-[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="2_7nk3a"]
+[ext_resource type="PackedScene" uid="uid://rpgvsnfuo7o5" path="res://src/demo/nurikabe/generator/demo_log.tscn" id="3_nmkj7"]
 [ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="4_whffh"]
 [ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="5_0ugav"]
 [ext_resource type="Script" uid="uid://0pb3o0nnfm07" path="res://src/demo/nurikabe/generator/bulk_generator_idle_state.gd" id="6_0ugav"]
@@ -47,15 +47,9 @@ grid_string = "
           
 "
 
-[node name="MessageLabel" type="RichTextLabel" parent="HBoxContainer"]
+[node name="DemoLog" parent="HBoxContainer" instance=ExtResource("3_nmkj7")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 2
-theme_override_fonts/normal_font = ExtResource("2_7nk3a")
-theme_override_font_sizes/normal_font_size = 32
-scroll_following = true
-selection_enabled = true
 
 [node name="StateMachine" parent="." instance=ExtResource("4_whffh")]
 unique_name_in_owner = true

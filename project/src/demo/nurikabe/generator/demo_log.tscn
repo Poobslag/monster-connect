@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://rpgvsnfuo7o5"]
+
+[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="1_ub2hk"]
+[ext_resource type="Script" uid="uid://b53myjogooki4" path="res://src/demo/nurikabe/generator/demo_log.gd" id="2_lxdik"]
+
+[node name="DemoLog" type="RichTextLabel"]
+size_flags_horizontal = 3
+focus_mode = 2
+theme_override_fonts/normal_font = ExtResource("1_ub2hk")
+theme_override_font_sizes/normal_font_size = 32
+scroll_following = true
+selection_enabled = true
+script = ExtResource("2_lxdik")

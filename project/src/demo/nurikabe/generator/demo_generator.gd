@@ -159,7 +159,7 @@ func step_generator() -> void:
 
 
 func show_generator_messages() -> void:
-	if not %MessageLabel.text.is_empty():
+	if not %DemoLog.text.is_empty():
 		_show_message("--------")
 	var events: Array[String] = generator.consume_events()
 	if generator.mutate_steps >= 1:
@@ -178,7 +178,7 @@ func step_solver() -> void:
 		_show_message("(finished)")
 		return
 	
-	if not %MessageLabel.text.is_empty():
+	if not %DemoLog.text.is_empty():
 		_show_message("--------")
 	
 	generator.solver.step()
@@ -203,4 +203,4 @@ func copy_board_from_generator() -> void:
 
 
 func _show_message(s: String) -> void:
-	%MessageLabel.text += s + "\n"
+	%DemoLog.show_message(s)

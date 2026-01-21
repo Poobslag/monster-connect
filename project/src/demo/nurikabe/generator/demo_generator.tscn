@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_4hbfq"]
 [ext_resource type="Script" uid="uid://2slbwofx885" path="res://src/demo/nurikabe/generator/demo_generator.gd" id="1_oisyd"]
-[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="2_oisyd"]
+[ext_resource type="PackedScene" uid="uid://rpgvsnfuo7o5" path="res://src/demo/nurikabe/generator/demo_log.tscn" id="3_oisyd"]
 
 [node name="DemoGenerator" type="Node"]
 script = ExtResource("1_oisyd")
@@ -42,20 +42,14 @@ grid_string = "
           
 "
 
-[node name="TileMapGround" parent="HBoxContainer/GameBoardHolder/GameBoard" index="0"]
+[node name="TileMapGround" parent="HBoxContainer/GameBoardHolder/GameBoard" index="1"]
 tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAACAAAAAAAAAAAAAAADAAAAAQAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAAAAAAAAAAACAAEAAQAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAQAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAQAAAAAAAAACAAIAAAAAAAAAAAADAAIAAQAAAAAAAAAEAAIAAAAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAAAAAAAAAAACAAMAAQAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAQAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAQAAAAAAAAACAAQAAAAAAAAAAAADAAQAAQAAAAAAAAAEAAQAAAAAAAAAAAA=")
 
-[node name="CursorableArea" parent="HBoxContainer/GameBoardHolder/GameBoard" index="5"]
+[node name="CursorableArea" parent="HBoxContainer/GameBoardHolder/GameBoard" index="6"]
 cursorable_rect = Rect2(0, 0, 1280, 1280)
 
-[node name="MessageLabel" type="RichTextLabel" parent="HBoxContainer"]
+[node name="DemoLog" parent="HBoxContainer" instance=ExtResource("3_oisyd")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 2
-theme_override_fonts/normal_font = ExtResource("2_oisyd")
-theme_override_font_sizes/normal_font_size = 32
-scroll_following = true
-selection_enabled = true
 
 [editable path="HBoxContainer/GameBoardHolder/GameBoard"]

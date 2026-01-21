@@ -90,7 +90,7 @@ func _input(event: InputEvent) -> void:
 				for i in 10:
 					var performance_text_index: int = (_performance_test_start_index + i) % _puzzle_paths.size()
 					performance_suite_queue.append(_puzzle_paths[performance_text_index])
-				if not %MessageLabel.text.is_empty():
+				if not %DemoLog.text.is_empty():
 					_show_message("--------")
 				_show_message("performance suite start (%s)" % [performance_suite_queue.size()])
 				_show_message("")
@@ -164,7 +164,7 @@ func step() -> void:
 		_show_message("(finished)")
 		return
 	
-	if not %MessageLabel.text.is_empty():
+	if not %DemoLog.text.is_empty():
 		_show_message("--------")
 	
 	solver.step()
@@ -193,7 +193,7 @@ func solve_until_bifurcation() -> void:
 	
 	copy_board_from_solver()
 	
-	if not %MessageLabel.text.is_empty():
+	if not %DemoLog.text.is_empty():
 		_show_message("--------")
 	if solver.board.is_filled():
 		_show_message("bifurcation: stops=%s scenarios=%s" % [
@@ -219,7 +219,7 @@ func performance_test() -> void:
 	
 	solver.step_until_done()
 	
-	if not %MessageLabel.text.is_empty():
+	if not %DemoLog.text.is_empty():
 		_show_message("--------")
 	_show_message("%.3f msec" % [(Time.get_ticks_usec() - start_time) / 1000.0])
 	_show_message("bifurcation: stops=%s scenarios=%s, duration=%.3f" % [
@@ -232,7 +232,7 @@ func performance_test() -> void:
 
 
 func _show_message(s: String) -> void:
-	%MessageLabel.text += s + "\n"
+	%DemoLog.show_message(s)
 
 
 func _show_suite_results() -> void:

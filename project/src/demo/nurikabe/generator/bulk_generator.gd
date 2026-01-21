@@ -8,7 +8,6 @@ extends Node
 const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
 const GENERATED_PUZZLE_DIR: String = "res://assets/main/nurikabe/official/generated"
 
-const MAX_LINES: int = 500
 const PUZZLE_TYPES: Array[Dictionary] = [
 	{
 		"id": "micro",
@@ -105,8 +104,4 @@ func toggle_state(state: String) -> void:
 
 
 func show_message(s: String) -> void:
-	if %MessageLabel.text:
-		%MessageLabel.text += "\n"
-	%MessageLabel.text += s
-	while %MessageLabel.get_line_count() > MAX_LINES:
-		%MessageLabel.text = StringUtils.substring_after(%MessageLabel.text, "\n")
+	%DemoLog.show_message(s)
