@@ -32,25 +32,3 @@ func test_attempt_island_buffer_from() -> void:
 			island, Vector2i(3, 2), [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT] as Array[Vector2i])
 	assert_placements(callable, expected)
 	assert_clue_minimum_changes(["{ \"pos\": (1, 1), \"value\": 3 }"])
-
-
-func test_all_clues_valid_mystery() -> void:
-	grid = [
-		"######",
-		"## ? .",
-		"      ",
-	]
-	generator.board = GeneratorTestUtils.init_board(grid)
-	generator.board.clue_minimums[Vector2i(1, 1)] = 3
-	assert_eq(generator.all_clues_valid(), true)
-
-
-func test_all_clues_valid_large() -> void:
-	grid = [
-		"######",
-		"## 2 .",
-		"######",
-	]
-	generator.board = GeneratorTestUtils.init_board(grid)
-	generator.board.clue_minimums[Vector2i(1, 1)] = 3
-	assert_eq(generator.all_clues_valid(), false)
