@@ -16,6 +16,7 @@ func test_mutate_force_exaggerate() -> void:
 	solver.board = board
 	solver.step_until_done(Solver.SolverPass.BIFURCATION)
 	assert_eq(board.is_filled(), true)
+	board.cleanup()
 
 
 func test_mutate_force_exaggerate_single() -> void:
@@ -30,6 +31,7 @@ func test_mutate_force_exaggerate_single() -> void:
 	board.from_grid_string("\n".join(grid))
 	mutation_library.mutate_force_exaggerate(board)
 	assert_eq(board.get_clue(Vector2i(0, 2)), 18)
+	board.cleanup()
 
 
 func test_mutate_force_inject() -> void:
@@ -48,6 +50,7 @@ func test_mutate_force_inject() -> void:
 	solver.board = board
 	solver.step_until_done(Solver.SolverPass.BIFURCATION)
 	assert_eq(board.is_filled(), true)
+	board.cleanup()
 
 
 func test_mutate_force_partition() -> void:
@@ -64,3 +67,4 @@ func test_mutate_force_partition() -> void:
 	assert_eq(1, board.get_clue(Vector2i(0, 2)))
 	assert_eq(3, board.get_clue(Vector2i(0, 4)))
 	assert_eq(15, board.get_island_for_cell(Vector2i(0, 0)).clue)
+	board.cleanup()

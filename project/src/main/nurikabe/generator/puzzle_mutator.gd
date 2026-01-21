@@ -134,6 +134,9 @@ func step() -> void:
 	for i in wrapped_candidates.size():
 		new_candidates[i] = wrapped_candidates[i]["candidate"]
 	
+	for candidate: Solver in candidates:
+		candidate.board.cleanup()
+	
 	candidates = new_candidates
 	_best_fitness = wrapped_candidates[0]["fitness"]
 
@@ -252,6 +255,11 @@ func calculate_fitness(solver: Solver) -> float:
 		fitness *= 10.0 / (validation_penalty + 10)
 	
 	return fitness
+
+
+func cleanup() -> void:
+	for candidate: Solver in candidates:
+		candidate.board.cleanup()
 
 
 func _refresh_difficulty() -> void:

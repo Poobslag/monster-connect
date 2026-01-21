@@ -23,6 +23,7 @@ func update(_delta: float) -> void:
 	copy_board_from_solver()
 	var validation_result: SolverBoard.ValidationResult \
 			= solver.board.validate(SolverBoard.VALIDATE_STRICT)
+	solver.board.cleanup()
 	if validation_result.error_count > 0:
 		object.show_message("Error: Invalid solution")
 		return

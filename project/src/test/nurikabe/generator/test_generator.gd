@@ -15,6 +15,11 @@ func before_each() -> void:
 	generator.clear()
 
 
+func after_all() -> void:
+	generator.board.solver_board.cleanup()
+	generator.solver.board.cleanup()
+
+
 func assert_placements(callable: Callable, expected_str_array: Array[String]) -> void:
 	generator.board = GeneratorTestUtils.init_board(grid)
 	callable.call()

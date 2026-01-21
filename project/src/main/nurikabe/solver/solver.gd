@@ -462,6 +462,7 @@ func _apply_assumptions(solver: Solver, assumptions: Dictionary[Vector2i, int]) 
 func _disprove_assumptions(assumptions: Dictionary[Vector2i, int]) -> bool:
 	var solver: Solver = Solver.new()
 	if not _apply_assumptions(solver, assumptions):
+		solver.board.cleanup()
 		return false
 	
 	if not metrics.has("bifurcation_scenarios"):
@@ -500,6 +501,8 @@ func _disprove_assumptions(assumptions: Dictionary[Vector2i, int]) -> bool:
 	if not metrics.has("bifurcation_duration"):
 		metrics["bifurcation_duration"] = 0
 	metrics["bifurcation_duration"] += (Time.get_ticks_usec() - bifurcation_start_time) / 1000.0
+	
+	solver.board.cleanup()
 	
 	return not assumptions_valid
 

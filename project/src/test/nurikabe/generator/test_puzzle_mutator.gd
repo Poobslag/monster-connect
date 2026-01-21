@@ -5,6 +5,7 @@ var mutator: PuzzleMutator
 func test_fun_weights_exact() -> void:
 	var board: SolverBoard = SolverBoard.new()
 	mutator = PuzzleMutator.new(board)
+	board.cleanup()
 	mutator.difficulty = 0.0
 	assert_fun_weight(Deduction.FunAxis.FUN_BIFURCATE, -1.0)
 	
@@ -19,6 +20,7 @@ func assert_fun_weight(fun_axis: Deduction.FunAxis, expected: float) -> void:
 func test_fun_weights_interpolated() -> void:
 	var board: SolverBoard = SolverBoard.new()
 	mutator = PuzzleMutator.new(board)
+	board.cleanup()
 	mutator.difficulty = 0.25
 	assert_fun_weight(Deduction.FunAxis.FUN_THINK, -0.5)
 	
@@ -41,6 +43,7 @@ func test_fun_weights_interpolated() -> void:
 func test_fun_weights_interpolated_min() -> void:
 	var board: SolverBoard = SolverBoard.new()
 	mutator = PuzzleMutator.new(board)
+	board.cleanup()
 	mutator.difficulty = 0.25
 	assert_fun_weight(Deduction.FunAxis.FUN_FAST, 2.0)
 	
@@ -57,6 +60,7 @@ func test_fun_weights_interpolated_min() -> void:
 func test_fun_weights_interpolated_max() -> void:
 	var board: SolverBoard = SolverBoard.new()
 	mutator = PuzzleMutator.new(board)
+	board.cleanup()
 	mutator.difficulty = 0.75
 	assert_fun_weight(Deduction.FunAxis.FUN_BIFURCATE, 1.0)
 	

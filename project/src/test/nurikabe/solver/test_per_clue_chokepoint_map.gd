@@ -103,6 +103,7 @@ func test_get_reachable_clues_by_cell() -> void:
 	var pccm: PerClueChokepointMap = init_per_clue_chokepoint_map()
 	var reachable_clues_by_cell: Dictionary[Vector2i, Dictionary] = pccm.get_reachable_clues_by_cell()
 	assert_eq([Vector2i(3, 5)], reachable_clues_by_cell.get(Vector2i(3, 1), {} as Dictionary[Vector2i, bool]).keys())
+	pccm.board.cleanup()
 
 
 func assert_chokepoint_cells(island_cell: Vector2i, expected: Dictionary[Vector2i, int]) -> void:
@@ -110,6 +111,7 @@ func assert_chokepoint_cells(island_cell: Vector2i, expected: Dictionary[Vector2
 	var island: CellGroup = pccm.board.get_island_for_cell(island_cell)
 	var actual: Dictionary[Vector2i, int] = pccm.find_chokepoint_cells(island)
 	assert_eq(actual, expected)
+	pccm.board.cleanup()
 
 
 func assert_component_cells(island_cell: Vector2i, expected: Array[Vector2i]) -> void:
@@ -119,6 +121,7 @@ func assert_component_cells(island_cell: Vector2i, expected: Array[Vector2i]) ->
 	actual.sort()
 	expected.sort()
 	assert_eq(actual, expected)
+	pccm.board.cleanup()
 
 
 func init_per_clue_chokepoint_map() -> PerClueChokepointMap:

@@ -113,6 +113,8 @@ func _input(event: InputEvent) -> void:
 				print_grid_string()
 		KEY_R:
 			%GameBoard.reset()
+			if solver.board:
+				solver.board.cleanup()
 			solver.board = %GameBoard.to_solver_board()
 			solver.clear()
 		KEY_D:
@@ -151,7 +153,9 @@ func _show_normalized_fun_string() -> String:
 
 
 func print_grid_string() -> void:
-	%GameBoard.to_solver_board().print_cells()
+	var board: SolverBoard = %GameBoard.to_solver_board()
+	board.print_cells()
+	board.cleanup()
 
 
 func step() -> void:
@@ -204,6 +208,8 @@ func solve_until_bifurcation() -> void:
 
 func load_puzzle(new_puzzle_path: String) -> void:
 	puzzle_path = new_puzzle_path
+	if solver.board:
+		solver.board.cleanup()
 	solver.board = %GameBoard.to_solver_board()
 	solver.clear()
 

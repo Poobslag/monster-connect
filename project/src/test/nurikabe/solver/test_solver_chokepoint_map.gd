@@ -16,6 +16,7 @@ func test_chokepoints_1() -> void:
 	]
 	var chokepoint_map: SolverChokepointMap = _build_island_chokepoint_map()
 	assert_chokepoints(chokepoint_map, [Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2)])
+	chokepoint_map.board.cleanup()
 
 
 func test_unchoked_cell_count_1() -> void:
@@ -31,6 +32,7 @@ func test_unchoked_cell_count_1() -> void:
 	assert_eq(chokepoint_map.get_unchoked_cell_count(Vector2(0, 2), Vector2(0, 0)), 3)
 	assert_eq(chokepoint_map.get_unchoked_cell_count(Vector2(0, 2), Vector2(2, 2)), 5)
 	assert_eq(chokepoint_map.get_unchoked_cell_count(Vector2(1, 3), Vector2(2, 2)), 8)
+	chokepoint_map.board.cleanup()
 
 
 func test_unchoked_cell_count_2() -> void:
@@ -43,6 +45,7 @@ func test_unchoked_cell_count_2() -> void:
 	]
 	var chokepoint_map: SolverChokepointMap = _build_island_chokepoint_map()
 	assert_eq(chokepoint_map.get_unchoked_cell_count(Vector2(3, 3), Vector2(3, 2)), 15)
+	chokepoint_map.board.cleanup()
 
 
 func test_chokepoints_donut() -> void:
@@ -53,6 +56,7 @@ func test_chokepoints_donut() -> void:
 	]
 	var chokepoint_map: SolverChokepointMap = _build_island_chokepoint_map()
 	assert_chokepoints(chokepoint_map, [])
+	chokepoint_map.board.cleanup()
 
 
 func test_chokepoints_2() -> void:
@@ -63,6 +67,7 @@ func test_chokepoints_2() -> void:
 	]
 	var chokepoint_map: SolverChokepointMap = _build_island_chokepoint_map()
 	assert_chokepoints(chokepoint_map, [Vector2i(1, 1)])
+	chokepoint_map.board.cleanup()
 
 
 func test_chokepoints_3() -> void:
@@ -73,6 +78,7 @@ func test_chokepoints_3() -> void:
 	]
 	var chokepoint_map: SolverChokepointMap = _build_island_chokepoint_map()
 	assert_chokepoints(chokepoint_map, [Vector2i(1, 1)])
+	chokepoint_map.board.cleanup()
 
 
 func test_chokepoints_two_clues() -> void:
@@ -83,6 +89,7 @@ func test_chokepoints_two_clues() -> void:
 	]
 	var chokepoint_map: SolverChokepointMap = _build_island_chokepoint_map()
 	assert_chokepoints(chokepoint_map, [Vector2i(0, 1), Vector2(2, 1)])
+	chokepoint_map.board.cleanup()
 
 
 func test_unchoked_cell_count_two_clues() -> void:
@@ -98,6 +105,7 @@ func test_unchoked_cell_count_two_clues() -> void:
 	assert_eq(chokepoint_map.get_unchoked_cell_count(Vector2(0, 1), Vector2(2, 0)), 3)
 	assert_eq(chokepoint_map.get_unchoked_cell_count(Vector2(0, 2), Vector2(0, 1)), 2)
 	assert_eq(chokepoint_map.get_unchoked_cell_count(Vector2(0, 2), Vector2(2, 0)), 3)
+	chokepoint_map.board.cleanup()
 
 
 func test_component_cell_count_two_clues() -> void:
@@ -112,6 +120,7 @@ func test_component_cell_count_two_clues() -> void:
 	assert_eq(chokepoint_map.get_component_cell_count(Vector2(0, 2)), 3)
 	assert_eq(chokepoint_map.get_component_cell_count(Vector2(2, 0)), 2)
 	assert_eq(chokepoint_map.get_component_cell_count(Vector2(2, 1)), 2)
+	chokepoint_map.board.cleanup()
 
 
 func test_component_cells_two_clues() -> void:
@@ -123,6 +132,7 @@ func test_component_cells_two_clues() -> void:
 	var chokepoint_map: SolverChokepointMap = _build_island_chokepoint_map()
 	assert_component_cells(chokepoint_map, Vector2(0, 0), [Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2)])
 	assert_component_cells(chokepoint_map, Vector2(2, 0), [Vector2i(2, 0), Vector2i(2, 1)])
+	chokepoint_map.board.cleanup()
 
 
 func test_special_cell_count_1() -> void:
@@ -138,6 +148,7 @@ func test_special_cell_count_1() -> void:
 	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(1, 2)), 2)
 	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(2, 0)), 1)
 	assert_eq(chokepoint_map.get_unchoked_special_count(Vector2i(1, 1), Vector2i(2, 2)), 2)
+	chokepoint_map.board.cleanup()
 
 
 func _build_island_chokepoint_map() -> SolverChokepointMap:

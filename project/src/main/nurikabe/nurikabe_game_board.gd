@@ -362,6 +362,7 @@ func _on_validate_timer_timeout() -> void:
 	for wrong_size_cell: Vector2i in result_strict.wrong_size:
 		new_lowlight_cells.erase(wrong_size_cell)
 	lowlight_cells = new_lowlight_cells
+	model.cleanup()
 	
 	# update error cells if the player made a mistake
 	var old_error_cells: Dictionary[Vector2i, bool] = error_cells

@@ -23,6 +23,7 @@ func test_islands() -> void:
 		{"cells": [Vector2i(0, 0)], "clue": 3, "liberties": [Vector2i(0, 1)]},
 		{"cells": [Vector2i(2, 0)], "clue": 2, "liberties": [Vector2i(2, 1)]},
 	])
+	board.cleanup()
 
 
 func test_islands_mystery_clue_1() -> void:
@@ -34,6 +35,7 @@ func test_islands_mystery_clue_1() -> void:
 	assert_groups(board.islands, [
 		{"cells": [Vector2i(1, 0), Vector2i(1, 1)], "clue": CELL_MYSTERY_CLUE, "liberties": [Vector2i(0, 0)]},
 	])
+	board.cleanup()
 
 
 func test_islands_mystery_clue_joined() -> void:
@@ -45,6 +47,7 @@ func test_islands_mystery_clue_joined() -> void:
 	assert_groups(board.islands, [
 		{"cells": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)], "clue": -1, "liberties": []},
 	])
+	board.cleanup()
 
 
 func test_islands_mystery_clue_2() -> void:
@@ -60,6 +63,7 @@ func test_islands_mystery_clue_2() -> void:
 	assert_groups(board.islands, [
 		{"cells": [Vector2i(1, 0), Vector2i(1, 1)], "clue": CELL_MYSTERY_CLUE, "liberties": [Vector2i(0, 0)]},
 	])
+	board.cleanup()
 
 
 func test_set_cell_island_open_islands() -> void:
@@ -84,6 +88,7 @@ func test_set_cell_island_open_islands() -> void:
 			"liberties": [Vector2i(0, 2), Vector2i(1, 0), Vector2i(2, 0), Vector2i(2, 2)],
 		},
 	])
+	board.cleanup()
 
 
 func test_set_cell_island_merge_islands() -> void:
@@ -113,6 +118,7 @@ func test_set_cell_island_merge_islands() -> void:
 			"liberties": [Vector2i(0, 2), Vector2i(2, 1)],
 		},
 	])
+	board.cleanup()
 
 
 func test_set_cell_island_merge_islands_2() -> void:
@@ -141,6 +147,7 @@ func test_set_cell_island_merge_islands_2() -> void:
 			"liberties": [Vector2i(0, 1)],
 		},
 	])
+	board.cleanup()
 
 
 func test_set_cell_wall_close_island() -> void:
@@ -165,6 +172,7 @@ func test_set_cell_wall_close_island() -> void:
 			"liberties": [Vector2i(1, 0), Vector2i(2, 1)],
 		},
 	])
+	board.cleanup()
 
 
 func test_walls() -> void:
@@ -178,6 +186,7 @@ func test_walls() -> void:
 		{"cells": [Vector2i(1, 1)], "clue": 0, "liberties": [Vector2i(0, 1), Vector2i(2, 1)]},
 		{"cells": [Vector2i(2, 0)], "clue": 0, "liberties": [Vector2i(2, 1)]},
 	])
+	board.cleanup()
 
 
 func test_set_cell_walls() -> void:
@@ -195,6 +204,7 @@ func test_set_cell_walls() -> void:
 	assert_groups(board.walls, [
 		{"cells": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0)], "clue": 0, "liberties": []},
 	])
+	board.cleanup()
 
 
 func test_joined_islands_two() -> void:
@@ -572,6 +582,7 @@ func test_island_chain_map_cycle() -> void:
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(1, 1)), true)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(0, 0)), false)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(1, 2)), false)
+	board.cleanup()
 
 
 func test_island_chain_map_cycle_clueless() -> void:
@@ -583,6 +594,7 @@ func test_island_chain_map_cycle_clueless() -> void:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(0, 1)), false)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(1, 1)), false)
+	board.cleanup()
 
 
 func test_island_chain_map_cycle_middle() -> void:
@@ -598,6 +610,7 @@ func test_island_chain_map_cycle_middle() -> void:
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 3)), true)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 4)), true)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 5)), false)
+	board.cleanup()
 
 
 func test_island_chain_map_cycle_middle_big() -> void:
@@ -612,6 +625,7 @@ func test_island_chain_map_cycle_middle_big() -> void:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 3)), true)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(2, 4)), true)
+	board.cleanup()
 
 
 func test_island_chain_map_cycle_janko_3() -> void:
@@ -632,6 +646,7 @@ func test_island_chain_map_cycle_janko_3() -> void:
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(4, 7)), true)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(6, 6)), false)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(8, 2)), false)
+	board.cleanup()
 
 
 func test_island_chain_map_cycle_janko_83() -> void:
@@ -649,6 +664,7 @@ func test_island_chain_map_cycle_janko_83() -> void:
 	var board: SolverBoard = SolverTestUtils.init_board(grid)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(4, 7)), false)
 	assert_eq(board.get_island_chain_map().has_chain_conflict(Vector2i(5, 6)), false)
+	board.cleanup()
 
 
 func assert_groups(actual_groups: Array[CellGroup], expected_props_list: Array[Dictionary]) -> void:
@@ -700,6 +716,7 @@ func _assert_validate(mode: SolverBoard.ValidationMode, expected_result_dict: Di
 		var validation_result_value: Array[Vector2i] = validation_result.get(key)
 		validation_result_value.sort()
 		assert_eq(expected_result_dict.get(key, []), validation_result_value, "Incorrect %s." % [key])
+	board.cleanup()
 
 
 func _assert_validate_local(local_cells: Array[Vector2i], expected_result: String, \
@@ -709,3 +726,4 @@ func _assert_validate_local(local_cells: Array[Vector2i], expected_result: Strin
 		configure_board.call(board)
 	var validation_result: String = board.validate_local(local_cells)
 	assert_eq(validation_result, expected_result)
+	board.cleanup()

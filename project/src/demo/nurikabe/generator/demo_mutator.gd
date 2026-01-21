@@ -25,6 +25,7 @@ func _ready() -> void:
 	var board: SolverBoard = SolverBoard.new()
 	board.from_grid_string(grid_string)
 	mutator = PuzzleMutator.new(board)
+	board.cleanup()
 	remove_all_children(%GameBoards)
 	remove_all_children(%Labels)
 	refresh_candidates()

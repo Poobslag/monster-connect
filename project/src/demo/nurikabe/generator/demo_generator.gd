@@ -71,11 +71,15 @@ func _input(event: InputEvent) -> void:
 		KEY_H:
 			generator.log_enabled = true
 			generator.consume_events()
+			if generator.board:
+				generator.board.solver_board.cleanup()
 			generator.board = %GameBoard.to_generator_board()
 			generator_running = true
 		KEY_R:
 			generator.clear()
 			%GameBoard.reset()
+			if generator.board:
+				generator.board.solver_board.cleanup()
 			generator.board = %GameBoard.to_generator_board()
 			if fixed_seed != -1:
 				generator.rng.seed = fixed_seed
@@ -115,7 +119,9 @@ func _process(_delta: float) -> void:
 
 
 func print_grid_string() -> void:
-	%GameBoard.to_solver_board().print_cells()
+	var board: SolverBoard = %GameBoard.to_solver_board()
+	board.print_cells()
+	board.cleanup()
 	var clue_minimum_strings: Array[String] = []
 	for clue_minimum_cell: Vector2i in generator.board.clue_minimums:
 		var string: String = "%s:%s" % [clue_minimum_cell, generator.board.clue_minimums[clue_minimum_cell]]
@@ -134,6 +140,8 @@ func set_puzzle_size(puzzle_size: Vector2i) -> void:
 	%GameBoard.grid_string = new_grid_string
 	%GameBoard.import_grid()
 	generator.clear()
+	if generator.board:
+		generator.board.solver_board.cleanup()
 	generator.board = %GameBoard.to_generator_board()
 
 
