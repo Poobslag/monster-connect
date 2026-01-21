@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ddtpj80rxs8rb" path="res://src/demo/nurikabe/solver/demo_solver.gd" id="1_hjsai"]
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="2_gilm6"]
-[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="3_jvtrg"]
+[ext_resource type="PackedScene" uid="uid://rpgvsnfuo7o5" path="res://src/demo/nurikabe/generator/demo_log.tscn" id="3_l4fyy"]
 [ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/demo/nurikabe/solver/command_palette.tscn" id="4_l4fyy"]
 
 [node name="Demo" type="Node"]
@@ -48,10 +48,10 @@ grid_string = "     2   3   5   1
                     
             18   2  "
 
-[node name="TileMapGround" parent="HBoxContainer/GameBoardHolder/GameBoard" index="0"]
+[node name="TileMapGround" parent="HBoxContainer/GameBoardHolder/GameBoard" index="1"]
 tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAACAAAAAAAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAAAAAAAAAAACAAEAAQAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAQAAAAAAAAACAAIAAAAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAAAAAAAAAAACAAMAAQAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAQAAAAAAAAACAAQAAAAAAAAAAAADAAAAAQAAAAAAAAAEAAAAAAAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAQAAAAAAAAADAAIAAQAAAAAAAAAEAAIAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAQAAAAAAAAADAAQAAQAAAAAAAAAEAAQAAAAAAAAAAAAFAAAAAQAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAQAAAAAAAAAIAAAAAAAAAAAAAAAJAAAAAQAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAQAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAQAAAAAAAAAJAAEAAAAAAAAAAAAFAAIAAQAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAQAAAAAAAAAIAAIAAAAAAAAAAAAJAAIAAQAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAQAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAQAAAAAAAAAJAAMAAAAAAAAAAAAFAAQAAQAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAQAAAAAAAAAIAAQAAAAAAAAAAAAJAAQAAQAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAAAAAAAAAAACAAUAAQAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAQAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAQAAAAAAAAAHAAUAAAAAAAAAAAAIAAUAAQAAAAAAAAAJAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAABAAYAAQAAAAAAAAACAAYAAAAAAAAAAAADAAYAAQAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAQAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAQAAAAAAAAAIAAYAAAAAAAAAAAAJAAYAAQAAAAAAAAAAAAcAAQAAAAAAAAABAAcAAAAAAAAAAAACAAcAAQAAAAAAAAADAAcAAAAAAAAAAAAEAAcAAQAAAAAAAAAFAAcAAAAAAAAAAAAGAAcAAQAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAQAAAAAAAAAJAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAABAAgAAQAAAAAAAAACAAgAAAAAAAAAAAADAAgAAQAAAAAAAAAEAAgAAAAAAAAAAAAFAAgAAQAAAAAAAAAGAAgAAAAAAAAAAAAHAAgAAQAAAAAAAAAIAAgAAAAAAAAAAAAJAAgAAQAAAAAAAAAAAAkAAQAAAAAAAAABAAkAAAAAAAAAAAACAAkAAQAAAAAAAAADAAkAAAAAAAAAAAAEAAkAAQAAAAAAAAAFAAkAAAAAAAAAAAAGAAkAAQAAAAAAAAAHAAkAAAAAAAAAAAAIAAkAAQAAAAAAAAAJAAkAAAAAAAAAAAA=")
 
-[node name="TileMapClue" parent="HBoxContainer/GameBoardHolder/GameBoard" index="3"]
+[node name="TileMapClue" parent="HBoxContainer/GameBoardHolder/GameBoard" index="4"]
 clues_by_cell = Dictionary[Vector2i, int]({
 Vector2i(0, 1): 2,
 Vector2i(1, 5): 5,
@@ -68,18 +68,12 @@ Vector2i(8, 0): 1,
 Vector2i(8, 9): 2
 })
 
-[node name="CursorableArea" parent="HBoxContainer/GameBoardHolder/GameBoard" index="5"]
+[node name="CursorableArea" parent="HBoxContainer/GameBoardHolder/GameBoard" index="6"]
 cursorable_rect = Rect2(0, 0, 2560, 2560)
 
-[node name="MessageLabel" type="RichTextLabel" parent="HBoxContainer"]
+[node name="DemoLog" parent="HBoxContainer" instance=ExtResource("3_l4fyy")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 2
-theme_override_fonts/normal_font = ExtResource("3_jvtrg")
-theme_override_font_sizes/normal_font_size = 32
-scroll_following = true
-selection_enabled = true
 
 [node name="PerformanceSuiteTimer" type="Timer" parent="."]
 unique_name_in_owner = true
