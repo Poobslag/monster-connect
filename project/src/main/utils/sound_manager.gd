@@ -29,7 +29,7 @@ const SOUND_CONFIGS: Dictionary[String, Dictionary] = {
 		"pitch_scale": 0.8,
 	},
 	"cursor_move": {
-		"volume_db": -12.0,
+		"volume_db": -16.0,
 	},
 	"drop_island_press": {
 		"volume_db": -8.0,
