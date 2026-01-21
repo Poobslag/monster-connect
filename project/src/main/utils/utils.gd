@@ -121,6 +121,14 @@ static func get_subtree_members(parent: Node, group: String) -> Array[Node]:
 	return child_members
 
 
+static func print_memory_stats() -> void:
+	print("--- Memory Stats (%0.1f) ---" % [Time.get_ticks_msec() / 1000.0])
+	print("Objects: %d" % [Performance.get_monitor(Performance.OBJECT_COUNT)])
+	print("Nodes: %d" % [Performance.get_monitor(Performance.OBJECT_NODE_COUNT)])
+	print("Orphans: %d" % [Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)])
+	print("Resources: %d" % [Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)])
+
+
 ## Returns [0-9] for a number key event, or -1 if the event is not a number key event.
 static func key_num(event: InputEvent) -> int:
 	return NUM_SCANCODES.get(key_press(event), -1)

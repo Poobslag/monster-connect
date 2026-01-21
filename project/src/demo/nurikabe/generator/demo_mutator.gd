@@ -35,6 +35,8 @@ func _input(event: InputEvent) -> void:
 		KEY_Q:
 			mutator.step()
 			refresh_candidates()
+		KEY_O:
+			Utils.print_memory_stats()
 		KEY_P:
 			mutator.candidates[0].board.print_cells()
 		KEY_MINUS:
