@@ -24,7 +24,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Route all input based on the drag owner
 	if is_any_drag_origin_in_puzzle():
 		%PuzzleHandler.handle(event)
-	%MoveHandler.handle(event)
 	
 	# Release drag ownership when mouse buttons are released
 	if event is InputEventMouseButton and not event.pressed:
@@ -39,10 +38,8 @@ func is_any_drag_origin_in_puzzle() -> bool:
 
 
 func update() -> void:
-	if %PuzzleHandler.game_board == null:
-		%MoveHandler.update()
-	else:
-		%PuzzleHandler.update()
+	%MoveHandler.update()
+	%PuzzleHandler.update()
 
 
 func reset() -> void:
