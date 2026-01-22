@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=3 uid="uid://cf8wyvww44vbg"]
 
-[ext_resource type="Script" uid="uid://scd325yh8swm" path="res://src/main/monster/player_monster.gd" id="1_8wxd0"]
+[ext_resource type="Script" uid="uid://scd325yh8swm" path="res://src/main/monster/player/player_monster.gd" id="1_8wxd0"]
 [ext_resource type="PackedScene" uid="uid://cpxiq6a77u7ku" path="res://src/main/monster/monster.tscn" id="1_xbynq"]
 [ext_resource type="SpriteFrames" uid="uid://cwnjt3aehcpwu" path="res://src/main/monster/monster_frames_purple.tres" id="3_r0jnp"]
-[ext_resource type="Script" uid="uid://51kbfnwulp1s" path="res://src/main/monster/player_input.gd" id="6_4yq1m"]
-[ext_resource type="Script" uid="uid://bjchwrumampry" path="res://src/main/monster/player_move_handler.gd" id="14_idx03"]
-[ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/monster/player_puzzle_handler.gd" id="15_vjvpx"]
+[ext_resource type="Script" uid="uid://51kbfnwulp1s" path="res://src/main/monster/player/player_input.gd" id="6_4yq1m"]
+[ext_resource type="Script" uid="uid://bjchwrumampry" path="res://src/main/monster/player/player_move_handler.gd" id="14_idx03"]
+[ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/monster/player/player_puzzle_handler.gd" id="15_vjvpx"]
 
 [node name="PlayerMonster" instance=ExtResource("1_xbynq")]
 platform_floor_layers = 65535
