@@ -1,0 +1,31 @@
+[gd_scene load_steps=7 format=3 uid="uid://cf8wyvww44vbg"]
+
+[ext_resource type="Script" uid="uid://scd325yh8swm" path="res://src/main/monster/player_monster.gd" id="1_8wxd0"]
+[ext_resource type="PackedScene" uid="uid://cpxiq6a77u7ku" path="res://src/main/monster/monster.tscn" id="1_xbynq"]
+[ext_resource type="SpriteFrames" uid="uid://cwnjt3aehcpwu" path="res://src/main/monster/monster_frames_purple.tres" id="3_r0jnp"]
+[ext_resource type="Script" uid="uid://51kbfnwulp1s" path="res://src/main/monster/player_input.gd" id="6_4yq1m"]
+[ext_resource type="Script" uid="uid://bjchwrumampry" path="res://src/main/monster/player_move_handler.gd" id="14_idx03"]
+[ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/monster/player_puzzle_handler.gd" id="15_vjvpx"]
+
+[node name="PlayerMonster" instance=ExtResource("1_xbynq")]
+platform_floor_layers = 65535
+script = ExtResource("1_8wxd0")
+skin = 3
+
+[node name="AnimatedSprite2D" parent="." index="0"]
+sprite_frames = ExtResource("3_r0jnp")
+
+[node name="Input" type="Node" parent="." index="4"]
+unique_name_in_owner = true
+script = ExtResource("6_4yq1m")
+
+[node name="MoveHandler" type="Node" parent="Input" index="0"]
+unique_name_in_owner = true
+script = ExtResource("14_idx03")
+
+[node name="PuzzleHandler" type="Node" parent="Input" index="1"]
+unique_name_in_owner = true
+script = ExtResource("15_vjvpx")
+
+[editable path="AnimatedSprite2D/CursorTracker"]
+[editable path="SteppableTracker"]
