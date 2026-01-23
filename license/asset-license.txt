@@ -20,7 +20,7 @@ project/assets/main/ui/baloo2.ttf Baloo2 by Ek Type
 
 Images
 --------------------------------------------------------------------------------
-project/assets/main/characters/character_purple_* character_purple_* by Kenney (New Platformer Pack)
+project/assets/main/monster/character_* character_* by Kenney (New Platformer Pack)
 project/assets/main/refresher_a.png flag_green_a by Kenney (New Platformer Pack)
 project/assets/main/refresher_b.png flag_green_b by Kenney (New Platformer Pack)
 project/assets/main/ui/kenney/* UI Pack by Kenney; Kenney's UI Theme for Godot 4.x by azagaya

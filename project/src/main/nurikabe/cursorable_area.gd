@@ -44,9 +44,9 @@ func add_cursor(area: Area2D) -> void:
 	%Cursors.add_child(cursor)
 	update_cursor(area)
 	
-	var player: Player = _find_player_for_cursor(area)
-	if player:
-		player.current_game_board = _find_game_board()
+	var monster: Monster = _find_monster_for_cursor(area)
+	if monster:
+		monster.current_game_board = _find_game_board()
 
 
 func remove_cursor(area: Area2D) -> void:
@@ -54,9 +54,9 @@ func remove_cursor(area: Area2D) -> void:
 	_cursors_by_area.erase(area)
 	cursor.queue_free()
 	
-	var player: Player = _find_player_for_cursor(area)
-	if player and player.current_game_board == _find_game_board():
-		player.current_game_board = null
+	var monster: Monster = _find_monster_for_cursor(area)
+	if monster and monster.current_game_board == _find_game_board():
+		monster.current_game_board = null
 
 
 func update_cursor(area: Area2D) -> void:
@@ -66,10 +66,10 @@ func update_cursor(area: Area2D) -> void:
 	var cursor_cell: Vector2i = (area_local_position / tile_size - Vector2(0.5, 0.5)).snapped(Vector2.ONE)
 	cursor_cell = cursor_cell.clamp(Vector2i.ZERO, Vector2i(cursorable_rect.size / tile_size) - Vector2i.ONE)
 	
-	var player: Player = _find_player_for_cursor(area)
+	var monster: Monster = _find_monster_for_cursor(area)
 	var game_board: Node = _find_game_board()
 	
-	cursor.update_cursor(game_board, player, cursor_cell, tile_size)
+	cursor.update_cursor(game_board, monster, cursor_cell, tile_size)
 
 
 func remove_all_cursors() -> void:
@@ -94,5 +94,5 @@ func _find_game_board() -> NurikabeGameBoard:
 	return Utils.find_parent_of_type(self, NurikabeGameBoard)
 
 
-func _find_player_for_cursor(area: Area2D) -> Player:
-	return Utils.find_parent_of_type(area, Player)
+func _find_monster_for_cursor(area: Area2D) -> Monster:
+	return Utils.find_parent_of_type(area, Monster)

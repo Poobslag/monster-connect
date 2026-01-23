@@ -20,7 +20,7 @@ var error_cells: Dictionary[Vector2i, bool] = {}:
 		error_cells = value
 		_cells_dirty = true
 
-## Cells currently being edited. The value is the most recent player id performing the edit.
+## Cells currently being edited. The value is the most recent monster id performing the edit.
 var half_cells: Dictionary[Vector2i, int] = {}:
 	set(value):
 		half_cells = value
@@ -351,7 +351,7 @@ func _on_validate_timer_timeout() -> void:
 		
 		puzzle_finished.emit()
 	
-	# update lowlight cells if the player isn't finished
+	# update lowlight cells if the monster isn't finished
 	var new_lowlight_cells: Dictionary[Vector2i, bool] = {}
 	for cell: Vector2i in model.cells:
 		var cell_value: int = model.get_cell(cell)
@@ -364,7 +364,7 @@ func _on_validate_timer_timeout() -> void:
 	lowlight_cells = new_lowlight_cells
 	model.cleanup()
 	
-	# update error cells if the player made a mistake
+	# update error cells if the monster made a mistake
 	var old_error_cells: Dictionary[Vector2i, bool] = error_cells
 	var new_error_cells: Dictionary[Vector2i, bool] = {}
 	for pool_cell: Vector2i in result_simple.pools:

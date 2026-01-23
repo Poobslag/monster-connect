@@ -98,6 +98,7 @@ reset={
 
 [layer_names]
 
-2d_physics/layer_1="Sprites"
+2d_physics/layer_1="Static"
+2d_physics/layer_2="Movable"
 2d_physics/layer_3="Steppable"
 2d_physics/layer_4="Cursor"

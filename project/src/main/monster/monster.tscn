@@ -1,0 +1,92 @@
+[gd_scene load_steps=14 format=3 uid="uid://cpxiq6a77u7ku"]
+
+[ext_resource type="Script" uid="uid://bk78f7eh38cp5" path="res://src/main/monster/monster.gd" id="1_7kr2a"]
+[ext_resource type="SpriteFrames" uid="uid://dthpckauw3o1v" path="res://src/main/monster/monster_frames_yellow.tres" id="2_wvhc2"]
+[ext_resource type="PackedScene" uid="uid://cjhud2828rp0i" path="res://src/main/utils/overlap_tracker.tscn" id="6_yxo3g"]
+[ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="7_ac4vo"]
+[ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="8_swudn"]
+[ext_resource type="Script" uid="uid://p2r0gntr00jy" path="res://src/main/monster/monster_state_idle.gd" id="9_21c7s"]
+[ext_resource type="Script" uid="uid://cau2s3vakgrdp" path="res://src/main/monster/monster_state_walk.gd" id="10_j0sbi"]
+[ext_resource type="Script" uid="uid://dwmqmrgupm0ue" path="res://src/main/monster/monster_state_fall.gd" id="11_nwv64"]
+[ext_resource type="Script" uid="uid://8n3k5hi7bdi7" path="res://src/main/monster/monster_state_jump.gd" id="12_n2twi"]
+[ext_resource type="Script" uid="uid://dvkamnli58wm3" path="res://src/main/monster/monster_cursor.gd" id="16_srbyd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2jfxr"]
+size = Vector2(192, 192)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h8b4f"]
+size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y1tn0"]
+
+[node name="Monster" type="CharacterBody2D" groups=["monsters"]]
+collision_layer = 0
+motion_mode = 1
+script = ExtResource("1_7kr2a")
+skin = 4
+metadata/_edit_group_ = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+unique_name_in_owner = true
+scale = Vector2(0.66, 0.66)
+sprite_frames = ExtResource("2_wvhc2")
+animation = &"walk"
+autoplay = "idle"
+offset = Vector2(0, -120)
+
+[node name="CursorTracker" parent="AnimatedSprite2D" instance=ExtResource("6_yxo3g")]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" parent="AnimatedSprite2D/CursorTracker" index="0"]
+position = Vector2(0, -92)
+shape = SubResource("RectangleShape2D_2jfxr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -21)
+shape = SubResource("RectangleShape2D_h8b4f")
+
+[node name="SteppableTracker" parent="." instance=ExtResource("6_yxo3g")]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" parent="SteppableTracker" index="0"]
+position = Vector2(0, -21)
+shape = SubResource("RectangleShape2D_h8b4f")
+
+[node name="StateMachine" parent="." instance=ExtResource("7_ac4vo")]
+unique_name_in_owner = true
+
+[node name="Idle" parent="StateMachine" instance=ExtResource("8_swudn")]
+script = ExtResource("9_21c7s")
+
+[node name="Walk" parent="StateMachine" instance=ExtResource("8_swudn")]
+script = ExtResource("10_j0sbi")
+
+[node name="Fall" parent="StateMachine" instance=ExtResource("8_swudn")]
+script = ExtResource("11_nwv64")
+
+[node name="Jump" parent="StateMachine" instance=ExtResource("8_swudn")]
+script = ExtResource("12_n2twi")
+
+[node name="Cursor" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 100
+z_as_relative = false
+script = ExtResource("16_srbyd")
+color = Color(0.78039217, 0.7137255, 1, 1)
+
+[node name="Area2D" type="Area2D" parent="Cursor"]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cursor/Area2D"]
+shape = SubResource("RectangleShape2D_y1tn0")
+
+[connection signal="overlap_ended" from="AnimatedSprite2D/CursorTracker" to="." method="_on_cursor_tracker_overlap_ended"]
+[connection signal="overlap_started" from="AnimatedSprite2D/CursorTracker" to="." method="_on_cursor_tracker_overlap_started"]
+[connection signal="overlap_ended" from="SteppableTracker" to="." method="_on_steppable_tracker_overlap_ended"]
+[connection signal="overlap_started" from="SteppableTracker" to="." method="_on_steppable_tracker_overlap_started"]
+
+[editable path="AnimatedSprite2D/CursorTracker"]
+[editable path="SteppableTracker"]

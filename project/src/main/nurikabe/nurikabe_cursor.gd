@@ -34,9 +34,9 @@ func _ready() -> void:
 	refresh()
 
 
-func update_cursor(game_board: NurikabeGameBoard, player: Player, cell: Vector2i, tile_size: Vector2) -> void:
-	if player:
-		cursor_color = player.cursor.color
+func update_cursor(game_board: NurikabeGameBoard, monster: Monster, cell: Vector2i, tile_size: Vector2) -> void:
+	if monster:
+		cursor_color = monster.cursor.color
 	position = (Vector2(cell) + Vector2(0.5, 0.5)) * tile_size
 	var cell_value: int = game_board.get_cell(cell)
 	tall = true if cell_value == NurikabeUtils.CELL_WALL else false
