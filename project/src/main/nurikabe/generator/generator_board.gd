@@ -40,6 +40,10 @@ func clear() -> void:
 	solver_board.clear()
 
 
+func cleanup() -> void:
+	solver_board.cleanup()
+
+
 func from_game_board(game_board: NurikabeGameBoard) -> void:
 	solver_board.from_game_board(game_board)
 	solver_board.allow_unclued_islands = true
