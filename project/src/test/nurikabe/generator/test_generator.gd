@@ -16,8 +16,10 @@ func before_each() -> void:
 
 
 func after_all() -> void:
-	generator.board.solver_board.cleanup()
-	generator.solver.board.cleanup()
+	if generator.board:
+		generator.board.solver_board.cleanup()
+	if generator.solver and generator.solver.board:
+		generator.solver.board.cleanup()
 
 
 func assert_placements(callable: Callable, expected_str_array: Array[String]) -> void:

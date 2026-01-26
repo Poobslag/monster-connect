@@ -110,7 +110,8 @@ func consume_events() -> Array[String]:
 func clear() -> void:
 	placements.clear()
 	solver.clear()
-	solver.board.clear()
+	if solver.board:
+		solver.board.clear()
 	step_count = 0
 	mutate_steps = 0
 	
@@ -605,9 +606,9 @@ func fix_tiny_split_wall() -> void:
 			break
 		temp_solver.apply_changes()
 	validation_result = temp_solver.board.validate(SolverBoard.VALIDATE_SIMPLE)
-	temp_solver.board.cleanup()
 	
 	if validation_result.error_count > 0:
+		temp_solver.board.cleanup()
 		return
 	
 	for cell: Vector2i in board.cells:
@@ -615,6 +616,7 @@ func fix_tiny_split_wall() -> void:
 			add_placement(cell, temp_solver.board.get_cell(cell), FIX_TINY_SPLIT_WALL, [split_wall_cell])
 			if board.has_clue(cell) and not temp_solver.board.has_clue(cell):
 				add_clue_minimum_change(cell, 0)
+	temp_solver.board.cleanup()
 
 
 func fix_all_unclued_islands() -> void:
