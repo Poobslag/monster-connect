@@ -1,11 +1,11 @@
 extends Node
 class_name GoapAction
 
-func enter() -> void:
+func enter(_actor: Variant) -> void:
 	pass
 
 
-func exit() -> void:
+func exit(_actor: Variant) -> void:
 	pass
 
 

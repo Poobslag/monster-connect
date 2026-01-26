@@ -5,11 +5,11 @@ const PUZZLE_APPROACH: float = 80.0
 
 var target_game_board: NurikabeGameBoard
 
-func exit() -> void:
+func exit(_actor: Variant) -> void:
 	target_game_board = null
 
 
-func perform(actor: Variant, delta: float) -> bool:
+func perform(actor: Variant, _delta: float) -> bool:
 	var finished: bool = false
 	var monster: SimMonster = actor
 	
@@ -29,7 +29,7 @@ func perform(actor: Variant, delta: float) -> bool:
 	if target_game_board != null:
 		monster.input.move_to(target_game_board.get_rect().get_center())
 		if dist_to_rect(target_game_board.get_rect(), monster.position) < PUZZLE_APPROACH:
-			monster.game_board = target_game_board
+			monster.current_game_board = target_game_board
 			target_game_board = null
 			monster.input.dir = Vector2.ZERO
 			finished = true

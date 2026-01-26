@@ -2,19 +2,28 @@
 class_name SimMonster
 extends Monster
 
-const BOREDOM_PER_SECOND: float = 1.6667 # 100 boredom per minute
+const BOREDOM_PER_SECOND: float = 16.66667 # should be lowered to 1.66667 (100 per minute) after testing
 
 @onready var input: SimInput = %Input
 
-var game_board: NurikabeGameBoard
 var boredom: float = 0.0
+var pending_deductions: Dictionary[Vector2i, Deduction] = {}
 
 func update_input() -> void:
 	input.update()
 
 
 func _process(delta: float) -> void:
-	if game_board == null:
+	if current_game_board == null:
 		boredom = clamp(boredom + delta * BOREDOM_PER_SECOND, 0, 100)
 	else:
 		boredom = clamp(boredom - delta * BOREDOM_PER_SECOND, 0, 100)
+
+
+func add_pending_deduction(init_pos: Vector2i, init_value: int,
+		init_reason: Deduction.Reason = Deduction.Reason.UNKNOWN) -> bool:
+	if pending_deductions.has(init_pos):
+		return false
+	
+	pending_deductions[init_pos] = Deduction.new(init_pos, init_value, init_reason)
+	return true

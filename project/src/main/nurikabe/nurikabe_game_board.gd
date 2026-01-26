@@ -195,6 +195,13 @@ func set_cell(cell_pos: Vector2i, value: int, player_id: int = -1) -> void:
 	_set_cell_internal(cell_pos, value)
 
 
+func get_cells() -> Dictionary[Vector2i, int]:
+	var cells: Dictionary[Vector2i, int] = {}
+	for cell_pos: Vector2i in get_used_cells():
+		cells[cell_pos] = get_cell(cell_pos)
+	return cells
+
+
 func get_cell(cell_pos: Vector2i) -> int:
 	var result: int = CELL_INVALID
 	
