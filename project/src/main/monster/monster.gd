@@ -18,6 +18,14 @@ const SPRITE_FRAMES_BY_SKIN: Dictionary[MonsterSkin, SpriteFrames] = {
 	MonsterSkin.YELLOW: preload("res://src/main/monster/monster_frames_yellow.tres"),
 }
 
+const CURSOR_COLOR_BY_SKIN: Dictionary[MonsterSkin, Color] = {
+	MonsterSkin.BEIGE: Color(0.886, 0.765, 0.671, 1.0),
+	MonsterSkin.GREEN: Color(0.365, 0.831, 0.667, 1.0),
+	MonsterSkin.PINK: Color(1.0, 0.541, 0.682, 1.0),
+	MonsterSkin.PURPLE: Color(0.78, 0.714, 1.0, 1.0),
+	MonsterSkin.YELLOW: Color(0.98, 0.729, 0.176, 1.0),
+}
+
 const ELEVATION_PER_Z_INDEX: float = 24.0
 
 const JUMP_DURATION: float = 0.2
@@ -111,6 +119,7 @@ func _refresh_skin() -> void:
 		return
 	
 	%AnimatedSprite2D.sprite_frames = SPRITE_FRAMES_BY_SKIN[skin]
+	%Cursor.color = CURSOR_COLOR_BY_SKIN[skin]
 
 
 func _on_cursor_tracker_overlap_ended() -> void:

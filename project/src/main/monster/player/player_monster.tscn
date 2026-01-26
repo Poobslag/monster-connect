@@ -27,5 +27,8 @@ script = ExtResource("14_idx03")
 unique_name_in_owner = true
 script = ExtResource("15_vjvpx")
 
+[node name="Cursor" parent="." index="5"]
+color = Color(0.78, 0.714, 1, 1)
+
 [editable path="AnimatedSprite2D/CursorTracker"]
 [editable path="SteppableTracker"]
