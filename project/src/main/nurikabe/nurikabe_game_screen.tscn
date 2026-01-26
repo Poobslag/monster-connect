@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_0ph7c"]
 [ext_resource type="Script" uid="uid://dkfhvt7xta6qi" path="res://src/main/nurikabe/nurikabe_game_screen.gd" id="1_nc88o"]
 [ext_resource type="PackedScene" uid="uid://dtev03a35ehu4" path="res://src/main/nurikabe/refresher.tscn" id="3_1cqpy"]
-[ext_resource type="PackedScene" uid="uid://3hxmksacljoy" path="res://src/main/monster/sim_monster.tscn" id="4_nctqi"]
-[ext_resource type="PackedScene" uid="uid://cf8wyvww44vbg" path="res://src/main/monster/player_monster.tscn" id="7_21uqv"]
+[ext_resource type="PackedScene" uid="uid://3hxmksacljoy" path="res://src/main/monster/sim/sim_monster.tscn" id="4_nctqi"]
+[ext_resource type="PackedScene" uid="uid://cf8wyvww44vbg" path="res://src/main/monster/player/player_monster.tscn" id="7_21uqv"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="16_2bf7t"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nctqi"]

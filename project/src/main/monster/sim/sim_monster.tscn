@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://3hxmksacljoy"]
+[gd_scene load_steps=6 format=3 uid="uid://diafqm0jkanve"]
 
 [ext_resource type="PackedScene" uid="uid://cpxiq6a77u7ku" path="res://src/main/monster/monster.tscn" id="1_m47ex"]
-[ext_resource type="Script" uid="uid://dffafunufye6x" path="res://src/main/monster/sim_monster.gd" id="2_xg55e"]
+[ext_resource type="Script" uid="uid://dffafunufye6x" path="res://src/main/monster/sim/sim_monster.gd" id="2_xg55e"]
 [ext_resource type="SpriteFrames" uid="uid://bdaf2u076uix8" path="res://src/main/monster/monster_frames_green.tres" id="3_bxtwi"]
-[ext_resource type="Script" uid="uid://cunilnx1alpu7" path="res://src/main/monster/sim_input.gd" id="3_urfwp"]
+[ext_resource type="Script" uid="uid://cunilnx1alpu7" path="res://src/main/monster/sim/sim_input.gd" id="3_urfwp"]
+[ext_resource type="PackedScene" uid="uid://d12tqxh0hihss" path="res://src/main/monster/sim/sim_brain.tscn" id="5_5vpq3"]
 
 [node name="Monster" instance=ExtResource("1_m47ex")]
 script = ExtResource("2_xg55e")
@@ -16,11 +17,7 @@ sprite_frames = ExtResource("3_bxtwi")
 unique_name_in_owner = true
 script = ExtResource("3_urfwp")
 
-[node name="InputTimer" type="Timer" parent="Input" index="0"]
-wait_time = 2.0
-autostart = true
-
-[connection signal="timeout" from="Input/InputTimer" to="Input" method="_on_input_timer_timeout"]
+[node name="Brain" parent="." index="5" instance=ExtResource("5_5vpq3")]
 
 [editable path="AnimatedSprite2D/CursorTracker"]
 [editable path="SteppableTracker"]

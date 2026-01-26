@@ -31,7 +31,7 @@ const SOUND_CONFIGS: Dictionary[String, Dictionary] = {
 	},
 	"cursor_move": {
 		"source": "button_click",
-		"volume_db": -16.0,
+		"volume_db": -24.0,
 	},
 	"drop_island_press": {
 		"volume_db": -8.0,
