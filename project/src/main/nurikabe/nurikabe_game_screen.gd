@@ -99,6 +99,22 @@ func add_random_puzzle() -> void:
 		game_board.set_meta("difficulty", new_info.get("difficulty"))
 		game_board.label_text = _difficulty_label(new_info.get("difficulty"))
 	
+	var clue_cell_values: Array[int] = []
+	var clue_cells: Array[Vector2i] = game_board.get_clue_cells()
+	var clue_cells_str: String
+	for clue_cell: Vector2i in clue_cells:
+		clue_cell_values.append(game_board.get_cell(clue_cell))
+		if clue_cell_values.size() >= 3:
+			break
+	clue_cells_str = "-".join(clue_cell_values) if clue_cells else "0"
+	
+	game_board.string_id = "%s-%sx%s-%s-%s" % [
+		puzzle_path.get_file().get_basename(),
+		game_board.puzzle_dimensions.x, game_board.puzzle_dimensions.y,
+		game_board.label_text.to_lower().left(3),
+		clue_cells_str,
+	]
+	
 	%GameBoards.add_child(game_board)
 	
 	var angle: float = randf_range(0, 2 * PI)
