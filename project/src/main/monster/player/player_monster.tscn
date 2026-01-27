@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cpxiq6a77u7ku" path="res://src/main/monster/monster.tscn" id="1_xbynq"]
 [ext_resource type="SpriteFrames" uid="uid://cwnjt3aehcpwu" path="res://src/main/monster/monster_frames_purple.tres" id="3_r0jnp"]
 [ext_resource type="Script" uid="uid://51kbfnwulp1s" path="res://src/main/monster/player/player_input.gd" id="6_4yq1m"]
+[ext_resource type="Script" uid="uid://b2gx8gynj5l1g" path="res://src/main/monster/player/player_cursor.gd" id="7_rh0vc"]
 [ext_resource type="Script" uid="uid://bjchwrumampry" path="res://src/main/monster/player/player_move_handler.gd" id="14_idx03"]
 [ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/monster/player/player_puzzle_handler.gd" id="15_vjvpx"]
 
@@ -27,7 +28,8 @@ script = ExtResource("14_idx03")
 unique_name_in_owner = true
 script = ExtResource("15_vjvpx")
 
-[node name="Cursor" parent="." index="5" unique_id=46421495]
+[node name="Cursor" parent="." index="5" unique_id=356151578]
+script = ExtResource("7_rh0vc")
 color = Color(0.78, 0.714, 1, 1)
 
 [editable path="AnimatedSprite2D/CursorTracker"]

@@ -10,10 +10,3 @@ const GHOST_COLOR := Color("35354188")
 func _draw() -> void:
 	draw_circle(Vector2.ZERO, 10, OUTLINE_COLOR, true, -1.0, true)
 	draw_circle(Vector2.ZERO, 5, color, true, -1.0, true)
-
-
-func _process(_delta: float) -> void:
-	if Engine.is_editor_hint():
-		return
-	
-	global_position = get_viewport().get_camera_2d().get_global_mouse_position()
