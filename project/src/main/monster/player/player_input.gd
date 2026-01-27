@@ -11,11 +11,12 @@ var _drag_origin_in_puzzle: Dictionary[int, bool] = {
 func _unhandled_input(event: InputEvent) -> void:
 	# Initialize drag ownership when mouse buttons are pressed
 	if event is InputEventMouseButton and event.pressed:
-		_drag_origin_in_puzzle[event.button_index] = monster.current_game_board != null
+		_drag_origin_in_puzzle[event.button_index] = monster.game_board != null
 	if event is InputEventMouseMotion and not is_any_drag_origin_in_puzzle():
-		%PuzzleHandler.game_board = monster.current_game_board
+		%PuzzleHandler.game_board = monster.game_board
 	
 	# Route all input based on the drag owner
+	monster.cursor.update_position() # ensure cursor position is up to date
 	%PuzzleHandler.handle(event)
 	
 	# Release drag ownership when mouse buttons are released
@@ -29,7 +30,7 @@ func is_any_drag_origin_in_puzzle() -> bool:
 			or _drag_origin_in_puzzle.get(MOUSE_BUTTON_RIGHT, false)
 
 
-func update() -> void:
+func update(_delta: float) -> void:
 	%MoveHandler.update()
 	%PuzzleHandler.update()
 

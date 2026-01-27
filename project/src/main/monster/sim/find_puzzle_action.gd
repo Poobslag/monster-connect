@@ -29,7 +29,7 @@ func perform(actor: Variant, _delta: float) -> bool:
 	if target_game_board != null:
 		monster.input.move_to(target_game_board.get_rect().get_center())
 		if dist_to_rect(target_game_board.get_rect(), monster.position) < PUZZLE_APPROACH:
-			monster.current_game_board = target_game_board
+			monster.game_board = target_game_board
 			target_game_board = null
 			monster.input.dir = Vector2.ZERO
 			finished = true

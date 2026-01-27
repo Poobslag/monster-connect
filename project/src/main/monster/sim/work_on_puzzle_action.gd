@@ -28,7 +28,7 @@ func perform(actor: Variant, delta: float) -> bool:
 	
 	if _next_deduction == null and not monster.pending_deductions.is_empty():
 		var deduction: Deduction = monster.pending_deductions.values().pick_random()
-		if monster.current_game_board.get_cell(deduction.pos) == CELL_EMPTY:
+		if monster.game_board.get_cell(deduction.pos) == CELL_EMPTY:
 			_next_deduction = deduction
 			_next_deduction_remaining_time = 0.6
 		monster.pending_deductions.erase(deduction.pos)
@@ -36,11 +36,13 @@ func perform(actor: Variant, delta: float) -> bool:
 	if _next_deduction != null:
 		_next_deduction_remaining_time -= delta
 		if _next_deduction_remaining_time <= 0:
-			if monster.current_game_board.get_cell(_next_deduction.pos) == CELL_EMPTY:
-				monster.current_game_board.set_cell(_next_deduction.pos, _next_deduction.value, monster.id)
+			monster.input.queue_cursor_command(
+					SimInput.LMB_PRESS, monster.game_board.map_to_global(_next_deduction.pos))
+			monster.input.queue_cursor_command(
+					SimInput.LMB_RELEASE, monster.game_board.map_to_global(_next_deduction.pos), 0.1)
 			_next_deduction = null
 	
-	return monster.current_game_board.is_finished()
+	return monster.game_board.is_finished()
 
 
 func exit(actor: Variant) -> void:

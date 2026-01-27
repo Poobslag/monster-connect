@@ -144,6 +144,10 @@ func global_to_map(global_point: Vector2) -> Vector2i:
 	return %TileMapGround.local_to_map(%TileMapGround.to_local(global_point))
 
 
+func map_to_global(cell: Vector2i) -> Vector2:
+	return %TileMapGround.to_global(%TileMapGround.map_to_local(cell))
+
+
 func import_grid() -> void:
 	%TileMapGround.clear()
 	%TileMapIsland.clear()
