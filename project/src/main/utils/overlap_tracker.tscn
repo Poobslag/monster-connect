@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cjhud2828rp0i"]
+[gd_scene format=3 uid="uid://cjhud2828rp0i"]
 
 [ext_resource type="Script" uid="uid://cq8gl04s61iee" path="res://src/main/utils/overlap_tracker.gd" id="1_1v07c"]
 
-[node name="OverlapTracker" type="Area2D"]
+[node name="OverlapTracker" type="Area2D" unique_id=391448237]
 script = ExtResource("1_1v07c")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1428493542]

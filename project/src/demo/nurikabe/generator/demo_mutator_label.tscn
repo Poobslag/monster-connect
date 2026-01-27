@@ -1,6 +1,6 @@
-[gd_scene load_steps=0 format=3 uid="uid://cnr1birfttcp7"]
+[gd_scene format=3 uid="uid://cnr1birfttcp7"]
 
-[node name="DemoMutatorLabel" type="RichTextLabel"]
+[node name="DemoMutatorLabel" type="RichTextLabel" unique_id=1380269213]
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.5019608)

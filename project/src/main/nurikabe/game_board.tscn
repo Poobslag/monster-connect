@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://b06aw2k2o1thk"]
+[gd_scene format=3 uid="uid://b06aw2k2o1thk"]
 
 [ext_resource type="Script" uid="uid://c8ofbnvv80ou2" path="res://src/main/nurikabe/nurikabe_game_board.gd" id="1_7bv3k"]
 [ext_resource type="Texture2D" uid="uid://gwh78fbjjfbb" path="res://assets/main/nurikabe/tile_blank_1.png" id="2_j45ic"]
@@ -119,7 +119,7 @@ sources/1 = SubResource("TileSetAtlasSource_vr7lx")
 sources/2 = SubResource("TileSetAtlasSource_m1d6t")
 sources/3 = SubResource("TileSetAtlasSource_pyfk6")
 
-[node name="GameBoard" type="Control" groups=["game_boards", "world_occupants"]]
+[node name="GameBoard" type="Control" unique_id=779353418 groups=["game_boards", "world_occupants"]]
 y_sort_enabled = true
 layout_mode = 3
 anchors_preset = 0
@@ -130,7 +130,7 @@ offset_bottom = 320.0
 mouse_filter = 2
 script = ExtResource("1_7bv3k")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=34496261]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(200, 23)
@@ -143,22 +143,22 @@ theme = ExtResource("20_j45ic")
 theme_override_font_sizes/font_size = 32
 text = "Medium"
 
-[node name="TileMapGround" type="TileMapLayer" parent="."]
+[node name="TileMapGround" type="TileMapLayer" parent="." unique_id=1164779139]
 unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 tile_set = SubResource("TileSet_nmhbr")
 
-[node name="TileMapError" type="TileMapLayer" parent="."]
+[node name="TileMapError" type="TileMapLayer" parent="." unique_id=1238986187]
 unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 tile_set = SubResource("TileSet_vr7lx")
 
-[node name="TileMapIsland" type="TileMapLayer" parent="."]
+[node name="TileMapIsland" type="TileMapLayer" parent="." unique_id=1779165099]
 unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 tile_set = SubResource("TileSet_w1x8j")
 
-[node name="TileMapClue" type="Node2D" parent="."]
+[node name="TileMapClue" type="Node2D" parent="." unique_id=1018272685]
 unique_name_in_owner = true
 scale = Vector2(0.5, 0.5)
 script = ExtResource("11_202sf")
@@ -167,26 +167,26 @@ font = SubResource("FontVariation_kn5p3")
 font_size = 100
 font_padding = 34.0
 
-[node name="TileMapWall" type="TileMapLayer" parent="."]
+[node name="TileMapWall" type="TileMapLayer" parent="." unique_id=1817437580]
 unique_name_in_owner = true
 y_sort_enabled = true
 scale = Vector2(0.25, 0.25)
 tile_set = SubResource("TileSet_ccndg")
 y_sort_origin = 60
 
-[node name="CursorableArea" parent="." instance=ExtResource("17_coiav")]
+[node name="CursorableArea" parent="." unique_id=1710127712 instance=ExtResource("17_coiav")]
 unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 cursor_scene = ExtResource("18_85sqx")
 tile_size = Vector2(256, 256)
 
-[node name="SteppableTiles" type="Node2D" parent="."]
+[node name="SteppableTiles" type="Node2D" parent="." unique_id=790376185]
 unique_name_in_owner = true
 scale = Vector2(0.5, 0.5)
 script = ExtResource("19_7bs1t")
 tile_size = Vector2i(128, 128)
 
-[node name="ValidateTimer" type="Timer" parent="."]
+[node name="ValidateTimer" type="Timer" parent="." unique_id=709611169]
 unique_name_in_owner = true
 wait_time = 0.05
 one_shot = true

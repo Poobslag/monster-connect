@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cpxiq6a77u7ku"]
+[gd_scene format=3 uid="uid://cpxiq6a77u7ku"]
 
 [ext_resource type="Script" uid="uid://bk78f7eh38cp5" path="res://src/main/monster/monster.gd" id="1_7kr2a"]
 [ext_resource type="SpriteFrames" uid="uid://dthpckauw3o1v" path="res://src/main/monster/monster_frames_yellow.tres" id="2_wvhc2"]
@@ -19,14 +19,14 @@ size = Vector2(64, 64)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y1tn0"]
 
-[node name="Monster" type="CharacterBody2D" groups=["monsters"]]
+[node name="Monster" type="CharacterBody2D" unique_id=459020565 groups=["monsters"]]
 collision_layer = 0
 motion_mode = 1
 script = ExtResource("1_7kr2a")
 skin = 4
 metadata/_edit_group_ = true
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2003187294]
 unique_name_in_owner = true
 scale = Vector2(0.66, 0.66)
 sprite_frames = ExtResource("2_wvhc2")
@@ -34,7 +34,7 @@ animation = &"walk"
 autoplay = "idle"
 offset = Vector2(0, -120)
 
-[node name="CursorTracker" parent="AnimatedSprite2D" instance=ExtResource("6_yxo3g")]
+[node name="CursorTracker" parent="AnimatedSprite2D" unique_id=160131166 instance=ExtResource("6_yxo3g")]
 collision_layer = 0
 collision_mask = 8
 
@@ -42,11 +42,11 @@ collision_mask = 8
 position = Vector2(0, -92)
 shape = SubResource("RectangleShape2D_2jfxr")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=70935897]
 position = Vector2(0, -21)
 shape = SubResource("RectangleShape2D_h8b4f")
 
-[node name="SteppableTracker" parent="." instance=ExtResource("6_yxo3g")]
+[node name="SteppableTracker" parent="." unique_id=521254992 instance=ExtResource("6_yxo3g")]
 collision_layer = 0
 collision_mask = 4
 
@@ -54,33 +54,33 @@ collision_mask = 4
 position = Vector2(0, -21)
 shape = SubResource("RectangleShape2D_h8b4f")
 
-[node name="StateMachine" parent="." instance=ExtResource("7_ac4vo")]
+[node name="StateMachine" parent="." unique_id=26677185 instance=ExtResource("7_ac4vo")]
 unique_name_in_owner = true
 
-[node name="Idle" parent="StateMachine" instance=ExtResource("8_swudn")]
+[node name="Idle" parent="StateMachine" unique_id=1831896705 instance=ExtResource("8_swudn")]
 script = ExtResource("9_21c7s")
 
-[node name="Walk" parent="StateMachine" instance=ExtResource("8_swudn")]
+[node name="Walk" parent="StateMachine" unique_id=360227418 instance=ExtResource("8_swudn")]
 script = ExtResource("10_j0sbi")
 
-[node name="Fall" parent="StateMachine" instance=ExtResource("8_swudn")]
+[node name="Fall" parent="StateMachine" unique_id=1190085882 instance=ExtResource("8_swudn")]
 script = ExtResource("11_nwv64")
 
-[node name="Jump" parent="StateMachine" instance=ExtResource("8_swudn")]
+[node name="Jump" parent="StateMachine" unique_id=398220904 instance=ExtResource("8_swudn")]
 script = ExtResource("12_n2twi")
 
-[node name="Cursor" type="Node2D" parent="."]
+[node name="Cursor" type="Node2D" parent="." unique_id=46421495]
 unique_name_in_owner = true
 z_index = 100
 z_as_relative = false
 script = ExtResource("16_srbyd")
 color = Color(0.78039217, 0.7137255, 1, 1)
 
-[node name="Area2D" type="Area2D" parent="Cursor"]
+[node name="Area2D" type="Area2D" parent="Cursor" unique_id=1235356551]
 collision_layer = 8
 collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Cursor/Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cursor/Area2D" unique_id=148326986]
 shape = SubResource("RectangleShape2D_y1tn0")
 
 [connection signal="overlap_ended" from="AnimatedSprite2D/CursorTracker" to="." method="_on_cursor_tracker_overlap_ended"]

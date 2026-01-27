@@ -1,9 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://c1ikxk7sf1v"]
+[gd_scene format=3 uid="uid://c1ikxk7sf1v"]
 
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_0ph7c"]
 [ext_resource type="Script" uid="uid://dkfhvt7xta6qi" path="res://src/main/nurikabe/nurikabe_game_screen.gd" id="1_nc88o"]
 [ext_resource type="PackedScene" uid="uid://dtev03a35ehu4" path="res://src/main/nurikabe/refresher.tscn" id="3_1cqpy"]
-[ext_resource type="PackedScene" uid="uid://3hxmksacljoy" path="res://src/main/monster/sim/sim_monster.tscn" id="4_nctqi"]
+[ext_resource type="PackedScene" uid="uid://diafqm0jkanve" path="res://src/main/monster/sim/sim_monster.tscn" id="4_nctqi"]
 [ext_resource type="PackedScene" uid="uid://cf8wyvww44vbg" path="res://src/main/monster/player/player_monster.tscn" id="7_21uqv"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="16_2bf7t"]
 
@@ -13,7 +13,7 @@ size = Vector2(1000, 10000)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bxie6"]
 size = Vector2(10000, 1000)
 
-[node name="GameScreen" type="Control"]
+[node name="GameScreen" type="Control" unique_id=913074349]
 y_sort_enabled = true
 layout_mode = 3
 anchors_preset = 15
@@ -24,14 +24,14 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_nc88o")
 
-[node name="GameBoards" type="Control" parent="."]
+[node name="GameBoards" type="Control" parent="." unique_id=199475706]
 unique_name_in_owner = true
 y_sort_enabled = true
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="GameBoard" parent="GameBoards" instance=ExtResource("1_0ph7c")]
+[node name="GameBoard" parent="GameBoards" unique_id=501943307 instance=ExtResource("1_0ph7c")]
 visible = false
 layout_mode = 0
 offset_left = 741.0
@@ -48,43 +48,42 @@ grid_string = " 2                 2
                     
    1         2   4  "
 
-[node name="Refresher" parent="." instance=ExtResource("3_1cqpy")]
+[node name="Refresher" parent="." unique_id=1922256761 instance=ExtResource("3_1cqpy")]
 layout_mode = 0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 300.0
 offset_bottom = 200.0
 
-[node name="Monster" parent="." instance=ExtResource("4_nctqi")]
+[node name="Monster" parent="." unique_id=1258642333 instance=ExtResource("4_nctqi")]
 position = Vector2(1255, 234)
-platform_floor_layers = 4294967295
 
-[node name="Player" parent="." instance=ExtResource("7_21uqv")]
+[node name="Player" parent="." unique_id=1629176103 instance=ExtResource("7_21uqv")]
 position = Vector2(961, 540)
 platform_floor_layers = 4294967295
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=2047494306]
 zoom = Vector2(1.2, 1.2)
 
-[node name="ResultsOverlay" parent="." instance=ExtResource("16_2bf7t")]
+[node name="ResultsOverlay" parent="." unique_id=1942560557 instance=ExtResource("16_2bf7t")]
 unique_name_in_owner = true
 visible = false
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=181064133]
 
-[node name="Left" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="Left" type="CollisionShape2D" parent="StaticBody2D" unique_id=789410393]
 position = Vector2(-5000, 0)
 shape = SubResource("RectangleShape2D_nctqi")
 
-[node name="Top" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="Top" type="CollisionShape2D" parent="StaticBody2D" unique_id=876951006]
 position = Vector2(0, -5000)
 shape = SubResource("RectangleShape2D_bxie6")
 
-[node name="Bottom" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="Bottom" type="CollisionShape2D" parent="StaticBody2D" unique_id=145169454]
 position = Vector2(0, 5000)
 shape = SubResource("RectangleShape2D_bxie6")
 
-[node name="Right" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="Right" type="CollisionShape2D" parent="StaticBody2D" unique_id=1071941437]
 position = Vector2(5000, 0)
 shape = SubResource("RectangleShape2D_nctqi")
 

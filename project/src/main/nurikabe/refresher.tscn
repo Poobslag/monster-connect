@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dtev03a35ehu4"]
+[gd_scene format=3 uid="uid://dtev03a35ehu4"]
 
 [ext_resource type="Script" uid="uid://dn3jcwmp1xob6" path="res://src/main/nurikabe/refresher.gd" id="1_fdd4n"]
 [ext_resource type="Shader" uid="uid://d4adblcb6nct3" path="res://src/main/nurikabe/flat_mix.gdshader" id="2_c2xks"]
@@ -27,7 +27,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Refresher" type="Control" groups=["world_occupants"]]
+[node name="Refresher" type="Control" unique_id=1848995352 groups=["world_occupants"]]
 y_sort_enabled = true
 layout_mode = 3
 anchors_preset = 0
@@ -38,14 +38,14 @@ offset_bottom = 802.0
 mouse_filter = 1
 script = ExtResource("1_fdd4n")
 
-[node name="ClickArea" type="Area2D" parent="."]
+[node name="ClickArea" type="Area2D" parent="." unique_id=191343358]
 position = Vector2(148, 156)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" unique_id=847532549]
 position = Vector2(0, -84)
 shape = SubResource("RectangleShape2D_bxie6")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1834559053]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_qnshh")
 position = Vector2(148, 120)
@@ -54,7 +54,7 @@ sprite_frames = SubResource("SpriteFrames_n1qax")
 frame_progress = 0.90685016
 offset = Vector2(0, -32)
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=1899940647]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
@@ -73,7 +73,7 @@ text = "New puzzles
 in 99:99"
 horizontal_alignment = 1
 
-[node name="RefreshTimer" type="Timer" parent="."]
+[node name="RefreshTimer" type="Timer" parent="." unique_id=2054388596]
 unique_name_in_owner = true
 wait_time = 900.0
 autostart = true

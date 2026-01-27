@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dvdhie7s6kaxx"]
+[gd_scene format=3 uid="uid://dvdhie7s6kaxx"]
 
 [ext_resource type="Script" uid="uid://drmqsr5yesuf5" path="res://src/demo/nurikabe/generator/demo_mutator.gd" id="1_3o16x"]
 
-[node name="Demo" type="Node"]
+[node name="Demo" type="Node" unique_id=1497646745]
 script = ExtResource("1_3o16x")
 grid_string = " . 2###### . . . . 5## 4
 ###### . 5############ .
@@ -22,19 +22,19 @@ grid_string = " . 2###### . . . . 5## 4
  3## 2## 2######## . . .
 "
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1333769734]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Canvas" type="Control" parent="ScrollContainer"]
+[node name="Canvas" type="Control" parent="ScrollContainer" unique_id=560665086]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(768, 1224)
 layout_mode = 2
 
-[node name="GameBoards" type="Control" parent="ScrollContainer/Canvas"]
+[node name="GameBoards" type="Control" parent="ScrollContainer/Canvas" unique_id=2144266731]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -43,7 +43,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Labels" type="Control" parent="ScrollContainer/Canvas"]
+[node name="Labels" type="Control" parent="ScrollContainer/Canvas" unique_id=510293555]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
