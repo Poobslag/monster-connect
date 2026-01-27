@@ -4,5 +4,5 @@ extends Monster
 
 @onready var input: PlayerInput = %Input
 
-func update_input() -> void:
-	input.update()
+func update_input(delta: float) -> void:
+	input.update(delta)

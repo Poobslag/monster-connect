@@ -14,10 +14,10 @@ var _current_action: GoapAction
 func _process(delta: float) -> void:
 	# select action based on current state
 	var new_action: GoapAction = _current_action
-	if _monster.current_game_board == null:
+	if _monster.game_board == null:
 		new_action = _find_puzzle_action if _monster.boredom >= 25 else _idle_action
 	else:
-		new_action = _leave_puzzle_action if _monster.current_game_board.is_finished() else _work_on_puzzle_action
+		new_action = _leave_puzzle_action if _monster.game_board.is_finished() else _work_on_puzzle_action
 	
 	# handle action transitions
 	if new_action != _current_action:

@@ -106,7 +106,7 @@ func request_move(monster: SimMonster) -> void:
 		AdjacentClueScanner.new(),
 	]
 	
-	var cells: Dictionary[Vector2i, int] = monster.current_game_board.get_cells()
+	var cells: Dictionary[Vector2i, int] = monster.game_board.get_cells()
 	for scanner: NaiveScanner in scanners:
 		scanner.monster = monster
 		scanner.cells = cells

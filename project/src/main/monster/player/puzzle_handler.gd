@@ -1,4 +1,4 @@
-class_name PlayerPuzzleHandler
+class_name PuzzleHandler
 extends Node
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
@@ -17,7 +17,7 @@ var _last_set_cell_to: int = CELL_INVALID
 var _prev_cell: Vector2i = Vector2i(-577218, -577218)
 var _last_mouse_pos: Vector2 = Vector2.ZERO
 
-@onready var input_handler: PlayerInput = get_parent()
+@onready var input_handler: MonsterInput = get_parent()
 @onready var monster: Monster = Utils.find_parent_of_type(self, Monster)
 
 func handle(event: InputEvent) -> void:
@@ -77,8 +77,8 @@ func update() -> void:
 
 
 func _handle_lmb_press() -> void:
-	_last_mouse_pos = _get_global_mouse_position()
-	var cell: Vector2i = _mouse_cell()
+	_last_mouse_pos = _get_global_cursor_position()
+	var cell: Vector2i = _cursor_cell()
 	var current_cell_value: int = game_board.get_cell(cell)
 	match current_cell_value:
 		CELL_WALL:
@@ -110,12 +110,12 @@ func _handle_lmb_press() -> void:
 
 
 func _handle_mb_drag() -> void:
-	var cells: Array[Vector2i] = _get_cells_along_line(_last_mouse_pos, _get_global_mouse_position())
+	var cells: Array[Vector2i] = _get_cells_along_line(_last_mouse_pos, _get_global_cursor_position())
 	
 	for cell: Vector2i in cells:
 		_process_drag_cell(cell)
 	
-	_last_mouse_pos = _get_global_mouse_position()
+	_last_mouse_pos = _get_global_cursor_position()
 
 
 func _process_drag_cell(cell: Vector2i) -> void:
@@ -189,7 +189,7 @@ func _handle_mb_release() -> void:
 
 
 func _handle_mouse_motion() -> void:
-	var cell: Vector2i = _mouse_cell()
+	var cell: Vector2i = _cursor_cell()
 	if cell != _prev_cell:
 		_input_sfx = "cursor_move"
 		_prev_cell = cell
@@ -207,8 +207,8 @@ func _handle_reset_action() -> void:
 
 
 func _handle_rmb_press() -> void:
-	_last_mouse_pos = _get_global_mouse_position()
-	var cell: Vector2i = _mouse_cell()
+	_last_mouse_pos = _get_global_cursor_position()
+	var cell: Vector2i = _cursor_cell()
 	var current_cell_value: int = game_board.get_cell(cell)
 	match current_cell_value:
 		CELL_ISLAND:
@@ -231,13 +231,13 @@ func _handle_undo_action() -> void:
 	SoundManager.play_sfx("undo")
 
 
-func _mouse_cell() -> Vector2i:
-	return _get_cell_from_position(_get_global_mouse_position())
+func _cursor_cell() -> Vector2i:
+	return _get_cell_from_position(_get_global_cursor_position())
 
 
 func _get_cell_from_position(pos: Vector2) -> Vector2i:
 	return game_board.global_to_map(pos)
 
 
-func _get_global_mouse_position() -> Vector2:
-	return get_viewport().get_camera_2d().get_global_mouse_position()
+func _get_global_cursor_position() -> Vector2:
+	return monster.cursor.global_position

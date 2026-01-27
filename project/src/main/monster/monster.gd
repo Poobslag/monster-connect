@@ -64,7 +64,7 @@ var _fade_tween: Tween
 var id: int
 
 var on_steppable: bool = false
-var current_game_board: NurikabeGameBoard
+var game_board: NurikabeGameBoard
 
 @onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var fsm: StateMachine = %StateMachine
@@ -89,12 +89,12 @@ func _physics_process(delta: float) -> void:
 		return
 	
 	refresh()
-	update_input()
+	update_input(delta)
 	fsm.physics_update(delta)
 
 
 ## Overridden by subclasses to apply the monster's desired input (running around, moving the cursor)
-func update_input() -> void:
+func update_input(_delta: float) -> void:
 	pass
 
 

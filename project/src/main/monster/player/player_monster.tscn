@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://51kbfnwulp1s" path="res://src/main/monster/player/player_input.gd" id="6_4yq1m"]
 [ext_resource type="Script" uid="uid://b2gx8gynj5l1g" path="res://src/main/monster/player/player_cursor.gd" id="7_rh0vc"]
 [ext_resource type="Script" uid="uid://bjchwrumampry" path="res://src/main/monster/player/player_move_handler.gd" id="14_idx03"]
-[ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/monster/player/player_puzzle_handler.gd" id="15_vjvpx"]
+[ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/monster/player/puzzle_handler.gd" id="15_vjvpx"]
 
 [node name="PlayerMonster" unique_id=1309473171 instance=ExtResource("1_xbynq")]
 platform_floor_layers = 65535

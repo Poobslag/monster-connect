@@ -46,7 +46,7 @@ func add_cursor(area: Area2D) -> void:
 	
 	var monster: Monster = _find_monster_for_cursor(area)
 	if monster:
-		monster.current_game_board = _find_game_board()
+		monster.game_board = _find_game_board()
 
 
 func remove_cursor(area: Area2D) -> void:
@@ -55,8 +55,8 @@ func remove_cursor(area: Area2D) -> void:
 	cursor.queue_free()
 	
 	var monster: Monster = _find_monster_for_cursor(area)
-	if monster and monster.current_game_board == _find_game_board():
-		monster.current_game_board = null
+	if monster and monster.game_board == _find_game_board():
+		monster.game_board = null
 
 
 func update_cursor(area: Area2D) -> void:

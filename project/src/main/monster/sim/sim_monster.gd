@@ -9,12 +9,12 @@ const BOREDOM_PER_SECOND: float = 16.66667 # should be lowered to 1.66667 (100 p
 var boredom: float = 0.0
 var pending_deductions: Dictionary[Vector2i, Deduction] = {}
 
-func update_input() -> void:
-	input.update()
+func update_input(delta: float) -> void:
+	input.update(delta)
 
 
 func _process(delta: float) -> void:
-	if current_game_board == null:
+	if game_board == null:
 		boredom = clamp(boredom + delta * BOREDOM_PER_SECOND, 0, 100)
 	else:
 		boredom = clamp(boredom - delta * BOREDOM_PER_SECOND, 0, 100)
