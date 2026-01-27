@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://mcir660yfag2"]
+[gd_scene format=3 uid="uid://mcir660yfag2"]
 
 [ext_resource type="Script" uid="uid://dbbofwi6kvo1s" path="res://src/demo/nurikabe/generator/bulk_generator.gd" id="1_7nk3a"]
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_o1grh"]
@@ -9,21 +9,21 @@
 [ext_resource type="Script" uid="uid://54j48jtfkdq" path="res://src/demo/nurikabe/generator/bulk_generator_generate_state.gd" id="6_nmkj7"]
 [ext_resource type="Script" uid="uid://cy1dkfhepugpp" path="res://src/demo/nurikabe/generator/bulk_generator_analyze_state.gd" id="7_nmkj7"]
 
-[node name="BulkGenerator" type="Node"]
+[node name="BulkGenerator" type="Node" unique_id=1244809172]
 script = ExtResource("1_7nk3a")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=764580261]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="GameBoardHolder" type="Control" parent="HBoxContainer"]
+[node name="GameBoardHolder" type="Control" parent="HBoxContainer" unique_id=1866575107]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GameBoard" parent="HBoxContainer/GameBoardHolder" instance=ExtResource("1_o1grh")]
+[node name="GameBoard" parent="HBoxContainer/GameBoardHolder" unique_id=904422144 instance=ExtResource("1_o1grh")]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -47,18 +47,18 @@ grid_string = "
           
 "
 
-[node name="DemoLog" parent="HBoxContainer" instance=ExtResource("3_nmkj7")]
+[node name="DemoLog" parent="HBoxContainer" unique_id=1068612325 instance=ExtResource("3_nmkj7")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="StateMachine" parent="." instance=ExtResource("4_whffh")]
+[node name="StateMachine" parent="." unique_id=1786798224 instance=ExtResource("4_whffh")]
 unique_name_in_owner = true
 
-[node name="Idle" parent="StateMachine" instance=ExtResource("5_0ugav")]
+[node name="Idle" parent="StateMachine" unique_id=1013458497 instance=ExtResource("5_0ugav")]
 script = ExtResource("6_0ugav")
 
-[node name="Analyze" parent="StateMachine" instance=ExtResource("5_0ugav")]
+[node name="Analyze" parent="StateMachine" unique_id=740463026 instance=ExtResource("5_0ugav")]
 script = ExtResource("7_nmkj7")
 
-[node name="Generate" parent="StateMachine" instance=ExtResource("5_0ugav")]
+[node name="Generate" parent="StateMachine" unique_id=1496435631 instance=ExtResource("5_0ugav")]
 script = ExtResource("6_nmkj7")

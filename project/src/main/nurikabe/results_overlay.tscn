@@ -1,13 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://dqoviysu1nmyw"]
+[gd_scene format=3 uid="uid://dqoviysu1nmyw"]
 
 [ext_resource type="Script" uid="uid://m420oyyhrvki" path="res://src/main/nurikabe/results_overlay.gd" id="1_3w171"]
 [ext_resource type="Theme" uid="uid://bb6vwl0h1flws" path="res://assets/main/ui/kenney/kenney_ui_blue.tres" id="2_trb17"]
 [ext_resource type="PackedScene" uid="uid://br86bm6bjwv24" path="res://src/main/ui/button_click_effect.tscn" id="3_trb17"]
 
-[node name="ResultsOverlay" type="CanvasLayer"]
+[node name="ResultsOverlay" type="CanvasLayer" unique_id=1174010181]
 script = ExtResource("1_3w171")
 
-[node name="Backdrop" type="ColorRect" parent="."]
+[node name="Backdrop" type="ColorRect" parent="." unique_id=941103097]
 unique_name_in_owner = true
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,7 +16,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.3137255)
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="." unique_id=814256374]
 custom_minimum_size = Vector2(800, 400)
 anchors_preset = 8
 anchor_left = 0.5
@@ -31,7 +31,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_trb17")
 
-[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=471857956]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,23 +43,23 @@ theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 50
 theme_override_constants/margin_bottom = 50
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=1254547362]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=1077620136]
 layout_mode = 2
 size_flags_vertical = 6
 theme_override_font_sizes/font_size = 32
 text = "You win!"
 horizontal_alignment = 1
 
-[node name="Button" type="Button" parent="Panel/MarginContainer/VBoxContainer"]
+[node name="Button" type="Button" parent="Panel/MarginContainer/VBoxContainer" unique_id=293433886]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
 text = "Cool :)"
 
-[node name="ButtonClickEffect" parent="Panel/MarginContainer/VBoxContainer/Button" instance=ExtResource("3_trb17")]
+[node name="ButtonClickEffect" parent="Panel/MarginContainer/VBoxContainer/Button" unique_id=1993043705 instance=ExtResource("3_trb17")]
 
 [connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]

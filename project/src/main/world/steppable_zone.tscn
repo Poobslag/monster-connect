@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://e0pi2gdc66sm"]
 
-[node name="SteppableZone" type="Area2D"]
+[node name="SteppableZone" type="Area2D" unique_id=1266750837]
 collision_layer = 4
 collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1529778802]
 position = Vector2(386, 376)

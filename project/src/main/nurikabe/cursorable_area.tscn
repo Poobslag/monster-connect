@@ -1,16 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://dn3d3m8il6qqm"]
+[gd_scene format=3 uid="uid://dn3d3m8il6qqm"]
 
 [ext_resource type="Script" uid="uid://6tp0h43vodrq" path="res://src/main/nurikabe/cursorable_area.gd" id="1_6g3lq"]
 
-[node name="CursorableArea" type="Area2D"]
+[node name="CursorableArea" type="Area2D" unique_id=1397150705]
 z_index = 1
 collision_layer = 0
 collision_mask = 8
 script = ExtResource("1_6g3lq")
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=1785407141]
 unique_name_in_owner = true
 visible = false
 
-[node name="Cursors" type="Node2D" parent="."]
+[node name="Cursors" type="Node2D" parent="." unique_id=777224507]
 unique_name_in_owner = true
