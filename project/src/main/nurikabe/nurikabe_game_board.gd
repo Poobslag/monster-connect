@@ -39,6 +39,18 @@ var label_text: String = "":
 		%Label.text = value
 		%Label.visible = true if label_text else false
 
+var puzzle_dimensions: Vector2i
+
+## Unique identifier string for this puzzle, used for debugging and logging.[br]
+## [br]
+## Format: "{archive-num}-{width}x{height}-{difficulty}-{clue1}-{clue2}-{clue3}"[br]
+## Example: "284-16x15-med-4-2-3"[br]
+## 	- Puzzle #284 in the archive
+## 	- 16 cells wide, 15 cells tall
+## 	- Medium difficulty
+## 	- First three clues (reading order) are 4, 2, 3
+var string_id: String
+
 var _cells_dirty: bool = false
 
 var _undo_stack: Array[UndoAction] = []
@@ -124,6 +136,10 @@ func get_used_cells() -> Array[Vector2i]:
 	return %TileMapGround.get_used_cells()
 
 
+func get_clue_cells() -> Array[Vector2i]:
+	return %TileMapClue.clues_by_cell.keys()
+
+
 func global_to_map(global_point: Vector2) -> Vector2i:
 	return %TileMapGround.local_to_map(%TileMapGround.to_local(global_point))
 
@@ -141,6 +157,11 @@ func import_grid() -> void:
 	var cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)
 	for cell: Vector2i in cells:
 		set_cell(cell, cells[cell])
+	
+	puzzle_dimensions = Vector2i.ZERO
+	for cell: Vector2i in cells:
+		puzzle_dimensions.x = max(puzzle_dimensions.x, cell.x + 1)
+		puzzle_dimensions.y = max(puzzle_dimensions.y, cell.y + 1)
 	
 	_undo_stack.clear()
 	_redo_stack.clear()
