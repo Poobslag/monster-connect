@@ -27,11 +27,9 @@ func perform(actor: Variant, delta: float) -> bool:
 			_solver_cooldown_remaining = SOLVER_COOLDOWN
 	
 	if _next_deduction == null and not monster.pending_deductions.is_empty():
-		var deduction: Deduction = monster.pending_deductions.values().pick_random()
-		if monster.game_board.get_cell(deduction.pos) == CELL_EMPTY:
-			_next_deduction = deduction
+		_choose_deduction(monster)
+		if _next_deduction != null:
 			_next_deduction_remaining_time = 0.6
-		monster.pending_deductions.erase(deduction.pos)
 	
 	if _next_deduction != null:
 		_next_deduction_remaining_time -= delta
@@ -54,3 +52,37 @@ func exit(actor: Variant) -> void:
 	_solver_cooldown_remaining = 0.0
 	
 	monster.pending_deductions.clear()
+
+
+func _choose_deduction(monster: SimMonster) -> void:
+	var best_score: float = 0.0
+	for deduction: Deduction in monster.pending_deductions.values():
+		if monster.game_board.get_cell(deduction.pos) != CELL_EMPTY:
+			monster.remove_pending_deduction_at(deduction.pos)
+			continue
+		
+		var score: float = _score_deduction(monster, deduction)
+		if score > best_score:
+			_next_deduction = deduction
+			best_score = score
+	if _next_deduction:
+		monster.remove_pending_deduction_at(_next_deduction.pos)
+
+
+func _score_deduction(monster: SimMonster, deduction: Deduction) -> float:
+	var score: float = 0.0
+	var deduction_global_pos: Vector2 = monster.game_board.map_to_global(deduction.pos)
+	var cursor_dist: float = monster.cursor.global_position.distance_to(deduction_global_pos)
+	score += 10.0 * _score_distance(cursor_dist, 300)
+	for other_monster: Monster in get_tree().get_nodes_in_group("monsters"):
+		if other_monster == monster:
+			continue
+		if other_monster.game_board != monster.game_board:
+			continue
+		var other_cursor_dist: float = other_monster.cursor.global_position.distance_to(deduction_global_pos)
+		score -= 20.0 * _score_distance(other_cursor_dist, 150)
+	return score
+
+
+func _score_distance(distance: float, factor: float) -> float:
+	return exp(-distance / factor)
