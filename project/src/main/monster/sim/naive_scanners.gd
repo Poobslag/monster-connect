@@ -47,16 +47,92 @@ const FUN_THINK: Deduction.FunAxis = Deduction.FunAxis.FUN_THINK
 const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
 
 
+class AdjacentIslandScanner extends NaiveScanner:
+	var neighbor_islands: Dictionary[Vector2i, Array] = {}
+	var build_neighbor_island_index: int = 0
+	
+	var neighbor_island_cells: Array[Vector2i] = []
+	var check_cell_index: int = 0
+	
+	func update(start_time: int) -> bool:
+		while build_neighbor_island_index < board.islands.size():
+			if out_of_time(start_time):
+				break
+			_build_neighbor_island(board.islands[build_neighbor_island_index])
+			if build_neighbor_island_index == board.islands.size() - 1:
+				neighbor_island_cells = neighbor_islands.keys()
+			build_neighbor_island_index += 1
+		
+		while check_cell_index < neighbor_island_cells.size():
+			if out_of_time(start_time):
+				break
+			_check_cell(neighbor_island_cells[check_cell_index])
+			check_cell_index += 1
+		
+		return build_neighbor_island_index >= board.islands.size() \
+				and check_cell_index >= neighbor_island_cells.size()
+	
+	
+	func _build_neighbor_island(island: CellGroup) -> void:
+		for liberty: Vector2i in island.liberties:
+			if not neighbor_islands.has(liberty):
+				neighbor_islands[liberty] = [] as Array[CellGroup]
+			neighbor_islands[liberty].append(island)
+	
+	
+	func _check_cell(cell: Vector2i) -> void:
+		if neighbor_islands[cell].size() <= 1:
+			return
+		if _is_valid_merged_island(neighbor_islands[cell], 1):
+			return
+		
+		# invalid merged island; calculate the reason
+		var neighbor_islands: Array[CellGroup] = neighbor_islands[cell]
+		var neighbor_clue_count: int = 0
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			if board.clues.has(neighbor):
+				neighbor_clue_count += 1
+		var reason: Deduction.Reason = ISLAND_DIVIDER if neighbor_clue_count <= 1 else ADJACENT_CLUES
+		
+		monster.add_pending_deduction(cell, CELL_WALL, reason)
+	
+	
+	func _is_valid_merged_island(islands: Array[CellGroup], merge_cells: int) -> bool:
+		var total_joined_size: int = merge_cells
+		var total_clues: int = 0
+		var clue_value: int = 0
+		
+		var result: bool = true
+		
+		for island: CellGroup in islands:
+			total_joined_size += island.size()
+			if island.clue >= 1:
+				if clue_value > 0:
+					result = false
+					break
+				clue_value = island.clue
+				total_clues += 1
+				if total_clues >= 2:
+					result = false
+					break
+			if clue_value > 0 and total_joined_size > clue_value:
+				result = false
+				break
+		
+		return result
+
+
 class IslandMoatScanner extends NaiveScanner:
 	var next_island_index: int = 0
 	
 	func update(start_time: int) -> bool:
-		while next_island_index < scanner_board.islands.size():
+		while next_island_index < board.islands.size():
 			if out_of_time(start_time):
 				break
-			_check_island(scanner_board.islands[next_island_index])
+			_check_island(board.islands[next_island_index])
 			next_island_index += 1
-		return next_island_index >= scanner_board.islands.size()
+		return next_island_index >= board.islands.size()
 	
 	
 	func _check_island(island: CellGroup) -> void:
@@ -70,29 +146,76 @@ class IslandMoatScanner extends NaiveScanner:
 			monster.add_pending_deduction(liberty, CELL_WALL, reason)
 
 
-class AdjacentIslandScanner extends NaiveScanner:
+class IslandExpansionScanner extends NaiveScanner:
 	var next_island_index: int = 0
-	var all_liberties: Dictionary[Vector2i, bool] = {}
 	
 	func update(start_time: int) -> bool:
-		while next_island_index < scanner_board.islands.size():
+		while next_island_index < board.islands.size():
 			if out_of_time(start_time):
 				break
-			_check_island(scanner_board.islands[next_island_index])
+			_check_island(board.islands[next_island_index])
 			next_island_index += 1
-		return next_island_index >= scanner_board.islands.size()
+		return next_island_index >= board.islands.size()
 	
 	
 	func _check_island(island: CellGroup) -> void:
-		for liberty: Vector2i in island.liberties:
-			if not all_liberties.has(liberty):
-				all_liberties[liberty] = true
+		if island.liberties.size() != 1 or island.clue <= island.size():
+			return
+		if not should_deduce(island.liberties[0]):
+			return
+		
+		monster.add_pending_deduction(island.liberties[0], CELL_ISLAND, ISLAND_EXPANSION)
+
+
+class PoolScanner extends NaiveScanner:
+	var next_wall_index: int = 0
+	
+	func update(start_time: int) -> bool:
+		while next_wall_index < board.walls.size():
+			if out_of_time(start_time):
+				break
+			_check_wall(board.walls[next_wall_index])
+			next_wall_index += 1
+		return next_wall_index >= board.walls.size()
+	
+	
+	func _check_wall(wall: CellGroup) -> void:
+		if wall.size() < 3 or wall.liberties.is_empty():
+			return
+		
+		for liberty: Vector2i in wall.liberties:
+			if not should_deduce(liberty):
 				continue
 			
-			var neighbor_clue_count: int = 0
-			for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-				var neighbor: Vector2i = liberty + neighbor_dir
-				if scanner_board.clues.has(neighbor):
-					neighbor_clue_count += 1
-			var reason: Deduction.Reason = ISLAND_DIVIDER if neighbor_clue_count <= 1 else ADJACENT_CLUES
-			monster.add_pending_deduction(liberty, CELL_WALL, reason)
+			for pool_dir: Vector2i in [Vector2i(-1, -1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(1, 1)]:
+				var pool_triplet_cells: Array[Vector2i] =  [
+					liberty + pool_dir,
+					liberty + Vector2i(pool_dir.x, 0),
+					liberty + Vector2i(0, pool_dir.y)]
+				if pool_triplet_cells.all(func(pool_triplet_cell: Vector2i) -> bool:
+						return board.cells.get(pool_triplet_cell, CELL_INVALID) == CELL_WALL):
+					pool_triplet_cells.sort()
+					monster.add_pending_deduction(liberty, CELL_ISLAND, POOL_TRIPLET)
+
+
+class WallExpansionScanner extends NaiveScanner:
+	var next_wall_index: int = 0
+	
+	func update(start_time: int) -> bool:
+		while next_wall_index < board.walls.size():
+			if out_of_time(start_time):
+				break
+			_check_wall(board.walls[next_wall_index])
+			next_wall_index += 1
+		return next_wall_index >= board.walls.size()
+	
+	
+	func _check_wall(wall: CellGroup) -> void:
+		@warning_ignore("integer_division")
+		if wall.liberties.size() != 1 \
+				or board.walls.size() <= 1 and wall.size() < board.cells.size() / 2:
+			return
+		if not should_deduce(wall.liberties[0]):
+			return
+		
+		monster.add_pending_deduction(wall.liberties[0], CELL_WALL, WALL_EXPANSION)

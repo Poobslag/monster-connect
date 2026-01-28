@@ -20,11 +20,10 @@ func perform(actor: Variant, delta: float) -> bool:
 		_solver_cooldown_remaining -= delta
 	
 	var monster: SimMonster = actor
-	if monster.pending_deductions.is_empty():
-		if _solver_cooldown_remaining <= 0 and not _solver.is_move_requested(monster):
-			# queue up the next deduction finder
-			_solver.request_move(monster)
-			_solver_cooldown_remaining = SOLVER_COOLDOWN
+	if _solver_cooldown_remaining <= 0 and not _solver.is_move_requested(monster):
+		# queue up the next deduction finder
+		_solver.request_move(monster)
+		_solver_cooldown_remaining = SOLVER_COOLDOWN
 	
 	if _next_deduction == null and not monster.pending_deductions.is_empty():
 		_choose_deduction(monster)
@@ -32,13 +31,7 @@ func perform(actor: Variant, delta: float) -> bool:
 			_next_deduction_remaining_time = 0.6
 	
 	if _next_deduction != null:
-		_next_deduction_remaining_time -= delta
-		if _next_deduction_remaining_time <= 0:
-			monster.input.queue_cursor_command(
-					SimInput.LMB_PRESS, monster.game_board.map_to_global(_next_deduction.pos))
-			monster.input.queue_cursor_command(
-					SimInput.LMB_RELEASE, monster.game_board.map_to_global(_next_deduction.pos), 0.1)
-			_next_deduction = null
+		_process_next_deduction(monster, delta)
 	
 	return monster.game_board.is_finished()
 
@@ -67,6 +60,30 @@ func _choose_deduction(monster: SimMonster) -> void:
 			best_score = score
 	if _next_deduction:
 		monster.remove_pending_deduction_at(_next_deduction.pos)
+
+
+func _execute_next_deduction(monster: SimMonster) -> void:
+	if _solver.verbose:
+		print("monster %s deduction: %s" % [monster.id, _next_deduction])
+	var target_pos: Vector2 = monster.game_board.map_to_global(_next_deduction.pos)
+	match _next_deduction.value:
+		CELL_WALL:
+			monster.input.queue_cursor_command(SimInput.LMB_PRESS, target_pos)
+			monster.input.queue_cursor_command(SimInput.LMB_RELEASE, target_pos, 0.1)
+		CELL_ISLAND:
+			monster.input.queue_cursor_command(SimInput.RMB_PRESS, target_pos)
+			monster.input.queue_cursor_command(SimInput.RMB_RELEASE, target_pos, 0.1)
+
+
+func _process_next_deduction(monster: SimMonster, delta: float) -> void:
+	if monster.game_board.get_cell(_next_deduction.pos) == _next_deduction.value:
+		_next_deduction = null
+		return
+
+	_next_deduction_remaining_time -= delta
+	if _next_deduction_remaining_time <= 0:
+		_execute_next_deduction(monster)
+		_next_deduction = null
 
 
 func _score_deduction(monster: SimMonster, deduction: Deduction) -> float:
