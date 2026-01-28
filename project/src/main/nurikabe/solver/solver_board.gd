@@ -1,4 +1,7 @@
 class_name SolverBoard
+## High-performance board model optimized for puzzle solving.[br]
+## [br]
+## Maintains complex cached structures with incremental update logic to avoid expensive rebuilds during solving.
 
 enum ValidationMode {
 	COMPLEX,

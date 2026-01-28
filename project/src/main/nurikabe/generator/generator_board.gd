@@ -1,4 +1,8 @@
 class_name GeneratorBoard
+## Board model optimized for procedural puzzle generation.[br]
+## [br]
+## Tracks generation-specific data (givens, clue minimums, placeholder clues) and disables certain deductions (e.g.,
+## unreachable cells) that become invalid as new clues are added during construction.
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND

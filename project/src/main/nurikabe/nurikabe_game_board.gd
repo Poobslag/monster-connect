@@ -1,6 +1,7 @@
 @tool
 class_name NurikabeGameBoard
 extends Control
+## Visual game board control node with rendering and interaction logic.
 
 signal puzzle_finished
 
