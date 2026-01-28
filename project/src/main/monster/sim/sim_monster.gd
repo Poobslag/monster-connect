@@ -27,3 +27,7 @@ func add_pending_deduction(init_pos: Vector2i, init_value: int,
 	
 	pending_deductions[init_pos] = Deduction.new(init_pos, init_value, init_reason)
 	return true
+
+
+func remove_pending_deduction_at(pos: Vector2i) -> void:
+	pending_deductions.erase(pos)
