@@ -70,7 +70,9 @@ func _choose_deduction(monster: SimMonster) -> void:
 
 
 func _score_deduction(monster: SimMonster, deduction: Deduction) -> float:
+	# some deductions score negative; these represent deductions which are too close to the player cursor
 	var score: float = 0.0
+	
 	var deduction_global_pos: Vector2 = monster.game_board.map_to_global(deduction.pos)
 	var cursor_dist: float = monster.cursor.global_position.distance_to(deduction_global_pos)
 	score += 10.0 * _score_distance(cursor_dist, 300)
