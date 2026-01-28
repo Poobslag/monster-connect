@@ -1,7 +1,7 @@
 class_name WorkOnPuzzleAction
 extends GoapAction
 
-const SOLVER_COOLDOWN: float = 10.0
+const SOLVER_COOLDOWN: float = 3.0
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
