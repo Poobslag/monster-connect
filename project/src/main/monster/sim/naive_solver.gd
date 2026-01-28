@@ -8,7 +8,7 @@ const BUDGET_USEC: int = 4167 # 1/240 of a second
 var monster_index: int = -1
 var monsters: Array[SimMonster] = []
 var scanners_by_monster: Dictionary[SimMonster, Array] = {}
-var scanner_boards_by_monster: Dictionary[SimMonster, ScannerBoard] = {}
+var boards_by_monster: Dictionary[SimMonster, ScannerBoard] = {}
 
 var _budget_available: int = 0
 var _budget_used: int = 0
@@ -33,12 +33,12 @@ func _process(_delta: float) -> void:
 		var scanners: Array[NaiveScanner] = scanners_by_monster[monster]
 		var scanner: NaiveScanner = scanners.front()
 		
-		var scanner_board: ScannerBoard = scanner_boards_by_monster.get(monster)
-		if scanner_board == null:
-			scanner_board = create_scanner_board(monster)
+		var board: ScannerBoard = boards_by_monster.get(monster)
+		if board == null:
+			board = create_board(monster)
 		
-		if not scanner_board.is_prepared():
-			scanner_board.prepare(start_time)
+		if not board.is_prepared():
+			board.prepare(start_time)
 			if Time.get_ticks_usec() - start_time >= BUDGET_USEC:
 				break
 		
@@ -60,12 +60,12 @@ func _process(_delta: float) -> void:
 		_budget_used += Time.get_ticks_usec() - start_time
 
 
-func create_scanner_board(monster: SimMonster) -> ScannerBoard:
-	var scanner_board: ScannerBoard = ScannerBoard.new(monster)
-	scanner_boards_by_monster[monster] = scanner_board
+func create_board(monster: SimMonster) -> ScannerBoard:
+	var board: ScannerBoard = ScannerBoard.new(monster)
+	boards_by_monster[monster] = board
 	for next_scanner: NaiveScanner in scanners_by_monster[monster]:
-		next_scanner.scanner_board = scanner_board
-	return scanner_board
+		next_scanner.board = board
+	return board
 
 
 func is_move_requested(monster: SimMonster) -> bool:
@@ -74,8 +74,11 @@ func is_move_requested(monster: SimMonster) -> bool:
 
 func request_move(monster: SimMonster) -> void:
 	var scanners: Array[NaiveScanner] = [
-		NaiveScanners.IslandMoatScanner.new(),
 		NaiveScanners.AdjacentIslandScanner.new(),
+		NaiveScanners.IslandExpansionScanner.new(),
+		NaiveScanners.IslandMoatScanner.new(),
+		NaiveScanners.PoolScanner.new(),
+		NaiveScanners.WallExpansionScanner.new(),
 	]
 	
 	for scanner: NaiveScanner in scanners:
@@ -98,7 +101,7 @@ func cancel_request(monster: SimMonster) -> void:
 		monster_index = 0 if monsters.size() > 1 else -1
 	
 	scanners_by_monster.erase(monster)
-	scanner_boards_by_monster.erase(monster)
+	boards_by_monster.erase(monster)
 	monsters.erase(monster)
 
 

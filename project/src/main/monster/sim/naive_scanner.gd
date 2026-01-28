@@ -6,7 +6,7 @@ const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 var monster: SimMonster
-var scanner_board: ScannerBoard
+var board: ScannerBoard
 
 func update(_start_time: int) -> bool:
 	return true
@@ -17,5 +17,5 @@ func out_of_time(start_time: int) -> bool:
 
 
 func should_deduce(cell: Vector2i) -> bool:
-	return scanner_board.cells.get(cell, CELL_INVALID) == CELL_EMPTY \
+	return board.cells.get(cell, CELL_INVALID) == CELL_EMPTY \
 			and not monster.pending_deductions.has(cell)
