@@ -41,6 +41,7 @@ const ISLAND_SNUG: Deduction.Reason = Deduction.Reason.ISLAND_SNUG
 const POOL_CHOKEPOINT: Deduction.Reason = Deduction.Reason.POOL_CHOKEPOINT
 const POOL_TRIPLET: Deduction.Reason = Deduction.Reason.POOL_TRIPLET
 const UNCLUED_LIFELINE: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE
+const UNCLUED_LIFELINE_BUFFER: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE_BUFFER
 const UNREACHABLE_CELL: Deduction.Reason = Deduction.Reason.UNREACHABLE_CELL
 const WALL_BUBBLE: Deduction.Reason = Deduction.Reason.WALL_BUBBLE
 const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR
@@ -763,59 +764,67 @@ func deduce_clue_chokepoint_wall_weaver(island: CellGroup) -> void:
 
 
 func deduce_unclued_lifeline() -> void:
-	var exclusive_clues_by_unclued: Dictionary[Vector2i, Vector2i] = {}
+	var irm: IslandReachabilityMap = board.get_island_reachability_map()
 	
-	var reachable_clues_by_cell: Dictionary[Vector2i, Dictionary] \
-			= board.get_per_clue_chokepoint_map().get_reachable_clues_by_cell()
-	for unclued_cell: Vector2i in reachable_clues_by_cell:
-		if reachable_clues_by_cell[unclued_cell].size() > 1:
+	# calculate required cells, combining unclued islands with island reachability
+	var required_cells_by_root: Dictionary[Vector2i, Array] = {}
+	for unclued_island: CellGroup in board.islands:
+		if unclued_island.clue != 0:
 			continue
-		if board.get_cell(unclued_cell) != CELL_ISLAND:
+		var exclusive_root: Vector2i = POS_NOT_FOUND
+		for cell: Vector2i in unclued_island.cells:
+			if irm.has_exclusive_root(cell):
+				exclusive_root = irm.get_exclusive_root(cell)
+				break
+		if exclusive_root == POS_NOT_FOUND:
 			continue
-		var island: CellGroup = board.get_island_for_cell(unclued_cell)
-		if island.clue != 0:
-			continue
-		exclusive_clues_by_unclued[island.root] \
-				= reachable_clues_by_cell[unclued_cell].keys().front()
+		if not required_cells_by_root.has(exclusive_root):
+			required_cells_by_root[exclusive_root] = [] as Array[Vector2i]
+		required_cells_by_root[exclusive_root].append_array(unclued_island.cells)
 	
-	var old_deductions_size: int = deductions.size()
-	for unclued_root: Vector2i in exclusive_clues_by_unclued:
-		var unclued_island: CellGroup = board.get_island_for_cell(unclued_root)
+	for clue_root: Vector2i in required_cells_by_root:
+		var clue_island: CellGroup = board.get_island_for_cell(clue_root)
+		var corridor_distance_map: Dictionary[Vector2i, int] \
+				= _find_corridor_cells(required_cells_by_root, clue_island)
 		
-		var clue_root: Vector2i = exclusive_clues_by_unclued[unclued_root]
-		var clued_island: CellGroup = board.get_island_for_cell(clue_root)
-		if clued_island.clue == CELL_MYSTERY_CLUE:
-			continue
+		# expand the corridor to include neighboring cells
+		var min_reach_score: int = 999999
+		for cell: Vector2i in required_cells_by_root[clue_root]:
+			min_reach_score = min(min_reach_score, \
+					board.get_island_reachability_map().get_reach_score(cell, clue_root))
 		
-		# calculate the minimum distance to the clued and unclued cells
-		var unclued_distance_map: Dictionary[Vector2i, int] \
-				= board.get_per_clue_chokepoint_map().get_distance_map(clued_island, unclued_island.cells)
-		var clued_island_distance_map: Dictionary[Vector2i, int] \
-				= board.get_per_clue_chokepoint_map().get_distance_map(clued_island, clued_island.cells)
+		# Islands with a min_reach_score >= 3 have multiple path options, so widen the corridor before chokepoint
+		# analysis. Islands with low reach scores must take the shortest path, so analyze chokepoints before widening.
+		var widen_corridor_before: bool = min_reach_score >= 3
 		
-		# calculate the cells capable of connecting the clued and unclued cells
-		var corridor_cells: Array[Vector2i] = []
-		var budget: int = clued_island.clue - unclued_island.size() - clued_island.size() + 1
-		for reachable_cell: Vector2i in \
-				board.get_per_clue_chokepoint_map().get_component_cells(clued_island):
-			var clue_distance: int = clued_island_distance_map[reachable_cell]
-			var unclued_distance: int = unclued_distance_map[reachable_cell]
-			if clue_distance == 0 or unclued_distance == 0 or clue_distance + unclued_distance <= budget:
-				corridor_cells.append(reachable_cell)
+		if widen_corridor_before:
+			corridor_distance_map = _widen_corridor(corridor_distance_map, clue_island, min_reach_score - 1)
 		
 		# calculate any corridor chokepoints which would separate the clued and unclued cells
-		var chokepoint_map: ChokepointMap = ChokepointMap.new(corridor_cells, func(cell: Vector2i) -> bool:
-			return cell in unclued_island.cells)
+		var required_cells: Array[Vector2i] = required_cells_by_root[clue_root]
+		var chokepoint_map: ChokepointMap = ChokepointMap.new(corridor_distance_map.keys(),
+			func(cell: Vector2i) -> bool:
+				return cell in required_cells)
 		for chokepoint: Vector2i in chokepoint_map.chokepoints_by_cell.keys():
 			if not should_deduce(board, chokepoint):
 				continue
 			var unchoked_special_count: int = \
 					chokepoint_map.get_unchoked_special_count(chokepoint, clue_root)
-			if unchoked_special_count < unclued_island.size():
+			if unchoked_special_count < required_cells.size():
 				add_deduction(chokepoint, CELL_ISLAND, UNCLUED_LIFELINE, [clue_root])
 				add_fun(FUN_THINK, 1.0)
-		if deductions.size() > old_deductions_size:
-			break
+		
+		if not widen_corridor_before:
+			corridor_distance_map = _widen_corridor(corridor_distance_map, clue_island, min_reach_score - 1)
+		
+		# the clued island cannot stray from the widened corridor - wall off exclusive cells outside it
+		var per_clue_chokepoint_map: PerClueChokepointMap = board.get_per_clue_chokepoint_map()
+		for cell: Vector2i in per_clue_chokepoint_map.get_component_cells(clue_island):
+			if irm.has_exclusive_root(cell) \
+					and irm.get_exclusive_root(cell) == clue_root \
+					and not cell in corridor_distance_map:
+				add_deduction(cell, CELL_WALL, UNCLUED_LIFELINE_BUFFER, [clue_root])
+				add_fun(FUN_THINK, 1.0)
 
 
 func deduce_clued_island_snug(island: CellGroup) -> void:
@@ -1085,3 +1094,53 @@ func _is_valid_merged_island(islands: Array[CellGroup], merge_cells: int) -> boo
 			break
 	
 	return result
+
+
+func _find_corridor_cells(
+		required_cells_by_root: Dictionary[Vector2i, Array],
+		clue_island: CellGroup) -> Dictionary[Vector2i, int]:
+	var queue: Array[Vector2i] = required_cells_by_root[clue_island.root].duplicate()
+	var corridor_distance_map: Dictionary[Vector2i, int] = {}
+	for cell: Vector2i in clue_island.cells:
+		corridor_distance_map[cell] = 0
+	for cell: Vector2i in queue:
+		corridor_distance_map[cell] = 0
+	
+	var irm: IslandReachabilityMap = board.get_island_reachability_map()
+	while not queue.is_empty():
+		var cell: Vector2i = queue.pop_front()
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			if corridor_distance_map.has(neighbor):
+					continue
+			var reach_score: int = irm.get_reach_score(cell, clue_island.root)
+			var neighbor_reach_score: int = irm.get_reach_score(neighbor, clue_island.root)
+			if neighbor_reach_score != reach_score + 1:
+				continue
+			corridor_distance_map[neighbor] = 0
+			queue.append(neighbor)
+	
+	return corridor_distance_map
+
+
+func _widen_corridor(
+		corridor_distance_map: Dictionary[Vector2i, int],
+		clue_island: CellGroup,
+		amount: int) -> Dictionary[Vector2i, int]:
+	if amount == 0:
+		return corridor_distance_map
+	
+	var queue: Array[Vector2i] = corridor_distance_map.keys()
+	while not queue.is_empty():
+		var cell: Vector2i = queue.pop_front()
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			if corridor_distance_map.has(neighbor):
+				continue
+			if board.get_island_reachability_map().get_reach_score(neighbor, clue_island.root) < 1:
+				continue
+			corridor_distance_map[neighbor] = corridor_distance_map[cell] + 1
+			if corridor_distance_map[neighbor] < amount:
+				queue.append(neighbor)
+	
+	return corridor_distance_map

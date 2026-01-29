@@ -8,13 +8,13 @@ func test_get_clue_reachability() -> void:
 		"      ##",
 		" 2   2  ",
 	]
-	var trm: IslandReachabilityMap = init_island_reachability_map()
-	assert_eq(trm.get_clue_reachability(Vector2(0, 0)), IslandReachabilityMap.ClueReachability.UNREACHABLE)
-	assert_eq(trm.get_clue_reachability(Vector2(0, 2)), IslandReachabilityMap.ClueReachability.IMPOSSIBLE)
-	assert_eq(trm.get_clue_reachability(Vector2(0, 1)), IslandReachabilityMap.ClueReachability.REACHABLE)
-	assert_eq(trm.get_clue_reachability(Vector2(1, 2)), IslandReachabilityMap.ClueReachability.CONFLICT)
-	assert_eq(trm.get_clue_reachability(Vector2(2, 0)), IslandReachabilityMap.ClueReachability.IMPOSSIBLE)
-	assert_eq(trm.get_clue_reachability(Vector2(3, 0)), IslandReachabilityMap.ClueReachability.IMPOSSIBLE)
+	var irm: IslandReachabilityMap = init_island_reachability_map()
+	assert_eq(irm.get_clue_reachability(Vector2(0, 0)), IslandReachabilityMap.ClueReachability.UNREACHABLE)
+	assert_eq(irm.get_clue_reachability(Vector2(0, 2)), IslandReachabilityMap.ClueReachability.IMPOSSIBLE)
+	assert_eq(irm.get_clue_reachability(Vector2(0, 1)), IslandReachabilityMap.ClueReachability.REACHABLE)
+	assert_eq(irm.get_clue_reachability(Vector2(1, 2)), IslandReachabilityMap.ClueReachability.CONFLICT)
+	assert_eq(irm.get_clue_reachability(Vector2(2, 0)), IslandReachabilityMap.ClueReachability.IMPOSSIBLE)
+	assert_eq(irm.get_clue_reachability(Vector2(3, 0)), IslandReachabilityMap.ClueReachability.IMPOSSIBLE)
 
 
 func test_get_clue_reachability_avoids_cycles() -> void:
@@ -23,9 +23,9 @@ func test_get_clue_reachability_avoids_cycles() -> void:
 		" 2      ",
 		"        ",
 	]
-	var trm: IslandReachabilityMap = init_island_reachability_map()
-	assert_eq(trm.get_clue_reachability(Vector2(1, 0)), IslandReachabilityMap.ClueReachability.CHAIN_CYCLE)
-	assert_eq(trm.get_clue_reachability(Vector2(1, 2)), IslandReachabilityMap.ClueReachability.CHAIN_CYCLE)
+	var irm: IslandReachabilityMap = init_island_reachability_map()
+	assert_eq(irm.get_clue_reachability(Vector2(1, 0)), IslandReachabilityMap.ClueReachability.CHAIN_CYCLE)
+	assert_eq(irm.get_clue_reachability(Vector2(1, 2)), IslandReachabilityMap.ClueReachability.CHAIN_CYCLE)
 
 
 func test_get_clue_reachability_cycles_janko_3() -> void:
@@ -41,8 +41,31 @@ func test_get_clue_reachability_cycles_janko_3() -> void:
 		"        ########## .",
 		" 3      ## 3 . .## .",
 	]
-	var trm: IslandReachabilityMap = init_island_reachability_map()
-	assert_eq(trm.get_clue_reachability(Vector2(5, 1)), IslandReachabilityMap.ClueReachability.REACHABLE)
+	var irm: IslandReachabilityMap = init_island_reachability_map()
+	assert_eq(irm.get_clue_reachability(Vector2(5, 1)), IslandReachabilityMap.ClueReachability.REACHABLE)
+
+
+func test_get_clue_reachability_janko_8() -> void:
+	# janko 8
+	grid = [
+		"   2    ## 4 . . .##",
+		"          ##########",
+		"        ## . .## 1##",
+		"        ## 3###### 3",
+		"         9#### .## .",
+		"##         .## 2## .",
+		"## .       . .######",
+		"## 6## 6    #### 1##",
+		" 3####    ## 2 .## 2",
+		" . .##    ######## .",
+	]
+	var irm: IslandReachabilityMap = init_island_reachability_map()
+	assert_eq(irm.get_reach_score(Vector2(5, 5), irm.board.get_island_for_cell(Vector2i(4, 4)).root), 7)
+	assert_eq(irm.get_reach_score(Vector2(5, 6), irm.board.get_island_for_cell(Vector2i(4, 4)).root), 6)
+	assert_eq(irm.get_reach_score(Vector2(6, 6), irm.board.get_island_for_cell(Vector2i(4, 4)).root), 5)
+	assert_eq(irm.get_reach_score(Vector2(5, 5), irm.board.get_island_for_cell(Vector2i(3, 7)).root), 2)
+	assert_eq(irm.get_reach_score(Vector2(5, 6), irm.board.get_island_for_cell(Vector2i(3, 7)).root), 3)
+	assert_eq(irm.get_reach_score(Vector2(6, 6), irm.board.get_island_for_cell(Vector2i(3, 7)).root), 2)
 
 
 func test_get_clue_reachability_unclued_cycles() -> void:
@@ -51,10 +74,10 @@ func test_get_clue_reachability_unclued_cycles() -> void:
 		" 2      ",
 		"     .  ",
 	]
-	var trm: IslandReachabilityMap = init_island_reachability_map()
-	assert_eq(trm.get_clue_reachability(Vector2(2, 1)), IslandReachabilityMap.ClueReachability.REACHABLE)
-	assert_eq(trm.get_clue_reachability(Vector2(3, 1)), IslandReachabilityMap.ClueReachability.REACHABLE)
-	assert_eq(trm.get_clue_reachability(Vector2(3, 2)), IslandReachabilityMap.ClueReachability.REACHABLE)
+	var irm: IslandReachabilityMap = init_island_reachability_map()
+	assert_eq(irm.get_clue_reachability(Vector2(2, 1)), IslandReachabilityMap.ClueReachability.REACHABLE)
+	assert_eq(irm.get_clue_reachability(Vector2(3, 1)), IslandReachabilityMap.ClueReachability.REACHABLE)
+	assert_eq(irm.get_clue_reachability(Vector2(3, 2)), IslandReachabilityMap.ClueReachability.REACHABLE)
 
 
 func test_get_nearest_clued_island_cell() -> void:

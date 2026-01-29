@@ -27,6 +27,7 @@ const ISLAND_SNUG: Deduction.Reason = Deduction.Reason.ISLAND_SNUG
 const POOL_CHOKEPOINT: Deduction.Reason = Deduction.Reason.POOL_CHOKEPOINT
 const POOL_TRIPLET: Deduction.Reason = Deduction.Reason.POOL_TRIPLET
 const UNCLUED_LIFELINE: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE
+const UNCLUED_LIFELINE_BUFFER: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE_BUFFER
 const UNREACHABLE_CELL: Deduction.Reason = Deduction.Reason.UNREACHABLE_CELL
 const WALL_BUBBLE: Deduction.Reason = Deduction.Reason.WALL_BUBBLE
 const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR

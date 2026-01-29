@@ -31,6 +31,7 @@ enum Reason {
 	POOL_CHOKEPOINT, # add an island to avoid isolating or trapping a small wall region
 	POOL_TRIPLET, # add an island to avoid a 2x2 wall area
 	UNCLUED_LIFELINE, # extend an unclued island towards the only connectable clue
+	UNCLUED_LIFELINE_BUFFER, # add a wall to prevent an unclued island from becoming unreachable
 	UNREACHABLE_CELL, # add a wall where no clue can reach
 	WALL_BUBBLE, # wall in a cell surrounded by walls
 	WALL_CONNECTOR, # connect two walls through a chokepoint

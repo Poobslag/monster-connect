@@ -45,6 +45,24 @@ func get_clue_reachability(cell: Vector2i) -> ClueReachability:
 	return reachability
 
 
+func has_exclusive_root(cell: Vector2i) -> int:
+	return _reach_scores_by_cell.has(cell) \
+			and _reach_scores_by_cell[cell].size() == 1 \
+			and _reach_scores_by_cell[cell].values().front() >= 1
+
+
+func get_exclusive_root(cell: Vector2i) -> Vector2i:
+	return _reach_scores_by_cell[cell].keys().front()
+
+
+func get_reach_score(cell: Vector2i, root: Vector2i) -> int:
+	if not _reach_scores_by_cell.has(cell):
+		return 0
+	if not _reach_scores_by_cell[cell].has(root):
+		return 0
+	return _reach_scores_by_cell[cell][root]
+
+
 func get_nearest_clued_island_cell(cell: Vector2i) -> Vector2i:
 	if not _reach_scores_by_cell.has(cell) or _reach_scores_by_cell[cell].is_empty():
 		return POS_NOT_FOUND
@@ -117,7 +135,8 @@ func _build() -> void:
 					if _reach_scores_by_cell[neighbor].get(root, 0) >= reach_score - 1:
 						# can already reach island
 						continue
-				if board.get_island_chain_map().causes_chain_conflict(board.get_island_for_cell(root), neighbor):
+				if board.get_cell(neighbor) == CELL_EMPTY \
+						and board.get_island_chain_map().causes_chain_conflict(board.get_island_for_cell(root), neighbor):
 					_cycles_by_cell[neighbor] = true
 					continue
 				
