@@ -2,7 +2,7 @@ extends RichTextLabel
 
 @export var max_lines: int = 500
 
-func show_message(message: String) -> void:
+func log_message(message: String) -> void:
 	if text:
 		text += "\n"
 	text += message
