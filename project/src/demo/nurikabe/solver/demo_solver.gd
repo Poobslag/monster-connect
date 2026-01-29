@@ -45,28 +45,12 @@ var performance_data: Dictionary[String, Variant] = {}
 var solver: Solver = Solver.new()
 var performance_suite_queue: Array[String] = []
 
-var _puzzle_paths: Array[String] = []
 var _performance_test_start_index: int = -1
 
 func _ready() -> void:
-	_load_puzzle_paths()
 	solver.board = %GameBoard.to_solver_board()
-	_performance_test_start_index = _puzzle_paths.find(puzzle_path)
+	_performance_test_start_index = %PuzzleArchive.find(puzzle_path)
 
-
-func _load_puzzle_paths() -> void:
-	for dir_path: String in [
-			"res://assets/demo/nurikabe/puzzles/janko",
-			"res://assets/demo/nurikabe/puzzles/nikoli",
-			"res://assets/demo/nurikabe/puzzles/poobslag",
-			]:
-		for file: String in DirAccess.get_files_at(dir_path):
-			_puzzle_paths.append(dir_path.path_join(file))
-	_puzzle_paths.sort_custom(func(a: String, b: String) -> bool:
-		if a.get_base_dir() != b.get_base_dir():
-			return a.get_base_dir() < b.get_base_dir()
-		return int(a.get_basename()) < int(b.get_basename())
-	)
 
 func _input(event: InputEvent) -> void:
 	if %CommandPalette.has_focus():
@@ -88,8 +72,8 @@ func _input(event: InputEvent) -> void:
 					return
 				performance_suite_queue.clear()
 				for i in 10:
-					var performance_text_index: int = (_performance_test_start_index + i) % _puzzle_paths.size()
-					performance_suite_queue.append(_puzzle_paths[performance_text_index])
+					var performance_text_index: int = (_performance_test_start_index + i) % %PuzzleArchive.size()
+					performance_suite_queue.append(%PuzzleArchive.puzzle_path_at(performance_text_index))
 				if not %DemoLog.text.is_empty():
 					_log_message("--------")
 				_log_message("performance suite start (%s)" % [performance_suite_queue.size()])
@@ -314,17 +298,17 @@ func _on_command_palette_command_entered(command: String) -> void:
 			if not command.substr(1).is_valid_int():
 				_log_message("Invalid parameter: " % [command.substr(1)])
 				return
-			var puzzle_path_pattern: String
+			var source: PuzzleArchive.Source
 			match command.substr(0, 1):
-				"j": puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/janko/%s.janko"
-				"n": puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/nikoli/%s.txt"
-				"p": puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/poobslag/%s.txt"
-				_: puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/%s.txt"
-			var new_puzzle_path: String = puzzle_path_pattern % [command.substr(1)]
+				"j": source = PuzzleArchive.JANKO
+				"n": source = PuzzleArchive.NIKOLI
+				"p": source = PuzzleArchive.POOBSLAG
+				_: source = PuzzleArchive.DEFAULT
+			var new_puzzle_path: String = %PuzzleArchive.from_source(source, command.substr(1))
 			if not FileAccess.file_exists(new_puzzle_path):
 				_log_message("File not found: %s" % [new_puzzle_path])
 				return
 			load_puzzle(new_puzzle_path)
-			_performance_test_start_index = _puzzle_paths.find(puzzle_path)
+			_performance_test_start_index = %PuzzleArchive.find(puzzle_path)
 		_:
 			_log_message("Invalid command: %s" % [command.substr(1)])

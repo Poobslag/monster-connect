@@ -31,6 +31,7 @@ const CORNER_ISLAND: Deduction.Reason = Deduction.Reason.CORNER_ISLAND
 const ISLAND_BUBBLE: Deduction.Reason = Deduction.Reason.ISLAND_BUBBLE
 const ISLAND_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_BUFFER
 const ISLAND_CHAIN: Deduction.Reason = Deduction.Reason.ISLAND_CHAIN
+const ISLAND_CHAIN_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_CHAIN_BUFFER
 const ISLAND_CHOKEPOINT: Deduction.Reason = Deduction.Reason.ISLAND_CHOKEPOINT
 const ISLAND_CONNECTOR: Deduction.Reason = Deduction.Reason.ISLAND_CONNECTOR
 const ISLAND_DIVIDER: Deduction.Reason = Deduction.Reason.ISLAND_DIVIDER
@@ -586,17 +587,21 @@ func deduce_all_unreachable_squares() -> void:
 	for cell: Vector2i in board.empty_cells:
 		if not should_deduce(board, cell):
 			continue
-		match board.get_global_reachability_map().get_clue_reachability(cell):
-			GlobalReachabilityMap.ClueReachability.REACHABLE:
+		match board.get_island_reachability_map().get_clue_reachability(cell):
+			IslandReachabilityMap.ClueReachability.REACHABLE:
 				continue
-			GlobalReachabilityMap.ClueReachability.UNREACHABLE:
-				add_deduction(cell, CELL_WALL, UNREACHABLE_CELL,
-						[board.get_global_reachability_map().get_nearest_clued_island_cell(cell)])
+			IslandReachabilityMap.ClueReachability.UNREACHABLE:
+				var nearest_clue: Vector2i = board.get_island_reachability_map().get_nearest_clued_island_cell(cell)
+				add_deduction(cell, CELL_WALL, UNREACHABLE_CELL, [nearest_clue])
 				add_fun(FUN_THINK, 1.0)
-			GlobalReachabilityMap.ClueReachability.IMPOSSIBLE:
+			IslandReachabilityMap.ClueReachability.IMPOSSIBLE:
 				add_deduction(cell, CELL_WALL, WALL_BUBBLE)
 				add_fun(FUN_FAST, 1.0)
-			GlobalReachabilityMap.ClueReachability.CONFLICT:
+			IslandReachabilityMap.ClueReachability.CHAIN_CYCLE:
+				var nearest_clue: Vector2i = board.get_island_reachability_map().get_nearest_clued_island_cell(cell)
+				add_deduction(cell, CELL_WALL, ISLAND_CHAIN_BUFFER, [nearest_clue])
+				add_fun(FUN_THINK, 1.0)
+			IslandReachabilityMap.ClueReachability.CONFLICT:
 				var clued_neighbor_roots: Array[Vector2i] = _find_clued_neighbor_roots(cell)
 				add_deduction(cell, CELL_WALL, ISLAND_DIVIDER,
 						[clued_neighbor_roots[0], clued_neighbor_roots[1]])
@@ -622,7 +627,7 @@ func deduce_island_chokepoint_cramped(chokepoint: Vector2i) -> void:
 	if not board.get_island_chokepoint_map().chokepoints_by_cell.has(chokepoint):
 		return
 	
-	var clue_cell: Vector2i = board.get_global_reachability_map().get_nearest_clued_island_cell(chokepoint)
+	var clue_cell: Vector2i = board.get_island_reachability_map().get_nearest_clued_island_cell(chokepoint)
 	if clue_cell == POS_NOT_FOUND:
 		return
 	var unchoked_cell_count: int = \

@@ -199,6 +199,12 @@ func get_island_chokepoint_map() -> SolverChokepointMap:
 		_build_island_chokepoint_map)
 
 
+func get_island_reachability_map() -> IslandReachabilityMap:
+	return _get_cached(
+		"island_reachability_map",
+		_build_island_reachability_map)
+
+
 ## This wall chokepoint map is currently unused because island-chain cycle logic is faster.
 func get_wall_chokepoint_map() -> SolverChokepointMap:
 	return _get_cached(
@@ -488,6 +494,10 @@ func _build_island_clues() -> Dictionary[Vector2i, int]:
 		for cell: Vector2i in island.cells:
 			result[cell] = clue_value
 	return result
+
+
+func _build_island_reachability_map() -> IslandReachabilityMap:
+	return IslandReachabilityMap.new(self)
 
 
 func _clue_value_for_cells(island: Array[Vector2i]) -> int:

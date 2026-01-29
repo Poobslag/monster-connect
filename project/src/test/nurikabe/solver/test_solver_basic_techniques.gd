@@ -453,6 +453,7 @@ func test_deduce_all_unreachable_squares_3() -> void:
 		" . 7   .",
 	]
 	var expected: Array[String] = [
+		"(2, 0)->## island_chain_buffer (3, 1)",
 		"(2, 2)->## island_divider (0, 2) (3, 1)",
 		"(3, 0)->## unreachable_cell (3, 1)",
 	]
