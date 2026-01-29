@@ -100,6 +100,7 @@ func _build_chains() -> void:
 	for island: CellGroup in central_islands:
 		if _chain_id_by_island.has(island):
 			continue
+		_parent_by_island[island] = null
 		_chain_id_by_island[island] = next_chain_id
 		_depth_by_island[island] = 0
 		_expand_chain(island)
@@ -144,6 +145,8 @@ func _illegal_endpoint_connection(
 		else:
 			b = _parent_by_island[b]
 			visited = b
+		if visited == null:
+			break
 		if _has_clue(visited) and a != b:
 			numbered_island_count += 1
 			if numbered_island_count >= 2:
