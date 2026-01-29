@@ -137,7 +137,7 @@ func test_deduce_all_islands_snug() -> void:
 	assert_deductions(solver.deduce_all_clued_island_snugs, expected)
 
 
-func test_deduce_all_island_chokepoints_lifeline() -> void:
+func test_deduce_unclued_lifeline() -> void:
 	grid = [
 		"    ####",
 		" 2  ## .",
@@ -147,13 +147,15 @@ func test_deduce_all_island_chokepoints_lifeline() -> void:
 		"       5",
 	]
 	var expected: Array[String] = [
+		"(2, 4)->## unclued_lifeline_buffer (3, 5)",
+		"(2, 5)->## unclued_lifeline_buffer (3, 5)",
 		"(3, 3)->. unclued_lifeline (3, 5)",
 		"(3, 4)->. unclued_lifeline (3, 5)",
 	]
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_deduce_all_island_chokepoints_lifeline_2() -> void:
+func test_deduce_unclued_lifeline_2() -> void:
 	grid = [
 		"    ####",
 		" 2  ## .",
@@ -164,13 +166,16 @@ func test_deduce_all_island_chokepoints_lifeline_2() -> void:
 		"     7 .",
 	]
 	var expected: Array[String] = [
+		"(1, 6)->## unclued_lifeline_buffer (3, 5)",
+		"(2, 4)->## unclued_lifeline_buffer (3, 5)",
+		"(2, 5)->## unclued_lifeline_buffer (3, 5)",
 		"(3, 3)->. unclued_lifeline (3, 5)",
 		"(3, 4)->. unclued_lifeline (3, 5)",
 	]
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_deduce_all_island_chokepoints_lifeline_3() -> void:
+func test_deduce_unclued_lifeline_3() -> void:
 	grid = [
 		"  ##  ",
 		"   .  ",
@@ -182,16 +187,28 @@ func test_deduce_all_island_chokepoints_lifeline_3() -> void:
 		"   7  ",
 	]
 	var expected: Array[String] = [
+		"(0, 2)->## unclued_lifeline_buffer (1, 7)",
+		"(0, 3)->## unclued_lifeline_buffer (1, 7)",
+		"(0, 4)->## unclued_lifeline_buffer (1, 7)",
+		"(0, 5)->## unclued_lifeline_buffer (1, 7)",
+		"(0, 6)->## unclued_lifeline_buffer (1, 7)",
+		"(0, 7)->## unclued_lifeline_buffer (1, 7)",
 		"(1, 2)->. unclued_lifeline (1, 7)",
 		"(1, 3)->. unclued_lifeline (1, 7)",
 		"(1, 4)->. unclued_lifeline (1, 7)",
 		"(1, 5)->. unclued_lifeline (1, 7)",
 		"(1, 6)->. unclued_lifeline (1, 7)",
+		"(2, 2)->## unclued_lifeline_buffer (1, 7)",
+		"(2, 3)->## unclued_lifeline_buffer (1, 7)",
+		"(2, 4)->## unclued_lifeline_buffer (1, 7)",
+		"(2, 5)->## unclued_lifeline_buffer (1, 7)",
+		"(2, 6)->## unclued_lifeline_buffer (1, 7)",
+		"(2, 7)->## unclued_lifeline_buffer (1, 7)",
 	]
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_deduce_all_island_chokepoints_lifeline_4() -> void:
+func test_deduce_unclued_lifeline_4() -> void:
 	grid = [
 		"  ##  ",
 		"   .  ",
@@ -212,7 +229,7 @@ func test_deduce_all_island_chokepoints_lifeline_4() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_deduce_all_island_chokepoints_lifeline_5() -> void:
+func test_deduce_unclued_lifeline_5() -> void:
 	grid = [
 		"############",
 		"## .## 6    ",
@@ -223,13 +240,14 @@ func test_deduce_all_island_chokepoints_lifeline_5() -> void:
 		" . 6 . .## .",
 	]
 	var expected: Array[String] = [
+		"(2, 3)->## unclued_lifeline_buffer (2, 4)",
 		"(3, 4)->. unclued_lifeline (2, 4)",
 		"(4, 4)->. unclued_lifeline (2, 4)",
 	]
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_deduce_all_island_chokepoints_lifeline_6() -> void:
+func test_deduce_unclued_lifeline_6() -> void:
 	grid = [
 		"####     4",
 		"## .      ",
@@ -239,13 +257,65 @@ func test_deduce_all_island_chokepoints_lifeline_6() -> void:
 		" 2 .  ## .",
 	]
 	var expected: Array[String] = [
+		"(2, 1)->## unclued_lifeline_buffer (1, 1)",
+		"(2, 2)->## unclued_lifeline_buffer (1, 1)",
 		"(2, 3)->. unclued_lifeline (1, 1)",
 		"(3, 3)->. unclued_lifeline (1, 1)",
 	]
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_deduce_all_island_chokepoints_lifeline_invalid_too_short() -> void:
+func test_deduce_unclued_lifeline_7() -> void:
+	grid = [
+		"########",
+		"     .##",
+		"   3  ##",
+	]
+	var expected: Array[String] = [
+		"(0, 1)->## unclued_lifeline_buffer (1, 2)",
+		"(0, 2)->## unclued_lifeline_buffer (1, 2)",
+	]
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
+
+
+func test_deduce_unclued_lifeline_8() -> void:
+	grid = [
+		" 2 .## . . 3######  ",
+		"############ 2 .##  ",
+		"## 2 .## 2 .####   .",
+		"###### 2####        ",
+		"## .## .## .        ",
+		"## .######         .",
+		"## .## .##      ## 7",
+		"## .## .## .## 6    ",
+		"## .## 3## .  ##    ",
+		"## . 7####   . . .10",
+	]
+	var expected: Array[String] = [
+	]
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
+
+
+func test_deduce_unclued_lifeline_9() -> void:
+	# janko 8
+	grid = [
+		"   2    ## 4 . . .##",
+		"          ##########",
+		"        ## . .## 1##",
+		"        ## 3###### 3",
+		"         9#### .## .",
+		"##         .## 2## .",
+		"## .       . .######",
+		"## 6## 6    #### 1##",
+		" 3####    ## 2 .## 2",
+		" . .##    ######## .",
+	]
+	var expected: Array[String] = [
+	]
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
+
+
+func test_deduce_unclued_lifeline_invalid_too_short() -> void:
 	# the unclued lifeline deduction can't apply to clues which are too close; they could swerve
 	grid = [
 		"  ##  ",
@@ -262,7 +332,7 @@ func test_deduce_all_island_chokepoints_lifeline_invalid_too_short() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
-func test_deduce_all_island_chokepoints_lifeline_invalid_bendy() -> void:
+func test_deduce_unclued_lifeline_invalid_bendy() -> void:
 	# the unclued lifeline deduction can't apply to diagonal clues
 	grid = [
 		"    ####",
@@ -274,6 +344,9 @@ func test_deduce_all_island_chokepoints_lifeline_invalid_bendy() -> void:
 		"     5 .",
 	]
 	var expected: Array[String] = [
+		"(0, 5)->## unclued_lifeline_buffer (0, 4)",
+		"(1, 3)->. unclued_lifeline (0, 4)",
+		"(2, 3)->. unclued_lifeline (0, 4)",
 	]
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
