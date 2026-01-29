@@ -1,6 +1,5 @@
 extends Node
 ## [b]Keys:[/b][br]
-## 	[kbd]G[/kbd]: Benchmark global_reachability_map for janko puzzles 1-50.
 ## 	[kbd]T[/kbd]: Benchmark island_reachability_map for janko puzzles 1-50.
 
 @export_file("*.txt") var puzzle_path: String:
@@ -15,8 +14,6 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	match Utils.key_press(event):
-		KEY_G:
-			benchmark("get_global_reachability_map")
 		KEY_T:
 			benchmark("get_island_reachability_map")
 
