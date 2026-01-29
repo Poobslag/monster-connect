@@ -89,7 +89,7 @@ func output_board() -> void:
 	var info_json: Dictionary[String, Variant] = {}
 	info_json["difficulty"] = generator.solver.get_measured_difficulty()
 	info_json["cells"] = generator.solver.board.cells.size()
-	info_json["version"] = 0.01
+	info_json["version"] = 0.02
 	FileAccess.open(info_path, FileAccess.WRITE).store_string(JSON.stringify(info_json))
 	
 	object.log_message("wrote puzzle #%s to %s; measured_difficulty=%.2f" \

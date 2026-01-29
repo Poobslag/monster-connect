@@ -70,7 +70,7 @@ const BAD_BIFURCATION_FUN_FACTOR: float = 0.25
 
 ## Calibration bounds for easy and hard puzzles. Derived from puzzles #1 and #96 from Nikoli's "Nurikabe 1".
 const UNSCALED_DIFFICULTY_EASY: float = 4.84
-const UNSCALED_DIFFICULTY_HARD: float = 9.22
+const UNSCALED_DIFFICULTY_HARD: float = 8.16
 
 ## Size scaling exponent; controls how much harder puzzles feel as the size doubles.[br]
 ## 1.0 = 0% harder, 0.7 = 23% harder, 0.5 = 41% harder, 0.0 = 100% harder.
