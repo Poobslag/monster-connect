@@ -5,12 +5,12 @@ var queue: Array[String] = []
 
 func enter() -> void:
 	queue = Utils.find_data_files(BulkGenerator.PUZZLE_DIR, "txt")
-	object.show_message("Searching %s; found %s files." % [BulkGenerator.PUZZLE_DIR, queue.size()])
+	object.log_message("Searching %s; found %s files." % [BulkGenerator.PUZZLE_DIR, queue.size()])
 
 
 func update(_delta: float) -> void:
 	if queue.is_empty():
-		object.show_message("Analysis complete.")
+		object.log_message("Analysis complete.")
 		change_state("idle")
 		return
 	
@@ -25,7 +25,7 @@ func update(_delta: float) -> void:
 			= solver.board.validate(SolverBoard.VALIDATE_STRICT)
 	solver.board.cleanup()
 	if validation_result.error_count > 0:
-		object.show_message("Error: Invalid solution")
+		object.log_message("Error: Invalid solution")
 		return
 	
 	var info_path: String = puzzle_info_path(puzzle_path)
@@ -34,7 +34,7 @@ func update(_delta: float) -> void:
 	info_json["cells"] = solver.board.cells.size()
 	info_json["version"] = 0.01
 	FileAccess.open(info_path, FileAccess.WRITE).store_string(JSON.stringify(info_json))
-	object.show_message("Wrote %s." % [info_path])
+	object.log_message("Wrote %s." % [info_path])
 
 
 func copy_board_from_solver() -> void:

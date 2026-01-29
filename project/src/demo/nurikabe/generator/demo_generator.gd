@@ -89,18 +89,18 @@ func _input(event: InputEvent) -> void:
 			if Input.is_key_pressed(KEY_SHIFT):
 				fixed_seed += 1
 			generator.rng.seed = fixed_seed
-			_show_message("seed: %s" % [fixed_seed])
+			_log_message("seed: %s" % [fixed_seed])
 		KEY_D:
 			if Input.is_key_pressed(KEY_SHIFT):
 				generator.target_difficulty -= 0.1
 			else:
 				generator.target_difficulty += 0.1
 			generator.target_difficulty = clamp(generator.target_difficulty, 0.0, 1.0)
-			_show_message("target_difficulty: %s" % [generator.target_difficulty])
+			_log_message("target_difficulty: %s" % [generator.target_difficulty])
 		KEY_M:
 			var values: Array[String] = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 			Utils.shuffle_weighted(values, PackedFloat32Array([0, 1, 2, 3, 4, 5, 6, 7, 8]))
-			_show_message("shuffle: %s" % [values])
+			_log_message("shuffle: %s" % [values])
 
 
 func _process(_delta: float) -> void:
@@ -115,7 +115,7 @@ func _process(_delta: float) -> void:
 				# filled with no validation errors
 				generator_running = false
 				%GameBoard.validate()
-				_show_message("(finished)")
+				_log_message("(finished)")
 
 
 func print_grid_string() -> void:
@@ -150,8 +150,8 @@ func step_generator() -> void:
 		var validation_result: SolverBoard.ValidationResult \
 				= generator.board.solver_board.validate(SolverBoard.VALIDATE_STRICT)
 		if validation_result.error_count == 0:
-			_show_message("--------")
-			_show_message("(finished)")
+			_log_message("--------")
+			_log_message("(finished)")
 			return
 	
 	generator.step()
@@ -160,36 +160,36 @@ func step_generator() -> void:
 
 func show_generator_messages() -> void:
 	if not %DemoLog.text.is_empty():
-		_show_message("--------")
+		_log_message("--------")
 	var events: Array[String] = generator.consume_events()
 	if generator.mutate_steps >= 1:
-		_show_message("(mutate %s/%s)" % [generator.mutate_steps, Generator.TARGET_MUTATE_STEPS])
+		_log_message("(mutate %s/%s)" % [generator.mutate_steps, Generator.TARGET_MUTATE_STEPS])
 	if events.is_empty():
-		_show_message("(no changes)")
+		_log_message("(no changes)")
 	else:
 		for event: String in events:
-			_show_message(event)
+			_log_message(event)
 		copy_board_from_generator()
 
 
 func step_solver() -> void:
 	if generator.solver.board.is_filled() and not generator.has_validation_errors():
-		_show_message("--------")
-		_show_message("(finished)")
+		_log_message("--------")
+		_log_message("(finished)")
 		return
 	
 	if not %DemoLog.text.is_empty():
-		_show_message("--------")
+		_log_message("--------")
 	
 	generator.solver.step()
 	
 	if not generator.solver.deductions.has_changes():
-		_show_message("(no changes)")
+		_log_message("(no changes)")
 	else:
 		for deduction_index: int in generator.solver.deductions.size():
 			var shown_index: int = generator.solver.board.version + deduction_index
 			var deduction: Deduction = generator.solver.deductions.deductions[deduction_index]
-			_show_message("%s-%s %s" % \
+			_log_message("%s-%s %s" % \
 					[generator.step_count, shown_index, str(deduction)])
 		
 		for change: Dictionary[String, Variant] in generator.solver.deductions.get_changes():
@@ -202,5 +202,5 @@ func copy_board_from_generator() -> void:
 	generator.board.solver_board.update_game_board(%GameBoard)
 
 
-func _show_message(s: String) -> void:
-	%DemoLog.show_message(s)
+func _log_message(s: String) -> void:
+	%DemoLog.log_message(s)

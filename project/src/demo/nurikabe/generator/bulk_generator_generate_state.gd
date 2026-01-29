@@ -17,7 +17,7 @@ func update(_delta: float) -> void:
 	generator.step()
 	
 	if generator.check_stuck(_stuck_state):
-		object.show_message("error: stuck")
+		object.log_message("error: stuck")
 		create_board()
 		return
 	
@@ -29,7 +29,7 @@ func update(_delta: float) -> void:
 			# filled with no validation errors
 			output_board()
 		else:
-			object.show_message("error: puzzle failed validation")
+			object.log_message("error: puzzle failed validation")
 		create_board()
 
 
@@ -56,7 +56,7 @@ func create_board() -> void:
 	difficulty = clamp(difficulty, 0.0, 1.0)
 	generator.difficulty = difficulty
 	
-	object.show_message("puzzle #%s: %s size=%s target_difficulty=%.2f" \
+	object.log_message("puzzle #%s: %s size=%s target_difficulty=%.2f" \
 			% [puzzle_num, puzzle_type["id"], puzzle_size, difficulty])
 	_stuck_state.clear()
 
@@ -92,7 +92,7 @@ func output_board() -> void:
 	info_json["version"] = 0.01
 	FileAccess.open(info_path, FileAccess.WRITE).store_string(JSON.stringify(info_json))
 	
-	object.show_message("wrote puzzle #%s to %s; measured_difficulty=%.2f" \
+	object.log_message("wrote puzzle #%s to %s; measured_difficulty=%.2f" \
 			% [puzzle_num, path, info_json["difficulty"]])
 	
 	puzzle_num += 1

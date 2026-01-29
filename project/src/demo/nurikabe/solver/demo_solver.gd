@@ -91,11 +91,11 @@ func _input(event: InputEvent) -> void:
 					var performance_text_index: int = (_performance_test_start_index + i) % _puzzle_paths.size()
 					performance_suite_queue.append(_puzzle_paths[performance_text_index])
 				if not %DemoLog.text.is_empty():
-					_show_message("--------")
-				_show_message("performance suite start (%s)" % [performance_suite_queue.size()])
-				_show_message("")
-				_show_message("| Puzzle | Result | Time (ms) | Bifurcations |")
-				_show_message("|:--|:--:|--:|--:|")
+					_log_message("--------")
+				_log_message("performance suite start (%s)" % [performance_suite_queue.size()])
+				_log_message("")
+				_log_message("| Puzzle | Result | Time (ms) | Bifurcations |")
+				_log_message("|:--|:--:|--:|--:|")
 				%PerformanceSuiteTimer.start()
 			else:
 				performance_test()
@@ -119,7 +119,7 @@ func _input(event: InputEvent) -> void:
 			solver.clear()
 		KEY_D:
 			var difficulty: float = solver.get_measured_difficulty()
-			_show_message("difficulty: %0.2f" % [difficulty])
+			_log_message("difficulty: %0.2f" % [difficulty])
 		KEY_F:
 			_show_normalized_fun_string()
 		KEY_B:
@@ -139,7 +139,7 @@ func _show_normalized_fun_string() -> String:
 		var normalized_value: int = round(100 * fun.get(key, 0.0) / solver.board.cells.size())
 		normalized_fun[key] = normalized_value
 	
-	_show_message("easy=%s (%s/%s) thinky=%s (%s/%s/%s)" % [
+	_log_message("easy=%s (%s/%s) thinky=%s (%s/%s/%s)" % [
 		normalized_fun[FUN_TRIVIAL] + normalized_fun[FUN_FAST],
 		normalized_fun[FUN_TRIVIAL],
 		normalized_fun[FUN_FAST],
@@ -160,22 +160,22 @@ func print_grid_string() -> void:
 
 func step() -> void:
 	if solver.board.is_filled():
-		_show_message("--------")
-		_show_message("(finished)")
+		_log_message("--------")
+		_log_message("(finished)")
 		return
 	
 	if not %DemoLog.text.is_empty():
-		_show_message("--------")
+		_log_message("--------")
 	
 	solver.step()
 	
 	if not solver.deductions.has_changes():
-		_show_message("(no changes)")
+		_log_message("(no changes)")
 	else:
 		for deduction_index: int in solver.deductions.size():
 			var shown_index: int = solver.board.version + deduction_index
 			var deduction: Deduction = solver.deductions.deductions[deduction_index]
-			_show_message("%s %s" % \
+			_log_message("%s %s" % \
 					[shown_index, str(deduction)])
 		
 		for change: Dictionary[String, Variant] in solver.deductions.get_changes():
@@ -194,14 +194,14 @@ func solve_until_bifurcation() -> void:
 	copy_board_from_solver()
 	
 	if not %DemoLog.text.is_empty():
-		_show_message("--------")
+		_log_message("--------")
 	if solver.board.is_filled():
-		_show_message("bifurcation: stops=%s scenarios=%s" % [
+		_log_message("bifurcation: stops=%s scenarios=%s" % [
 			solver.metrics.get("bifurcation_stops"),
 			solver.metrics.get("bifurcation_scenarios"),
 			])
 	else:
-		_show_message("bifurcation required: (%s)" % [
+		_log_message("bifurcation required: (%s)" % [
 			solver.board.version
 			])
 
@@ -220,9 +220,9 @@ func performance_test() -> void:
 	solver.step_until_done()
 	
 	if not %DemoLog.text.is_empty():
-		_show_message("--------")
-	_show_message("%.3f msec" % [(Time.get_ticks_usec() - start_time) / 1000.0])
-	_show_message("bifurcation: stops=%s scenarios=%s, duration=%.3f" % [
+		_log_message("--------")
+	_log_message("%.3f msec" % [(Time.get_ticks_usec() - start_time) / 1000.0])
+	_log_message("bifurcation: stops=%s scenarios=%s, duration=%.3f" % [
 			solver.metrics.get("bifurcation_stops", 0),
 			solver.metrics.get("bifurcation_scenarios", 0),
 			solver.metrics.get("bifurcation_duration", 0),
@@ -231,20 +231,20 @@ func performance_test() -> void:
 	copy_board_from_solver()
 
 
-func _show_message(s: String) -> void:
-	%DemoLog.show_message(s)
+func _log_message(s: String) -> void:
+	%DemoLog.log_message(s)
 
 
 func _show_suite_results() -> void:
-	_show_message("")
-	_show_message("**Summary:** ")
-	_show_message("✔️ %s / %s completed ⏱ %s ms total 🔀 %s bifurcations" % [
+	_log_message("")
+	_log_message("**Summary:** ")
+	_log_message("✔️ %s / %s completed ⏱ %s ms total 🔀 %s bifurcations" % [
 		performance_data.get("total_ok", 0), performance_data.get("total_run", 0),
 		_msec_str(performance_data.get("total_duration") / 1000.0),
 		performance_data.get("total_bifurcation_scenarios"),
 	])
-	_show_message("--------")
-	_show_message("finished")
+	_log_message("--------")
+	_log_message("finished")
 
 
 func _refresh_puzzle_path() -> void:
@@ -276,7 +276,7 @@ func _on_performance_suite_timer_timeout() -> void:
 		push_error("Validation errors for %s: %s" % [next_path, validation_errors])
 	var puzzle_name: String = StringUtils.substring_between(next_path, "nurikabe/puzzles", ".")
 	var result: String = "err" if validation_errors.error_count > 0 else "dnf" if not filled else "ok"
-	_show_message("| %s | %s %s | %s | %s |" % [
+	_log_message("| %s | %s %s | %s | %s |" % [
 			puzzle_name,
 			"✅" if result == "ok" else "⚠️", result,
 			_msec_str(duration / 1000.0),
@@ -312,7 +312,7 @@ func _on_command_palette_command_entered(command: String) -> void:
 	match command.substr(0, 1):
 		"j", "n", "p":
 			if not command.substr(1).is_valid_int():
-				_show_message("Invalid parameter: " % [command.substr(1)])
+				_log_message("Invalid parameter: " % [command.substr(1)])
 				return
 			var puzzle_path_pattern: String
 			match command.substr(0, 1):
@@ -322,9 +322,9 @@ func _on_command_palette_command_entered(command: String) -> void:
 				_: puzzle_path_pattern = "res://assets/demo/nurikabe/puzzles/%s.txt"
 			var new_puzzle_path: String = puzzle_path_pattern % [command.substr(1)]
 			if not FileAccess.file_exists(new_puzzle_path):
-				_show_message("File not found: %s" % [new_puzzle_path])
+				_log_message("File not found: %s" % [new_puzzle_path])
 				return
 			load_puzzle(new_puzzle_path)
 			_performance_test_start_index = _puzzle_paths.find(puzzle_path)
 		_:
-			_show_message("Invalid command: %s" % [command.substr(1)])
+			_log_message("Invalid command: %s" % [command.substr(1)])

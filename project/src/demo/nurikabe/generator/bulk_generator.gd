@@ -100,8 +100,8 @@ func _process(delta: float) -> void:
 func toggle_state(state: String) -> void:
 	var old_state: String = %StateMachine.current_state
 	%StateMachine.change_state("idle" if %StateMachine.current_state == state else state)
-	show_message("state: %s -> %s" % [old_state, %StateMachine.current_state])
+	log_message("state: %s -> %s" % [old_state, %StateMachine.current_state])
 
 
-func show_message(s: String) -> void:
-	%DemoLog.show_message(s)
+func log_message(s: String) -> void:
+	%DemoLog.log_message(s)
