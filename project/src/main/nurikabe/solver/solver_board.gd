@@ -181,12 +181,6 @@ func is_filled() -> bool:
 	return empty_cells.is_empty()
 
 
-func get_global_reachability_map() -> GlobalReachabilityMap:
-	return _get_cached(
-		"global_reachability_map",
-		_build_global_reachability_map)
-
-
 func get_island_chain_map() -> IslandChainMap:
 	return _get_cached(
 		"island_chain_map",
@@ -479,10 +473,6 @@ func _build_flooded_board() -> SolverBoard:
 	for cell: Vector2i in empty_cells:
 		flooded_board.set_cell(cell, CELL_ISLAND)
 	return flooded_board
-
-
-func _build_global_reachability_map() -> GlobalReachabilityMap:
-	return GlobalReachabilityMap.new(self)
 
 
 func _build_island_clues() -> Dictionary[Vector2i, int]:
