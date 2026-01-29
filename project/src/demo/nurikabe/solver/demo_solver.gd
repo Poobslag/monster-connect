@@ -4,7 +4,6 @@ extends Node
 ## 	[kbd]Q[/kbd]: Solve one step.
 ## 	[kbd]Shift + Q[/kbd]: Solve five steps.
 ## 	[kbd]W[/kbd]: Performance test a full solution.
-## 	[kbd]Shift + W[/kbd]: Performance test next 10 puzzles in sequence.
 ## 	[kbd]E[/kbd]: Solve until bifurcation is necessary.
 ## 	[kbd]R[/kbd]: Reset the board.
 ## 	[kbd]O[/kbd]: Print memory usage statistics.
@@ -19,6 +18,7 @@ extends Node
 ## 	[kbd]/j<n>[/kbd]: Load Janko puzzle <n>.
 ## 	[kbd]/n<n>[/kbd]: Load Nikoli puzzle <n>.
 ## 	[kbd]/p<n>[/kbd]: Load Poobslag puzzle <n>.
+## 	[kbd]/w<n>[/kbd]: Performance test the next <n> puzzles in sequence.
 
 @export_file("*.txt") var puzzle_path: String:
 	set(value):
@@ -66,24 +66,8 @@ func _input(event: InputEvent) -> void:
 			%GameBoard.validate()
 		KEY_W:
 			performance_data.clear()
-			if Input.is_key_pressed(KEY_SHIFT):
-				if _performance_test_start_index == -1:
-					push_error("Puzzle not found: %s" % [puzzle_path])
-					return
-				performance_suite_queue.clear()
-				for i in 10:
-					var performance_text_index: int = (_performance_test_start_index + i) % %PuzzleArchive.size()
-					performance_suite_queue.append(%PuzzleArchive.puzzle_path_at(performance_text_index))
-				if not %DemoLog.text.is_empty():
-					_log_message("--------")
-				_log_message("performance suite start (%s)" % [performance_suite_queue.size()])
-				_log_message("")
-				_log_message("| Puzzle | Result | Time (ms) | Bifurcations |")
-				_log_message("|:--|:--:|--:|--:|")
-				%PerformanceSuiteTimer.start()
-			else:
-				performance_test()
-				%GameBoard.validate()
+			performance_test()
+			%GameBoard.validate()
 		KEY_E:
 			solve_until_bifurcation()
 			%GameBoard.validate()
@@ -292,6 +276,27 @@ func _msec_str(msec: float) -> String:
 	return str(result)
 
 
+func _run_puzzle_suite(puzzle_count: int) -> void:
+	if _performance_test_start_index == -1:
+		push_error("Puzzle not found: %s" % [puzzle_path])
+		return
+	
+	performance_data.clear()
+	performance_test()
+	%GameBoard.validate()
+	performance_suite_queue.clear()
+	for i in puzzle_count:
+		var performance_text_index: int = (_performance_test_start_index + i) % %PuzzleArchive.size()
+		performance_suite_queue.append(%PuzzleArchive.puzzle_path_at(performance_text_index))
+	if not %DemoLog.text.is_empty():
+		_log_message("--------")
+	_log_message("performance suite start (%s)" % [performance_suite_queue.size()])
+	_log_message("")
+	_log_message("| Puzzle | Result | Time (ms) | Bifurcations |")
+	_log_message("|:--|:--:|--:|--:|")
+	%PerformanceSuiteTimer.start()
+
+
 func _on_command_palette_command_entered(command: String) -> void:
 	match command.substr(0, 1):
 		"j", "n", "p":
@@ -310,5 +315,8 @@ func _on_command_palette_command_entered(command: String) -> void:
 				return
 			load_puzzle(new_puzzle_path)
 			_performance_test_start_index = %PuzzleArchive.find(puzzle_path)
+		"w":
+			var puzzle_count: int = int(command.substr(1))
+			_run_puzzle_suite(puzzle_count)
 		_:
 			_log_message("Invalid command: %s" % [command.substr(1)])
