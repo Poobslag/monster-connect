@@ -299,12 +299,13 @@ func _run_puzzle_suite(puzzle_count: int) -> void:
 
 func _on_command_palette_command_entered(command: String) -> void:
 	match command.substr(0, 1):
-		"j", "n", "p":
+		"g", "j", "n", "p":
 			if not command.substr(1).is_valid_int():
 				_log_message("Invalid parameter: " % [command.substr(1)])
 				return
 			var source: PuzzleArchive.Source
 			match command.substr(0, 1):
+				"g": source = PuzzleArchive.GENERATED
 				"j": source = PuzzleArchive.JANKO
 				"n": source = PuzzleArchive.NIKOLI
 				"p": source = PuzzleArchive.POOBSLAG
@@ -319,4 +320,4 @@ func _on_command_palette_command_entered(command: String) -> void:
 			var puzzle_count: int = int(command.substr(1))
 			_run_puzzle_suite(puzzle_count)
 		_:
-			_log_message("Invalid command: %s" % [command.substr(1)])
+			_log_message("Invalid command: %s" % [command])
