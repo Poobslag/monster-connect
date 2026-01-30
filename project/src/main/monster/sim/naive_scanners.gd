@@ -89,7 +89,6 @@ class AdjacentIslandScanner extends NaiveScanner:
 			return
 		
 		# invalid merged island; calculate the reason
-		var neighbor_islands: Array[CellGroup] = neighbor_islands[cell]
 		var neighbor_clue_count: int = 0
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor: Vector2i = cell + neighbor_dir
