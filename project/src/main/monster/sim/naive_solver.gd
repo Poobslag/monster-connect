@@ -79,6 +79,7 @@ func request_move(monster: SimMonster) -> void:
 		NaiveScanners.IslandMoatScanner.new(),
 		NaiveScanners.PoolScanner.new(),
 		NaiveScanners.WallExpansionScanner.new(),
+		NaiveScanners.UnreachableScanner.new(),
 	]
 	
 	for scanner: NaiveScanner in scanners:

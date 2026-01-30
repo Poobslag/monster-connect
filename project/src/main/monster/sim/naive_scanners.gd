@@ -199,6 +199,54 @@ class PoolScanner extends NaiveScanner:
 					monster.add_pending_deduction(liberty, CELL_ISLAND, POOL_TRIPLET)
 
 
+class UnreachableScanner extends NaiveScanner:
+	var adjacent_clue_cells: Dictionary[Vector2i, bool] = {}
+	var reachability_by_cell: Dictionary[Vector2i, int] = {}
+	var visitable: Dictionary[Vector2i, bool] = {}
+	var queue: Array[Vector2i] = []
+	
+	func update(start_time: int) -> bool:
+		for island: CellGroup in board.islands:
+			var reachability: int = island.clue - island.size()
+			for liberty: Vector2i in island.liberties:
+				adjacent_clue_cells[liberty] = true
+				if reachability > 0:
+					reachability_by_cell[liberty] = reachability
+		
+		for cell: Vector2i in board.cells:
+			if board.cells[cell] == CELL_EMPTY and not adjacent_clue_cells.has(cell):
+				visitable[cell] = true
+		
+		queue = reachability_by_cell.keys()
+		while not queue.is_empty():
+			#if out_of_time(start_time):
+				#break
+			
+			_propogate_bfs(queue.pop_front())
+		
+		if queue.is_empty():
+			for cell: Vector2i in visitable:
+				if not should_deduce(cell):
+					continue
+				if reachability_by_cell.get(cell, 0) == 0:
+					monster.add_pending_deduction(cell, CELL_WALL, UNREACHABLE_CELL)
+		
+		return queue.is_empty()
+	
+	
+	func _propogate_bfs(cell: Vector2i) -> void:
+		var reachability: int = reachability_by_cell[cell]
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			if not visitable.has(neighbor):
+				continue
+			if reachability_by_cell.get(neighbor, 0) >= reachability - 1:
+				continue
+			reachability_by_cell[neighbor] = reachability - 1
+			if reachability >= 3 and not queue.has(neighbor):
+				queue.append(neighbor)
+
+
 class WallExpansionScanner extends NaiveScanner:
 	var next_wall_index: int = 0
 	
