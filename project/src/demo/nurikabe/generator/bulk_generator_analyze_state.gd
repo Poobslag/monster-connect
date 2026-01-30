@@ -23,9 +23,11 @@ func update(_delta: float) -> void:
 	copy_board_from_solver()
 	var validation_result: SolverBoard.ValidationResult \
 			= solver.board.validate(SolverBoard.VALIDATE_STRICT)
-	solver.board.cleanup()
 	if validation_result.error_count > 0:
-		object.log_message("Error: Invalid solution")
+		object.log_message("Error: Invalid solution for %s" % [puzzle_path])
+		print("== %s" % [puzzle_path])
+		solver.board.print_cells()
+		print(validation_result)
 		return
 	
 	var info_path: String = puzzle_info_path(puzzle_path)
@@ -35,6 +37,7 @@ func update(_delta: float) -> void:
 	info_json["version"] = 0.02
 	FileAccess.open(info_path, FileAccess.WRITE).store_string(JSON.stringify(info_json))
 	object.log_message("Wrote %s." % [info_path])
+	solver.board.cleanup()
 
 
 func copy_board_from_solver() -> void:

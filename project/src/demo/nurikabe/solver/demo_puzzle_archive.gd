@@ -3,18 +3,21 @@ extends Node
 
 enum Source {
 	DEFAULT,
+	GENERATED,
 	JANKO,
 	NIKOLI,
 	POOBSLAG,
 }
 
 const DEFAULT: Source = Source.DEFAULT
+const GENERATED: Source = Source.GENERATED
 const JANKO: Source = Source.JANKO
 const NIKOLI: Source = Source.NIKOLI
 const POOBSLAG: Source = Source.POOBSLAG
 
 const PATTERN_BY_SOURCE: Dictionary[Source, String] = {
 	JANKO: "res://assets/demo/nurikabe/puzzles/janko/%s.janko",
+	GENERATED: "res://assets/main/nurikabe/official/generated/%s.txt",
 	NIKOLI: "res://assets/demo/nurikabe/puzzles/nikoli/%s.txt",
 	POOBSLAG: "res://assets/demo/nurikabe/puzzles/poobslag/%s.txt",
 	DEFAULT: "res://assets/demo/nurikabe/puzzles/%s.txt",
