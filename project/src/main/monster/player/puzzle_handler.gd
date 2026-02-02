@@ -97,28 +97,33 @@ func _handle_lmb_press() -> void:
 			_cells_to_erase[cell] = true
 			_last_set_cell_from = game_board.get_cell(cell)
 			_last_set_cell_to = CELL_EMPTY
-			game_board.set_half_cell(cell, monster.id)
+			_set_half_cell(cell, monster.id)
 			_input_sfx = "drop_wall_release"
 		CELL_EMPTY, CELL_ISLAND:
 			_last_set_cell_from = game_board.get_cell(cell)
 			_last_set_cell_to = CELL_WALL
-			game_board.set_cell(cell, CELL_WALL, monster.id)
-			game_board.set_half_cell(cell, monster.id)
+			_set_cell(cell, CELL_WALL, monster.id)
+			_set_half_cell(cell, monster.id)
 			_input_sfx = "drop_wall_press"
 	if NurikabeUtils.is_clue(current_cell_value):
 		var changes: Array[Dictionary] = game_board.to_solver_board().surround_island(cell)
 		if changes:
 			for change: Dictionary[String, Variant] in changes:
-				game_board.set_cell(change["pos"], change["value"])
+				_set_cell(change["pos"], change["value"])
 			var cell_positions: Array[Vector2i] = []
 			for change: Dictionary[String, Variant] in changes:
 				cell_positions.append(change["pos"])
 			_last_set_cell_from = CELL_INVALID
 			_last_set_cell_to = CELL_SURROUND_ISLAND
-			game_board.set_half_cells(cell_positions, monster.id)
+			_set_half_cells(cell_positions, monster.id)
 			_input_sfx = "surround_island_press"
 		else:
 			_input_sfx = "surround_island_fail"
+
+
+func _is_editable(cell_pos: Vector2i) -> bool:
+	var curr_value: int = game_board.get_cell(cell_pos)
+	return curr_value != CELL_INVALID and not NurikabeUtils.is_clue(curr_value)
 
 
 func _handle_mb_drag() -> void:
@@ -132,13 +137,15 @@ func _handle_mb_drag() -> void:
 
 func _process_drag_cell(cell: Vector2i) -> void:
 	var old_cell_value: int = game_board.get_cell(cell)
+	if old_cell_value == CELL_INVALID:
+		return
 	if old_cell_value != _last_set_cell_from:
 		return
 	
 	match _last_set_cell_to:
 		CELL_WALL, CELL_ISLAND:
-			game_board.set_cell(cell, _last_set_cell_to, monster.id)
-			game_board.set_half_cell(cell, monster.id)
+			_set_cell(cell, _last_set_cell_to, monster.id)
+			_set_half_cell(cell, monster.id)
 			if _last_set_cell_to == CELL_WALL:
 				_input_sfx = "drop_wall_press"
 			elif _last_set_cell_to == CELL_ISLAND:
@@ -146,7 +153,7 @@ func _process_drag_cell(cell: Vector2i) -> void:
 		CELL_EMPTY:
 			if not _cells_to_erase.has(cell):
 				_cells_to_erase[cell] = true
-				game_board.set_half_cell(cell, monster.id)
+				_set_half_cell(cell, monster.id)
 				if game_board.get_cell(cell) == CELL_WALL:
 					_input_sfx = "drop_wall_release"
 				elif game_board.get_cell(cell) == CELL_ISLAND:
@@ -178,7 +185,7 @@ func _handle_mb_release() -> void:
 		var changes: Array[Dictionary] = []
 		for cell: Vector2i in _cells_to_erase:
 			changes.append({"pos": cell, "value": CELL_EMPTY} as Dictionary[String, Variant])
-		game_board.set_cells(changes, monster.id)
+		_set_cells(changes, monster.id)
 	
 	if game_board.has_half_cells(monster.id):
 		if _last_set_cell_to == CELL_WALL:
@@ -227,13 +234,13 @@ func _handle_rmb_press() -> void:
 			_cells_to_erase[cell] = true
 			_last_set_cell_from = game_board.get_cell(cell)
 			_last_set_cell_to = CELL_EMPTY
-			game_board.set_half_cell(cell, monster.id)
+			_set_half_cell(cell, monster.id)
 			_input_sfx = "drop_island_release"
 		CELL_EMPTY, CELL_WALL:
 			_last_set_cell_from = game_board.get_cell(cell)
 			_last_set_cell_to = CELL_ISLAND
-			game_board.set_cell(cell, CELL_ISLAND, monster.id)
-			game_board.set_half_cell(cell, monster.id)
+			_set_cell(cell, CELL_ISLAND, monster.id)
+			_set_half_cell(cell, monster.id)
 			_input_sfx = "drop_island_press"
 
 
@@ -253,3 +260,27 @@ func _get_cell_from_position(pos: Vector2) -> Vector2i:
 
 func _get_global_cursor_position() -> Vector2:
 	return monster.cursor.global_position
+
+
+func _set_cell(cell_pos: Vector2i, value: int, player_id: int = -1) -> void:
+	if not _is_editable(cell_pos):
+		return
+	game_board.set_cell(cell_pos, value, player_id)
+
+
+func _set_half_cell(cell_pos: Vector2i, player_id: int) -> void:
+	if not _is_editable(cell_pos):
+		return
+	game_board.set_half_cell(cell_pos, player_id)
+
+
+func _set_cells(changes: Array[Dictionary], player_id: int = -1) -> void:
+	var filtered_changes: Array[Dictionary] = changes.filter(func(change: Dictionary) -> bool:
+		return _is_editable(change["pos"]))
+	game_board.set_cells(filtered_changes, player_id)
+
+
+func _set_half_cells(cell_positions: Array[Vector2i], player_id: int) -> void:
+	var filtered_positions: Array[Vector2i] = cell_positions.filter(func(pos: Vector2i) -> bool:
+		return _is_editable(pos))
+	game_board.set_half_cells(filtered_positions, player_id)
