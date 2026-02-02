@@ -70,7 +70,7 @@ func handle(event: InputEvent) -> void:
 	
 	# releasing the mouse button after modifying a puzzle
 	if event is InputEventMouseButton \
-			and not (_lmb_pressed or _rmb_pressed):
+			and not event.pressed:
 		_handle_mb_release()
 	
 	if _input_sfx:
