@@ -85,9 +85,8 @@ func clear() -> void:
 
 
 func set_cell(cell: Vector2i) -> void:
-	var to_point: Vector2 = (Vector2(cell) + Vector2.ONE) * tile_size
-	if not cursorable_rect.has_point(to_point):
-		cursorable_rect = cursorable_rect.expand(to_point)
+	if not cursorable_rect.has_point((Vector2(cell) + Vector2(0.5, 0.5)) * tile_size):
+		cursorable_rect = cursorable_rect.expand((Vector2(cell) + Vector2(1.0, 1.0)) * tile_size)
 
 
 func _find_game_board() -> NurikabeGameBoard:
