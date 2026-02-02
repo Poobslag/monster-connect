@@ -16,6 +16,9 @@ const TARGET_PUZZLE_COUNT: int = 7
 
 @export var draw_debug_paths: bool = false
 
+## Force all puzzles to use the same fixed path. Useful for debugging.
+@export_file("*.txt") var test_puzzle_path: String
+
 var _all_puzzles: Array[String] = Utils.find_data_files(PUZZLE_DIR, "txt")
 var _puzzle_queue: Array[String] = []
 
@@ -81,12 +84,17 @@ func _load_puzzle_info(puzzle_path: String) -> Dictionary[String, Variant]:
 func add_random_puzzle() -> void:
 	var debug_path: Array[Vector2] = []
 	
-	var puzzle_path: String = _next_puzzle_path()
+	var puzzle_path: String
+	if test_puzzle_path:
+		puzzle_path = test_puzzle_path
+	else:
+		puzzle_path = _next_puzzle_path()
 	var new_grid_string: String = NurikabeUtils.load_grid_string_from_file(puzzle_path)
 	
-	if randf() < 0.5:
-		new_grid_string = NurikabeUtils.mirror_grid_string(new_grid_string)
-	new_grid_string = NurikabeUtils.rotate_grid_string(new_grid_string, randi_range(0, 3))
+	if not test_puzzle_path:
+		if randf() < 0.5:
+			new_grid_string = NurikabeUtils.mirror_grid_string(new_grid_string)
+		new_grid_string = NurikabeUtils.rotate_grid_string(new_grid_string, randi_range(0, 3))
 	
 	var game_board: NurikabeGameBoard = GAME_BOARD_SCENE.instantiate()
 	game_board.grid_string = new_grid_string
@@ -97,7 +105,10 @@ func add_random_puzzle() -> void:
 	var new_info: Dictionary[String, Variant] = _load_puzzle_info(puzzle_path)
 	if new_info.has("difficulty"):
 		game_board.set_meta("difficulty", new_info.get("difficulty"))
-		game_board.label_text = _difficulty_label(new_info.get("difficulty"))
+		game_board.label_text = "#%s - %s" % [
+				puzzle_path.get_file().get_basename(),
+				_difficulty_label(new_info.get("difficulty")),
+			]
 	
 	var clue_cell_values: Array[int] = []
 	var clue_cells: Array[Vector2i] = game_board.get_clue_cells()
