@@ -207,6 +207,13 @@ class UnreachableScanner extends NaiveScanner:
 	
 	func update(start_time: int) -> bool:
 		for island: CellGroup in board.islands:
+			if island.clue == 0:
+				# unclued islands
+				for cell in island.cells:
+					visitable[cell] = true
+				continue
+			
+			# clued islands
 			var reachability: int = island.clue - island.size()
 			for liberty: Vector2i in island.liberties:
 				adjacent_clue_cells[liberty] = true
@@ -219,8 +226,8 @@ class UnreachableScanner extends NaiveScanner:
 		
 		queue = reachability_by_cell.keys()
 		while not queue.is_empty():
-			#if out_of_time(start_time):
-				#break
+			if out_of_time(start_time):
+				break
 			
 			_propogate_bfs(queue.pop_front())
 		
