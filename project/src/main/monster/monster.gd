@@ -64,7 +64,7 @@ var _fade_tween: Tween
 var id: int
 
 var on_steppable: bool = false
-var game_board: NurikabeGameBoard
+var cursor_board: NurikabeGameBoard
 
 @onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var fsm: StateMachine = %StateMachine
