@@ -33,7 +33,7 @@ func perform(actor: Variant, delta: float) -> bool:
 	if _next_deduction != null:
 		_process_next_deduction(monster, delta)
 	
-	return monster.game_board.is_finished()
+	return monster.solving_board.is_finished()
 
 
 func exit(actor: Variant) -> void:
@@ -50,7 +50,7 @@ func exit(actor: Variant) -> void:
 func _choose_deduction(monster: SimMonster) -> void:
 	var best_score: float = 0.0
 	for deduction: Deduction in monster.pending_deductions.values():
-		if monster.game_board.get_cell(deduction.pos) != CELL_EMPTY:
+		if monster.solving_board.get_cell(deduction.pos) != CELL_EMPTY:
 			monster.remove_pending_deduction_at(deduction.pos)
 			continue
 		
@@ -65,7 +65,7 @@ func _choose_deduction(monster: SimMonster) -> void:
 func _execute_next_deduction(monster: SimMonster) -> void:
 	if _solver.verbose:
 		print("monster %s deduction: %s" % [monster.id, _next_deduction])
-	var target_pos: Vector2 = monster.game_board.map_to_global(_next_deduction.pos)
+	var target_pos: Vector2 = monster.solving_board.map_to_global(_next_deduction.pos)
 	match _next_deduction.value:
 		CELL_WALL:
 			monster.input.queue_cursor_command(SimInput.LMB_PRESS, target_pos)
@@ -76,7 +76,7 @@ func _execute_next_deduction(monster: SimMonster) -> void:
 
 
 func _process_next_deduction(monster: SimMonster, delta: float) -> void:
-	if monster.game_board.get_cell(_next_deduction.pos) == _next_deduction.value:
+	if monster.solving_board.get_cell(_next_deduction.pos) == _next_deduction.value:
 		_next_deduction = null
 		return
 
@@ -90,13 +90,13 @@ func _score_deduction(monster: SimMonster, deduction: Deduction) -> float:
 	# some deductions score negative; these represent deductions which are too close to the player cursor
 	var score: float = 0.0
 	
-	var deduction_global_pos: Vector2 = monster.game_board.map_to_global(deduction.pos)
+	var deduction_global_pos: Vector2 = monster.solving_board.map_to_global(deduction.pos)
 	var cursor_dist: float = monster.cursor.global_position.distance_to(deduction_global_pos)
 	score += 10.0 * _score_distance(cursor_dist, 300)
 	for other_monster: Monster in get_tree().get_nodes_in_group("monsters"):
 		if other_monster == monster:
 			continue
-		if other_monster.game_board != monster.game_board:
+		if other_monster.cursor_board != monster.cursor_board:
 			continue
 		var other_cursor_dist: float = other_monster.cursor.global_position.distance_to(deduction_global_pos)
 		score -= 20.0 * _score_distance(other_cursor_dist, 150)

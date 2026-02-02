@@ -48,7 +48,7 @@ func _process_cursor_command(delta: float) -> void:
 	if cursor_command.delay > 0:
 		return
 	
-	%PuzzleHandler.game_board = monster.game_board
+	%PuzzleHandler.game_board = monster.cursor_board
 	var event: InputEvent
 	if %Cursor.global_position.distance_to(cursor_command.pos) > CURSOR_POS_EPSILON:
 		if %Cursor.global_position.distance_to(cursor_command.pos) > 10:

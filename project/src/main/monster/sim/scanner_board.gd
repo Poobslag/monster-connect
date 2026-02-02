@@ -24,7 +24,7 @@ var _next_cell_index: int = 0
 func _init(init_monster: SimMonster) -> void:
 	_monster = init_monster
 	
-	var board_cells: Dictionary[Vector2i, int] = _monster.game_board.get_cells()
+	var board_cells: Dictionary[Vector2i, int] = _monster.solving_board.get_cells()
 	for cell: Vector2i in board_cells:
 		var cell_value: int = board_cells[cell]
 		if NurikabeUtils.is_clue(cell_value):

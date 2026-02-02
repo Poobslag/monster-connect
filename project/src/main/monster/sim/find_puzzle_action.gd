@@ -29,7 +29,7 @@ func perform(actor: Variant, _delta: float) -> bool:
 	if target_game_board != null:
 		monster.input.move_to(target_game_board.get_rect().get_center())
 		if dist_to_rect(target_game_board.get_rect(), monster.position) < PUZZLE_APPROACH:
-			monster.game_board = target_game_board
+			monster.solving_board = target_game_board
 			target_game_board = null
 			monster.input.dir = Vector2.ZERO
 			finished = true
@@ -40,12 +40,7 @@ func perform(actor: Variant, _delta: float) -> bool:
 static func dist_to_rect(rect: Rect2, point: Vector2) -> float:
 	var result: float
 	if rect.has_point(point):
-		result = min(
-			abs(point.x - rect.position.x),
-			abs(point.y - rect.position.y),
-			abs(point.x - rect.end.x),
-			abs(point.y - rect.end.y),
-		)
+		result = 0.0
 	else:
 		result = point.clamp(rect.position, rect.end).distance_to(point)
 	return result
