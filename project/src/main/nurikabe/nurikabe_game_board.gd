@@ -381,6 +381,7 @@ func _on_validate_timer_timeout() -> void:
 		for cell: Vector2i in model.cells:
 			if model.get_cell(cell) == CELL_EMPTY:
 				set_cell(cell, CELL_ISLAND)
+		half_cells.clear()
 		
 		puzzle_finished.emit()
 	
