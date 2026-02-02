@@ -11,9 +11,18 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 var _next_deduction: Deduction
 var _next_deduction_remaining_time: float = 0.0
 
+var _curr_deduction: Deduction
+
 var _solver_cooldown_remaining: float = 0.0
 
+var _cursor_commands_by_cell: Dictionary[Vector2i, Array] = {}
+
 @onready var _solver: NaiveSolver = NaiveSolver.find_instance(self)
+
+func enter(actor: Variant) -> void:
+	var monster: SimMonster = actor
+	monster.solving_board.cell_changed.connect(_on_solving_board_cell_changed.bind(monster))
+
 
 func perform(actor: Variant, delta: float) -> bool:
 	if _solver_cooldown_remaining > 0.0:
@@ -45,12 +54,16 @@ func exit(actor: Variant) -> void:
 	_solver_cooldown_remaining = 0.0
 	
 	monster.pending_deductions.clear()
+	_cursor_commands_by_cell.clear()
 
 
 func _choose_deduction(monster: SimMonster) -> void:
 	var best_score: float = 0.0
 	for deduction: Deduction in monster.pending_deductions.values():
 		if monster.solving_board.get_cell(deduction.pos) != CELL_EMPTY:
+			monster.remove_pending_deduction_at(deduction.pos)
+			continue
+		if _cursor_commands_by_cell.has(deduction.pos):
 			monster.remove_pending_deduction_at(deduction.pos)
 			continue
 		
@@ -62,17 +75,19 @@ func _choose_deduction(monster: SimMonster) -> void:
 		monster.remove_pending_deduction_at(_next_deduction.pos)
 
 
-func _execute_next_deduction(monster: SimMonster) -> void:
+func _execute_curr_deduction(monster: SimMonster) -> void:
 	if _solver.verbose:
-		print("monster %s deduction: %s" % [monster.id, _next_deduction])
-	var target_pos: Vector2 = monster.solving_board.map_to_global(_next_deduction.pos)
-	match _next_deduction.value:
+		print("monster %s deduction: %s" % [monster.id, _curr_deduction])
+	var target_pos: Vector2 = monster.solving_board.map_to_global(_curr_deduction.pos)
+	var commands: Array[SimInput.CursorCommand] = []
+	match _curr_deduction.value:
 		CELL_WALL:
-			monster.input.queue_cursor_command(SimInput.LMB_PRESS, target_pos)
-			monster.input.queue_cursor_command(SimInput.LMB_RELEASE, target_pos, 0.1)
+			commands.append(monster.input.queue_cursor_command(SimInput.LMB_PRESS, target_pos))
+			commands.append(monster.input.queue_cursor_command(SimInput.LMB_RELEASE, target_pos, 0.1))
 		CELL_ISLAND:
-			monster.input.queue_cursor_command(SimInput.RMB_PRESS, target_pos)
-			monster.input.queue_cursor_command(SimInput.RMB_RELEASE, target_pos, 0.1)
+			commands.append(monster.input.queue_cursor_command(SimInput.RMB_PRESS, target_pos))
+			commands.append(monster.input.queue_cursor_command(SimInput.RMB_RELEASE, target_pos, 0.1))
+	_cursor_commands_by_cell[_curr_deduction.pos] = commands
 
 
 func _process_next_deduction(monster: SimMonster, delta: float) -> void:
@@ -82,8 +97,9 @@ func _process_next_deduction(monster: SimMonster, delta: float) -> void:
 
 	_next_deduction_remaining_time -= delta
 	if _next_deduction_remaining_time <= 0:
-		_execute_next_deduction(monster)
+		_curr_deduction = _next_deduction
 		_next_deduction = null
+		_execute_curr_deduction(monster)
 
 
 func _score_deduction(monster: SimMonster, deduction: Deduction) -> float:
@@ -105,3 +121,18 @@ func _score_deduction(monster: SimMonster, deduction: Deduction) -> float:
 
 func _score_distance(distance: float, factor: float) -> float:
 	return exp(-distance / factor)
+
+
+func _on_solving_board_cell_changed(cell_pos: Vector2i, _value: int, monster: SimMonster) -> void:
+	if _cursor_commands_by_cell.has(cell_pos):
+		var cursor_press_command: SimInput.CursorCommand = null
+		for cursor_command: SimInput.CursorCommand in _cursor_commands_by_cell[cell_pos]:
+			if cursor_command.action in [SimInput.LMB_PRESS, SimInput.RMB_PRESS] \
+					and monster.input.has_cursor_command(cursor_command):
+				cursor_press_command = cursor_command
+				break
+		if cursor_press_command != null:
+			for cursor_command: SimInput.CursorCommand in _cursor_commands_by_cell[cell_pos]:
+				monster.input.dequeue_cursor_command(cursor_command)
+		
+		_cursor_commands_by_cell.erase(cell_pos)

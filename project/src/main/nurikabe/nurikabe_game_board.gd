@@ -5,6 +5,8 @@ extends Control
 
 signal puzzle_finished
 
+signal cell_changed(cell_pos: Vector2i, value: int)
+
 const MAX_UNDO: int = 200
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
@@ -345,6 +347,8 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 		error_cells.erase(cell_pos)
 		lowlight_cells.erase(cell_pos)
 		_cells_dirty = true
+	
+	cell_changed.emit(cell_pos, value)
 
 
 func validate() -> void:

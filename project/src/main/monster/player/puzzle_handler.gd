@@ -10,6 +10,9 @@ const CELL_SURROUND_ISLAND: int = 822
 
 var game_board: NurikabeGameBoard = null
 
+var lmb_pressed: bool = false
+var rmb_pressed: bool = false
+
 var _cells_to_erase: Dictionary[Vector2i, bool] = {}
 var _input_sfx: String
 var _last_set_cell_from: int = CELL_INVALID
@@ -17,20 +20,8 @@ var _last_set_cell_to: int = CELL_INVALID
 var _prev_cell: Vector2i = Vector2i(-577218, -577218)
 var _last_mouse_pos: Vector2 = Vector2.ZERO
 
-var _lmb_pressed: bool = false
-var _rmb_pressed: bool = false
-
 @onready var input_handler: MonsterInput = get_parent()
 @onready var monster: Monster = Utils.find_parent_of_type(self, Monster)
-
-
-func _update_pressed(event: InputEvent) -> void:
-	if not event is InputEventMouseButton:
-		return
-	if event.button_index == MOUSE_BUTTON_LEFT:
-		_lmb_pressed = event.is_pressed()
-	if event.button_index == MOUSE_BUTTON_RIGHT:
-		_rmb_pressed = event.is_pressed()
 
 
 func handle(event: InputEvent) -> void:
@@ -65,7 +56,7 @@ func handle(event: InputEvent) -> void:
 	
 	# dragging the left or right mouse button on a puzzle
 	if event is InputEventMouseMotion \
-			and (_lmb_pressed or _rmb_pressed):
+			and (lmb_pressed or rmb_pressed):
 		_handle_mb_drag()
 	
 	# releasing the mouse button after modifying a puzzle
@@ -82,10 +73,21 @@ func reset() -> void:
 	_last_set_cell_from = CELL_INVALID
 	_last_set_cell_to = CELL_INVALID
 	_prev_cell = Vector2i(-577218, -577218)
+	lmb_pressed = false
+	rmb_pressed = false
 
 
 func update() -> void:
 	return
+
+
+func _update_pressed(event: InputEvent) -> void:
+	if not event is InputEventMouseButton:
+		return
+	if event.button_index == MOUSE_BUTTON_LEFT:
+		lmb_pressed = event.is_pressed()
+	if event.button_index == MOUSE_BUTTON_RIGHT:
+		rmb_pressed = event.is_pressed()
 
 
 func _handle_lmb_press() -> void:
