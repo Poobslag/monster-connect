@@ -209,7 +209,7 @@ class UnreachableScanner extends NaiveScanner:
 		for island: CellGroup in board.islands:
 			if island.clue == 0:
 				# unclued islands
-				for cell in island.cells:
+				for cell: Vector2i in island.cells:
 					visitable[cell] = true
 				continue
 			
