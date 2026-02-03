@@ -20,7 +20,7 @@ const MOVE: CursorAction = CursorAction.MOVE
 
 var target_puzzle: NurikabeGameBoard
 
-var _cursor_commands: Array[CursorCommand] = []
+var cursor_commands: Array[CursorCommand] = []
 
 @onready var monster: Monster = Utils.find_parent_of_type(self, Monster)
 
@@ -38,20 +38,20 @@ func move_to(target: Vector2) -> void:
 
 func queue_cursor_command(action: CursorAction, pos: Vector2, delay: float = 0.0) -> CursorCommand:
 	var command: CursorCommand = CursorCommand.new(action, pos, delay)
-	_cursor_commands.append(command)
+	cursor_commands.append(command)
 	return command
 
 
 func has_cursor_command(command: CursorCommand) -> bool:
-	return command in _cursor_commands
+	return command in cursor_commands
 
 
 func dequeue_cursor_command(command: CursorCommand) -> void:
-	var command_index: int = _cursor_commands.find(command)
+	var command_index: int = cursor_commands.find(command)
 	if command_index == -1:
 		return
 	
-	_cursor_commands.remove_at(command_index)
+	cursor_commands.remove_at(command_index)
 	if command_index == 0:
 		if %PuzzleHandler.lmb_pressed:
 			var event: InputEventMouseButton = InputEventMouseButton.new()
@@ -66,9 +66,9 @@ func dequeue_cursor_command(command: CursorCommand) -> void:
 
 
 func _process_cursor_command(delta: float) -> void:
-	if _cursor_commands.is_empty():
+	if cursor_commands.is_empty():
 		return
-	var cursor_command: CursorCommand = _cursor_commands.front()
+	var cursor_command: CursorCommand = cursor_commands.front()
 	cursor_command.delay -= delta
 	if cursor_command.delay > 0:
 		return
@@ -100,7 +100,7 @@ func _process_cursor_command(delta: float) -> void:
 				event = InputEventMouseButton.new()
 				event.button_index = MOUSE_BUTTON_RIGHT
 				event.pressed = false
-		_cursor_commands.pop_front()
+		cursor_commands.pop_front()
 	
 	if event:
 		%PuzzleHandler.handle(event)
