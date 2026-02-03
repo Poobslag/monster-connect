@@ -58,6 +58,13 @@ func exit(actor: Variant) -> void:
 
 
 func _choose_deduction(monster: SimMonster) -> void:
+	# search near where cursor will end up after all queued cursor commands
+	var search_center: Vector2i
+	if not monster.input.cursor_commands.is_empty():
+		search_center = monster.input.cursor_commands.back().pos
+	else:
+		search_center = monster.cursor.global_position
+	
 	var best_score: float = 0.0
 	for deduction: Deduction in monster.pending_deductions.values():
 		if monster.solving_board.get_cell(deduction.pos) != CELL_EMPTY:
@@ -67,7 +74,7 @@ func _choose_deduction(monster: SimMonster) -> void:
 			monster.remove_pending_deduction_at(deduction.pos)
 			continue
 		
-		var score: float = _score_deduction(monster, deduction)
+		var score: float = _score_deduction(monster, deduction, search_center)
 		if score > best_score:
 			_next_deduction = deduction
 			best_score = score
@@ -102,12 +109,12 @@ func _process_next_deduction(monster: SimMonster, delta: float) -> void:
 		_execute_curr_deduction(monster)
 
 
-func _score_deduction(monster: SimMonster, deduction: Deduction) -> float:
+func _score_deduction(monster: SimMonster, deduction: Deduction, search_center: Vector2) -> float:
 	# some deductions score negative; these represent deductions which are too close to the player cursor
 	var score: float = 0.0
 	
 	var deduction_global_pos: Vector2 = monster.solving_board.map_to_global(deduction.pos)
-	var cursor_dist: float = monster.cursor.global_position.distance_to(deduction_global_pos)
+	var cursor_dist: float = search_center.distance_to(deduction_global_pos)
 	score += 10.0 * _score_distance(cursor_dist, 300)
 	for other_monster: Monster in get_tree().get_nodes_in_group("monsters"):
 		if other_monster == monster:
