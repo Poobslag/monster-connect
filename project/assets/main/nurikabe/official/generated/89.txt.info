@@ -1,1 +1,90 @@
-{"cells":391,"difficulty":6.72469746770842,"version":0.02}
+{"version":"0.01"}
+
+[metadata]
+difficulty 6.72
+width 22
+height 16
+author poobslag v02
+
+[solution]
+############## . . . . . 6## 3## . . 4#### 5 .
+## 3 . .## .################ .## .###### 7## .
+ .######## . . . . 6## . .## .#### 4## . .## .
+ .## 3 .############ 4## . 4#### . .## .#### .
+ .## .## .## .## . . .###### 6## .#### .## 3##
+ .###### .## 3 .###### 4## . .###### . .## .##
+ .## .## .######## . . .## .#### . 5###### .##
+ .## .## .## .## .######## .## . .#### . 4####
+ .## .## .## .## .## . .## .## .#### . .#### 7
+ .## .## .## .## .## .############ 5#### 4## .
+ .## .## .## .## 4## 4## 2 .## . . . .## .## .
+ .## 6## .## 5############## .########## .## .
+11####10 .#### . . .## 1## . 3## 1## .## .## .
+#### .###### . .############## 1#### .###### .
+## 3 .## . . .## 4 . . .## . 2#### 4 .## .## .
+ 5###### 9###################### 1###### 2####
+ . . . .#### 9 . . . . . . . .#### 1## 1#### 1
+
+[order]
+70 70 70 64 64 64 60 60 57 57 54 54 16 0 14 14 12 12 12 1 0 0 2 3 5 3 2 4 49 49 53 78 83 0 4 0 3 3
+70 47 70 65 64 65 61 58 59 55 56 52 53 1 15 13 15 2 11 1 49 0 2 6 2 2 2 1 46 51 77 82 0 - 0 - 0 3
+81 70 66 71 70 66 70 60 56 19 0 54 51 15 15 15 15 10 11 9 2 5 2 0 21 0 42 0 46 - 76 78 83 0 0 0 - 3
+81 41 31 79 78 70 71 70 25 0 12 19 17 11 0 17 18 17 17 12 8 3 6 0 0 1 0 49 49 73 53 76 83 0 - 0 0 1
+40 80 79 78 78 78 79 85 86 23 20 2 50 0 10 19 33 31 18 19 14 49 6 0 39 2 2 0 0 0 - 76 76 - 0 0 - 0
+35 37 35 37 78 36 17 84 24 87 22 0 50 49 20 35 33 25 25 19 20 15 7 38 0 1 2 2 51 71 73 55 3 77 77 101 0 -
+23 33 35 32 35 77 76 83 64 88 89 51 53 51 48 43 42 4 22 23 16 22 17 0 49 4 2 3 69 76 72 74 - 75 99 100 1 0
+23 22 31 33 31 33 76 32 84 64 90 90 56 54 53 46 44 40 31 23 47 22 23 7 6 16 18 67 77 76 96 75 3 98 1 0 102 -
+15 22 20 25 31 25 31 75 74 85 91 91 55 57 47 54 45 37 37 33 0 24 46 12 15 19 18 19 68 - 96 97 97 - 0 - 0 104
+15 14 20 19 23 25 23 25 22 73 72 92 85 57 59 54 56 11 34 35 46 31 25 57 20 19 20 19 95 95 77 97 102 0 - 0 105 104
+12 14 5 19 17 22 23 17 0 0 0 0 0 84 83 84 85 57 69 68 37 35 33 21 20 21 20 21 79 108 - 109 103 3 3 3 106 107
+12 2 29 0 17 11 28 22 21 23 92 0 85 85 93 1 0 86 86 68 67 38 37 33 22 21 22 21 107 107 108 113 114 111 3 107 129 134
+28 11 0 10 8 15 15 20 23 23 0 52 0 63 60 0 7 0 87 64 39 38 6 31 31 24 22 24 105 109 112 112 114 127 128 131 133 130
+1 1 9 6 9 10 14 17 19 23 24 0 62 1 0 41 0 88 82 5 2 5 4 33 25 29 26 24 111 111 110 117 118 126 132 133 133 133
+0 27 2 8 8 11 11 12 36 20 25 25 25 27 41 0 0 51 3 2 2 2 3 31 31 27 27 27 107 - 116 125 125 126 133 133 133 133
+25 0 5 3 5 7 12 12 15 19 22 25 26 2 28 0 44 0 1 0 62 1 0 93 102 102 102 112 114 115 123 124 126 125 133 133 133 3
+2 2 2 6 6 7 27 14 14 17 20 23 30 30 29 1 0 44 0 22 0 0 94 99 99 102 103 113 116 123 123 123 - 127 127 0 1 -
+21 19 19 25 22 26 30 31 30 31 33 35 32 35 33 3 44 66 44 20 88 95 98 98 102 102 105 117 122 122 123 124 0 1 0 - 0 0
+0 19 18 21 23 7 25 29 30 29 30 31 33 31 2 1 95 0 3 20 87 96 96 99 99 104 119 121 121 123 123 0 - 0 - 0 0 -
+14 14 17 17 16 21 23 26 28 23 0 29 30 0 0 1 4 83 2 17 63 89 98 98 102 102 120 120 122 122 123 124 0 - 0 - 0 0
+11 12 16 16 16 16 15 21 20 0 0 29 0 0 0 0 4 0 2 17 88 88 90 99 99 104 - 121 121 123 123 124 2 2 1 0 - 0
+11 2 9 14 12 14 0 19 23 23 28 0 98 0 0 6 56 0 15 14 - - - - - - - - - - - - - - - - - -
+1 0 9 9 12 0 35 3 16 25 26 29 0 31 31 3 0 73 13 14 - - - - - - - - - - - - - - - - - -
+0 4 3 7 5 0 0 9 9 14 26 0 30 54 4 33 74 73 12 14 - - - - - - - - - - - - - - - - - -
+2 0 7 8 11 3 7 7 11 11 0 45 0 0 33 33 75 81 - - - - - - - - - - - - - - - - - - - -
+3 7 7 7 11 5 10 0 9 12 12 0 19 47 21 52 79 73 - - - - - - - - - - - - - - - - - - - -
+5 6 0 9 7 3 0 12 3 11 14 14 19 19 55 35 85 85 - - - - - - - - - - - - - - - - - - - -
+19 0 19 0 1 3 1 0 5 5 12 16 15 21 55 24 - - - - - - - - - - - - - - - - - - - - - -
+7 1 0 15 0 13 0 11 3 7 7 14 19 19 23 57 - - - - - - - - - - - - - - - - - - - - - -
+- 18 17 17 14 14 12 12 - 10 6 7 3 0 2 2 - - - - - - - - - - - - - - - - - - - - - -
+
+[reason]
+uL uL uL ur ur ur im ix ix ix ix ix ie ac im id ix ix ci wx ac i1 ix ci wx wx im wx ix ix ix ix ix i1 wx i1 im ix
+uL wx ul p3 ur p3 wx ci wx cb wx ci wx wx ix ci ix cb wx wx uL ac ix ix ix im ix wx wx id id id i1 - i1 - ac ix
+ix uL cb im uL ie ul ix ix wx ac ix ix im ix im im ix id ix ix wx ix ac ix ac ix i1 id - ix ix ix i1 i1 i1 - ix
+ix cb Bi p3 im uL im uL wx ac ix id ix wx ac wx p3 ix wx ix wx ci ix ac ac wx i1 ix im wx cb im im i1 - i1 i1 wx
+ix im p3 im ix im p3 im p3 ix ix cb wx ac ix wx ix wx wx ix wx ul im ac ix ix ix i1 ac ac - ix im - i1 i1 - i1
+ix wx im wx ix cb ix p3 ci im id ac id ix ix wx im im ix ix wx ix wx wx ac wx ix im ix ix id ci cb ix ix ie i1 -
+ix wx ix ci ix wx im ur ur p3 ie ix id ix wx wx ix ix ci wx ci ix wx ac ix wx im wx wx ix ci p3 - im wx p3 wx ac
+ix wx ix wx ix wx ix ci p3 ur im im wx ix wx ix ix wx wx ix im im wx id ix ix wx ix wx im wx im ci ix wx i1 wx -
+ix wx ix wx ix wx ix id ix im p3 p3 ci ix ci ix wx im ix ix ac wx uL wx wx ix wx ix cb - ix ix im - i1 - i1 ix
+ix wx ix wx ix wx ix id ix id ix im im im wx im wx ix ci id uL id ix ix wx ix wx ix ix im cb im wx ac - i1 wx ix
+ix wx ix wx ix wx ix cb ac ac ac ac i1 p3 ur p3 ie ix p3 im ix wx ix ix wx ix wx ix ci wx - ix p3 im ix im p3 ix
+ix cb p3 ac ix cb im id cb im im i1 im im ix wx i1 im im im ie im ix wx wx ix wx ix ix ix id wx ix wx im wx Bi ix
+im wx ac wx ix wx id ix ix ix i1 ic i1 p3 im i1 ix i1 p3 ur p3 im ie im ix ix wx ix wx ix ix im im wx p3 wv iB ci
+wx wx ix ci id wx ix ix id im wx i1 wb wx ac im i1 im ix wx im wx ie wx ci wx wx ix wx id ci wx p3 im ie is is is
+ac wx ix wx ix ix ix id ci ix ix ix im p3 im ac i1 wx p3 im ix im p3 ix ix ix ix ix cb - ix ix ix im is is is is
+ix ac wx ci id wx wx wx id wx wx im wx ci im i1 uL i1 wx i1 im wx i1 ix ix ix im ix ix id im wx im ci is is is ix
+ix ix ix ix im wx ci ix ix ix ix ix ie ie p3 wx i1 ul i1 wx i1 i1 wx wx wx im wx wx ix ix ix im - ix im i1 wx -
+ix wx id ix ci ix wx ix wx ix wx ix ci ix wx ix uL im uL wx wx ix ix ix ix ix ix wx wx wx im wx i1 wx i1 - i1 i1
+ac wx ix ix id cb id ix wx ix wx ix id ix wx wx is ac wx wx im wx wx wx wx wx ix ix ix ix ix i1 - i1 - i1 i1 -
+wx wx ix wx im wx ix ix id ix ac ix id ac i1 wx ix im im wx wx ix ix ix ix im wx wx wx wx im wx i1 - ac - i1 i1
+wx ix ix im ix im wx id ci ac i1 ix i1 i1 ac i1 wx ci ix wx wx wx wx wx wx wx - ix ix ix ix ix wx wx wx i1 - i1
+wx ix im wx ix wx ac ix ix im id i1 ik i1 i1 ix im ac ix wx - - - - - - - - - - - - - - - - - -
+wx ac ix im ix ac ix ix wx wx ix ix i1 ix im ix i1 ur ix wx - - - - - - - - - - - - - - - - - -
+ac wx ix id ix ac ac wx wx ix ix i1 wx id ci ix p3 ur wx wx - - - - - - - - - - - - - - - - - -
+ix ac im wx im cb ix ix ix ix i1 id i1 ac wx im ie uL - - - - - - - - - - - - - - - - - - - -
+ix ix ix im ix id wx ac wx wx wx i1 im id ix ic cb ur - - - - - - - - - - - - - - - - - - - -
+id wx i1 wx ix ix ac ix ix ix ix ix ix im ix ci ix ix - - - - - - - - - - - - - - - - - - - -
+ix i1 ix i1 wx ix wx ac wx wx wx wx ci wx im ci - - - - - - - - - - - - - - - - - - - - - -
+ix wx i1 ci ac wx ac wx ix ix ix ix ix ix ix ix - - - - - - - - - - - - - - - - - - - - - -
+- wx im ix ix ix ix ix - wx ci wx wx i1 im ix - - - - - - - - - - - - - - - - - - - - - -
