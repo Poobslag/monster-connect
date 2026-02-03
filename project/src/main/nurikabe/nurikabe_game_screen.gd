@@ -72,15 +72,6 @@ func refresh_game_boards() -> void:
 		add_random_puzzle()
 
 
-func _load_puzzle_info(puzzle_path: String) -> Dictionary[String, Variant]:
-	var result: Dictionary[String, Variant] = {}
-	var info_text: String = FileAccess.get_file_as_string(puzzle_path + ".info")
-	var test_json_conv: JSON = JSON.new()
-	test_json_conv.parse(info_text)
-	result.assign(test_json_conv.data)
-	return result
-
-
 func add_random_puzzle() -> void:
 	var debug_path: Array[Vector2] = []
 	
@@ -102,12 +93,13 @@ func add_random_puzzle() -> void:
 	game_board.puzzle_finished.connect(%ResultsOverlay._on_game_board_puzzle_finished)
 	game_board.set_meta("puzzle_path", puzzle_path)
 	
-	var new_info: Dictionary[String, Variant] = _load_puzzle_info(puzzle_path)
-	if new_info.has("difficulty"):
-		game_board.set_meta("difficulty", new_info.get("difficulty"))
+	var info_path: String = puzzle_path + ".info"
+	if FileAccess.file_exists(info_path):
+		var saver: PuzzleInfoSaver = PuzzleInfoSaver.new()
+		game_board.info = saver.load_puzzle_info(puzzle_path + ".info")
 		game_board.label_text = "#%s - %s" % [
 				puzzle_path.get_file().get_basename(),
-				_difficulty_label(new_info.get("difficulty")),
+				_difficulty_label(game_board.info.get("difficulty")),
 			]
 	
 	var clue_cell_values: Array[int] = []
