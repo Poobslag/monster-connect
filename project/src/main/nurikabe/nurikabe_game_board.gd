@@ -54,6 +54,8 @@ var puzzle_dimensions: Vector2i
 ## 	- First three clues (reading order) are 4, 2, 3
 var string_id: String
 
+var info: PuzzleInfo
+
 var _cells_dirty: bool = false
 
 var _undo_stack: Array[UndoAction] = []
