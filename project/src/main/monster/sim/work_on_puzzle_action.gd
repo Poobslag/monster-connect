@@ -4,8 +4,6 @@ extends GoapAction
 const SOLVER_COOLDOWN: float = 3.0
 const IDLE_COOLDOWN: float = 3.0
 
-
-
 const UNKNOWN_REASON: Deduction.Reason = Deduction.Reason.UNKNOWN
 
 ## starting techniques
@@ -124,7 +122,7 @@ func perform(actor: Variant, delta: float) -> bool:
 		_choose_deduction(monster)
 		if _next_deduction != null:
 			_next_deduction_remaining_time = DEDUCTION_DELAY_FOR_REASON.get(_next_deduction.reason, 0.6) \
-					 * randf_range(1.0, 1.5)
+					* randf_range(1.0, 1.5)
 	
 	if _next_deduction != null:
 		_process_next_deduction(monster, delta)
