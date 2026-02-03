@@ -1,1 +1,55 @@
-{"cells":80,"difficulty":7.28207470325659,"version":0.02}
+{"version":"0.01"}
+
+[metadata]
+difficulty 7.28
+width 7
+height 9
+author poobslag v02
+
+[solution]
+################
+## . . . .## .##
+## 6#### .## .##
+ 7##10###### 3##
+ .## .## . 2## 3
+ .## .######## .
+ .## .## 2 .## .
+ .## .##########
+ .## . . . . .##
+ .##############
+
+[order]
+4 4 4 6 6 8 8 9 9 5 5
+1 2 5 5 7 3 8 4 19 2 5
+0 2 0 6 7 7 2 1 22 2 1
+0 0 13 8 7 0 20 0 28 3 0
+2 1 9 21 21 9 0 30 28 0 -
+2 10 12 22 2 20 1 2 31 1 2
+11 12 12 12 8 19 2 2 31 2 2
+14 13 12 25 20 14 18 2 9 0 2
+14 16 24 23 23 20 19 18 38 11 2
+17 15 23 23 23 23 18 18 39 2 31
+2 4 2 4 0 1 2 0 3 31 32
+5 5 5 5 0 4 2 5 31 32 33
+6 6 5 5 7 3 5 31 31 32 -
+42 28 0 35 35 - 0 31 30 1 0
+- 0 - 0 35 0 - 0 23 24 -
+43 28 0 57 - 56 0 28 28 2 25
+
+[reason]
+wx wx wx wx wx wx im wx ur wx wx
+wx ix ix ix ix ci ix wx Bh ix wx
+ac ci ac wx ix im ix wx wx ix wx
+i1 ac wx wx im ac uL ac wx wx ac
+ix wx ix im ix im ac Bi wx ac -
+ix wx ix wx ci im wx ix wx wx ix
+ix iB ik iB im p3 im ix wx im ix
+ix wx ik im im ci ur im ur i1 im
+ix wx p3 ul ul ie p3 ur p3 ix i1
+ix ci uL uL uL uL ur ur ie i1 uL
+ix id ix id ac wx ix i1 ix uL p3
+ix im ix im i1 id ix wx ul im ie
+ix im im ci ix ci ix uL ul im -
+Bj iC i1 im ix - i1 uL ie wx ac
+- i1 - i1 im i1 - i1 pk id -
+ix ur i1 ix - Bj i1 ur ur ci ix
