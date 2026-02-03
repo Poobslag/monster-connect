@@ -36,8 +36,8 @@ func move_to(target: Vector2) -> void:
 		dir = Vector2.ZERO
 
 
-func queue_cursor_command(action: CursorAction, pos: Vector2, delay: float = 0.0) -> CursorCommand:
-	var command: CursorCommand = CursorCommand.new(action, pos, delay)
+func queue_cursor_command(action: CursorAction, pos: Vector2, delay: float = 0.0, speed: float = 1.0) -> CursorCommand:
+	var command: CursorCommand = CursorCommand.new(action, pos, delay, speed)
 	cursor_commands.append(command)
 	return command
 
@@ -76,10 +76,15 @@ func _process_cursor_command(delta: float) -> void:
 	%PuzzleHandler.game_board = monster.cursor_board
 	var event: InputEvent
 	if %Cursor.global_position.distance_to(cursor_command.pos) > CURSOR_POS_EPSILON:
-		if %Cursor.global_position.distance_to(cursor_command.pos) > 10:
-			%Cursor.global_position = lerp(%Cursor.global_position, cursor_command.pos, 1.0 - exp(-10.0 * delta))
+		var lerp_pos: Vector2 = lerp(%Cursor.global_position, cursor_command.pos,
+					1.0 - exp(-10.0 * cursor_command.speed * delta))
+		var move_toward_pos: Vector2 = %Cursor.global_position.move_toward(cursor_command.pos,
+					300 * cursor_command.speed * delta)
+		if lerp_pos.distance_to(cursor_command.pos) < move_toward_pos.distance_to(cursor_command.pos):
+			%Cursor.global_position = lerp_pos
 		else:
-			%Cursor.global_position = %Cursor.global_position.move_toward(cursor_command.pos, 300 * delta)
+			%Cursor.global_position = move_toward_pos
+		
 		event = InputEventMouseMotion.new()
 		event.position = %Cursor.global_position
 	else:
@@ -110,8 +115,10 @@ class CursorCommand:
 	var action: CursorAction
 	var pos: Vector2
 	var delay: float
+	var speed: float = 1.0
 	
-	func _init(init_action: CursorAction, init_pos: Vector2, init_delay: float = 0.0) -> void:
+	func _init(init_action: CursorAction, init_pos: Vector2, init_delay: float = 0.0, init_speed: float = 1.0) -> void:
 		action = init_action
 		pos = init_pos
 		delay = init_delay
+		speed = init_speed
