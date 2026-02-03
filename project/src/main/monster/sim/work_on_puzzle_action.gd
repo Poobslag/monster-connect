@@ -2,6 +2,7 @@ class_name WorkOnPuzzleAction
 extends GoapAction
 
 const SOLVER_COOLDOWN: float = 3.0
+const IDLE_COOLDOWN: float = 3.0
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
@@ -10,6 +11,7 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 var _next_deduction: Deduction
 var _next_deduction_remaining_time: float = 0.0
+var _next_idle_remaining_time: float = randf_range(0, IDLE_COOLDOWN)
 
 var _curr_deduction: Deduction
 
@@ -41,6 +43,8 @@ func perform(actor: Variant, delta: float) -> bool:
 	
 	if _next_deduction != null:
 		_process_next_deduction(monster, delta)
+	else:
+		_process_idle_cursor(monster, delta)
 	
 	return monster.solving_board.is_finished()
 
@@ -107,6 +111,28 @@ func _process_next_deduction(monster: SimMonster, delta: float) -> void:
 		_curr_deduction = _next_deduction
 		_next_deduction = null
 		_execute_curr_deduction(monster)
+
+
+func _process_idle_cursor(monster: SimMonster, delta: float) -> void:
+	if not monster.input.cursor_commands.is_empty():
+		return
+	if _next_idle_remaining_time > 0:
+		_next_idle_remaining_time -= delta
+		return
+	
+	var board_rect: Rect2 = monster.solving_board.get_global_cursorable_rect()
+	var pos: Vector2 = monster.cursor.global_position
+	
+	# move the cursor randomly, "bouncing off" the edge of the board
+	var pos_delta: Vector2 = Vector2(randf_range(-60, 60), randf_range(-60, 60))
+	if not board_rect.has_point(Vector2(pos.x, pos.y + pos_delta.y)):
+		pos_delta.y *= -1
+	if not board_rect.has_point(Vector2(pos.x + pos_delta.x, pos.y)):
+		pos_delta.x *= -1
+	
+	pos = (pos + pos_delta).clamp(board_rect.position, board_rect.end)
+	monster.input.queue_cursor_command(SimInput.MOVE, pos, 0.0, 0.33)
+	_next_idle_remaining_time = IDLE_COOLDOWN
 
 
 func _score_deduction(monster: SimMonster, deduction: Deduction, search_center: Vector2) -> float:
