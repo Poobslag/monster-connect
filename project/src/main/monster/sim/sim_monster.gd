@@ -22,6 +22,16 @@ func _process(delta: float) -> void:
 		boredom = clamp(boredom - delta * BOREDOM_PER_SECOND, 0, 100)
 
 
+## Returns the global cursor position after any queued cursor commands.
+func get_final_cursor_position() -> Vector2:
+	var result: Vector2i
+	if not input.cursor_commands.is_empty():
+		result = input.cursor_commands.back().pos
+	else:
+		result = cursor.global_position
+	return result
+
+
 func add_pending_deduction(init_pos: Vector2i, init_value: int,
 		init_reason: Deduction.Reason = Deduction.Reason.UNKNOWN) -> bool:
 	if pending_deductions.has(init_pos):
