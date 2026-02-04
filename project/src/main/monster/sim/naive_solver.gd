@@ -75,6 +75,7 @@ func is_move_requested(monster: SimMonster) -> bool:
 func request_move(monster: SimMonster) -> void:
 	var scanners: Array[NaiveScanner] = [
 		NaiveScanners.AdjacentIslandScanner.new(),
+		NaiveScanners.CheatScanner.new(),
 		NaiveScanners.IslandExpansionScanner.new(),
 		NaiveScanners.IslandMoatScanner.new(),
 		NaiveScanners.PoolScanner.new(),

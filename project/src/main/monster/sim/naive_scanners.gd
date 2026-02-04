@@ -5,7 +5,9 @@ const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
+const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 const NEIGHBOR_DIRS: Array[Vector2i] = NurikabeUtils.NEIGHBOR_DIRS
+const ADJACENT_DIRS: Array[Vector2i] = NurikabeUtils.ADJACENT_DIRS
 
 ## break-in techniques
 const ISLAND_OF_ONE: Deduction.Reason = Deduction.Reason.ISLAND_OF_ONE
@@ -126,6 +128,74 @@ class AdjacentIslandScanner extends NaiveScanner:
 		return result
 
 
+class CheatScanner extends NaiveScanner:
+	const NO_ORDER: int = 999999
+	
+	var best_order: int = NO_ORDER
+	var best_cells: Array[Vector2i] = []
+	var queue: Array[Vector2i] = []
+	var visited: Dictionary[Vector2i, bool] = {}
+	
+	func update(start_time: int) -> bool:
+		if monster.solving_board.hint_model == null:
+			return true
+		
+		if queue.is_empty():
+			# find the nearest empty cell to the monster's cursor
+			var cursor_cell: Vector2i = monster.solving_board.global_to_map(\
+					monster.get_final_cursor_position())
+			var nearest_empty_cell: Vector2i = POS_NOT_FOUND
+			var nearest_distance: float = 999999.0
+			for cell: Vector2i in board.cells:
+				if not should_deduce(cell):
+					continue
+				var distance: float = cell.distance_to(cursor_cell)
+				if distance < nearest_distance:
+					nearest_distance = distance
+					nearest_empty_cell = cell
+			
+			if nearest_empty_cell != POS_NOT_FOUND:
+				# initialize the queue with the nearest empty cell
+				best_cells = [nearest_empty_cell]
+				queue.append(nearest_empty_cell)
+		
+		while not queue.is_empty():
+			if out_of_time(start_time):
+				break
+			_propagate_bfs(queue.pop_front())
+		
+		if queue.is_empty():
+			for cell: Vector2i in best_cells:
+				if not should_deduce(cell):
+					continue
+				monster.add_pending_deduction(
+						cell,
+						monster.solving_board.hint_model.solution_grid[cell],
+						monster.solving_board.hint_model.reason_grid[cell])
+		
+		return queue.is_empty()
+	
+	
+	func _propagate_bfs(cell: Vector2i) -> void:
+		for dir: Vector2i in ADJACENT_DIRS:
+			var neighbor: Vector2i = cell + dir
+			if visited.has(neighbor):
+				continue
+			visited[neighbor] = true
+			if board.cells.get(neighbor, CELL_INVALID) != CELL_EMPTY:
+				continue
+			var order: int = monster.solving_board.hint_model.order_grid.get(neighbor, NO_ORDER)
+			if order > best_order:
+				continue
+			
+			if order == best_order:
+				best_cells.append(neighbor)
+			elif order < best_order:
+				best_order = order
+				best_cells = [neighbor]
+			queue.append(neighbor)
+
+
 class IslandMoatScanner extends NaiveScanner:
 	var next_island_index: int = 0
 	
@@ -208,30 +278,31 @@ class UnreachableScanner extends NaiveScanner:
 	var queue: Array[Vector2i] = []
 	
 	func update(start_time: int) -> bool:
-		for island: CellGroup in board.islands:
-			if island.clue == 0:
-				# unclued islands
-				for cell: Vector2i in island.cells:
-					visitable[cell] = true
-				continue
+		if queue.is_empty():
+			for island: CellGroup in board.islands:
+				if island.clue == 0:
+					# unclued islands
+					for cell: Vector2i in island.cells:
+						visitable[cell] = true
+					continue
+				
+				# clued islands
+				var reachability: int = island.clue - island.size()
+				for liberty: Vector2i in island.liberties:
+					adjacent_clue_cells[liberty] = true
+					if reachability > 0:
+						reachability_by_cell[liberty] = reachability
 			
-			# clued islands
-			var reachability: int = island.clue - island.size()
-			for liberty: Vector2i in island.liberties:
-				adjacent_clue_cells[liberty] = true
-				if reachability > 0:
-					reachability_by_cell[liberty] = reachability
+			for cell: Vector2i in board.cells:
+				if board.cells[cell] == CELL_EMPTY and not adjacent_clue_cells.has(cell):
+					visitable[cell] = true
+			queue = reachability_by_cell.keys()
 		
-		for cell: Vector2i in board.cells:
-			if board.cells[cell] == CELL_EMPTY and not adjacent_clue_cells.has(cell):
-				visitable[cell] = true
-		
-		queue = reachability_by_cell.keys()
 		while not queue.is_empty():
 			if out_of_time(start_time):
 				break
 			
-			_propogate_bfs(queue.pop_front())
+			_propagate_bfs(queue.pop_front())
 		
 		if queue.is_empty():
 			for cell: Vector2i in visitable:
@@ -243,7 +314,7 @@ class UnreachableScanner extends NaiveScanner:
 		return queue.is_empty()
 	
 	
-	func _propogate_bfs(cell: Vector2i) -> void:
+	func _propagate_bfs(cell: Vector2i) -> void:
 		var reachability: int = reachability_by_cell[cell]
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor: Vector2i = cell + neighbor_dir

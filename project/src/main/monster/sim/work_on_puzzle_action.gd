@@ -65,12 +65,7 @@ func exit(actor: Variant) -> void:
 
 
 func _choose_deduction(monster: SimMonster) -> void:
-	# search near where cursor will end up after all queued cursor commands
-	var search_center: Vector2i
-	if not monster.input.cursor_commands.is_empty():
-		search_center = monster.input.cursor_commands.back().pos
-	else:
-		search_center = monster.cursor.global_position
+	var search_center: Vector2i = monster.get_final_cursor_position()
 	
 	var best_score: float = 0.0
 	for deduction: Deduction in monster.pending_deductions.values():
