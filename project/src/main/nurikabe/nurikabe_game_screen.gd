@@ -73,21 +73,26 @@ func refresh_game_boards() -> void:
 
 
 func add_random_puzzle() -> void:
-	var debug_path: Array[Vector2] = []
+	var puzzle_path: String = test_puzzle_path if test_puzzle_path else _next_puzzle_path()
+	var game_board: NurikabeGameBoard = GAME_BOARD_SCENE.instantiate()
 	
-	var puzzle_path: String
-	if test_puzzle_path:
-		puzzle_path = test_puzzle_path
-	else:
-		puzzle_path = _next_puzzle_path()
+	_attach_puzzle_info(game_board, puzzle_path)
+	_generate_board_string_id(game_board, puzzle_path)
+	_position_board_in_world(game_board)
+
+
+func _attach_puzzle_info(game_board: NurikabeGameBoard, puzzle_path: String) -> void:
 	var new_grid_string: String = NurikabeUtils.load_grid_string_from_file(puzzle_path)
 	
 	if not test_puzzle_path:
-		if randf() < 0.5:
+		var mirrored: bool = randf() < 0.5
+		if mirrored:
 			new_grid_string = NurikabeUtils.mirror_grid_string(new_grid_string)
-		new_grid_string = NurikabeUtils.rotate_grid_string(new_grid_string, randi_range(0, 3))
+		game_board.set_meta("mirrored", mirrored)
+		var rotated_turns: int = randi_range(0, 3)
+		game_board.set_meta("rotation_turns", rotated_turns)
+		new_grid_string = NurikabeUtils.rotate_grid_string(new_grid_string, rotated_turns)
 	
-	var game_board: NurikabeGameBoard = GAME_BOARD_SCENE.instantiate()
 	game_board.grid_string = new_grid_string
 	game_board.import_grid()
 	game_board.puzzle_finished.connect(%ResultsOverlay._on_game_board_puzzle_finished)
@@ -101,7 +106,14 @@ func add_random_puzzle() -> void:
 				puzzle_path.get_file().get_basename(),
 				_difficulty_label(game_board.info.get("difficulty")),
 			]
-	
+		
+		game_board.hint_model = PuzzleHintModel.new(
+				game_board.info,
+				game_board.get_meta("mirrored", false),
+				game_board.get_meta("rotation_turns", 0))
+
+
+func _generate_board_string_id(game_board: NurikabeGameBoard, puzzle_path: String) -> void:
 	var clue_cell_values: Array[int] = []
 	var clue_cells: Array[Vector2i] = game_board.get_clue_cells()
 	var clue_cells_str: String
@@ -117,6 +129,10 @@ func add_random_puzzle() -> void:
 		game_board.label_text.to_lower().left(3),
 		clue_cells_str,
 	]
+
+
+func _position_board_in_world(game_board: NurikabeGameBoard) -> void:
+	var debug_path: Array[Vector2] = []
 	
 	%GameBoards.add_child(game_board)
 	

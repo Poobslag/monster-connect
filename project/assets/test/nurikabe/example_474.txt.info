@@ -1,0 +1,37 @@
+{"version":"0.01"}
+
+[metadata]
+difficulty 0.00
+width 4
+height 7
+author poobslag v02
+
+[solution]
+ 3 . .## .
+######## 2
+ 1## . 2##
+##########
+ 3## . 2##
+ .###### 5
+ .## . . .
+######## .
+
+[order]
+- 5 5 5 5
+0 1 4 0 -
+- 0 3 - 0
+0 1 2 0 1
+- 5 5 - 0
+7 6 5 0 -
+7 7 8 9 5
+7 8 10 12 11
+
+[reason]
+- ix ix im ix
+i1 wx im ac -
+- i1 p3 - ac
+i1 wx wx ac wx
+- im ix - ac
+ix wx im ac -
+ix im p3 ul ix
+im wx Bj im Bi

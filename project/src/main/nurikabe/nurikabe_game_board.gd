@@ -55,6 +55,7 @@ var puzzle_dimensions: Vector2i
 var string_id: String
 
 var info: PuzzleInfo
+var hint_model: PuzzleHintModel
 
 var _cells_dirty: bool = false
 

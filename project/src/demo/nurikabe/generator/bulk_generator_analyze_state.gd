@@ -91,8 +91,10 @@ func _get_order_string() -> String:
 		var line: Array[String] = []
 		for x: int in range(rect.position.x, rect.end.x + 1):
 			var cell: Vector2i = Vector2i(x, y)
-			var cell_value: int = _order_by_cell.get(cell, -1)
-			var cell_string: String = "-" if cell_value == -1 else str(cell_value)
+			var cell_string: String = "-"
+			if _order_by_cell.has(cell):
+				var cell_value: int = _order_by_cell.get(cell, -1)
+				cell_string = str(cell_value)
 			line.append(cell_string)
 		lines.append(" ".join(line))
 	return "\n".join(lines)
@@ -108,8 +110,10 @@ func _get_reason_string() -> String:
 		var line: Array[String] = []
 		for x: int in range(rect.position.x, rect.end.x + 1):
 			var cell: Vector2i = Vector2i(x, y)
-			var reason: Deduction.Reason = _reason_by_cell.get(cell, Deduction.Reason.UNKNOWN)
-			var cell_string: String = ReasonCode.encode(reason)
+			var cell_string: String = "-"
+			if _reason_by_cell.has(cell):
+				var reason: Deduction.Reason = _reason_by_cell.get(cell, Deduction.Reason.UNKNOWN)
+				cell_string = ReasonCode.encode(reason)
 			line.append(cell_string)
 		lines.append(" ".join(line))
 	return "\n".join(lines)

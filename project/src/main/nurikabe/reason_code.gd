@@ -40,7 +40,7 @@ const ISLAND_STRANGLE: Deduction.Reason = Deduction.Reason.ISLAND_STRANGLE
 const WALL_STRANGLE: Deduction.Reason = Deduction.Reason.WALL_STRANGLE
 
 const CODES: Dictionary[String, Deduction.Reason] = {
-	"-": UNKNOWN_REASON,
+	"zz": UNKNOWN_REASON,
 	
 	# break-in techniques
 	"i1": ISLAND_OF_ONE,
