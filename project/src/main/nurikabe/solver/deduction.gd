@@ -11,34 +11,36 @@ enum FunAxis {
 enum Reason {
 	UNKNOWN,
 	
-	# starting techniques
+	# Break-in techniques - Applied at puzzle start by examining clue numbers
 	ISLAND_OF_ONE, # surround single-square island with walls
 	ADJACENT_CLUES, # wall off a liberty shared between two clues
 	
-	# basic techniques
+	# Easy techniques - Obvious moves novices can find by examining a few nearby cells
+	ISLAND_BUBBLE, # fill in an empty cell surrounded by islands
+	ISLAND_DIVIDER, # add a wall to keep two islands apart
+	ISLAND_EXPANSION, # expand an island to a cell needed to fulfill its clue
+	ISLAND_MOAT, # seal a completed island with walls
+	POOL_TRIPLET, # add an island to avoid a 2x2 wall area
+	WALL_BUBBLE, # wall in a cell surrounded by walls
+	WALL_EXPANSION, # expand a wall in the only possible direction
+	
+	# Standard techniques - Require spatial reasoning or specialized puzzle knowledge
 	CORNER_BUFFER, # add a wall diagonally to separate an island from another island with only two liberties
 	CORNER_ISLAND, # add a wall diagonally from an island with only two liberties
-	ISLAND_BUBBLE, # fill in an empty cell surrounded by islands
 	ISLAND_BUFFER, # add a wall to preserve space for an island to grow
 	ISLAND_CHAIN, # add a wall to avoid connecting an island chain
 	ISLAND_CHAIN_BUFFER, # add a wall to prevent a chain cycle from all reachable clues
 	ISLAND_CHOKEPOINT, # expand an island through a narrow passage
 	ISLAND_CONNECTOR, # connect a clueless island to a clued island
-	ISLAND_DIVIDER, # add a wall to keep two islands apart
-	ISLAND_EXPANSION, # expand an island to a cell needed to fulfill its clue
-	ISLAND_MOAT, # seal a completed island with walls
 	ISLAND_SNUG, # fill an island when its reachable space matches its clue
 	POOL_CHOKEPOINT, # add an island to avoid isolating or trapping a small wall region
-	POOL_TRIPLET, # add an island to avoid a 2x2 wall area
 	UNCLUED_LIFELINE, # extend an unclued island towards the only connectable clue
 	UNCLUED_LIFELINE_BUFFER, # add a wall to prevent an unclued island from becoming unreachable
 	UNREACHABLE_CELL, # add a wall where no clue can reach
-	WALL_BUBBLE, # wall in a cell surrounded by walls
 	WALL_CONNECTOR, # connect two walls through a chokepoint
-	WALL_EXPANSION, # expand a wall in the only possible direction
 	WALL_WEAVER, # finish an island in a way which preserves wall connectivity
 	
-	# advanced techniques
+	# Advanced techniques - Require planning several moves ahead
 	ASSUMPTION, # unproven assumption made when bifurcating
 	BORDER_HUG, # bifurcate options where extending an island along the border would create a split wall
 	ISLAND_BATTLEGROUND, # bifurcate two clues with adjacent liberties

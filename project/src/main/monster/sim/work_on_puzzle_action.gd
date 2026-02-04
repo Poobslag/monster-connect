@@ -6,31 +6,33 @@ const IDLE_COOLDOWN: float = 3.0
 
 const UNKNOWN_REASON: Deduction.Reason = Deduction.Reason.UNKNOWN
 
-## starting techniques
+## break-in techniques
 const ISLAND_OF_ONE: Deduction.Reason = Deduction.Reason.ISLAND_OF_ONE
 const ADJACENT_CLUES: Deduction.Reason = Deduction.Reason.ADJACENT_CLUES
 
-## basic techniques
+## easy techniques
+const ISLAND_BUBBLE: Deduction.Reason = Deduction.Reason.ISLAND_BUBBLE
+const ISLAND_DIVIDER: Deduction.Reason = Deduction.Reason.ISLAND_DIVIDER
+const ISLAND_EXPANSION: Deduction.Reason = Deduction.Reason.ISLAND_EXPANSION
+const ISLAND_MOAT: Deduction.Reason = Deduction.Reason.ISLAND_MOAT
+const POOL_TRIPLET: Deduction.Reason = Deduction.Reason.POOL_TRIPLET
+const WALL_BUBBLE: Deduction.Reason = Deduction.Reason.WALL_BUBBLE
+const WALL_EXPANSION: Deduction.Reason = Deduction.Reason.WALL_EXPANSION
+
+## standard techniques
 const CORNER_BUFFER: Deduction.Reason = Deduction.Reason.CORNER_BUFFER
 const CORNER_ISLAND: Deduction.Reason = Deduction.Reason.CORNER_ISLAND
-const ISLAND_BUBBLE: Deduction.Reason = Deduction.Reason.ISLAND_BUBBLE
 const ISLAND_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_BUFFER
 const ISLAND_CHAIN: Deduction.Reason = Deduction.Reason.ISLAND_CHAIN
 const ISLAND_CHAIN_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_CHAIN_BUFFER
 const ISLAND_CHOKEPOINT: Deduction.Reason = Deduction.Reason.ISLAND_CHOKEPOINT
 const ISLAND_CONNECTOR: Deduction.Reason = Deduction.Reason.ISLAND_CONNECTOR
-const ISLAND_DIVIDER: Deduction.Reason = Deduction.Reason.ISLAND_DIVIDER
-const ISLAND_EXPANSION: Deduction.Reason = Deduction.Reason.ISLAND_EXPANSION
-const ISLAND_MOAT: Deduction.Reason = Deduction.Reason.ISLAND_MOAT
 const ISLAND_SNUG: Deduction.Reason = Deduction.Reason.ISLAND_SNUG
 const POOL_CHOKEPOINT: Deduction.Reason = Deduction.Reason.POOL_CHOKEPOINT
-const POOL_TRIPLET: Deduction.Reason = Deduction.Reason.POOL_TRIPLET
 const UNCLUED_LIFELINE: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE
 const UNCLUED_LIFELINE_BUFFER: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE_BUFFER
 const UNREACHABLE_CELL: Deduction.Reason = Deduction.Reason.UNREACHABLE_CELL
-const WALL_BUBBLE: Deduction.Reason = Deduction.Reason.WALL_BUBBLE
 const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR
-const WALL_EXPANSION: Deduction.Reason = Deduction.Reason.WALL_EXPANSION
 const WALL_WEAVER: Deduction.Reason = Deduction.Reason.WALL_WEAVER
 
 ## advanced techniques
@@ -50,31 +52,33 @@ const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
 const DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
 	UNKNOWN_REASON: 10.0,
 	
-	# starting techniques
+	# break-in techniques
 	ISLAND_OF_ONE: 0.4,
 	ADJACENT_CLUES: 0.4,
 	
-	# basic techniques
+	# easy techniques
+	ISLAND_BUBBLE: 0.8,
+	ISLAND_DIVIDER: 0.8,
+	ISLAND_EXPANSION: 0.8,
+	ISLAND_MOAT: 0.8,
+	POOL_TRIPLET: 0.8,
+	WALL_BUBBLE: 0.8,
+	WALL_EXPANSION: 0.8,
+	
+	# standard techniques
 	CORNER_BUFFER: 1.2,
 	CORNER_ISLAND: 1.2,
-	ISLAND_BUBBLE: 1.2,
 	ISLAND_BUFFER: 1.2,
 	ISLAND_CHAIN: 1.2,
 	ISLAND_CHAIN_BUFFER: 1.2,
 	ISLAND_CHOKEPOINT: 1.2,
 	ISLAND_CONNECTOR: 1.2,
-	ISLAND_DIVIDER: 1.2,
-	ISLAND_EXPANSION: 0.8,
-	ISLAND_MOAT: 1.2,
 	ISLAND_SNUG: 1.2,
 	POOL_CHOKEPOINT: 1.2,
-	POOL_TRIPLET: 0.8,
 	UNCLUED_LIFELINE: 1.2,
 	UNCLUED_LIFELINE_BUFFER: 1.2,
 	UNREACHABLE_CELL: 1.2,
-	WALL_BUBBLE: 1.2,
 	WALL_CONNECTOR: 1.2,
-	WALL_EXPANSION: 0.8,
 	WALL_WEAVER: 1.2,
 	
 	# advanced techniques

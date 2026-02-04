@@ -22,10 +22,10 @@ const MAX_STUCK_COUNT: int = 25
 
 const UNKNOWN_REASON: Placement.Reason = Placement.Reason.UNKNOWN
 
-## starting techniques
+## break-in techniques
 const INITIAL_OPEN_ISLAND: Placement.Reason = Placement.Reason.INITIAL_OPEN_ISLAND
 
-## basic techniques
+## standard techniques
 const ISLAND_GUIDE: Placement.Reason = Placement.Reason.ISLAND_GUIDE
 const ISLAND_EXPANSION: Placement.Reason = Placement.Reason.ISLAND_EXPANSION
 const ISLAND_MOAT: Placement.Reason = Placement.Reason.ISLAND_MOAT
