@@ -22,37 +22,31 @@ author poobslag v02
  .###### .## .
 
 [order]
-21 20 19 19 17 0 16 13 9 5 5
-20 20 20 18 0 25 0 20 19 2 5
-15 2 17 2 0 0 12 14 22 2 1
-0 14 13 12 0 11 20 27 28 3 0
-0 1 12 12 0 9 10 30 28 0 -
-6 16 16 8 9 9 9 29 31 1 2
-12 2 8 8 8 8 4 32 31 2 2
-1 8 2 8 7 2 1 2 9 0 2
-0 0 7 5 0 15 0 37 38 11 2
-0 0 4 2 0 0 1 10 39 2 31
-2 4 2 4 0 1 2 0 3 31 32
-5 5 5 5 0 4 2 5 31 32 33
-6 6 5 5 7 3 5 31 31 32 -
-42 28 0 35 35 - 0 31 30 1 0
-- 0 - 0 35 0 - 0 23 24 -
-43 28 0 57 - 56 0 28 28 2 25
+21 20 19 19 17 0 16
+20 20 20 18 0 - 0
+15 2 17 2 - 0 12
+- 14 13 12 0 11 -
+0 1 12 12 - 9 10
+- 16 16 8 9 9 9
+12 2 8 8 8 8 4
+1 8 2 8 7 2 1
+0 - 7 5 0 - 0
+- 0 4 2 - 0 -
+2 4 - 4 0 1 2
+5 5 5 5 - 4 2
+6 6 5 5 7 3 5
 
 [reason]
-wx im wx wx wx i1 wx wx ur wx wx
-im ix ix ix i1 im i1 p3 Bh ix wx
-im ci wx ix ac i1 ix iC wx ix wx
-i1 p3 wx im ac wx uL ik wx wx ac
-ac wx im ix i1 im wx Bi wx ac -
-p3 ix im im wx ix im pk wx wx ix
-wx ci im ix im ix wx p3 wx im ix
-wx ix ci ix wx ix wx i1 ur i1 im
-ac i1 id ix ac Bw ac wx p3 ix i1
-ac ac id ix i1 ac wx ix ie i1 uL
-ix id ix id ac wx ix i1 ix uL p3
-ix im ix im i1 id ix wx ul im ie
-ix im im ci ix ci ix uL ul im -
-Bj iC i1 im ix - i1 uL ie wx ac
-- i1 - i1 im i1 - i1 pk id -
-ix ur i1 ix - Bj i1 ur ur ci ix
+wx im wx wx wx i1 wx
+im ix ix ix i1 - i1
+im ci wx ix - i1 ix
+- p3 wx im ac wx -
+ac wx im ix - im wx
+- ix im im wx ix im
+wx ci im ix im ix wx
+wx ix ci ix wx ix wx
+ac - id ix ac - ac
+- ac id ix - ac -
+ix id - id ac wx ix
+ix im ix im - id ix
+ix im im ci ix ci ix

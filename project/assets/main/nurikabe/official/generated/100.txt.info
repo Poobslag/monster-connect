@@ -25,15 +25,15 @@ author poobslag v02
  .#### . 2########## .
 
 [order]
-1 0 2 2 8 8 10 7 5 5 5
-1 2 0 7 3 11 9 0 6 2 5
-1 2 6 7 0 12 0 10 0 2 1
-5 5 8 14 16 18 16 0 0 3 0
-13 2 13 18 15 18 17 4 16 0 -
+1 0 - 2 8 8 10 7 5 5 5
+1 - 0 7 3 11 9 0 6 2 5
+1 2 6 7 - 12 0 - 0 2 1
+5 5 8 14 16 18 16 0 0 - 0
+13 - 13 18 15 18 17 4 - 0 -
 13 14 19 18 19 66 58 2 3 1 2
 16 20 22 50 51 26 29 28 0 2 2
-21 21 45 27 26 65 0 0 18 0 2
-19 39 49 46 38 0 - 0 0 11 2
+21 21 45 27 26 65 0 0 - 0 2
+- 39 49 46 38 0 - 0 0 - 2
 40 22 48 52 47 1 0 - 2 2 31
 40 - 60 61 53 36 - 0 3 31 32
 41 62 55 54 37 36 35 5 31 32 33
@@ -43,15 +43,15 @@ author poobslag v02
 43 28 0 57 - 56 0 28 28 2 25
 
 [reason]
-wx ac im ix ix ix p3 wx wx wx wx
-wx im ac wx cb im ci i1 ix ix wx
-wx ix ix id i1 p3 i1 wx i1 ix wx
-wx id ix ix id ix wx i1 ac wx ac
-wx ix id ix ci ix p3 im ix ac -
+wx ac - ix ix ix p3 wx wx wx wx
+wx - ac wx cb im ci i1 ix ix wx
+wx ix ix id - p3 i1 - i1 ix wx
+wx id ix ix id ix wx i1 ac - ac
+wx - id ix ci ix p3 im - ac -
 wx ix wx im wx ix Bi ci p3 wx ix
 wx ix ix im p3 ik p3 wb i1 im ix
-wx wx Bi cb ik wx i1 i1 ix i1 im
-ix Bw p3 iC ik i1 - i1 i1 ix i1
+wx wx Bi cb ik wx i1 i1 - i1 im
+- Bw p3 iC ik i1 - i1 i1 - i1
 ix ci Bw iC ul wx i1 - ix i1 uL
 im - ic p3 ul im - ac ix uL p3
 wx ix cb ik p3 im ie wx ul im ie
