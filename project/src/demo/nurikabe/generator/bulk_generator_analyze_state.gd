@@ -21,6 +21,8 @@ func update(_delta: float) -> void:
 	%GameBoard.grid_string = NurikabeUtils.load_grid_string_from_file(puzzle_path)
 	%GameBoard.import_grid()
 	solver.clear()
+	_order_by_cell.clear()
+	_reason_by_cell.clear()
 	solver.board = %GameBoard.to_solver_board()
 	_step_until_done()
 	copy_board_from_solver()

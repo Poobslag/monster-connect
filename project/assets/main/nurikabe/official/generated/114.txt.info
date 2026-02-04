@@ -26,39 +26,39 @@ author poobslag v02
 ############## 4 . . .#### .
 
 [order]
-57 58 19 0 24 19 15 15 9 9 8 7 7 -
-57 55 57 1 21 2 16 0 14 9 8 7 6 6
+57 58 - 0 - 19 15 15 9 9 8 7 7 -
+57 55 57 1 21 2 16 - 14 9 8 7 6 6
 54 56 54 47 21 21 16 0 14 10 7 7 5 6
-52 53 50 48 43 43 19 0 11 13 12 4 5 4
+52 53 50 48 43 43 19 - 11 13 12 4 5 4
 52 51 46 49 44 20 42 16 0 13 2 4 2 4
-41 50 50 45 42 14 42 0 11 0 2 1 2 1
-41 40 39 41 39 41 13 12 0 0 13 0 0 0
-13 39 39 38 5 0 0 4 2 9 0 11 0 -
+41 50 50 45 42 14 42 0 - 0 2 1 2 1
+41 40 39 41 39 41 13 12 0 0 - 0 - 0
+- 39 39 38 - 0 - 4 2 - 0 - 0 -
 0 1 39 37 0 21 12 7 5 0 1 2 1 2
-11 36 36 28 3 19 19 13 6 10 4 2 4 2
+- 36 36 28 - 19 19 13 6 - 4 2 4 2
 35 2 36 26 27 24 14 16 5 7 6 5 4 5
-30 33 28 28 25 23 23 6 58 0 12 7 6 5
-32 29 14 27 24 24 22 22 0 5 8 13 12 7
+30 33 28 28 25 23 23 6 - 0 12 7 6 5
+32 29 - 27 24 24 22 22 0 - 8 13 12 7
 30 29 0 25 25 23 23 21 13 12 16 13 16 13
-32 27 22 25 24 24 0 1 19 19 16 17 18 19
-31 33 25 25 25 2 2 0 1 19 3 - 18 19
+32 27 - 25 24 24 0 - 19 19 16 17 18 19
+31 33 25 25 25 2 - 0 1 19 3 - 18 19
 34 33 26 25 4 1 0 - 2 2 21 18 19 19
 
 [reason]
-im wx ur ac ix wx wx wx im ix ix ix ix -
-ix ci ie wx ix ci ix ac im im wx im cb wx
+im wx - ac - wx wx wx im ix ix ix ix -
+ix ci ie wx ix ci ix - im im wx im cb wx
 ix id ie iC im wx im ac ix p3 im ix ix wx
-ix id ie p3 im ix ix ac cb ix wx wx ix wx
+ix id ie p3 im ix ix - cb ix wx wx ix wx
 ix wx ci id wx ci im wx i1 ix ix wx ix wx
-ix im ix ix ix ci ix i1 im i1 ix wx ix wx
-ix wx im wx ix wx ix wx i1 ac ix ac ac ac
-ix im ix id ix ac i1 id ix cb ac im ac -
+ix im ix ix ix ci ix i1 - i1 ix wx ix wx
+ix wx im wx ix wx ix wx i1 ac - ac - ac
+- im ix id - ac - id ix - ac - ac -
 ac wx ix ix ac wx id ix ix ac wx ix wx ix
-ix ix im ix id im ix ix id wx id ix wx ix
+- ix im ix - im ix ix id - id ix wx ix
 wx ci wx ci id wx ci wx ci ix wx ix wx ix
-ci ix im ix ix ix ix ix ix ac wx ix wx ix
-ic ix ur wx wx wx wx wx ac wx ci ix wx ix
+ci ix im ix ix ix ix ix - ac wx ix wx ix
+ic ix - wx wx wx wx wx ac - ci ix wx ix
 wx wx ac im ix ix ix ix cb ix wx im wx ix
-ic ix ix im wx wx ac wx im ix ci p3 im ix
-ci ix im ix ix ix ix ac wx im ci - im ix
+ic ix - im wx wx ac - im ix ci p3 im ix
+ci ix im ix ix ix - ac wx im ci - im ix
 wx im wx im wx wx ac - ix ix ix im im ix
