@@ -4,97 +4,12 @@ extends GoapAction
 const SOLVER_COOLDOWN: float = 3.0
 const IDLE_COOLDOWN: float = 3.0
 
-const UNKNOWN_REASON: Deduction.Reason = Deduction.Reason.UNKNOWN
-
-## break-in techniques
-const ISLAND_OF_ONE: Deduction.Reason = Deduction.Reason.ISLAND_OF_ONE
-const ADJACENT_CLUES: Deduction.Reason = Deduction.Reason.ADJACENT_CLUES
-
-## easy techniques
-const ISLAND_BUBBLE: Deduction.Reason = Deduction.Reason.ISLAND_BUBBLE
-const ISLAND_DIVIDER: Deduction.Reason = Deduction.Reason.ISLAND_DIVIDER
-const ISLAND_EXPANSION: Deduction.Reason = Deduction.Reason.ISLAND_EXPANSION
-const ISLAND_MOAT: Deduction.Reason = Deduction.Reason.ISLAND_MOAT
-const POOL_TRIPLET: Deduction.Reason = Deduction.Reason.POOL_TRIPLET
-const WALL_BUBBLE: Deduction.Reason = Deduction.Reason.WALL_BUBBLE
-const WALL_EXPANSION: Deduction.Reason = Deduction.Reason.WALL_EXPANSION
-
-## standard techniques
-const CORNER_BUFFER: Deduction.Reason = Deduction.Reason.CORNER_BUFFER
-const CORNER_ISLAND: Deduction.Reason = Deduction.Reason.CORNER_ISLAND
-const ISLAND_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_BUFFER
-const ISLAND_CHAIN: Deduction.Reason = Deduction.Reason.ISLAND_CHAIN
-const ISLAND_CHAIN_BUFFER: Deduction.Reason = Deduction.Reason.ISLAND_CHAIN_BUFFER
-const ISLAND_CHOKEPOINT: Deduction.Reason = Deduction.Reason.ISLAND_CHOKEPOINT
-const ISLAND_CONNECTOR: Deduction.Reason = Deduction.Reason.ISLAND_CONNECTOR
-const ISLAND_SNUG: Deduction.Reason = Deduction.Reason.ISLAND_SNUG
-const POOL_CHOKEPOINT: Deduction.Reason = Deduction.Reason.POOL_CHOKEPOINT
-const UNCLUED_LIFELINE: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE
-const UNCLUED_LIFELINE_BUFFER: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE_BUFFER
-const UNREACHABLE_CELL: Deduction.Reason = Deduction.Reason.UNREACHABLE_CELL
-const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR
-const WALL_WEAVER: Deduction.Reason = Deduction.Reason.WALL_WEAVER
-
-## advanced techniques
-const ASSUMPTION: Deduction.Reason = Deduction.Reason.ASSUMPTION
-const BORDER_HUG: Deduction.Reason = Deduction.Reason.BORDER_HUG
-const ISLAND_BATTLEGROUND: Deduction.Reason = Deduction.Reason.ISLAND_BATTLEGROUND
-const ISLAND_RELEASE: Deduction.Reason = Deduction.Reason.ISLAND_RELEASE
-const ISLAND_STRANGLE: Deduction.Reason = Deduction.Reason.ISLAND_STRANGLE
-const WALL_STRANGLE: Deduction.Reason = Deduction.Reason.WALL_STRANGLE
-
-const FUN_TRIVIAL: Deduction.FunAxis = Deduction.FunAxis.FUN_TRIVIAL
-const FUN_FAST: Deduction.FunAxis = Deduction.FunAxis.FUN_FAST
-const FUN_NOVELTY: Deduction.FunAxis = Deduction.FunAxis.FUN_NOVELTY
-const FUN_THINK: Deduction.FunAxis = Deduction.FunAxis.FUN_THINK
-const FUN_BIFURCATE: Deduction.FunAxis = Deduction.FunAxis.FUN_BIFURCATE
-
-const DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
-	UNKNOWN_REASON: 10.0,
-	
-	# break-in techniques
-	ISLAND_OF_ONE: 0.4,
-	ADJACENT_CLUES: 0.4,
-	
-	# easy techniques
-	ISLAND_BUBBLE: 0.8,
-	ISLAND_DIVIDER: 0.8,
-	ISLAND_EXPANSION: 0.8,
-	ISLAND_MOAT: 0.8,
-	POOL_TRIPLET: 0.8,
-	WALL_BUBBLE: 0.8,
-	WALL_EXPANSION: 0.8,
-	
-	# standard techniques
-	CORNER_BUFFER: 1.2,
-	CORNER_ISLAND: 1.2,
-	ISLAND_BUFFER: 1.2,
-	ISLAND_CHAIN: 1.2,
-	ISLAND_CHAIN_BUFFER: 1.2,
-	ISLAND_CHOKEPOINT: 1.2,
-	ISLAND_CONNECTOR: 1.2,
-	ISLAND_SNUG: 1.2,
-	POOL_CHOKEPOINT: 1.2,
-	UNCLUED_LIFELINE: 1.2,
-	UNCLUED_LIFELINE_BUFFER: 1.2,
-	UNREACHABLE_CELL: 1.2,
-	WALL_CONNECTOR: 1.2,
-	WALL_WEAVER: 1.2,
-	
-	# advanced techniques
-	ASSUMPTION: 3.6,
-	BORDER_HUG: 3.6,
-	ISLAND_BATTLEGROUND: 3.6,
-	ISLAND_RELEASE: 3.6,
-	ISLAND_STRANGLE: 3.6,
-	WALL_STRANGLE: 3.6,
-}
-
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
+var _board_size_factor: float
 var _next_deduction: Deduction
 var _next_deduction_remaining_time: float = 0.0
 var _next_idle_remaining_time: float = randf_range(0, IDLE_COOLDOWN)
@@ -110,6 +25,7 @@ var _cursor_commands_by_cell: Dictionary[Vector2i, Array] = {}
 func enter(actor: Variant) -> void:
 	var monster: SimMonster = actor
 	monster.solving_board.cell_changed.connect(_on_solving_board_cell_changed.bind(monster))
+	_board_size_factor = monster.solving_board.get_global_cursorable_rect().size.length() / 500.0
 
 
 func perform(actor: Variant, delta: float) -> bool:
@@ -125,8 +41,8 @@ func perform(actor: Variant, delta: float) -> bool:
 	if _next_deduction == null and not monster.pending_deductions.is_empty():
 		_choose_deduction(monster)
 		if _next_deduction != null:
-			_next_deduction_remaining_time = DEDUCTION_DELAY_FOR_REASON.get(_next_deduction.reason, 0.6) \
-					* randf_range(1.0, 1.5)
+			_next_deduction_remaining_time = \
+					DeductionScorer.get_delay(_next_deduction.reason) * randf_range(1.0, 1.5)
 	
 	if _next_deduction != null:
 		_process_next_deduction(monster, delta)
@@ -166,6 +82,8 @@ func _choose_deduction(monster: SimMonster) -> void:
 			continue
 		
 		var score: float = _score_deduction(monster, deduction, search_center)
+		if score > 0.0:
+			score += DeductionScorer.get_priority(deduction.reason)
 		if score > best_score:
 			_next_deduction = deduction
 			best_score = score
@@ -239,8 +157,9 @@ func _score_deduction(monster: SimMonster, deduction: Deduction, search_center: 
 	return score
 
 
-func _score_distance(distance: float, factor: float) -> float:
-	return exp(-distance / factor)
+## Exponential decay: closer cursor = higher score, normalized for board size
+func _score_distance(distance: float, decay_factor: float) -> float:
+	return exp(-(distance / _board_size_factor) / decay_factor)
 
 
 func _on_solving_board_cell_changed(cell_pos: Vector2i, _value: int, monster: SimMonster) -> void:
