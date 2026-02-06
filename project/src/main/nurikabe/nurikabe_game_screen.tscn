@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://diafqm0jkanve" path="res://src/main/monster/sim/sim_monster.tscn" id="4_nctqi"]
 [ext_resource type="PackedScene" uid="uid://cf8wyvww44vbg" path="res://src/main/monster/player/player_monster.tscn" id="7_21uqv"]
 [ext_resource type="PackedScene" uid="uid://bcvt254axwueq" path="res://src/main/monster/sim/naive_solver.tscn" id="7_bxie6"]
+[ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="8_mwwr5"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="16_2bf7t"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nctqi"]
@@ -67,6 +68,9 @@ platform_floor_layers = 4294967295
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=2047494306]
 zoom = Vector2(1.2, 1.2)
 
+[node name="CommandPalette" parent="." unique_id=1368678133 instance=ExtResource("8_mwwr5")]
+unique_name_in_owner = true
+
 [node name="ResultsOverlay" parent="." unique_id=1942560557 instance=ExtResource("16_2bf7t")]
 unique_name_in_owner = true
 visible = false
@@ -93,3 +97,4 @@ shape = SubResource("RectangleShape2D_nctqi")
 
 [connection signal="puzzle_finished" from="GameBoards/GameBoard" to="ResultsOverlay" method="_on_game_board_puzzle_finished"]
 [connection signal="refresh_requested" from="Refresher" to="." method="_on_refresher_refresh_requested"]
+[connection signal="command_entered" from="CommandPalette" to="." method="_on_command_palette_command_entered"]

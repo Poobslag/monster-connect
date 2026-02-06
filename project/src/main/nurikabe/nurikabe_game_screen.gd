@@ -15,6 +15,7 @@ const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
 const TARGET_PUZZLE_COUNT: int = 7
 
 @export var draw_debug_paths: bool = false
+@export var show_puzzle_ids: bool = false
 
 ## Force all puzzles to use the same fixed path. Useful for debugging.
 @export_file("*.txt") var test_puzzle_path: String
@@ -39,6 +40,11 @@ func _draw() -> void:
 			var from: Vector2 = _debug_paths[i][j]
 			var to: Vector2 = _debug_paths[i][j + 1]
 			draw_line(from, to, color, 4.0)
+
+
+func _input(event: InputEvent) -> void:
+	if Utils.key_press(event) == KEY_SLASH:
+		%CommandPalette.open()
 
 
 func clear_game_boards() -> void:
@@ -77,7 +83,8 @@ func add_random_puzzle() -> void:
 	var game_board: NurikabeGameBoard = GAME_BOARD_SCENE.instantiate()
 	
 	_attach_puzzle_info(game_board, puzzle_path)
-	_generate_board_string_id(game_board, puzzle_path)
+	_generate_board_label_text(game_board)
+	_generate_board_string_id(game_board)
 	_position_board_in_world(game_board)
 
 
@@ -102,18 +109,28 @@ func _attach_puzzle_info(game_board: NurikabeGameBoard, puzzle_path: String) -> 
 	if FileAccess.file_exists(info_path):
 		var saver: PuzzleInfoSaver = PuzzleInfoSaver.new()
 		game_board.info = saver.load_puzzle_info(puzzle_path + ".info")
-		game_board.label_text = "#%s - %s" % [
-				puzzle_path.get_file().get_basename(),
-				_difficulty_label(game_board.info.get("difficulty")),
-			]
-		
+	
+	if game_board.info != null:
 		game_board.hint_model = PuzzleHintModel.new(
 				game_board.info,
 				game_board.get_meta("mirrored", false),
 				game_board.get_meta("rotation_turns", 0))
 
 
-func _generate_board_string_id(game_board: NurikabeGameBoard, puzzle_path: String) -> void:
+func _generate_board_label_text(game_board: NurikabeGameBoard) -> void:
+	if game_board.info == null:
+		return
+	if show_puzzle_ids:
+		var puzzle_path: String = game_board.get_meta("puzzle_path")
+		game_board.label_text = "#%s - %s" % [
+				puzzle_path.get_file().get_basename(),
+				_difficulty_label(game_board.info.get("difficulty")),
+			]
+	else:
+		game_board.label_text = _difficulty_label(game_board.info.get("difficulty"))
+
+
+func _generate_board_string_id(game_board: NurikabeGameBoard) -> void:
 	var clue_cell_values: Array[int] = []
 	var clue_cells: Array[Vector2i] = game_board.get_clue_cells()
 	var clue_cells_str: String
@@ -123,6 +140,7 @@ func _generate_board_string_id(game_board: NurikabeGameBoard, puzzle_path: Strin
 			break
 	clue_cells_str = "-".join(clue_cell_values) if clue_cells else "0"
 	
+	var puzzle_path: String = game_board.get_meta("puzzle_path")
 	game_board.string_id = "%s-%sx%s-%s-%s" % [
 		puzzle_path.get_file().get_basename(),
 		game_board.puzzle_dimensions.x, game_board.puzzle_dimensions.y,
@@ -208,3 +226,17 @@ func _on_game_board_puzzle_finished(game_board: NurikabeGameBoard) -> void:
 		%ResultsOverlay.show_results()
 	else:
 		SoundManager.play_sfx("win")
+
+
+func _on_command_palette_command_entered(command: String) -> void:
+	match command:
+		"/ids":
+			SoundManager.play_sfx("cheat_enabled")
+			show_puzzle_ids = true
+			for game_board: NurikabeGameBoard in get_game_boards():
+				_generate_board_label_text(game_board)
+		"/noids":
+			SoundManager.play_sfx("cheat_disabled")
+			show_puzzle_ids = false
+			for game_board: NurikabeGameBoard in get_game_boards():
+				_generate_board_label_text(game_board)

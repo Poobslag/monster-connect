@@ -8,7 +8,12 @@ var _drag_origin_in_puzzle: Dictionary[int, bool] = {
 
 @onready var monster: PlayerMonster = get_parent()
 
+@onready var _command_palette: CommandPalette = CommandPalette.find_instance(self)
+
 func _unhandled_input(event: InputEvent) -> void:
+	if _command_palette.has_focus():
+		return
+	
 	# Initialize drag ownership when mouse buttons are pressed
 	if event is InputEventMouseButton and event.pressed:
 		_drag_origin_in_puzzle[event.button_index] = monster.cursor_board != null
@@ -35,6 +40,9 @@ func is_any_drag_origin_in_puzzle() -> bool:
 
 
 func update(_delta: float) -> void:
+	if _command_palette.has_focus():
+		return
+	
 	%MoveHandler.update()
 	%PuzzleHandler.update()
 
