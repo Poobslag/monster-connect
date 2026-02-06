@@ -60,6 +60,7 @@ offset_bottom = 200.0
 position = Vector2(1255, 234)
 
 [node name="Player" parent="." unique_id=1629176103 instance=ExtResource("7_21uqv")]
+unique_name_in_owner = true
 position = Vector2(961, 540)
 platform_floor_layers = 4294967295
 

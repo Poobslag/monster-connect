@@ -6,7 +6,7 @@ var _drag_origin_in_puzzle: Dictionary[int, bool] = {
 	MOUSE_BUTTON_RIGHT: false
 }
 
-@onready var monster: Monster = get_parent()
+@onready var monster: PlayerMonster = get_parent()
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Initialize drag ownership when mouse buttons are pressed
@@ -18,6 +18,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Route all input based on the drag owner
 	monster.cursor.update_position() # ensure cursor position is up to date
 	%PuzzleHandler.handle(event)
+	
+	# Update monster.solving_board
+	if event is InputEventMouseButton and event.is_pressed() and monster.cursor_board != null:
+		monster.solving_board = monster.cursor_board
 	
 	# Release drag ownership when mouse buttons are released
 	if event is InputEventMouseButton and not event.pressed:
