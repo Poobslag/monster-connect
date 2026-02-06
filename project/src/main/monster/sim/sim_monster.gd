@@ -2,7 +2,7 @@
 class_name SimMonster
 extends Monster
 
-const BOREDOM_PER_SECOND: float = 16.66667 # should be lowered to 1.66667 (100 per minute) after testing
+const BOREDOM_PER_SECOND: float = 1.66667 # 100 per minute
 
 @onready var input: SimInput = %Input
 
