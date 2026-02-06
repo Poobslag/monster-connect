@@ -7,6 +7,7 @@ const BOREDOM_PER_SECOND: float = 16.66667 # should be lowered to 1.66667 (100 p
 @onready var input: SimInput = %Input
 
 var solving_board: NurikabeGameBoard
+var bored_with_puzzle: bool = false
 
 var boredom: float = 0.0
 var pending_deductions: Dictionary[Vector2i, Deduction] = {}
@@ -17,9 +18,15 @@ func update_input(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	if solving_board == null:
-		boredom = clamp(boredom + delta * BOREDOM_PER_SECOND, 0, 100)
-	else:
-		boredom = clamp(boredom - delta * BOREDOM_PER_SECOND, 0, 100)
+		increase_boredom(delta)
+
+
+func increase_boredom(delta: float) -> void:
+	boredom = clamp(boredom + delta * BOREDOM_PER_SECOND, 0, 100)
+
+
+func decrease_boredom(delta: float) -> void:
+	boredom = clamp(boredom - delta * BOREDOM_PER_SECOND, 0, 100)
 
 
 ## Returns the global cursor position after any queued cursor commands.

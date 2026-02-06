@@ -105,13 +105,16 @@ func _execute_curr_deduction(monster: SimMonster) -> void:
 
 func _perform_while_fixing(actor: Variant, delta: float) -> bool:
 	var monster: SimMonster = actor
+	monster.increase_boredom(delta)
 	_process_idle_cursor(monster, delta)
-	return false
+	if monster.boredom >= 75:
+		monster.bored_with_puzzle = true
+	return monster.bored_with_puzzle or monster.solving_board.is_finished()
 
 
 func _perform_normally(actor: Variant, delta: float) -> bool:
 	var monster: SimMonster = actor
-	
+	monster.decrease_boredom(delta)
 	_update_recently_modified_cells()
 	
 	if _solver_cooldown_remaining > 0.0:
