@@ -17,7 +17,8 @@ func _process(delta: float) -> void:
 	if _monster.solving_board == null:
 		new_action = _find_puzzle_action if _monster.boredom >= 25 else _idle_action
 	else:
-		new_action = _leave_puzzle_action if _monster.solving_board.is_finished() else _work_on_puzzle_action
+		var should_leave_puzzle: bool = _monster.solving_board.is_finished() or _monster.bored_with_puzzle
+		new_action = _leave_puzzle_action if should_leave_puzzle else _work_on_puzzle_action
 	
 	# handle action transitions
 	if new_action != _current_action:

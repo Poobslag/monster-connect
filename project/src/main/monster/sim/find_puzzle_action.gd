@@ -17,7 +17,7 @@ func perform(actor: Variant, _delta: float) -> bool:
 	if target_game_board == null:
 		var game_boards: Array[Node] = get_tree().get_nodes_in_group("game_boards")
 		game_boards = game_boards.filter(func(a: Node) -> bool:
-			return not a.is_finished())
+			return not a.is_finished() and a.error_cells.is_empty())
 		if game_boards:
 			game_boards.sort_custom(func(a: Node, b: Node) -> bool:
 				return a.get_rect().get_center().distance_to(monster.position) \
