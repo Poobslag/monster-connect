@@ -95,7 +95,7 @@ func _attach_puzzle_info(game_board: NurikabeGameBoard, puzzle_path: String) -> 
 	
 	game_board.grid_string = new_grid_string
 	game_board.import_grid()
-	game_board.puzzle_finished.connect(%ResultsOverlay._on_game_board_puzzle_finished)
+	game_board.puzzle_finished.connect(_on_game_board_puzzle_finished.bind(game_board))
 	game_board.set_meta("puzzle_path", puzzle_path)
 	
 	var info_path: String = puzzle_path + ".info"
@@ -201,3 +201,10 @@ func _overlaps_world_occupants(new_board: NurikabeGameBoard) -> bool:
 
 func _on_refresher_refresh_requested() -> void:
 	refresh_game_boards()
+
+
+func _on_game_board_puzzle_finished(game_board: NurikabeGameBoard) -> void:
+	if game_board == %Player.solving_board:
+		%ResultsOverlay.show_results()
+	else:
+		SoundManager.play_sfx("win")
