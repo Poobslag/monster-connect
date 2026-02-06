@@ -5,7 +5,7 @@
 [ext_resource type="SpriteFrames" uid="uid://bdaf2u076uix8" path="res://src/main/monster/monster_frames_green.tres" id="3_bxtwi"]
 [ext_resource type="Script" uid="uid://cunilnx1alpu7" path="res://src/main/monster/sim/sim_input.gd" id="3_urfwp"]
 [ext_resource type="PackedScene" uid="uid://d12tqxh0hihss" path="res://src/main/monster/sim/sim_brain.tscn" id="5_5vpq3"]
-[ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/monster/player/puzzle_handler.gd" id="5_cpqkn"]
+[ext_resource type="Script" uid="uid://cwdhdit4jkv2k" path="res://src/main/monster/puzzle_handler.gd" id="5_cpqkn"]
 
 [node name="Monster" unique_id=1494933160 instance=ExtResource("1_m47ex")]
 script = ExtResource("2_xg55e")
