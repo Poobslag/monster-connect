@@ -5,7 +5,9 @@ extends Control
 
 signal puzzle_finished
 
+signal board_reset
 signal cell_changed(cell_pos: Vector2i, value: int)
+signal error_cells_changed
 
 const MAX_UNDO: int = 200
 
@@ -75,6 +77,7 @@ func _process(_delta: float) -> void:
 
 func reset() -> void:
 	import_grid()
+	board_reset.emit()
 
 
 func is_started() -> bool:
@@ -423,6 +426,8 @@ func _on_validate_timer_timeout() -> void:
 	
 	if not old_error_cells.has_all(new_error_cells.keys()):
 		SoundManager.play_sfx("rule_broken")
+	if new_error_cells != old_error_cells:
+		error_cells_changed.emit()
 
 
 class UndoAction:
