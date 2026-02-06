@@ -4,64 +4,65 @@ extends GoapAction
 const SOLVER_COOLDOWN: float = 3.0
 const IDLE_COOLDOWN: float = 3.0
 
+const ADJACENT_DIRS: Array[Vector2i] = NurikabeUtils.ADJACENT_DIRS
+
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
+const RECENT_MODIFICATION_WINDOW: float = 1.0
+
 var _board_size_factor: float
+var _curr_deduction: Deduction
 var _next_deduction: Deduction
 var _next_deduction_remaining_time: float = 0.0
-var _next_idle_remaining_time: float = randf_range(0, IDLE_COOLDOWN)
-
-var _curr_deduction: Deduction
-
+var _next_idle_remaining_time: float
 var _solver_cooldown_remaining: float = 0.0
+var _needs_fix: bool = false
 
 var _cursor_commands_by_cell: Dictionary[Vector2i, Array] = {}
+var _interested_cells: Dictionary[Vector2i, float] = {}
 
 @onready var _solver: NaiveSolver = NaiveSolver.find_instance(self)
 
 func enter(actor: Variant) -> void:
 	var monster: SimMonster = actor
 	monster.solving_board.cell_changed.connect(_on_solving_board_cell_changed.bind(monster))
+	monster.solving_board.error_cells_changed.connect(_on_solving_board_error_cells_changed.bind(monster))
+	monster.solving_board.board_reset.connect(_on_solving_board_reset.bind(monster))
 	_board_size_factor = monster.solving_board.get_global_cursorable_rect().size.length() / 500.0
+	_next_idle_remaining_time = randf_range(0, IDLE_COOLDOWN)
 
 
 func perform(actor: Variant, delta: float) -> bool:
-	if _solver_cooldown_remaining > 0.0:
-		_solver_cooldown_remaining -= delta
+	var result: bool = false
 	
-	var monster: SimMonster = actor
-	if _solver_cooldown_remaining <= 0 and not _solver.is_move_requested(monster):
-		# queue up the next deduction finder
-		_solver.request_move(monster)
-		_solver_cooldown_remaining = SOLVER_COOLDOWN
-	
-	if _next_deduction == null and not monster.pending_deductions.is_empty():
-		_choose_deduction(monster)
-		if _next_deduction != null:
-			_next_deduction_remaining_time = \
-					DeductionScorer.get_delay(_next_deduction.reason) * randf_range(1.0, 1.5)
-	
-	if _next_deduction != null:
-		_process_next_deduction(monster, delta)
+	if _needs_fix:
+		result = _perform_while_fixing(actor, delta)
 	else:
-		_process_idle_cursor(monster, delta)
-	
-	return monster.solving_board.is_finished()
+		result = _perform_normally(actor, delta)
+	return result
 
 
 func exit(actor: Variant) -> void:
 	var monster: SimMonster = actor
 	
 	_solver.cancel_request(monster)
+	monster.solving_board.cell_changed.disconnect(_on_solving_board_cell_changed)
+	monster.solving_board.error_cells_changed.disconnect(_on_solving_board_error_cells_changed)
+	monster.solving_board.board_reset.disconnect(_on_solving_board_reset)
+
+	_curr_deduction = null
 	_next_deduction = null
 	_next_deduction_remaining_time = 0.0
+	_next_idle_remaining_time = 0.0
 	_solver_cooldown_remaining = 0.0
+	_needs_fix = false
 	
 	monster.pending_deductions.clear()
 	_cursor_commands_by_cell.clear()
+	_interested_cells.clear()
 
 
 func _choose_deduction(monster: SimMonster) -> void:
@@ -99,18 +100,89 @@ func _execute_curr_deduction(monster: SimMonster) -> void:
 			commands.append(monster.input.queue_cursor_command(SimInput.RMB_PRESS, target_pos))
 			commands.append(monster.input.queue_cursor_command(SimInput.RMB_RELEASE, target_pos, 0.1))
 	_cursor_commands_by_cell[_curr_deduction.pos] = commands
+	_interested_cells[_curr_deduction.pos] = Time.get_ticks_msec()
+
+
+func _perform_while_fixing(actor: Variant, delta: float) -> bool:
+	var monster: SimMonster = actor
+	_process_idle_cursor(monster, delta)
+	return false
+
+
+func _perform_normally(actor: Variant, delta: float) -> bool:
+	var monster: SimMonster = actor
+	
+	_update_recently_modified_cells()
+	
+	if _solver_cooldown_remaining > 0.0:
+		_solver_cooldown_remaining -= delta
+	
+	if _solver_cooldown_remaining <= 0 and not _solver.is_move_requested(monster):
+		# queue up the next deduction finder
+		_solver.request_move(monster)
+		_solver_cooldown_remaining = SOLVER_COOLDOWN
+	
+	if _next_deduction == null and not monster.pending_deductions.is_empty():
+		_choose_deduction(monster)
+		if _next_deduction != null:
+			_next_deduction_remaining_time = \
+					DeductionScorer.get_delay(_next_deduction.reason) * randf_range(1.0, 1.5)
+	
+	if _next_deduction != null:
+		_process_next_deduction(monster, delta)
+	else:
+		_process_idle_cursor(monster, delta)
+	
+	return monster.solving_board.is_finished()
+
+
+func _update_recently_modified_cells() -> void:
+	var expired_window: int = Time.get_ticks_msec() - int(RECENT_MODIFICATION_WINDOW * 1000)
+	for cell: Vector2i in _interested_cells.keys():
+		if _interested_cells[cell] < expired_window:
+			_interested_cells.erase(cell)
 
 
 func _process_next_deduction(monster: SimMonster, delta: float) -> void:
 	if monster.solving_board.get_cell(_next_deduction.pos) == _next_deduction.value:
 		_next_deduction = null
 		return
-
+	
 	_next_deduction_remaining_time -= delta
 	if _next_deduction_remaining_time <= 0:
-		_curr_deduction = _next_deduction
-		_next_deduction = null
-		_execute_curr_deduction(monster)
+		if _has_adjacent_error(monster, _next_deduction.pos):
+			# the sim's next deduction is near an error, so they wait until it's fixed
+			_interested_cells[_next_deduction.pos] = Time.get_ticks_msec()
+			_needs_fix = true
+			_clear_working_state(monster)
+		else:
+			# the sim makes their next deduction
+			_curr_deduction = _next_deduction
+			_next_deduction = null
+			_execute_curr_deduction(monster)
+
+
+## Interrupts any deductions and cursor commands.
+func _clear_working_state(monster: SimMonster) -> void:
+	_curr_deduction = null
+	_next_deduction = null
+	monster.pending_deductions.clear()
+	_cursor_commands_by_cell.clear()
+	monster.input.cursor_commands.clear()
+	monster.input.release_buttons()
+
+
+func _has_adjacent_error(monster: SimMonster, cell: Vector2i) -> bool:
+	if monster.solving_board.error_cells.is_empty():
+		return false
+	
+	var result: bool = false
+	for dir: Vector2i in ADJACENT_DIRS:
+		var adjacent_cell: Vector2i = cell + dir
+		if monster.solving_board.error_cells.has(adjacent_cell):
+			result = true
+			break
+	return result
 
 
 func _process_idle_cursor(monster: SimMonster, delta: float) -> void:
@@ -170,3 +242,27 @@ func _on_solving_board_cell_changed(cell_pos: Vector2i, _value: int, monster: Si
 				monster.input.dequeue_cursor_command(cursor_command)
 		
 		_cursor_commands_by_cell.erase(cell_pos)
+
+
+func _on_solving_board_error_cells_changed(monster: SimMonster) -> void:
+	# calculate the new value for 'needs_fix'
+	var new_needs_fix: bool = false
+	for cell: Vector2i in _interested_cells:
+		if _has_adjacent_error(monster, cell):
+			new_needs_fix = true
+			break
+	
+	# react to any state changes in 'needs_fix'
+	if new_needs_fix != _needs_fix:
+		if new_needs_fix:
+			_needs_fix = true
+			_clear_working_state(monster)
+		else:
+			_needs_fix = false
+
+
+func _on_solving_board_reset(monster: SimMonster) -> void:
+	_needs_fix = false
+	
+	_interested_cells.clear()
+	_clear_working_state(monster)
