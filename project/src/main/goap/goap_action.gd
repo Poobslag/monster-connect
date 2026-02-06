@@ -1,11 +1,11 @@
 extends Node
 class_name GoapAction
 
-func enter(_actor: Variant) -> void:
+func enter() -> void:
 	pass
 
 
-func exit(_actor: Variant) -> void:
+func exit() -> void:
 	pass
 
 
@@ -13,5 +13,5 @@ func exit(_actor: Variant) -> void:
 ## [br]
 ## [param _actor] is the NPC using the AI. [param _delta] is the time in seconds since last loop. Returns true when
 ## the task is complete.[br]
-func perform(_actor: Variant, _delta: float) -> bool:
+func perform(_delta: float) -> bool:
 	return false
