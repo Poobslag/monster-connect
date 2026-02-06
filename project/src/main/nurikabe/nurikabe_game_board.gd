@@ -422,6 +422,14 @@ func _on_validate_timer_timeout() -> void:
 		new_error_cells[wrong_size_cell] = true
 	for split_wall_cell in result_simple.split_walls:
 		new_error_cells[split_wall_cell] = true
+	
+	# preserve error state for half cells to prevent flickering when multiple players edit simultaneously
+	for half_cell: Vector2i in half_cells:
+		if old_error_cells.has(half_cell):
+			new_error_cells[half_cell] = true
+		else:
+			new_error_cells.erase(half_cell)
+	
 	error_cells = new_error_cells
 	
 	if not old_error_cells.has_all(new_error_cells.keys()):
