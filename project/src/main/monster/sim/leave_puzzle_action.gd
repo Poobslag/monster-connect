@@ -5,5 +5,5 @@ extends GoapAction
 
 func perform(_delta: float) -> bool:
 	monster.solving_board = null
-	monster.bored_with_puzzle = false
+	monster.memory.erase("puzzle.bored_with_puzzle")
 	return false

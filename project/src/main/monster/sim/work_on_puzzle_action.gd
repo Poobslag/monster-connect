@@ -105,8 +105,8 @@ func _perform_while_fixing(delta: float) -> bool:
 	monster.increase_boredom(delta)
 	_process_idle_cursor( delta)
 	if monster.boredom >= 75:
-		monster.bored_with_puzzle = true
-	return monster.bored_with_puzzle or monster.solving_board.is_finished()
+		monster.memory["puzzle.bored_with_puzzle"] = true
+	return monster.memory.get("puzzle.bored_with_puzzle", false) or monster.solving_board.is_finished()
 
 
 func _perform_normally(delta: float) -> bool:

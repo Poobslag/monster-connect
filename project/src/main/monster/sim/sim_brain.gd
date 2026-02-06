@@ -5,7 +5,6 @@ extends Node
 var _current_action: GoapAction
 
 @onready var _monster: SimMonster = Utils.find_parent_of_type(self, SimMonster)
-
 @onready var _find_puzzle_action: GoapAction = %FindPuzzleAction
 @onready var _idle_action: GoapAction = %IdleAction
 @onready var _leave_puzzle_action: GoapAction = %LeavePuzzleAction
@@ -17,7 +16,8 @@ func _process(delta: float) -> void:
 	if _monster.solving_board == null:
 		new_action = _find_puzzle_action if _monster.boredom >= 6 else _idle_action
 	else:
-		var should_leave_puzzle: bool = _monster.solving_board.is_finished() or _monster.bored_with_puzzle
+		var should_leave_puzzle: bool = _monster.solving_board.is_finished() \
+				or _monster.memory.get("puzzle.bored_with_puzzle", false)
 		new_action = _leave_puzzle_action if should_leave_puzzle else _work_on_puzzle_action
 	
 	# handle action transitions
