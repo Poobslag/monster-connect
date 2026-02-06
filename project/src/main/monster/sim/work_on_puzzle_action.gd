@@ -25,29 +25,27 @@ var _cursor_commands_by_cell: Dictionary[Vector2i, Array] = {}
 var _interested_cells: Dictionary[Vector2i, float] = {}
 
 @onready var _solver: NaiveSolver = NaiveSolver.find_instance(self)
+@onready var monster: SimMonster = Utils.find_parent_of_type(self, SimMonster)
 
-func enter(actor: Variant) -> void:
-	var monster: SimMonster = actor
-	monster.solving_board.cell_changed.connect(_on_solving_board_cell_changed.bind(monster))
-	monster.solving_board.error_cells_changed.connect(_on_solving_board_error_cells_changed.bind(monster))
-	monster.solving_board.board_reset.connect(_on_solving_board_reset.bind(monster))
+func enter() -> void:
+	monster.solving_board.cell_changed.connect(_on_solving_board_cell_changed)
+	monster.solving_board.error_cells_changed.connect(_on_solving_board_error_cells_changed)
+	monster.solving_board.board_reset.connect(_on_solving_board_reset)
 	_board_size_factor = monster.solving_board.get_global_cursorable_rect().size.length() / 500.0
 	_next_idle_remaining_time = randf_range(0, IDLE_COOLDOWN)
 
 
-func perform(actor: Variant, delta: float) -> bool:
+func perform(delta: float) -> bool:
 	var result: bool = false
 	
 	if _needs_fix:
-		result = _perform_while_fixing(actor, delta)
+		result = _perform_while_fixing(delta)
 	else:
-		result = _perform_normally(actor, delta)
+		result = _perform_normally(delta)
 	return result
 
 
-func exit(actor: Variant) -> void:
-	var monster: SimMonster = actor
-	
+func exit() -> void:
 	_solver.cancel_request(monster)
 	monster.solving_board.cell_changed.disconnect(_on_solving_board_cell_changed)
 	monster.solving_board.error_cells_changed.disconnect(_on_solving_board_error_cells_changed)
@@ -65,7 +63,7 @@ func exit(actor: Variant) -> void:
 	_interested_cells.clear()
 
 
-func _choose_deduction(monster: SimMonster) -> void:
+func _choose_deduction() -> void:
 	var search_center: Vector2i = monster.get_final_cursor_position()
 	
 	var best_score: float = 0.0
@@ -77,7 +75,7 @@ func _choose_deduction(monster: SimMonster) -> void:
 			monster.remove_pending_deduction_at(deduction.pos)
 			continue
 		
-		var score: float = _score_deduction(monster, deduction, search_center)
+		var score: float = _score_deduction(deduction, search_center)
 		if score > 0.0:
 			score += DeductionScorer.get_priority(deduction.reason)
 		if score > best_score:
@@ -87,7 +85,7 @@ func _choose_deduction(monster: SimMonster) -> void:
 		monster.remove_pending_deduction_at(_next_deduction.pos)
 
 
-func _execute_curr_deduction(monster: SimMonster) -> void:
+func _execute_curr_deduction() -> void:
 	if _solver.verbose:
 		print("monster %s deduction: %s" % [monster.id, _curr_deduction])
 	var target_pos: Vector2 = monster.solving_board.map_to_global(_curr_deduction.pos)
@@ -103,17 +101,15 @@ func _execute_curr_deduction(monster: SimMonster) -> void:
 	_interested_cells[_curr_deduction.pos] = Time.get_ticks_msec()
 
 
-func _perform_while_fixing(actor: Variant, delta: float) -> bool:
-	var monster: SimMonster = actor
+func _perform_while_fixing(delta: float) -> bool:
 	monster.increase_boredom(delta)
-	_process_idle_cursor(monster, delta)
+	_process_idle_cursor( delta)
 	if monster.boredom >= 75:
 		monster.bored_with_puzzle = true
 	return monster.bored_with_puzzle or monster.solving_board.is_finished()
 
 
-func _perform_normally(actor: Variant, delta: float) -> bool:
-	var monster: SimMonster = actor
+func _perform_normally(delta: float) -> bool:
 	monster.decrease_boredom(delta)
 	_update_recently_modified_cells()
 	
@@ -126,15 +122,15 @@ func _perform_normally(actor: Variant, delta: float) -> bool:
 		_solver_cooldown_remaining = SOLVER_COOLDOWN
 	
 	if _next_deduction == null and not monster.pending_deductions.is_empty():
-		_choose_deduction(monster)
+		_choose_deduction()
 		if _next_deduction != null:
 			_next_deduction_remaining_time = \
 					DeductionScorer.get_delay(_next_deduction.reason) * randf_range(1.0, 1.5)
 	
 	if _next_deduction != null:
-		_process_next_deduction(monster, delta)
+		_process_next_deduction(delta)
 	else:
-		_process_idle_cursor(monster, delta)
+		_process_idle_cursor(delta)
 	
 	return monster.solving_board.is_finished()
 
@@ -146,27 +142,27 @@ func _update_recently_modified_cells() -> void:
 			_interested_cells.erase(cell)
 
 
-func _process_next_deduction(monster: SimMonster, delta: float) -> void:
+func _process_next_deduction(delta: float) -> void:
 	if monster.solving_board.get_cell(_next_deduction.pos) == _next_deduction.value:
 		_next_deduction = null
 		return
 	
 	_next_deduction_remaining_time -= delta
 	if _next_deduction_remaining_time <= 0:
-		if _has_adjacent_error(monster, _next_deduction.pos):
+		if _has_adjacent_error(_next_deduction.pos):
 			# the sim's next deduction is near an error, so they wait until it's fixed
 			_interested_cells[_next_deduction.pos] = Time.get_ticks_msec()
 			_needs_fix = true
-			_clear_working_state(monster)
+			_clear_working_state()
 		else:
 			# the sim makes their next deduction
 			_curr_deduction = _next_deduction
 			_next_deduction = null
-			_execute_curr_deduction(monster)
+			_execute_curr_deduction()
 
 
 ## Interrupts any deductions and cursor commands.
-func _clear_working_state(monster: SimMonster) -> void:
+func _clear_working_state() -> void:
 	_curr_deduction = null
 	_next_deduction = null
 	monster.pending_deductions.clear()
@@ -175,7 +171,7 @@ func _clear_working_state(monster: SimMonster) -> void:
 	monster.input.release_buttons()
 
 
-func _has_adjacent_error(monster: SimMonster, cell: Vector2i) -> bool:
+func _has_adjacent_error(cell: Vector2i) -> bool:
 	if monster.solving_board.error_cells.is_empty():
 		return false
 	
@@ -188,7 +184,7 @@ func _has_adjacent_error(monster: SimMonster, cell: Vector2i) -> bool:
 	return result
 
 
-func _process_idle_cursor(monster: SimMonster, delta: float) -> void:
+func _process_idle_cursor(delta: float) -> void:
 	if not monster.input.cursor_commands.is_empty():
 		return
 	if _next_idle_remaining_time > 0:
@@ -210,10 +206,9 @@ func _process_idle_cursor(monster: SimMonster, delta: float) -> void:
 	_next_idle_remaining_time = IDLE_COOLDOWN
 
 
-func _score_deduction(monster: SimMonster, deduction: Deduction, search_center: Vector2) -> float:
+func _score_deduction(deduction: Deduction, search_center: Vector2) -> float:
 	# some deductions score negative; these represent deductions which are too close to the player cursor
 	var score: float = 0.0
-	
 	var deduction_global_pos: Vector2 = monster.solving_board.map_to_global(deduction.pos)
 	var cursor_dist: float = search_center.distance_to(deduction_global_pos)
 	score += 10.0 * _score_distance(cursor_dist, 300)
@@ -232,7 +227,7 @@ func _score_distance(distance: float, decay_factor: float) -> float:
 	return exp(-(distance / _board_size_factor) / decay_factor)
 
 
-func _on_solving_board_cell_changed(cell_pos: Vector2i, _value: int, monster: SimMonster) -> void:
+func _on_solving_board_cell_changed(cell_pos: Vector2i, _value: int) -> void:
 	if _cursor_commands_by_cell.has(cell_pos):
 		var cursor_press_command: SimInput.CursorCommand = null
 		for cursor_command: SimInput.CursorCommand in _cursor_commands_by_cell[cell_pos]:
@@ -247,11 +242,11 @@ func _on_solving_board_cell_changed(cell_pos: Vector2i, _value: int, monster: Si
 		_cursor_commands_by_cell.erase(cell_pos)
 
 
-func _on_solving_board_error_cells_changed(monster: SimMonster) -> void:
+func _on_solving_board_error_cells_changed() -> void:
 	# calculate the new value for 'needs_fix'
 	var new_needs_fix: bool = false
 	for cell: Vector2i in _interested_cells:
-		if _has_adjacent_error(monster, cell):
+		if _has_adjacent_error(cell):
 			new_needs_fix = true
 			break
 	
@@ -259,13 +254,12 @@ func _on_solving_board_error_cells_changed(monster: SimMonster) -> void:
 	if new_needs_fix != _needs_fix:
 		if new_needs_fix:
 			_needs_fix = true
-			_clear_working_state(monster)
+			_clear_working_state()
 		else:
 			_needs_fix = false
 
 
-func _on_solving_board_reset(monster: SimMonster) -> void:
+func _on_solving_board_reset() -> void:
 	_needs_fix = false
-	
 	_interested_cells.clear()
-	_clear_working_state(monster)
+	_clear_working_state()

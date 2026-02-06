@@ -5,13 +5,14 @@ const PUZZLE_APPROACH: float = 80.0
 
 var target_game_board: NurikabeGameBoard
 
-func exit(_actor: Variant) -> void:
+@onready var monster: SimMonster = Utils.find_parent_of_type(self, SimMonster)
+
+func exit() -> void:
 	target_game_board = null
 
 
-func perform(actor: Variant, _delta: float) -> bool:
+func perform(_delta: float) -> bool:
 	var finished: bool = false
-	var monster: SimMonster = actor
 	
 	# find the nearest game board
 	if target_game_board == null:

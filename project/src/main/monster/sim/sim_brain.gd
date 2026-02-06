@@ -24,15 +24,15 @@ func _process(delta: float) -> void:
 	if new_action != _current_action:
 		_log_action_change(new_action)
 		if _current_action != null:
-			_current_action.exit(_monster)
+			_current_action.exit()
 		_current_action = new_action
 		if _current_action != null:
-			_current_action.enter(_monster)
+			_current_action.enter()
 	
 	# execute current action
-	var finished: bool = _current_action.perform(_monster, delta)
+	var finished: bool = _current_action.perform(delta)
 	if finished:
-		_current_action.exit(_monster)
+		_current_action.exit()
 		_current_action = null
 
 
