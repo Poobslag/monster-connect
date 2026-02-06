@@ -15,7 +15,7 @@ func _process(delta: float) -> void:
 	# select action based on current state
 	var new_action: GoapAction = _current_action
 	if _monster.solving_board == null:
-		new_action = _find_puzzle_action if _monster.boredom >= 20 else _idle_action
+		new_action = _find_puzzle_action if _monster.boredom >= 6 else _idle_action
 	else:
 		var should_leave_puzzle: bool = _monster.solving_board.is_finished() or _monster.bored_with_puzzle
 		new_action = _leave_puzzle_action if should_leave_puzzle else _work_on_puzzle_action
