@@ -9,7 +9,7 @@ const BOREDOM_PER_SECOND: float = 1.66667 # 100 per minute
 var solving_board: NurikabeGameBoard
 var bored_with_puzzle: bool = false
 
-var boredom: float = 0.0
+var boredom: float = randf_range(10, 20)
 var pending_deductions: Dictionary[Vector2i, Deduction] = {}
 
 func update_input(delta: float) -> void:
