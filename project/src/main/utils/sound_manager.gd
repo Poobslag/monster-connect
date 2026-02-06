@@ -29,6 +29,13 @@ const SOUND_CONFIGS: Dictionary[String, Dictionary] = {
 		"source": "button_click",
 		"semitones": -2.0,
 	},
+	"cheat_enabled": {
+		"source": "surround_island_release",
+	},
+	"cheat_disabled": {
+		"source": "surround_island_release",
+		"semitones": -2.0
+	},
 	"cursor_move": {
 		"source": "button_click",
 		"volume_db": -24.0,

@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://qwccyyoqtm7y" path="res://src/demo/nurikabe/solver/demo_solver_board.gd" id="1_1oyp4"]
 [ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="2_ts2fd"]
 [ext_resource type="PackedScene" uid="uid://rpgvsnfuo7o5" path="res://src/demo/nurikabe/generator/demo_log.tscn" id="3_16nxf"]
-[ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/demo/nurikabe/solver/command_palette.tscn" id="4_ulbbn"]
+[ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="4_ulbbn"]
 [ext_resource type="Script" uid="uid://bvoy1f5e7f8ao" path="res://src/demo/nurikabe/solver/demo_puzzle_archive.gd" id="5_ts2fd"]
 
 [node name="Demo" type="Node" unique_id=1237384723]

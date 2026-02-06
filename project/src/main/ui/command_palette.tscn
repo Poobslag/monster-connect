@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://h73338s4fipn"]
 
-[ext_resource type="Script" uid="uid://vhxhtwq5oq03" path="res://src/demo/nurikabe/solver/command_palette.gd" id="1_h8uq1"]
+[ext_resource type="Script" uid="uid://vhxhtwq5oq03" path="res://src/main/ui/command_palette.gd" id="1_h8uq1"]
 
-[node name="CommandPalette" type="CanvasLayer" unique_id=1368678133]
+[node name="CommandPalette" type="CanvasLayer" unique_id=1368678133 groups=["command_palettes"]]
 visible = false
 script = ExtResource("1_h8uq1")
 
