@@ -11,9 +11,11 @@ const DEBUG_COLORS: Array[Color] = [
 ]
 
 const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe/game_board.tscn")
+const SIM_SCENE: PackedScene = preload("res://src/main/monster/sim/sim_monster.tscn")
 const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
-const TARGET_PUZZLE_COUNT: int = 7
 
+@export var target_sim_count: int = 1
+@export var target_puzzle_count: int = 7
 @export var draw_debug_paths: bool = false
 @export var show_puzzle_ids: bool = false
 
@@ -26,6 +28,8 @@ var _puzzle_queue: Array[String] = []
 var _debug_paths: Array[Array] = []
 
 func _ready() -> void:
+	clear_sims()
+	refresh_sims()
 	clear_game_boards()
 	refresh_game_boards()
 
@@ -73,7 +77,7 @@ func refresh_game_boards() -> void:
 			remove_game_board(game_board)
 	
 	# add puzzles to reach the target puzzle count
-	var new_puzzle_count: int = TARGET_PUZZLE_COUNT - get_game_boards().size()
+	var new_puzzle_count: int = target_puzzle_count - get_game_boards().size()
 	for _i: int in new_puzzle_count:
 		add_random_puzzle()
 
@@ -86,6 +90,40 @@ func add_random_puzzle() -> void:
 	_generate_board_label_text(game_board)
 	_generate_board_string_id(game_board)
 	_position_board_in_world(game_board)
+
+
+func clear_sims() -> void:
+	for sim: SimMonster in get_sims():
+		remove_sim(sim)
+
+
+func get_sims() -> Array[SimMonster]:
+	var sims: Array[SimMonster] = []
+	for monster: Monster in get_tree().get_nodes_in_group("monsters"):
+		if monster is SimMonster and not monster.is_queued_for_deletion():
+			sims.append(monster)
+	return sims
+
+
+func remove_sim(sim: SimMonster) -> void:
+	sim.queue_free()
+
+
+func refresh_sims() -> void:
+	var sims: Array[SimMonster] = get_sims()
+	var new_sim_count: int = target_sim_count - sims.size()
+	
+	for _i in new_sim_count:
+		var sim: SimMonster = add_sim(sims.size())
+		sims.append(sim)
+
+
+func add_sim(sim_index: int) -> SimMonster:
+	var sim: SimMonster = SIM_SCENE.instantiate()
+	sim.skin = Monster.MonsterSkin.values()[sim_index % Monster.MonsterSkin.size()]
+	sim.position = Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000))
+	add_child(sim)
+	return sim
 
 
 func _attach_puzzle_info(game_board: NurikabeGameBoard, puzzle_path: String) -> void:
