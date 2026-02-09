@@ -2,6 +2,7 @@ class_name WorkOnPuzzleAction
 extends GoapAction
 
 const SOLVER_COOLDOWN: float = 3.0
+const CHOOSE_DEDUCTION_COOLDOWN: float = 0.5
 const IDLE_COOLDOWN: float = 3.0
 
 const ADJACENT_DIRS: Array[Vector2i] = NurikabeUtils.ADJACENT_DIRS
@@ -13,13 +14,17 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const RECENT_MODIFICATION_WINDOW: float = 1.0
 
+const PATIENCE_DURATION: float = 30.0
+
 var _board_size_factor: float
 var _curr_deduction: Deduction
 var _next_deduction: Deduction
 var _next_deduction_remaining_time: float = 0.0
 var _next_idle_remaining_time: float
 var _solver_cooldown_remaining: float = 0.0
+var _choose_deduction_cooldown_remaining: float = 0.0
 var _needs_fix: bool = false
+var _impatience_timer: float = 0.0
 
 var _cursor_commands_by_cell: Dictionary[Vector2i, Array] = {}
 var _interested_cells: Dictionary[Vector2i, float] = {}
@@ -65,8 +70,12 @@ func exit() -> void:
 
 func _choose_deduction() -> void:
 	var search_center: Vector2i = monster.get_final_cursor_position()
-	
 	var best_score: float = 0.0
+	var teammate: Monster = _find_teammate()
+	
+	var impatience_factor: float = clamp(_impatience_timer / PATIENCE_DURATION, 0.0, 1.0)
+	var min_distance_ratio: float = lerp(0.5, 0.0, impatience_factor)
+	
 	for deduction: Deduction in monster.pending_deductions.values():
 		if monster.solving_board.get_cell(deduction.pos) != CELL_EMPTY:
 			monster.remove_pending_deduction_at(deduction.pos)
@@ -75,7 +84,7 @@ func _choose_deduction() -> void:
 			monster.remove_pending_deduction_at(deduction.pos)
 			continue
 		
-		var score: float = _score_deduction(deduction, search_center)
+		var score: float = _score_deduction(deduction, search_center, teammate, min_distance_ratio)
 		if score > 0.0:
 			score += DeductionScorer.get_priority(deduction.reason)
 		if score > best_score:
@@ -83,6 +92,22 @@ func _choose_deduction() -> void:
 			best_score = score
 	if _next_deduction:
 		monster.remove_pending_deduction_at(_next_deduction.pos)
+
+
+func _find_teammate() -> Monster:
+	var teammate: Monster = null
+	var teammate_dist: float = 999999
+	for other_monster: Monster in get_tree().get_nodes_in_group("monsters"):
+		if other_monster == monster:
+			continue
+		if other_monster.cursor_board != monster.cursor_board:
+			continue
+		var other_monster_dist: float = other_monster.cursor.global_position.distance_to(
+				monster.cursor.global_position)
+		if other_monster_dist < teammate_dist:
+			teammate = other_monster
+			teammate_dist = other_monster_dist
+	return teammate
 
 
 func _execute_curr_deduction() -> void:
@@ -121,11 +146,23 @@ func _perform_normally(delta: float) -> bool:
 		_solver.request_move(monster)
 		_solver_cooldown_remaining = SOLVER_COOLDOWN
 	
-	if _next_deduction == null and not monster.pending_deductions.is_empty():
+	if _choose_deduction_cooldown_remaining > 0.0:
+		_choose_deduction_cooldown_remaining -= delta
+	
+	if _next_deduction == null \
+			and not monster.pending_deductions.is_empty() \
+			and _choose_deduction_cooldown_remaining <= 0:
 		_choose_deduction()
+		_choose_deduction_cooldown_remaining = CHOOSE_DEDUCTION_COOLDOWN
+		
 		if _next_deduction != null:
 			_next_deduction_remaining_time = \
 					DeductionScorer.get_delay(_next_deduction.reason) * randf_range(1.0, 1.5)
+	
+	if not monster.pending_deductions.is_empty() and _next_deduction == null:
+		_impatience_timer += delta
+	else:
+		_impatience_timer = 0.0
 	
 	if _next_deduction != null:
 		_process_next_deduction(delta)
@@ -206,20 +243,30 @@ func _process_idle_cursor(delta: float) -> void:
 	_next_idle_remaining_time = IDLE_COOLDOWN
 
 
-func _score_deduction(deduction: Deduction, search_center: Vector2) -> float:
+func _score_deduction(
+		deduction: Deduction,
+		search_center: Vector2,
+		teammate: Monster,
+		min_distance_ratio: float) -> float:
 	# some deductions score negative; these represent deductions which are too close to the player cursor
 	var score: float = 0.0
+	var distance_ratio: float = _get_distance_ratio(deduction, search_center, teammate)
+	if distance_ratio >= min_distance_ratio:
+		var deduction_global_pos: Vector2 = monster.solving_board.map_to_global(deduction.pos)
+		var cursor_dist: float = search_center.distance_to(deduction_global_pos)
+		# prefer closer deductions; add a little randomness so sims don't overlap each other so much
+		score += 10.0 * _score_distance(cursor_dist, 300) + randf_range(0.0, 1.0)
+	return score
+
+
+func _get_distance_ratio(deduction: Deduction, search_center: Vector2, teammate: Monster) -> float:
 	var deduction_global_pos: Vector2 = monster.solving_board.map_to_global(deduction.pos)
 	var cursor_dist: float = search_center.distance_to(deduction_global_pos)
-	score += 10.0 * _score_distance(cursor_dist, 300)
-	for other_monster: Monster in get_tree().get_nodes_in_group("monsters"):
-		if other_monster == monster:
-			continue
-		if other_monster.cursor_board != monster.cursor_board:
-			continue
-		var other_cursor_dist: float = other_monster.cursor.global_position.distance_to(deduction_global_pos)
-		score -= 20.0 * _score_distance(other_cursor_dist, 150)
-	return score
+	var distance_ratio: float = 999999.0
+	if teammate:
+		var teammate_cursor_dist: float = teammate.cursor.global_position.distance_to(deduction_global_pos)
+		distance_ratio = max(teammate_cursor_dist, 0.1) / max(cursor_dist, 0.1)
+	return distance_ratio
 
 
 ## Exponential decay: closer cursor = higher score, normalized for board size
