@@ -1,9 +1,9 @@
-[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://cwnjt3aehcpwu"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://cwnjt3aehcpwu"]
 
-[ext_resource type="Texture2D" uid="uid://censlhvjmk5m1" path="res://assets/main/monster/character_purple_jump.png" id="1_k2pc5"]
-[ext_resource type="Texture2D" uid="uid://bbnbcdni8f5kn" path="res://assets/main/monster/character_purple_idle.png" id="2_7hw6g"]
-[ext_resource type="Texture2D" uid="uid://cjkep2j5uaws4" path="res://assets/main/monster/character_purple_walk_a.png" id="3_era3t"]
-[ext_resource type="Texture2D" uid="uid://dkaqjyv3qmy7t" path="res://assets/main/monster/character_purple_walk_b.png" id="4_8o51i"]
+[ext_resource type="Texture2D" uid="uid://censlhvjmk5m1" path="res://assets/main/monster/sprites/character_purple_jump.png" id="1_k2pc5"]
+[ext_resource type="Texture2D" uid="uid://bbnbcdni8f5kn" path="res://assets/main/monster/sprites/character_purple_idle.png" id="2_7hw6g"]
+[ext_resource type="Texture2D" uid="uid://cjkep2j5uaws4" path="res://assets/main/monster/sprites/character_purple_walk_a.png" id="3_era3t"]
+[ext_resource type="Texture2D" uid="uid://dkaqjyv3qmy7t" path="res://assets/main/monster/sprites/character_purple_walk_b.png" id="4_8o51i"]
 
 [resource]
 animations = [{

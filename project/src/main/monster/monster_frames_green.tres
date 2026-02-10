@@ -1,9 +1,9 @@
-[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://bdaf2u076uix8"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://bdaf2u076uix8"]
 
-[ext_resource type="Texture2D" uid="uid://iw5glrdsfgl8" path="res://assets/main/monster/character_green_jump.png" id="1_gweqg"]
-[ext_resource type="Texture2D" uid="uid://d2h3puhewdgl4" path="res://assets/main/monster/character_green_idle.png" id="2_gweqg"]
-[ext_resource type="Texture2D" uid="uid://ckyefgeoigieh" path="res://assets/main/monster/character_green_walk_a.png" id="3_3wj4b"]
-[ext_resource type="Texture2D" uid="uid://bunphoi4bb5vs" path="res://assets/main/monster/character_green_walk_b.png" id="4_gweqg"]
+[ext_resource type="Texture2D" uid="uid://iw5glrdsfgl8" path="res://assets/main/monster/sprites/character_green_jump.png" id="1_gweqg"]
+[ext_resource type="Texture2D" uid="uid://d2h3puhewdgl4" path="res://assets/main/monster/sprites/character_green_idle.png" id="2_gweqg"]
+[ext_resource type="Texture2D" uid="uid://ckyefgeoigieh" path="res://assets/main/monster/sprites/character_green_walk_a.png" id="3_3wj4b"]
+[ext_resource type="Texture2D" uid="uid://bunphoi4bb5vs" path="res://assets/main/monster/sprites/character_green_walk_b.png" id="4_gweqg"]
 
 [resource]
 animations = [{
