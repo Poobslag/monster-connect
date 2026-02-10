@@ -1,9 +1,9 @@
-[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://c7fau5ows7p6r"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://c7fau5ows7p6r"]
 
-[ext_resource type="Texture2D" uid="uid://orvmpk6vnelq" path="res://assets/main/monster/character_pink_jump.png" id="1_bowi7"]
-[ext_resource type="Texture2D" uid="uid://cv7ydscabo6gn" path="res://assets/main/monster/character_pink_idle.png" id="2_drgas"]
-[ext_resource type="Texture2D" uid="uid://c6wbqgvdth2a4" path="res://assets/main/monster/character_pink_walk_a.png" id="3_2sncm"]
-[ext_resource type="Texture2D" uid="uid://dd427i0ks3ous" path="res://assets/main/monster/character_pink_walk_b.png" id="4_sui7p"]
+[ext_resource type="Texture2D" uid="uid://orvmpk6vnelq" path="res://assets/main/monster/sprites/character_pink_jump.png" id="1_bowi7"]
+[ext_resource type="Texture2D" uid="uid://cv7ydscabo6gn" path="res://assets/main/monster/sprites/character_pink_idle.png" id="2_drgas"]
+[ext_resource type="Texture2D" uid="uid://c6wbqgvdth2a4" path="res://assets/main/monster/sprites/character_pink_walk_a.png" id="3_2sncm"]
+[ext_resource type="Texture2D" uid="uid://dd427i0ks3ous" path="res://assets/main/monster/sprites/character_pink_walk_b.png" id="4_sui7p"]
 
 [resource]
 animations = [{

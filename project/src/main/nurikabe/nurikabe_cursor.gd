@@ -2,10 +2,10 @@
 extends Sprite2D
 
 const TALL_OFFSET = Vector2(0, -24)
-const TEXTURE_TALL_CENTER = preload("res://assets/main/nurikabe/cursor_tall_center.png")
-const TEXTURE_TALL_OUTLINE = preload("res://assets/main/nurikabe/cursor_tall_outline.png")
-const TEXTURE_CENTER = preload("res://assets/main/nurikabe/cursor_center.png")
-const TEXTURE_OUTLINE = preload("res://assets/main/nurikabe/cursor_outline.png")
+const TEXTURE_TALL_CENTER = preload("res://assets/main/nurikabe/sprites/cursor_tall_center.png")
+const TEXTURE_TALL_OUTLINE = preload("res://assets/main/nurikabe/sprites/cursor_tall_outline.png")
+const TEXTURE_CENTER = preload("res://assets/main/nurikabe/sprites/cursor_center.png")
+const TEXTURE_OUTLINE = preload("res://assets/main/nurikabe/sprites/cursor_outline.png")
 
 @export var tall: bool = false:
 	set(value):
