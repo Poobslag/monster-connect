@@ -5,14 +5,14 @@
 [ext_resource type="FontFile" uid="uid://bnh0lslf4yh87" path="res://addons/gut/fonts/CourierPrime-Regular.ttf" id="2_u5uc1"]
 [ext_resource type="PackedScene" uid="uid://bvrqqgjpyouse" path="res://addons/gut/gui/ResizeHandle.tscn" id="4_2r8a8"]
 
-[node name="Large" type="Panel" unique_id=2085131503]
+[node name="Large" type="Panel" unique_id=381265794]
 custom_minimum_size = Vector2(500, 150)
 offset_right = 632.0
 offset_bottom = 260.0
 theme = ExtResource("1_5hlsm")
 script = ExtResource("2_fue6q")
 
-[node name="MainBox" type="VBoxContainer" parent="." unique_id=1272833404]
+[node name="MainBox" type="VBoxContainer" parent="." unique_id=1718706015]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -20,11 +20,11 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_layout_mode = 1
 
-[node name="TitleBar" type="Panel" parent="MainBox" unique_id=1325332065]
+[node name="TitleBar" type="Panel" parent="MainBox" unique_id=1578121656]
 custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
 
-[node name="TitleBox" type="HBoxContainer" parent="MainBox/TitleBar" unique_id=914085712]
+[node name="TitleBox" type="HBoxContainer" parent="MainBox/TitleBar" unique_id=776114444]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -34,49 +34,49 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_layout_mode = 1
 
-[node name="Spacer1" type="CenterContainer" parent="MainBox/TitleBar/TitleBox" unique_id=1624956854]
+[node name="Spacer1" type="CenterContainer" parent="MainBox/TitleBar/TitleBox" unique_id=1486406073]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Title" type="Label" parent="MainBox/TitleBar/TitleBox" unique_id=1269787431]
+[node name="Title" type="Label" parent="MainBox/TitleBar/TitleBox" unique_id=440856192]
 layout_mode = 2
 text = "Title"
 
-[node name="Spacer2" type="CenterContainer" parent="MainBox/TitleBar/TitleBox" unique_id=1142171382]
+[node name="Spacer2" type="CenterContainer" parent="MainBox/TitleBar/TitleBox" unique_id=1517433102]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TimeLabel" type="Label" parent="MainBox/TitleBar/TitleBox" unique_id=777335714]
+[node name="TimeLabel" type="Label" parent="MainBox/TitleBar/TitleBox" unique_id=1052082808]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "999.999s"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MainBox" unique_id=1414902759]
+[node name="HBoxContainer" type="HBoxContainer" parent="MainBox" unique_id=1351674847]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MainBox/HBoxContainer" unique_id=1655172968]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainBox/HBoxContainer" unique_id=115762102]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="OutputBG" type="ColorRect" parent="MainBox/HBoxContainer/VBoxContainer" unique_id=75166894]
+[node name="OutputBG" type="ColorRect" parent="MainBox/HBoxContainer/VBoxContainer" unique_id=1509105653]
 layout_mode = 2
 size_flags_vertical = 3
 color = Color(0.0745098, 0.0705882, 0.0784314, 1)
 metadata/_edit_layout_mode = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/OutputBG" unique_id=1926090261]
+[node name="HBoxContainer" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/OutputBG" unique_id=2071989950]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="S2" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/OutputBG/HBoxContainer" unique_id=314903669]
+[node name="S2" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/OutputBG/HBoxContainer" unique_id=48114430]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="TestOutput" type="RichTextLabel" parent="MainBox/HBoxContainer/VBoxContainer/OutputBG/HBoxContainer" unique_id=1076484057]
+[node name="TestOutput" type="RichTextLabel" parent="MainBox/HBoxContainer/VBoxContainer/OutputBG/HBoxContainer" unique_id=554463376]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -86,55 +86,55 @@ scroll_following = true
 autowrap_mode = 0
 selection_enabled = true
 
-[node name="S1" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/OutputBG/HBoxContainer" unique_id=2131805648]
+[node name="S1" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/OutputBG/HBoxContainer" unique_id=1261062791]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="ControlBox" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer" unique_id=31564996]
+[node name="ControlBox" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer" unique_id=1117940790]
 layout_mode = 2
 
-[node name="S1" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=546047088]
+[node name="S1" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=1815507872]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="ProgressBars" type="VBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=2012814098]
+[node name="ProgressBars" type="VBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=791623421]
 custom_minimum_size = Vector2(2.08165e-12, 2.08165e-12)
 layout_mode = 2
 
-[node name="TestBox" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars" unique_id=672044947]
+[node name="TestBox" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars" unique_id=552426860]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars/TestBox" unique_id=566432343]
+[node name="Label" type="Label" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars/TestBox" unique_id=1759477717]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Tests"
 
-[node name="ProgressTest" type="ProgressBar" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars/TestBox" unique_id=1678639203]
+[node name="ProgressTest" type="ProgressBar" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars/TestBox" unique_id=217975448]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 value = 25.0
 
-[node name="ScriptBox" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars" unique_id=555182544]
+[node name="ScriptBox" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars" unique_id=1497043432]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars/ScriptBox" unique_id=253509747]
+[node name="Label" type="Label" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars/ScriptBox" unique_id=1556469935]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Scripts"
 
-[node name="ProgressScript" type="ProgressBar" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars/ScriptBox" unique_id=490856112]
+[node name="ProgressScript" type="ProgressBar" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/ProgressBars/ScriptBox" unique_id=2098886971]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 value = 75.0
 
-[node name="PathDisplay" type="VBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=1888889222]
+[node name="PathDisplay" type="VBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=2116372732]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Path" type="Label" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/PathDisplay" unique_id=1708799512]
+[node name="Path" type="Label" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/PathDisplay" unique_id=244911350]
 layout_mode = 2
 size_flags_vertical = 6
 theme_override_fonts/font = ExtResource("2_u5uc1")
@@ -142,15 +142,15 @@ theme_override_font_sizes/font_size = 14
 text = "res://test/integration/whatever"
 text_overrun_behavior = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/PathDisplay" unique_id=585301412]
+[node name="HBoxContainer" type="HBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/PathDisplay" unique_id=937279391]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="S3" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/PathDisplay/HBoxContainer" unique_id=2135821576]
+[node name="S3" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/PathDisplay/HBoxContainer" unique_id=1616032636]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="File" type="Label" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/PathDisplay/HBoxContainer" unique_id=1063738718]
+[node name="File" type="Label" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/PathDisplay/HBoxContainer" unique_id=284221310]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("2_u5uc1")
@@ -158,58 +158,58 @@ theme_override_font_sizes/font_size = 14
 text = "test_this_thing.gd"
 text_overrun_behavior = 3
 
-[node name="Buttons" type="VBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=123492459]
+[node name="Buttons" type="VBoxContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=1075444278]
 layout_mode = 2
 
-[node name="Continue" type="Button" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/Buttons" unique_id=1771373620]
+[node name="Continue" type="Button" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/Buttons" unique_id=202718902]
 layout_mode = 2
 size_flags_vertical = 4
 text = "Continue
 "
 
-[node name="WordWrap" type="CheckButton" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/Buttons" unique_id=1119384043]
+[node name="WordWrap" type="CheckButton" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox/Buttons" unique_id=1778709834]
 layout_mode = 2
 text = "Word Wrap"
 
-[node name="S3" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=2047722321]
+[node name="S3" type="CenterContainer" parent="MainBox/HBoxContainer/VBoxContainer/ControlBox" unique_id=2093227298]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="BottomPad" type="CenterContainer" parent="MainBox" unique_id=170396332]
+[node name="BottomPad" type="CenterContainer" parent="MainBox" unique_id=1540609032]
 custom_minimum_size = Vector2(0, 5)
 layout_mode = 2
 
-[node name="Footer" type="HBoxContainer" parent="MainBox" unique_id=1749750181]
+[node name="Footer" type="HBoxContainer" parent="MainBox" unique_id=2003130831]
 layout_mode = 2
 
-[node name="SidePad1" type="CenterContainer" parent="MainBox/Footer" unique_id=2083292842]
+[node name="SidePad1" type="CenterContainer" parent="MainBox/Footer" unique_id=1810442177]
 custom_minimum_size = Vector2(2, 2.08165e-12)
 layout_mode = 2
 
-[node name="ResizeHandle3" parent="MainBox/Footer" unique_id=1836425535 node_paths=PackedStringArray("resize_control") instance=ExtResource("4_2r8a8")]
+[node name="ResizeHandle3" parent="MainBox/Footer" unique_id=366754103 node_paths=PackedStringArray("resize_control") instance=ExtResource("4_2r8a8")]
 custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 orientation = 0
 resize_control = NodePath("../../..")
 
-[node name="SwitchModes" type="Button" parent="MainBox/Footer" unique_id=355651901]
+[node name="SwitchModes" type="Button" parent="MainBox/Footer" unique_id=569547914]
 layout_mode = 2
 text = "Compact
 "
 
-[node name="CenterContainer" type="CenterContainer" parent="MainBox/Footer" unique_id=2036626059]
+[node name="CenterContainer" type="CenterContainer" parent="MainBox/Footer" unique_id=2041070097]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ResizeHandle2" parent="MainBox/Footer" unique_id=1009782041 node_paths=PackedStringArray("resize_control") instance=ExtResource("4_2r8a8")]
+[node name="ResizeHandle2" parent="MainBox/Footer" unique_id=278580548 node_paths=PackedStringArray("resize_control") instance=ExtResource("4_2r8a8")]
 custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 resize_control = NodePath("../../..")
 
-[node name="SidePad2" type="CenterContainer" parent="MainBox/Footer" unique_id=1412588255]
+[node name="SidePad2" type="CenterContainer" parent="MainBox/Footer" unique_id=248410369]
 custom_minimum_size = Vector2(2, 2.08165e-12)
 layout_mode = 2
 
-[node name="BottomPad2" type="CenterContainer" parent="MainBox" unique_id=1914603332]
+[node name="BottomPad2" type="CenterContainer" parent="MainBox" unique_id=1827028394]
 custom_minimum_size = Vector2(2.08165e-12, 2)
 layout_mode = 2
