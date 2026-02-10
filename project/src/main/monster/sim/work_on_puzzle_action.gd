@@ -128,7 +128,7 @@ func _execute_curr_deduction() -> void:
 
 func _perform_while_fixing(delta: float) -> bool:
 	monster.increase_boredom(delta)
-	_process_idle_cursor( delta)
+	_process_idle_cursor(delta)
 	if monster.boredom >= 75:
 		monster.memory["puzzle.bored_with_puzzle"] = true
 	return monster.memory.get("puzzle.bored_with_puzzle", false) or monster.solving_board.is_finished()
@@ -196,6 +196,8 @@ func _process_next_deduction(delta: float) -> void:
 			_curr_deduction = _next_deduction
 			_next_deduction = null
 			_execute_curr_deduction()
+	else:
+		_process_idle_cursor(delta)
 
 
 ## Interrupts any deductions and cursor commands.
