@@ -3,6 +3,7 @@ class_name Monster
 extends CharacterBody2D
 
 enum MonsterSkin {
+	NONE,
 	BEIGE,
 	GREEN,
 	PINK,
@@ -11,6 +12,7 @@ enum MonsterSkin {
 }
 
 const SPRITE_FRAMES_BY_SKIN: Dictionary[MonsterSkin, SpriteFrames] = {
+	MonsterSkin.NONE: preload("res://src/main/monster/monster_frames_beige.tres"),
 	MonsterSkin.BEIGE: preload("res://src/main/monster/monster_frames_beige.tres"),
 	MonsterSkin.GREEN: preload("res://src/main/monster/monster_frames_green.tres"),
 	MonsterSkin.PINK: preload("res://src/main/monster/monster_frames_pink.tres"),
@@ -19,6 +21,16 @@ const SPRITE_FRAMES_BY_SKIN: Dictionary[MonsterSkin, SpriteFrames] = {
 }
 
 const CURSOR_COLOR_BY_SKIN: Dictionary[MonsterSkin, Color] = {
+	MonsterSkin.NONE: Color.BLACK,
+	MonsterSkin.BEIGE: Color(0.886, 0.765, 0.671, 1.0),
+	MonsterSkin.GREEN: Color(0.365, 0.831, 0.667, 1.0),
+	MonsterSkin.PINK: Color(1.0, 0.541, 0.682, 1.0),
+	MonsterSkin.PURPLE: Color(0.78, 0.714, 1.0, 1.0),
+	MonsterSkin.YELLOW: Color(0.98, 0.729, 0.176, 1.0),
+}
+
+const FONT_COLOR_BY_SKIN: Dictionary[MonsterSkin, Color] = {
+	MonsterSkin.NONE: Color.WHITE,
 	MonsterSkin.BEIGE: Color(0.886, 0.765, 0.671, 1.0),
 	MonsterSkin.GREEN: Color(0.365, 0.831, 0.667, 1.0),
 	MonsterSkin.PINK: Color(1.0, 0.541, 0.682, 1.0),
@@ -65,6 +77,10 @@ var id: int
 
 var on_steppable: bool = false
 var cursor_board: NurikabeGameBoard
+var display_name: String = "":
+	set(value):
+		display_name = value
+		%NameLabel.text = display_name
 
 @onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var fsm: StateMachine = %StateMachine
@@ -120,6 +136,7 @@ func _refresh_skin() -> void:
 	
 	%AnimatedSprite2D.sprite_frames = SPRITE_FRAMES_BY_SKIN[skin]
 	%Cursor.color = CURSOR_COLOR_BY_SKIN[skin]
+	%NameLabel.add_theme_color_override("font_outline_color", FONT_COLOR_BY_SKIN[skin])
 
 
 func _on_cursor_tracker_overlap_ended() -> void:

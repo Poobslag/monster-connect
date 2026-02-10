@@ -9,6 +9,11 @@ enum CursorAction {
 	MOVE,
 }
 
+const MIN_CURSOR_MOVE_SPEED: float = 100.0
+const MAX_CURSOR_MOVE_SPEED: float = 400.0
+const MIN_CURSOR_SMOOTHING: float = 3.0
+const MAX_CURSOR_SMOOTHING: float = 12.0
+
 const CURSOR_POS_EPSILON: float = 1.0
 const MOVEMENT_POS_EPSILON: float = 10.0
 
@@ -22,7 +27,20 @@ var target_puzzle: NurikabeGameBoard
 
 var cursor_commands: Array[CursorCommand] = []
 
-@onready var monster: Monster = Utils.find_parent_of_type(self, Monster)
+var cursor_move_speed: float = MIN_CURSOR_MOVE_SPEED
+var cursor_smoothing: float = MIN_CURSOR_SMOOTHING
+
+@onready var monster: SimMonster = Utils.find_parent_of_type(self, Monster)
+
+func _ready() -> void:
+	# wait for monster.behavior
+	await get_tree().process_frame
+	
+	cursor_move_speed = lerp(MIN_CURSOR_MOVE_SPEED, MAX_CURSOR_MOVE_SPEED,
+			monster.behavior.get_stat(SimBehavior.PUZZLE_CURSOR_SPEED))
+	cursor_smoothing = lerp(MIN_CURSOR_SMOOTHING, MAX_CURSOR_SMOOTHING,
+			monster.behavior.get_stat(SimBehavior.PUZZLE_CURSOR_SPEED))
+
 
 func update(delta: float) -> void:
 	_process_cursor_command(delta)
@@ -81,9 +99,9 @@ func _process_cursor_command(delta: float) -> void:
 	var event: InputEvent
 	if %Cursor.global_position.distance_to(cursor_command.pos) > CURSOR_POS_EPSILON:
 		var lerp_pos: Vector2 = lerp(%Cursor.global_position, cursor_command.pos,
-					1.0 - exp(-10.0 * cursor_command.speed * delta))
+					1.0 - exp(-cursor_smoothing * cursor_command.speed * delta))
 		var move_toward_pos: Vector2 = %Cursor.global_position.move_toward(cursor_command.pos,
-					300 * cursor_command.speed * delta)
+					cursor_move_speed * cursor_command.speed * delta)
 		if lerp_pos.distance_to(cursor_command.pos) < move_toward_pos.distance_to(cursor_command.pos):
 			%Cursor.global_position = lerp_pos
 		else:

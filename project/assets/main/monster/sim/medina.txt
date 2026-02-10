@@ -1,0 +1,11 @@
+{"version":"0.01"}
+
+[metadata]
+name Medina
+author Poobslag
+description Used to love puzzles, but now they just love that spark in a solver's eye who does something very clever.
+skin yellow
+
+[archetypes]
+rat 3
+pig 7

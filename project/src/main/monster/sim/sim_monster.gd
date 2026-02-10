@@ -9,6 +9,7 @@ const BOREDOM_PER_SECOND: float = 1.66667 # 100 per minute
 var solving_board: NurikabeGameBoard
 
 var memory: Dictionary[String, Variant] = {}
+var behavior: SimBehavior
 
 var boredom: float = randf_range(0, 6)
 var pending_deductions: Dictionary[Vector2i, Deduction] = {}

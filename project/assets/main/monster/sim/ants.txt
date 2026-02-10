@@ -1,0 +1,11 @@
+{"version":"0.01"}
+
+[metadata]
+name Ants
+author Poobslag
+description A recluse ratatouilled by a colony of ants living inside his brain. His hobbies include sugar and fealty.
+skin pink
+
+[archetypes]
+rat 9
+pig 1

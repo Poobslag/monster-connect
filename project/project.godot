@@ -26,6 +26,7 @@ Global="*res://src/main/utils/global.gd"
 GameSettings="*res://src/main/data/game_settings.gd"
 SettingsSaver="*res://src/main/data/settings_saver.gd"
 SoundManager="*res://src/main/utils/sound_manager.tscn"
+SimLibrary="*uid://c8fv8nx45to50"
 
 [debug]
 
