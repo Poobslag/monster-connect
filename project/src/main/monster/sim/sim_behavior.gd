@@ -3,6 +3,7 @@ class_name SimBehavior
 const MOTIVATION: String = "motivation" # constantly active and moving
 
 ## solving a puzzle
+const PUZZLE_CURSOR_COURTESY: String = "puzzle.cursor_courtesy" # avoid other player cursors
 const PUZZLE_CURSOR_SPEED: String = "puzzle.cursor_speed" # fast cursor movements, no pauses
 const PUZZLE_THINK_SPEED: String = "puzzle.think_speed" # fast at coming up with deductions
 
