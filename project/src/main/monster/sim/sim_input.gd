@@ -36,10 +36,10 @@ func _ready() -> void:
 	# wait for monster.behavior
 	await get_tree().process_frame
 	
-	cursor_move_speed = lerp(MIN_CURSOR_MOVE_SPEED, MAX_CURSOR_MOVE_SPEED,
-			monster.behavior.get_stat(SimBehavior.PUZZLE_CURSOR_SPEED))
-	cursor_smoothing = lerp(MIN_CURSOR_SMOOTHING, MAX_CURSOR_SMOOTHING,
-			monster.behavior.get_stat(SimBehavior.PUZZLE_CURSOR_SPEED))
+	cursor_move_speed = monster.behavior.lerp_stat(SimBehavior.PUZZLE_CURSOR_SPEED,
+			MIN_CURSOR_MOVE_SPEED, MAX_CURSOR_MOVE_SPEED)
+	cursor_smoothing = monster.behavior.lerp_stat(SimBehavior.PUZZLE_CURSOR_SPEED,
+			MIN_CURSOR_SMOOTHING, MAX_CURSOR_SMOOTHING)
 
 
 func update(delta: float) -> void:
