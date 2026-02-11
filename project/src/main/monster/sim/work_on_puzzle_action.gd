@@ -1,9 +1,9 @@
 class_name WorkOnPuzzleAction
 extends GoapAction
 
-const MIN_SOLVER_COOLDOWN: float = 2.3
-const AVG_SOLVER_COOLDOWN: float = 5.0
-const MAX_SOLVER_COOLDOWN: float = 9.0
+const SOLVER_COOLDOWN_MIN: float = 2.3
+const SOLVER_COOLDOWN_AVG: float = 5.0
+const SOLVER_COOLDOWN_MAX: float = 9.0
 
 const CHOOSE_DEDUCTION_COOLDOWN: float = 0.5
 const IDLE_COOLDOWN: float = 3.0
@@ -32,7 +32,7 @@ var _impatience_timer: float = 0.0
 var _cursor_commands_by_cell: Dictionary[Vector2i, Array] = {}
 var _interested_cells: Dictionary[Vector2i, float] = {}
 
-var _solver_cooldown: float = MIN_SOLVER_COOLDOWN
+var _solver_cooldown: float = SOLVER_COOLDOWN_MIN
 var _deduction_speed_factor: float = 0.0
 
 @onready var _solver: NaiveSolver = NaiveSolver.find_instance(self)
@@ -43,7 +43,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	
 	_solver_cooldown = monster.behavior.lerp_stat(SimBehavior.PUZZLE_THINK_SPEED,
-		MIN_SOLVER_COOLDOWN, MAX_SOLVER_COOLDOWN, AVG_SOLVER_COOLDOWN)
+		SOLVER_COOLDOWN_MIN, SOLVER_COOLDOWN_MAX, SOLVER_COOLDOWN_AVG)
 	_deduction_speed_factor = monster.behavior.lerp_stat(SimBehavior.PUZZLE_THINK_SPEED, 0.0, 1.0, 0.75)
 
 

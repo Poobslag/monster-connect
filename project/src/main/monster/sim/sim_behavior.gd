@@ -1,15 +1,15 @@
 class_name SimBehavior
 
-const MOTIVATION: String = "motivation"
+const MOTIVATION: String = "motivation" # constantly active and moving
 
 ## solving a puzzle
-const PUZZLE_CURSOR_SPEED: String = "puzzle.cursor_speed"
-const PUZZLE_THINK_SPEED: String = "puzzle.think_speed"
+const PUZZLE_CURSOR_SPEED: String = "puzzle.cursor_speed" # fast cursor movements, no pauses
+const PUZZLE_THINK_SPEED: String = "puzzle.think_speed" # fast at coming up with deductions
 
 ## choosing a puzzle
-const PUZZLE_SIZE_PREFERENCE: String = "puzzle.size_preference"
-const PUZZLE_DIFFICULTY_PREFERENCE: String = "puzzle.difficulty_preference"
-const PUZZLE_PICKINESS: String = "puzzle.pickiness"
+const PUZZLE_SIZE_PREFERENCE: String = "puzzle.size_preference" # prefer large puzzles
+const PUZZLE_DIFFICULTY_PREFERENCE: String = "puzzle.difficulty_preference" # prefer hard puzzles
+const PUZZLE_PICKINESS: String = "puzzle.pickiness" # strong preferences, will search for a specific puzzle
 
 const STATS_BY_ARCHETYPE: Dictionary[String, Dictionary] = {
 	"neutral": {

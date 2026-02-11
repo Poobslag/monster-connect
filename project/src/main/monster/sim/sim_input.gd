@@ -9,10 +9,10 @@ enum CursorAction {
 	MOVE,
 }
 
-const MIN_CURSOR_MOVE_SPEED: float = 100.0
-const MAX_CURSOR_MOVE_SPEED: float = 400.0
-const MIN_CURSOR_SMOOTHING: float = 3.0
-const MAX_CURSOR_SMOOTHING: float = 12.0
+const CURSOR_MOVE_SPEED_MIN: float = 100.0
+const CURSOR_MOVE_SPEED_MAX: float = 400.0
+const CURSOR_SMOOTHING_MIN: float = 3.0
+const CURSOR_SMOOTHING_MAX: float = 12.0
 
 const CURSOR_POS_EPSILON: float = 1.0
 const MOVEMENT_POS_EPSILON: float = 10.0
@@ -27,8 +27,8 @@ var target_puzzle: NurikabeGameBoard
 
 var cursor_commands: Array[CursorCommand] = []
 
-var cursor_move_speed: float = MIN_CURSOR_MOVE_SPEED
-var cursor_smoothing: float = MIN_CURSOR_SMOOTHING
+var cursor_move_speed: float = CURSOR_MOVE_SPEED_MIN
+var cursor_smoothing: float = CURSOR_SMOOTHING_MIN
 
 @onready var monster: SimMonster = Utils.find_parent_of_type(self, Monster)
 
@@ -37,9 +37,9 @@ func _ready() -> void:
 	await get_tree().process_frame
 	
 	cursor_move_speed = monster.behavior.lerp_stat(SimBehavior.PUZZLE_CURSOR_SPEED,
-			MIN_CURSOR_MOVE_SPEED, MAX_CURSOR_MOVE_SPEED)
+			CURSOR_MOVE_SPEED_MIN, CURSOR_MOVE_SPEED_MAX)
 	cursor_smoothing = monster.behavior.lerp_stat(SimBehavior.PUZZLE_CURSOR_SPEED,
-			MIN_CURSOR_SMOOTHING, MAX_CURSOR_SMOOTHING)
+			CURSOR_SMOOTHING_MIN, CURSOR_SMOOTHING_MAX)
 
 
 func update(delta: float) -> void:
