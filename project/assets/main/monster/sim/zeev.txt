@@ -1,0 +1,11 @@
+{"version":"0.01"}
+
+[metadata]
+name Zeev
+author Poobslag
+description Comes off as rude, but he's only critical of his friends because he sees their unfulfilled potential.
+skin green
+
+[archetypes]
+dragon 5
+monkey 5

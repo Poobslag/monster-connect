@@ -4,10 +4,52 @@ extends GoapAction
 const FIND_TARGET_COOLDOWN: float = 3.0
 const PUZZLE_APPROACH: float = 80.0
 
+const DESIRED_SIZE_MIN: float = 40.0
+const DESIRED_SIZE_MAX: float = 600.0
+const DESIRED_SIZE_AVG: float = 150.0
+
+const DESIRED_DIFFICULTY_MIN: float = 0.0
+const DESIRED_DIFFICULTY_MAX: float = 12.0
+const DESIRED_DIFFICULTY_AVG: float = 4.0
+
+const DIFFICULTY_WEIGHT_MIN: float = 0.0
+const DIFFICULTY_WEIGHT_MAX: float = 20.0
+const DIFFICULTY_WEIGHT_AVG: float = 5.0
+
+const SIZE_WEIGHT_MIN: float = 0.0
+const SIZE_WEIGHT_MAX: float = 20.0
+const SIZE_WEIGHT_AVG: float = 5.0
+
+@export var verbose: bool = false
+
 var target_game_board: NurikabeGameBoard
 var find_target_cooldown_remaining: float = 0.0
 
+var _distance_weight: float = 5.0
+var _desired_difficulty: float = 0.0
+var _difficulty_weight: float = 5.0
+var _desired_size: float = 0.0
+var _size_weight: float = 5.0
+
 @onready var monster: SimMonster = Utils.find_parent_of_type(self, SimMonster)
+
+func _ready() -> void:
+	# wait for monster.behavior
+	await get_tree().process_frame
+	
+	_desired_difficulty = monster.behavior.lerp_stat(
+			SimBehavior.PUZZLE_DIFFICULTY_PREFERENCE,
+			DESIRED_DIFFICULTY_MIN, DESIRED_DIFFICULTY_MAX, DESIRED_DIFFICULTY_AVG)
+	_difficulty_weight = monster.behavior.lerp_stat(
+			SimBehavior.PUZZLE_PICKINESS,
+			DIFFICULTY_WEIGHT_MIN, DIFFICULTY_WEIGHT_MAX, DIFFICULTY_WEIGHT_AVG)
+	
+	_desired_size = monster.behavior.lerp_stat(
+			SimBehavior.PUZZLE_SIZE_PREFERENCE, DESIRED_SIZE_MIN, DESIRED_SIZE_MAX, DESIRED_SIZE_AVG)
+	_size_weight = monster.behavior.lerp_stat(
+			SimBehavior.PUZZLE_PICKINESS,
+			SIZE_WEIGHT_MIN, SIZE_WEIGHT_MAX, SIZE_WEIGHT_AVG)
+
 
 func enter() -> void:
 	find_target_cooldown_remaining = randf_range(0, FIND_TARGET_COOLDOWN)
@@ -52,17 +94,10 @@ func _find_target() -> void:
 	
 	# calculate a match score for each candidate
 	var wrapped_candidates: Array[Dictionary] = []
-	var distance_weight: float = 5.0
 	
-	var desired_difficulty: float = monster.behavior.lerp_stat(
-			SimBehavior.PUZZLE_DIFFICULTY_PREFERENCE, 0, 12.0, 4.0)
-	var difficulty_weight: float = monster.behavior.lerp_stat(
-			SimBehavior.PUZZLE_PICKINESS, 0, 20, 5)
-	
-	var desired_size: float = monster.behavior.lerp_stat(
-			SimBehavior.PUZZLE_SIZE_PREFERENCE, 40.0, 600.0, 150.0)
-	var size_weight: float = monster.behavior.lerp_stat(
-			SimBehavior.PUZZLE_PICKINESS, 0, 20, 5)
+	if verbose:
+		print("Find puzzle: %s wants a puzzle of size=%0.2f, difficulty=%0.2f" \
+				% [monster.display_name, _desired_size, _desired_difficulty])
 	
 	for game_board: NurikabeGameBoard in game_boards:
 		var candidate: Dictionary[String, Variant] = {}
@@ -72,23 +107,35 @@ func _find_target() -> void:
 		var distance: float = game_board.get_rect().get_center().distance_to(monster.position)
 		distance += randf_range(0, 500)
 		var distance_match: float = _calculate_match_factor(distance, 1000.0)
-		candidate["score"] += distance_match * distance_weight
+		candidate["score"] += distance_match * _distance_weight
 		
 		var difficulty: float = clamp(game_board.info.difficulty, 0, 12.0)
-		var difficulty_match: float = _calculate_match_factor(desired_difficulty - difficulty, 3.0)
-		candidate["score"] += difficulty_match * difficulty_weight
+		var difficulty_match: float = _calculate_match_factor(_desired_difficulty - difficulty, 3.0)
+		candidate["score"] += difficulty_match * _difficulty_weight
 		
-		var size: float = clamp(game_board.info.size.x * game_board.info.size.y, 40.0, 600.0)
-		var size_match: float = _calculate_match_factor(desired_size - size, desired_size * 0.5)
-		candidate["score"] += size_match * size_weight
+		var size: float = clamp(game_board.info.size.x * game_board.info.size.y, DESIRED_SIZE_MIN, DESIRED_SIZE_MAX)
+		var size_match: float = _calculate_match_factor(_desired_size - size, _desired_size * 0.5)
+		candidate["score"] += size_match * _size_weight
 		
+		if verbose:
+			print("  %s=%s: (%.2f * %.2f) + (%2.2f * %.2f) + (%.2f * %.2f)" % [ \
+					game_board.string_id, candidate["score"],
+					distance_match, _distance_weight,
+					difficulty_match, _difficulty_weight,
+					size_match, _size_weight,
+				])
 		wrapped_candidates.append(candidate)
 	
 	# assign the game board with the highest match score
 	if wrapped_candidates:
 		wrapped_candidates.sort_custom(func(a: Dictionary[String, Variant], b: Dictionary[String, Variant]) -> bool:
 			return a["score"] > b["score"])
-		target_game_board = wrapped_candidates[0]["board"]
+		var candidate: Dictionary[String, Variant] = wrapped_candidates[0]
+		if verbose:
+			print("Monster %s chose: %s; score=%.2f" \
+					% [monster.display_name, candidate["board"].string_id,
+				candidate["score"]])
+		target_game_board = candidate["board"]
 
 
 static func _calculate_match_factor(distance: float, tolerance: float) -> float:

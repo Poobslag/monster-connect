@@ -1,0 +1,11 @@
+{"version":"0.01"}
+
+[metadata]
+name Skyla
+author Poobslag
+description She'll hyper focus for 2 hours calculating which netflix special to watch and accidentally miss lunch.
+skin green
+
+[archetypes]
+pig 8
+monkey 2

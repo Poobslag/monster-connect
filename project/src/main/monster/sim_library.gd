@@ -32,6 +32,10 @@ func get_next_profile() -> SimProfile:
 		return null
 	
 	var path: String = _profile_queue[_next_profile_index]
+	return get_profile(path)
+
+
+func get_profile(path: String) -> SimProfile:
 	var result: SimProfile
 	if not _profile_cache.has(path):
 		var saver: MonsterSaver = MonsterSaver.new()

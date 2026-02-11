@@ -25,26 +25,76 @@ const STATS_BY_ARCHETYPE: Dictionary[String, Dictionary] = {
 		PUZZLE_PICKINESS: 5,
 	},
 	"rat": {
-		MOTIVATION: 5,
-		
-		PUZZLE_CURSOR_COURTESY: 7,
-		PUZZLE_CURSOR_SPEED: 8,
-		PUZZLE_THINK_SPEED: 8,
-		
-		PUZZLE_DIFFICULTY_PREFERENCE: 8,
-		PUZZLE_SIZE_PREFERENCE: 7,
-		PUZZLE_PICKINESS: 6,
-	},
-	"pig": {
-		MOTIVATION: 4,
+		# Tenacious, quick witted, social. Happy to tackle the hardest puzzles as a group.
+		MOTIVATION: 9,
 		
 		PUZZLE_CURSOR_COURTESY: 3,
+		PUZZLE_CURSOR_SPEED: 10,
+		PUZZLE_THINK_SPEED: 9,
+		
+		PUZZLE_DIFFICULTY_PREFERENCE: 8,
+		PUZZLE_SIZE_PREFERENCE: 2,
+		PUZZLE_PICKINESS: 8,
+	},
+	"ox": {
+		# Patient, unpretentious, perservering. Plodding and resourceful, just wants to work.
+		MOTIVATION: 10,
+		
+		PUZZLE_CURSOR_COURTESY: 6,
+		PUZZLE_CURSOR_SPEED: 0,
+		PUZZLE_THINK_SPEED: 0,
+		
+		PUZZLE_DIFFICULTY_PREFERENCE: 9,
+		PUZZLE_SIZE_PREFERENCE: 10,
+		PUZZLE_PICKINESS: 0,
+	},
+	"rabbit": {
+		# Open, optimistic, sensitive. Avoids conflict and prefers comfortable, easy puzzles.
+		MOTIVATION: 3,
+		
+		PUZZLE_CURSOR_COURTESY: 10,
+		PUZZLE_CURSOR_SPEED: 8,
+		PUZZLE_THINK_SPEED: 6,
+		
+		PUZZLE_DIFFICULTY_PREFERENCE: 1,
+		PUZZLE_SIZE_PREFERENCE: 3,
+		PUZZLE_PICKINESS: 6,
+	},
+	"dragon": {
+		# Powerful, energetic, ambitious. Visionary leaders who tackle the hardest challenges.
+		MOTIVATION: 8,
+		
+		PUZZLE_CURSOR_COURTESY: 0,
+		PUZZLE_CURSOR_SPEED: 4,
+		PUZZLE_THINK_SPEED: 10,
+		
+		PUZZLE_DIFFICULTY_PREFERENCE: 10,
+		PUZZLE_SIZE_PREFERENCE: 9,
+		PUZZLE_PICKINESS: 5,
+	},
+	"monkey": {
+		# Playful, clever, unpredictable. They follow their whims and take frequent breaks.
+		MOTIVATION: 0,
+		
+		PUZZLE_CURSOR_COURTESY: 2,
+		PUZZLE_CURSOR_SPEED: 10,
+		PUZZLE_THINK_SPEED: 7,
+		
+		PUZZLE_DIFFICULTY_PREFERENCE: 5,
+		PUZZLE_SIZE_PREFERENCE: 0,
+		PUZZLE_PICKINESS: 10,
+	},
+	"pig": {
+		# Cool-headed, intelligent and capable. Chill not competitive, well-liked by friends.
+		MOTIVATION: 5,
+		
+		PUZZLE_CURSOR_COURTESY: 8,
 		PUZZLE_CURSOR_SPEED: 2,
 		PUZZLE_THINK_SPEED: 2,
 		
-		PUZZLE_DIFFICULTY_PREFERENCE: 2,
-		PUZZLE_SIZE_PREFERENCE: 3,
-		PUZZLE_PICKINESS: 8,
+		PUZZLE_DIFFICULTY_PREFERENCE: 0,
+		PUZZLE_SIZE_PREFERENCE: 6,
+		PUZZLE_PICKINESS: 9,
 	},
 }
 

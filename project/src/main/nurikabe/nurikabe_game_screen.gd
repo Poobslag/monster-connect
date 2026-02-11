@@ -30,6 +30,9 @@ const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
 ## Force all puzzles to use the same fixed path. Useful for debugging.
 @export_file("*.txt") var test_puzzle_path: String
 
+## Force a specific sim to show up. Useful for debugging.
+@export_file("*.txt") var test_sim_path: String
+
 var _all_puzzles: Array[String] = Utils.find_data_files(PUZZLE_DIR, "txt")
 var _puzzle_queue: Array[String] = []
 
@@ -128,7 +131,11 @@ func refresh_sims() -> void:
 
 func add_sim(sim_index: int) -> SimMonster:
 	var sim: SimMonster = SIM_SCENE.instantiate()
-	var profile: SimProfile = SimLibrary.get_next_profile()
+	var profile: SimProfile
+	if test_sim_path:
+		profile = SimLibrary.get_profile(test_sim_path)
+	else:
+		profile = SimLibrary.get_next_profile()
 	if profile.skin == SimMonster.MonsterSkin.NONE:
 		sim.skin = DEFAULT_SKIN_VALUES[sim_index % DEFAULT_SKIN_VALUES.size()]
 	else:

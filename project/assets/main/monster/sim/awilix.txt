@@ -1,11 +1,11 @@
 {"version":"0.01"}
 
 [metadata]
-name Ants
+name Awilix
 author Poobslag
 description A recluse ratatouilled by a colony of ants living inside his brain. His hobbies include sugar and fealty.
 skin pink
 
 [archetypes]
-rat 9
-pig 1
+monkey 8
+rabbit 2

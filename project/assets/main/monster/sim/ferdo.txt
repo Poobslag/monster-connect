@@ -1,0 +1,12 @@
+{"version":"0.01"}
+
+[metadata]
+name Ferdo
+author Poobslag
+description Loves swearing creatively, and keeps a half dozen profane quips to unleash on anyone who wrongs him.
+skin beige
+
+[archetypes]
+ox 8
+rat 1
+monkey 1
