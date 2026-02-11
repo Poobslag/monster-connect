@@ -9,3 +9,6 @@ skin yellow
 [archetypes]
 rat 9
 pig 1
+
+[stats]
+puzzle.pickiness 0

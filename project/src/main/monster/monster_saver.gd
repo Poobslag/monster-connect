@@ -27,6 +27,8 @@ func load_sim_profile(filename: String) -> SimProfile:
 				_parse_metadata_line(line, profile)
 			"archetypes":
 				_parse_archetypes_line(line, profile)
+			"stats":
+				_parse_stats_line(line, profile)
 	
 	profile.apply_archetypes()
 	return profile
@@ -55,3 +57,9 @@ func _parse_archetypes_line(line: String, profile: SimProfile) -> void:
 			profile.archetypes[key] = float(value)
 		_:
 			push_warning("Unknown archetypes key: %s" % [key])
+
+
+func _parse_stats_line(line: String, profile: SimProfile) -> void:
+	var key: String = StringUtils.substring_before(line, " ")
+	var value: String = StringUtils.substring_after(line, " ")
+	profile.behavior.stats[key] = float(value)

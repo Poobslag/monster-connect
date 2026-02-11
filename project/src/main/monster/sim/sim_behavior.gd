@@ -1,20 +1,38 @@
 class_name SimBehavior
 
+## solving a puzzle
 const PUZZLE_CURSOR_SPEED: String = "puzzle.cursor_speed"
 const PUZZLE_THINK_SPEED: String = "puzzle.think_speed"
+
+## choosing a puzzle
+const PUZZLE_SIZE_PREFERENCE: String = "puzzle.size_preference"
+const PUZZLE_DIFFICULTY_PREFERENCE: String = "puzzle.difficulty_preference"
+const PUZZLE_PICKINESS: String = "puzzle.pickiness"
 
 const STATS_BY_ARCHETYPE: Dictionary[String, Dictionary] = {
 	"neutral": {
 		PUZZLE_CURSOR_SPEED: 5,
 		PUZZLE_THINK_SPEED: 5,
+		
+		PUZZLE_DIFFICULTY_PREFERENCE: 5,
+		PUZZLE_SIZE_PREFERENCE: 5,
+		PUZZLE_PICKINESS: 5,
 	},
 	"rat": {
 		PUZZLE_CURSOR_SPEED: 8,
 		PUZZLE_THINK_SPEED: 8,
+		
+		PUZZLE_DIFFICULTY_PREFERENCE: 8,
+		PUZZLE_SIZE_PREFERENCE: 7,
+		PUZZLE_PICKINESS: 6,
 	},
 	"pig": {
 		PUZZLE_CURSOR_SPEED: 2,
 		PUZZLE_THINK_SPEED: 2,
+		
+		PUZZLE_DIFFICULTY_PREFERENCE: 2,
+		PUZZLE_SIZE_PREFERENCE: 3,
+		PUZZLE_PICKINESS: 8,
 	},
 }
 
