@@ -1,5 +1,7 @@
 class_name SimBehavior
 
+const MOTIVATION: String = "motivation"
+
 ## solving a puzzle
 const PUZZLE_CURSOR_SPEED: String = "puzzle.cursor_speed"
 const PUZZLE_THINK_SPEED: String = "puzzle.think_speed"
@@ -17,6 +19,8 @@ const STATS_BY_ARCHETYPE: Dictionary[String, Dictionary] = {
 		PUZZLE_DIFFICULTY_PREFERENCE: 5,
 		PUZZLE_SIZE_PREFERENCE: 5,
 		PUZZLE_PICKINESS: 5,
+		
+		MOTIVATION: 5
 	},
 	"rat": {
 		PUZZLE_CURSOR_SPEED: 8,
@@ -25,6 +29,8 @@ const STATS_BY_ARCHETYPE: Dictionary[String, Dictionary] = {
 		PUZZLE_DIFFICULTY_PREFERENCE: 8,
 		PUZZLE_SIZE_PREFERENCE: 7,
 		PUZZLE_PICKINESS: 6,
+		
+		MOTIVATION: 8,
 	},
 	"pig": {
 		PUZZLE_CURSOR_SPEED: 2,
@@ -33,6 +39,8 @@ const STATS_BY_ARCHETYPE: Dictionary[String, Dictionary] = {
 		PUZZLE_DIFFICULTY_PREFERENCE: 2,
 		PUZZLE_SIZE_PREFERENCE: 3,
 		PUZZLE_PICKINESS: 8,
+		
+		MOTIVATION: 4,
 	},
 }
 
