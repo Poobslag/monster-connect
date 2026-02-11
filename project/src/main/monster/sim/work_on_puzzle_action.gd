@@ -1,7 +1,9 @@
 class_name WorkOnPuzzleAction
 extends GoapAction
 
-const SOLVER_COOLDOWN: float = 3.0
+const MIN_SOLVER_COOLDOWN: float = 2.3
+const MAX_SOLVER_COOLDOWN: float = 9.0
+
 const CHOOSE_DEDUCTION_COOLDOWN: float = 0.5
 const IDLE_COOLDOWN: float = 3.0
 
@@ -29,8 +31,20 @@ var _impatience_timer: float = 0.0
 var _cursor_commands_by_cell: Dictionary[Vector2i, Array] = {}
 var _interested_cells: Dictionary[Vector2i, float] = {}
 
+var _solver_cooldown: float = MIN_SOLVER_COOLDOWN
+var _deduction_speed_factor: float = 0.0
+
 @onready var _solver: NaiveSolver = NaiveSolver.find_instance(self)
 @onready var monster: SimMonster = Utils.find_parent_of_type(self, SimMonster)
+
+func _ready() -> void:
+	# wait for monster.behavior
+	await get_tree().process_frame
+	
+	_solver_cooldown = lerp(MIN_SOLVER_COOLDOWN, MAX_SOLVER_COOLDOWN,
+			pow(monster.behavior.get_stat(SimBehavior.PUZZLE_THINK_SPEED), 2.0))
+	_deduction_speed_factor = pow(monster.behavior.get_stat(SimBehavior.PUZZLE_THINK_SPEED), 0.5)
+
 
 func enter() -> void:
 	monster.solving_board.cell_changed.connect(_on_solving_board_cell_changed)
@@ -144,7 +158,7 @@ func _perform_normally(delta: float) -> bool:
 	if _solver_cooldown_remaining <= 0 and not _solver.is_move_requested(monster):
 		# queue up the next deduction finder
 		_solver.request_move(monster)
-		_solver_cooldown_remaining = SOLVER_COOLDOWN
+		_solver_cooldown_remaining = _solver_cooldown
 	
 	if _choose_deduction_cooldown_remaining > 0.0:
 		_choose_deduction_cooldown_remaining -= delta
@@ -157,7 +171,7 @@ func _perform_normally(delta: float) -> bool:
 		
 		if _next_deduction != null:
 			_next_deduction_remaining_time = \
-					DeductionScorer.get_delay(_next_deduction.reason) * randf_range(1.0, 1.5)
+					DeductionScorer.get_delay(_next_deduction.reason, _deduction_speed_factor) * randf_range(1.0, 1.5)
 	
 	if not monster.pending_deductions.is_empty() and _next_deduction == null:
 		_impatience_timer += delta

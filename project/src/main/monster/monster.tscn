@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://p2r0gntr00jy" path="res://src/main/monster/monster_state_idle.gd" id="9_21c7s"]
 [ext_resource type="Script" uid="uid://cau2s3vakgrdp" path="res://src/main/monster/monster_state_walk.gd" id="10_j0sbi"]
 [ext_resource type="PackedScene" uid="uid://dv3wpirlmcqmy" path="res://src/main/monster/cursor.tscn" id="10_wvhc2"]
+[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="11_ce6ck"]
 [ext_resource type="Script" uid="uid://dwmqmrgupm0ue" path="res://src/main/monster/monster_state_fall.gd" id="11_nwv64"]
 [ext_resource type="Script" uid="uid://8n3k5hi7bdi7" path="res://src/main/monster/monster_state_jump.gd" id="12_n2twi"]
 
@@ -16,6 +17,12 @@ size = Vector2(192, 192)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h8b4f"]
 size = Vector2(64, 64)
+
+[sub_resource type="FontVariation" id="FontVariation_78uaj"]
+base_font = ExtResource("11_ce6ck")
+variation_opentype = {
+2003265652: 600
+}
 
 [node name="Monster" type="CharacterBody2D" unique_id=459020565 groups=["monsters"]]
 collision_layer = 0
@@ -69,6 +76,19 @@ script = ExtResource("12_n2twi")
 
 [node name="Cursor" parent="." unique_id=356151578 instance=ExtResource("10_wvhc2")]
 unique_name_in_owner = true
+
+[node name="NameLabel" type="Label" parent="." unique_id=261523813]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 0)
+offset_left = -128.0
+offset_top = -172.0
+offset_right = 128.0
+offset_bottom = -120.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 15
+theme_override_fonts/font = SubResource("FontVariation_78uaj")
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
 
 [connection signal="overlap_ended" from="AnimatedSprite2D/CursorTracker" to="." method="_on_cursor_tracker_overlap_ended"]
 [connection signal="overlap_started" from="AnimatedSprite2D/CursorTracker" to="." method="_on_cursor_tracker_overlap_started"]

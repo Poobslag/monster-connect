@@ -25,7 +25,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_nc88o")
-target_sim_count = 3
+target_sim_count = 2
 target_puzzle_count = 15
 
 [node name="GameBoards" type="Control" parent="." unique_id=199475706]
@@ -66,6 +66,7 @@ position = Vector2(1255, 234)
 unique_name_in_owner = true
 position = Vector2(961, 540)
 platform_floor_layers = 4294967295
+skin = 4
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=2047494306]
 zoom = Vector2(1.2, 1.2)

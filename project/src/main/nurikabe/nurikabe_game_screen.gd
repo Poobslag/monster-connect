@@ -10,6 +10,14 @@ const DEBUG_COLORS: Array[Color] = [
 	Color("#8E5A2A"), # brown
 ]
 
+const DEFAULT_SKIN_VALUES: Array[Monster.MonsterSkin] = [
+	Monster.MonsterSkin.BEIGE,
+	Monster.MonsterSkin.GREEN,
+	Monster.MonsterSkin.PINK,
+	Monster.MonsterSkin.PURPLE,
+	Monster.MonsterSkin.YELLOW,
+]
+
 const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe/game_board.tscn")
 const SIM_SCENE: PackedScene = preload("res://src/main/monster/sim/sim_monster.tscn")
 const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
@@ -120,7 +128,13 @@ func refresh_sims() -> void:
 
 func add_sim(sim_index: int) -> SimMonster:
 	var sim: SimMonster = SIM_SCENE.instantiate()
-	sim.skin = Monster.MonsterSkin.values()[sim_index % Monster.MonsterSkin.size()]
+	var profile: SimProfile = SimLibrary.get_next_profile()
+	if profile.skin == SimMonster.MonsterSkin.NONE:
+		sim.skin = DEFAULT_SKIN_VALUES[sim_index % DEFAULT_SKIN_VALUES.size()]
+	else:
+		sim.skin = profile.skin
+	sim.behavior = profile.behavior
+	sim.display_name = profile.name
 	sim.position = Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000))
 	add_child(sim)
 	return sim

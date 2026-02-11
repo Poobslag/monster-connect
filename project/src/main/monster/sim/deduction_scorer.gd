@@ -86,7 +86,7 @@ const DEDUCTION_PRIORITY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
 	UNKNOWN_REASON: 0.0,
 }
 
-const DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
+const MIN_DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
 	UNKNOWN_REASON: 10.0,
 	
 	# break-in techniques
@@ -127,9 +127,52 @@ const DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
 	WALL_STRANGLE: 7.2,
 }
 
+const MAX_DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
+	UNKNOWN_REASON: 20.0,
+	
+	# break-in techniques
+	ISLAND_OF_ONE: 0.8,
+	ADJACENT_CLUES: 0.8,
+	
+	# easy techniques
+	ISLAND_BUBBLE: 1.6,
+	ISLAND_DIVIDER: 1.6,
+	ISLAND_EXPANSION: 1.6,
+	ISLAND_MOAT: 0.8,
+	POOL_TRIPLET: 1.6,
+	WALL_BUBBLE: 1.6,
+	WALL_EXPANSION: 1.6,
+	
+	# standard techniques
+	CORNER_BUFFER: 12.0,
+	CORNER_ISLAND: 12.0,
+	ISLAND_BUFFER: 12.0,
+	ISLAND_CHAIN: 12.0,
+	ISLAND_CHAIN_BUFFER: 12.0,
+	ISLAND_CHOKEPOINT: 12.0,
+	ISLAND_CONNECTOR: 12.0,
+	ISLAND_SNUG: 12.0,
+	POOL_CHOKEPOINT: 12.0,
+	UNCLUED_LIFELINE: 12.0,
+	UNCLUED_LIFELINE_BUFFER: 12.0,
+	UNREACHABLE_CELL: 12.0,
+	WALL_CONNECTOR: 12.0,
+	WALL_WEAVER: 12.0,
+	
+	# advanced techniques
+	ASSUMPTION: 40.0,
+	BORDER_HUG: 40.0,
+	ISLAND_BATTLEGROUND: 40.0,
+	ISLAND_RELEASE: 40.0,
+	ISLAND_STRANGLE: 40.0,
+	WALL_STRANGLE: 40.0,
+}
 
-static func get_delay(reason: Deduction.Reason) -> float:
-	return DEDUCTION_DELAY_FOR_REASON.get(reason, 0.6)
+
+static func get_delay(reason: Deduction.Reason, speed_factor: float) -> float:
+	return lerp(
+			MAX_DEDUCTION_DELAY_FOR_REASON.get(reason, 0.6),
+			MIN_DEDUCTION_DELAY_FOR_REASON.get(reason, 0.6), speed_factor)
 
 
 static func get_priority(reason: Deduction.Reason) -> float:

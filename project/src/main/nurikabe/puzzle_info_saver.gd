@@ -56,6 +56,10 @@ func load_puzzle_info(filename: String) -> PuzzleInfo:
 				if not info.reason_string.is_empty():
 					info.reason_string += "\n"
 				info.reason_string += line
+			"":
+				pass
+			_:
+				push_warning("Unknown section: %s" % [current_section])
 	
 	return info
 
@@ -72,3 +76,5 @@ func _parse_metadata_line(line: String, info: PuzzleInfo) -> void:
 			info.size.y = int(value)
 		"author":
 			info.author = value
+		_:
+			push_warning("Unknown metadata key: %s" % [key])
