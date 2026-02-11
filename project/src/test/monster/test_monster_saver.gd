@@ -17,6 +17,7 @@ func test_load_sim_behavior() -> void:
 	
 	assert_almost_eq(profile.behavior.get_stat("puzzle.cursor_speed"), 0.74, 0.001)
 	assert_almost_eq(profile.behavior.get_stat("puzzle.think_speed"), 0.74, 0.001)
+	assert_almost_eq(profile.behavior.get_stat("puzzle.pickiness"), 0.0, 0.001)
 
 
 func test_load_sim_behavior_empty() -> void:
