@@ -86,7 +86,7 @@ const DEDUCTION_PRIORITY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
 	UNKNOWN_REASON: 0.0,
 }
 
-const MIN_DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
+const DEDUCTION_DELAYS_MIN: Dictionary[Deduction.Reason, float] = {
 	UNKNOWN_REASON: 10.0,
 	
 	# break-in techniques
@@ -127,7 +127,7 @@ const MIN_DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
 	WALL_STRANGLE: 7.2,
 }
 
-const MAX_DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
+const DEDUCTION_DELAYS_MAX: Dictionary[Deduction.Reason, float] = {
 	UNKNOWN_REASON: 20.0,
 	
 	# break-in techniques
@@ -171,8 +171,8 @@ const MAX_DEDUCTION_DELAY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
 
 static func get_delay(reason: Deduction.Reason, speed_factor: float) -> float:
 	return lerp(
-			MAX_DEDUCTION_DELAY_FOR_REASON.get(reason, 0.6),
-			MIN_DEDUCTION_DELAY_FOR_REASON.get(reason, 0.6), speed_factor)
+			DEDUCTION_DELAYS_MAX.get(reason, 0.6),
+			DEDUCTION_DELAYS_MIN.get(reason, 0.6), speed_factor)
 
 
 static func get_priority(reason: Deduction.Reason) -> float:
