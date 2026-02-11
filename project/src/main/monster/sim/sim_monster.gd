@@ -2,7 +2,12 @@
 class_name SimMonster
 extends Monster
 
-const BOREDOM_PER_SECOND: float = 1.66667 # 100 per minute
+const BOREDOM_INCREASE_RATE_MIN: float = 0.5 # 30 per minute
+const BOREDOM_INCREASE_RATE_AVG: float = 1.6 # 100 per minute
+const BOREDOM_INCREASE_RATE_MAX: float = 5.0 # 300 per minute
+
+const BOREDOM_DECREASE_RATE_MIN: float = 1.6 # 100 per minute
+const BOREDOM_DECREASE_RATE_MAX: float = 3.2 # 200 per minute
 
 @onready var input: SimInput = %Input
 
@@ -14,6 +19,21 @@ var behavior: SimBehavior
 var boredom: float = randf_range(0, 6)
 var pending_deductions: Dictionary[Vector2i, Deduction] = {}
 
+var boredom_increase_rate: float
+var boredom_decrease_rate: float
+
+func _ready() -> void:
+	super._ready()
+	
+	# wait for monster.behavior
+	await get_tree().process_frame
+	
+	boredom_increase_rate = behavior.lerp_stat(SimBehavior.MOTIVATION,
+		BOREDOM_INCREASE_RATE_MIN, BOREDOM_INCREASE_RATE_MAX, BOREDOM_INCREASE_RATE_AVG)
+	boredom_decrease_rate = behavior.lerp_stat(SimBehavior.MOTIVATION,
+		BOREDOM_DECREASE_RATE_MIN, BOREDOM_DECREASE_RATE_MAX)
+
+
 func update_input(delta: float) -> void:
 	input.update(delta)
 
@@ -24,11 +44,11 @@ func _process(delta: float) -> void:
 
 
 func increase_boredom(delta: float) -> void:
-	boredom = clamp(boredom + delta * BOREDOM_PER_SECOND, 0, 100)
+	boredom = clamp(boredom + delta * boredom_increase_rate, 0, 100)
 
 
 func decrease_boredom(delta: float) -> void:
-	boredom = clamp(boredom - delta * BOREDOM_PER_SECOND, 0, 100)
+	boredom = clamp(boredom - delta * boredom_decrease_rate, 0, 100)
 
 
 ## Returns the global cursor position after any queued cursor commands.
