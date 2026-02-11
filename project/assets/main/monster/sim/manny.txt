@@ -1,0 +1,11 @@
+{"version":"0.01"}
+
+[metadata]
+name Manny
+author Poobslag
+description Ostentatious with an alien wardrobe and dialect. Weirding out strangers is like peeing in the ocean. 
+skin purple
+
+[archetypes]
+dragon 8
+neutral 2

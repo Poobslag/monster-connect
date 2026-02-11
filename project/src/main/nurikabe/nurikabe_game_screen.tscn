@@ -25,7 +25,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_nc88o")
-target_sim_count = 2
+target_sim_count = 3
 target_puzzle_count = 15
 
 [node name="GameBoards" type="Control" parent="." unique_id=199475706]

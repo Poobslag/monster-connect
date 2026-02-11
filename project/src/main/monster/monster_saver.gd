@@ -52,11 +52,12 @@ func _parse_metadata_line(line: String, profile: SimProfile) -> void:
 func _parse_archetypes_line(line: String, profile: SimProfile) -> void:
 	var key: String = StringUtils.substring_before(line, " ")
 	var value: String = StringUtils.substring_after(line, " ")
-	match key:
-		"rat", "pig":
-			profile.archetypes[key] = float(value)
-		_:
-			push_warning("Unknown archetypes key: %s" % [key])
+	
+	if not SimBehavior.STATS_BY_ARCHETYPE.has(key):
+		push_warning("Unknown archetypes key: %s" % [key])
+		return
+	
+	profile.archetypes[key] = float(value)
 
 
 func _parse_stats_line(line: String, profile: SimProfile) -> void:
