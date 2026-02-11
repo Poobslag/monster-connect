@@ -6,7 +6,9 @@ const SOLVER_COOLDOWN_AVG: float = 5.0
 const SOLVER_COOLDOWN_MAX: float = 9.0
 
 const CHOOSE_DEDUCTION_COOLDOWN: float = 0.5
-const IDLE_COOLDOWN: float = 3.0
+
+const IDLE_COOLDOWN_MIN: float = 2.0
+const IDLE_COOLDOWN_MAX: float = 4.0
 
 const ADJACENT_DIRS: Array[Vector2i] = NurikabeUtils.ADJACENT_DIRS
 
@@ -17,13 +19,19 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const RECENT_MODIFICATION_WINDOW: float = 1.0
 
-const PATIENCE_DURATION: float = 30.0
+const PATIENCE_DURATION_MIN: float = 12.0
+const PATIENCE_DURATION_AVG: float = 30.0
+const PATIENCE_DURATION_MAX: float = 120.0
+
+const PATIENT_DISTANCE_RATIO_MIN: float = 0.30
+const PATIENT_DISTANCE_RATIO_MAX: float = 0.50
+const PATIENT_DISTANCE_RATIO_AVG: float = 0.45
 
 var _board_size_factor: float
 var _curr_deduction: Deduction
 var _next_deduction: Deduction
 var _next_deduction_remaining_time: float = 0.0
-var _next_idle_remaining_time: float
+var _idle_cooldown_remaining: float
 var _solver_cooldown_remaining: float = 0.0
 var _choose_deduction_cooldown_remaining: float = 0.0
 var _needs_fix: bool = false
@@ -32,8 +40,13 @@ var _impatience_timer: float = 0.0
 var _cursor_commands_by_cell: Dictionary[Vector2i, Array] = {}
 var _interested_cells: Dictionary[Vector2i, float] = {}
 
-var _solver_cooldown: float = SOLVER_COOLDOWN_MIN
 var _deduction_speed_factor: float = 0.0
+var _idle_cooldown: float = IDLE_COOLDOWN_MIN
+var _solver_cooldown: float = SOLVER_COOLDOWN_AVG
+var _patience_duration: float = PATIENCE_DURATION_AVG
+
+## Values > 0.5 risk deadlock, even the closest sim may refuse to work.
+var _patient_distance_ratio: float = PATIENT_DISTANCE_RATIO_AVG
 
 @onready var _solver: NaiveSolver = NaiveSolver.find_instance(self)
 @onready var monster: SimMonster = Utils.find_parent_of_type(self, SimMonster)
@@ -43,8 +56,15 @@ func _ready() -> void:
 	await get_tree().process_frame
 	
 	_solver_cooldown = monster.behavior.lerp_stat(SimBehavior.PUZZLE_THINK_SPEED,
-		SOLVER_COOLDOWN_MIN, SOLVER_COOLDOWN_MAX, SOLVER_COOLDOWN_AVG)
-	_deduction_speed_factor = monster.behavior.lerp_stat(SimBehavior.PUZZLE_THINK_SPEED, 0.0, 1.0, 0.75)
+			SOLVER_COOLDOWN_MIN, SOLVER_COOLDOWN_MAX, SOLVER_COOLDOWN_AVG)
+	_deduction_speed_factor = monster.behavior.lerp_stat(SimBehavior.PUZZLE_THINK_SPEED,
+			0.0, 1.0, 0.75)
+	_idle_cooldown = monster.behavior.lerp_stat(SimBehavior.MOTIVATION,
+			IDLE_COOLDOWN_MIN, IDLE_COOLDOWN_MAX)
+	_patience_duration = monster.behavior.lerp_stat(SimBehavior.PUZZLE_CURSOR_COURTESY,
+			PATIENCE_DURATION_MIN, PATIENCE_DURATION_MAX, PATIENCE_DURATION_AVG)
+	_patient_distance_ratio = monster.behavior.lerp_stat(SimBehavior.PUZZLE_CURSOR_COURTESY,
+			PATIENT_DISTANCE_RATIO_MIN, PATIENT_DISTANCE_RATIO_MAX, PATIENT_DISTANCE_RATIO_AVG)
 
 
 func enter() -> void:
@@ -52,7 +72,7 @@ func enter() -> void:
 	monster.solving_board.error_cells_changed.connect(_on_solving_board_error_cells_changed)
 	monster.solving_board.board_reset.connect(_on_solving_board_reset)
 	_board_size_factor = monster.solving_board.get_global_cursorable_rect().size.length() / 500.0
-	_next_idle_remaining_time = randf_range(0, IDLE_COOLDOWN)
+	_idle_cooldown_remaining = randf_range(0, _idle_cooldown)
 
 
 func perform(delta: float) -> bool:
@@ -74,7 +94,7 @@ func exit() -> void:
 	_curr_deduction = null
 	_next_deduction = null
 	_next_deduction_remaining_time = 0.0
-	_next_idle_remaining_time = 0.0
+	_idle_cooldown_remaining = 0.0
 	_solver_cooldown_remaining = 0.0
 	_needs_fix = false
 	
@@ -88,8 +108,8 @@ func _choose_deduction() -> void:
 	var best_score: float = 0.0
 	var teammate: Monster = _find_teammate()
 	
-	var impatience_factor: float = clamp(_impatience_timer / PATIENCE_DURATION, 0.0, 1.0)
-	var min_distance_ratio: float = lerp(0.5, 0.0, impatience_factor)
+	var impatience_factor: float = clamp(_impatience_timer / _patience_duration, 0.0, 1.0)
+	var min_distance_ratio: float = lerp(_patient_distance_ratio, 0.0, impatience_factor)
 	
 	for deduction: Deduction in monster.pending_deductions.values():
 		if monster.solving_board.get_cell(deduction.pos) != CELL_EMPTY:
@@ -241,8 +261,8 @@ func _has_adjacent_error(cell: Vector2i) -> bool:
 func _process_idle_cursor(delta: float) -> void:
 	if not monster.input.cursor_commands.is_empty():
 		return
-	if _next_idle_remaining_time > 0:
-		_next_idle_remaining_time -= delta
+	if _idle_cooldown_remaining > 0:
+		_idle_cooldown_remaining -= delta
 		return
 	
 	var board_rect: Rect2 = monster.solving_board.get_global_cursorable_rect()
@@ -257,7 +277,7 @@ func _process_idle_cursor(delta: float) -> void:
 	
 	pos = (pos + pos_delta).clamp(board_rect.position, board_rect.end)
 	monster.input.queue_cursor_command(SimInput.MOVE, pos, 0.0, 0.33)
-	_next_idle_remaining_time = IDLE_COOLDOWN
+	_idle_cooldown_remaining = _idle_cooldown
 
 
 func _score_deduction(
