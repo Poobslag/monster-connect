@@ -28,7 +28,6 @@ variation_opentype = {
 collision_layer = 0
 motion_mode = 1
 script = ExtResource("1_7kr2a")
-skin = 4
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2003187294]
