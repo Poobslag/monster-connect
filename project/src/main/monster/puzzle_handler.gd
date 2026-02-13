@@ -114,7 +114,7 @@ func _handle_lmb_press() -> void:
 		var changes: Array[Dictionary] = game_board.to_solver_board().surround_island(cell)
 		if changes:
 			for change: Dictionary[String, Variant] in changes:
-				_set_cell(change["pos"], change["value"])
+				_set_cell(change["pos"], change["value"], monster.id)
 			var cell_positions: Array[Vector2i] = []
 			for change: Dictionary[String, Variant] in changes:
 				cell_positions.append(change["pos"])
