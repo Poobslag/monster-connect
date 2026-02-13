@@ -65,7 +65,7 @@ func handle(event: InputEvent) -> void:
 		_handle_mb_release()
 	
 	if _input_sfx:
-		SoundManager.play_sfx(_input_sfx)
+		SoundManager.play_sfx_at(_input_sfx, _get_global_cursor_position())
 
 
 func reset() -> void:
@@ -196,9 +196,9 @@ func _handle_mb_release() -> void:
 			_input_sfx = "drop_island_release"
 		elif _last_set_cell_to == CELL_EMPTY:
 			if _last_set_cell_from == CELL_WALL:
-				SoundManager.play_sfx("drop_wall_press")
+				SoundManager.play_sfx_at("drop_wall_press", _get_global_cursor_position())
 			elif _last_set_cell_from == CELL_ISLAND:
-				SoundManager.play_sfx("drop_island_press")
+				SoundManager.play_sfx_at("drop_island_press", _get_global_cursor_position())
 		elif _last_set_cell_to == CELL_SURROUND_ISLAND:
 			_input_sfx = "surround_island_release"
 		game_board.validate()
@@ -219,12 +219,12 @@ func _handle_mouse_motion() -> void:
 func _handle_redo_action() -> void:
 	game_board.redo(monster.id)
 	game_board.validate()
-	SoundManager.play_sfx("redo")
+	SoundManager.play_sfx_at("redo", game_board.get_global_rect().get_center())
 
 
 func _handle_reset_action() -> void:
 	game_board.reset()
-	SoundManager.play_sfx("reset")
+	SoundManager.play_sfx_at("reset", game_board.get_global_rect().get_center())
 
 
 func _handle_rmb_press() -> void:
@@ -249,7 +249,7 @@ func _handle_rmb_press() -> void:
 func _handle_undo_action() -> void:
 	game_board.undo(monster.id)
 	game_board.validate()
-	SoundManager.play_sfx("undo")
+	SoundManager.play_sfx_at("undo", game_board.get_global_rect().get_center())
 
 
 func _cursor_cell() -> Vector2i:
