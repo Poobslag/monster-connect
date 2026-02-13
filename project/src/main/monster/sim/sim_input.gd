@@ -9,10 +9,10 @@ enum CursorAction {
 	MOVE,
 }
 
-const CURSOR_MOVE_SPEED_MIN: float = 100.0
-const CURSOR_MOVE_SPEED_MAX: float = 400.0
-const CURSOR_SMOOTHING_MIN: float = 3.0
-const CURSOR_SMOOTHING_MAX: float = 12.0
+const CURSOR_MOVE_SPEED_MIN: float = 70.0
+const CURSOR_MOVE_SPEED_MAX: float = 250.0
+const CURSOR_SMOOTHING_MIN: float = 2.0
+const CURSOR_SMOOTHING_MAX: float = 8.0
 
 const CURSOR_POS_EPSILON: float = 1.0
 const MOVEMENT_POS_EPSILON: float = 10.0
