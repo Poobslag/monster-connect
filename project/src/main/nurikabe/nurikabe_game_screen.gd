@@ -43,6 +43,8 @@ func _ready() -> void:
 	refresh_sims()
 	clear_game_boards()
 	refresh_game_boards()
+	
+	%TutorialOverlay.show_tutorial()
 
 
 func _enter_tree() -> void:
@@ -68,6 +70,13 @@ func _draw() -> void:
 func _input(event: InputEvent) -> void:
 	if Utils.key_press(event) == KEY_SLASH:
 		%CommandPalette.open()
+	elif event.is_action_pressed("tutorial"):
+		if %ResultsOverlay.visible:
+			%ResultsOverlay.hide_results()
+		if %TutorialOverlay.visible:
+			%TutorialOverlay.hide_tutorial()
+		else:
+			%TutorialOverlay.show_tutorial()
 
 
 func clear_game_boards() -> void:
@@ -289,7 +298,7 @@ func _on_refresher_refresh_requested() -> void:
 
 
 func _on_game_board_puzzle_finished(game_board: NurikabeGameBoard) -> void:
-	if game_board == %Player.solving_board:
+	if game_board == %Player.solving_board and not %TutorialOverlay.visible:
 		%ResultsOverlay.show_results()
 	else:
 		SoundManager.play_sfx_at("win", game_board.get_global_rect().get_center())
