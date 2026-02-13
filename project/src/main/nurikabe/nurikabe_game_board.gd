@@ -292,17 +292,19 @@ func to_solver_board() -> SolverBoard:
 
 
 func undo(player_id: int) -> void:
-	for undo_index in _undo_stack.size():
+	var undo_index: int = 0
+	while undo_index < _undo_stack.size():
 		if _undo_stack[undo_index].player_id != player_id:
+			undo_index += 1
 			continue
-		if _can_apply_undo_action(_undo_stack[undo_index]):
-			var undo_action: UndoAction = _undo_stack[undo_index]
+		if not _can_apply_undo_action(_undo_stack[undo_index]):
 			_undo_stack.remove_at(undo_index)
-			_apply_undo_action(undo_action)
-			_redo_stack.push_front(undo_action)
-			break
-		else:
-			_undo_stack.remove_at(undo_index)
+			continue
+		var undo_action: UndoAction = _undo_stack[undo_index]
+		_undo_stack.remove_at(undo_index)
+		_apply_undo_action(undo_action)
+		_redo_stack.push_front(undo_action)
+		break
 
 
 func redo(player_id: int) -> void:
