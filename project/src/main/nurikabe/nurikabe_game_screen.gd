@@ -45,6 +45,14 @@ func _ready() -> void:
 	refresh_game_boards()
 
 
+func _enter_tree() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+
+
+func _exit_tree() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+
 func _draw() -> void:
 	if not draw_debug_paths:
 		return
