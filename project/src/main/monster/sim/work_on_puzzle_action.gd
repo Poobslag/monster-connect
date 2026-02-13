@@ -1,14 +1,14 @@
 class_name WorkOnPuzzleAction
 extends GoapAction
 
-const SOLVER_COOLDOWN_MIN: float = 2.3
-const SOLVER_COOLDOWN_AVG: float = 5.0
-const SOLVER_COOLDOWN_MAX: float = 9.0
+const SOLVER_COOLDOWN_MIN: float = 3.5
+const SOLVER_COOLDOWN_AVG: float = 7.5
+const SOLVER_COOLDOWN_MAX: float = 13.5
 
 const CHOOSE_DEDUCTION_COOLDOWN: float = 0.5
 
-const IDLE_COOLDOWN_MIN: float = 2.0
-const IDLE_COOLDOWN_MAX: float = 4.0
+const IDLE_COOLDOWN_MIN: float = 3.0
+const IDLE_COOLDOWN_MAX: float = 6.0
 
 const ADJACENT_DIRS: Array[Vector2i] = NurikabeUtils.ADJACENT_DIRS
 
@@ -19,9 +19,9 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const RECENT_MODIFICATION_WINDOW: float = 1.0
 
-const PATIENCE_DURATION_MIN: float = 12.0
-const PATIENCE_DURATION_AVG: float = 30.0
-const PATIENCE_DURATION_MAX: float = 120.0
+const PATIENCE_DURATION_MIN: float = 18.0
+const PATIENCE_DURATION_AVG: float = 45.0
+const PATIENCE_DURATION_MAX: float = 180.0
 
 const PATIENT_DISTANCE_RATIO_MIN: float = 0.30
 const PATIENT_DISTANCE_RATIO_MAX: float = 0.50
@@ -58,7 +58,7 @@ func _ready() -> void:
 	_solver_cooldown = monster.behavior.lerp_stat(SimBehavior.PUZZLE_THINK_SPEED,
 			SOLVER_COOLDOWN_MIN, SOLVER_COOLDOWN_MAX, SOLVER_COOLDOWN_AVG)
 	_deduction_speed_factor = monster.behavior.lerp_stat(SimBehavior.PUZZLE_THINK_SPEED,
-			0.0, 1.0, 0.75)
+			0.0, 1.0, 0.6)
 	_idle_cooldown = monster.behavior.lerp_stat(SimBehavior.MOTIVATION,
 			IDLE_COOLDOWN_MIN, IDLE_COOLDOWN_MAX)
 	_patience_duration = monster.behavior.lerp_stat(SimBehavior.PUZZLE_CURSOR_COURTESY,
