@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe/tutorial_overlay.tscn" id="8_aypp7"]
 [ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="8_mwwr5"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="8_n1qax"]
+[ext_resource type="Script" uid="uid://48je0hlydow6" path="res://src/main/ui/version_label.gd" id="10_r5o04"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="16_2bf7t"]
 
 [sub_resource type="FontVariation" id="FontVariation_n1qax"]
@@ -16,8 +17,16 @@ base_font = ExtResource("8_n1qax")
 variation_opentype = {
 2003265652: 600
 }
-spacing_top = -8
-spacing_bottom = -8
+spacing_top = -12
+spacing_bottom = -12
+
+[sub_resource type="FontVariation" id="FontVariation_r5o04"]
+base_font = ExtResource("8_n1qax")
+variation_opentype = {
+2003265652: 600
+}
+spacing_top = -12
+spacing_bottom = -12
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nctqi"]
 size = Vector2(1000, 10000)
@@ -84,17 +93,9 @@ zoom = Vector2(1.2, 1.2)
 [node name="CommandPalette" parent="." unique_id=1368678133 instance=ExtResource("8_mwwr5")]
 unique_name_in_owner = true
 
-[node name="ResultsOverlay" parent="." unique_id=1942560557 instance=ExtResource("16_2bf7t")]
-unique_name_in_owner = true
-visible = false
-
-[node name="TutorialOverlay" parent="." unique_id=1610644807 instance=ExtResource("8_aypp7")]
-unique_name_in_owner = true
-visible = false
-
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1743850001]
 
-[node name="GridContainer" type="GridContainer" parent="HUD" unique_id=1966256132]
+[node name="Controls" type="GridContainer" parent="HUD" unique_id=1966256132]
 custom_minimum_size = Vector2(1000, 1000)
 anchors_preset = 2
 anchor_top = 1.0
@@ -106,16 +107,17 @@ offset_bottom = -40.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 8
 columns = 2
 
-[node name="Spacer" type="Control" parent="HUD/GridContainer" unique_id=97767343]
+[node name="Spacer" type="Control" parent="HUD/Controls" unique_id=97767343]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Spacer2" type="Control" parent="HUD/GridContainer" unique_id=27563744]
+[node name="Spacer2" type="Control" parent="HUD/Controls" unique_id=27563744]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="HUD/GridContainer" unique_id=1389433984]
+[node name="Label" type="Label" parent="HUD/Controls" unique_id=1389433984]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
@@ -125,7 +127,7 @@ theme_override_font_sizes/font_size = 30
 text = "W/A/S/D"
 horizontal_alignment = 2
 
-[node name="Label2" type="Label" parent="HUD/GridContainer" unique_id=2029629421]
+[node name="Label2" type="Label" parent="HUD/Controls" unique_id=2029629421]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
@@ -134,7 +136,7 @@ theme_override_fonts/font = SubResource("FontVariation_n1qax")
 theme_override_font_sizes/font_size = 30
 text = "Move"
 
-[node name="Label3" type="Label" parent="HUD/GridContainer" unique_id=466009511]
+[node name="Label3" type="Label" parent="HUD/Controls" unique_id=466009511]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
@@ -144,7 +146,7 @@ theme_override_font_sizes/font_size = 30
 text = "Z/X"
 horizontal_alignment = 2
 
-[node name="Label4" type="Label" parent="HUD/GridContainer" unique_id=1041128441]
+[node name="Label4" type="Label" parent="HUD/Controls" unique_id=1041128441]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
@@ -153,7 +155,7 @@ theme_override_fonts/font = SubResource("FontVariation_n1qax")
 theme_override_font_sizes/font_size = 30
 text = "Undo, Redo"
 
-[node name="Label5" type="Label" parent="HUD/GridContainer" unique_id=2128368019]
+[node name="Label5" type="Label" parent="HUD/Controls" unique_id=2128368019]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
@@ -163,7 +165,7 @@ theme_override_font_sizes/font_size = 30
 text = "R"
 horizontal_alignment = 2
 
-[node name="Label6" type="Label" parent="HUD/GridContainer" unique_id=1449754288]
+[node name="Label6" type="Label" parent="HUD/Controls" unique_id=1449754288]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
@@ -172,7 +174,7 @@ theme_override_fonts/font = SubResource("FontVariation_n1qax")
 theme_override_font_sizes/font_size = 30
 text = "Reset Puzzle"
 
-[node name="Label7" type="Label" parent="HUD/GridContainer" unique_id=899214976]
+[node name="Label7" type="Label" parent="HUD/Controls" unique_id=899214976]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
@@ -182,7 +184,7 @@ theme_override_font_sizes/font_size = 30
 text = "T"
 horizontal_alignment = 2
 
-[node name="Label8" type="Label" parent="HUD/GridContainer" unique_id=1834374017]
+[node name="Label8" type="Label" parent="HUD/Controls" unique_id=1834374017]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
@@ -190,6 +192,36 @@ theme_override_constants/outline_size = 18
 theme_override_fonts/font = SubResource("FontVariation_n1qax")
 theme_override_font_sizes/font_size = 30
 text = "Tutorial"
+
+[node name="VersionLabel" type="Label" parent="HUD" unique_id=1388148631]
+custom_minimum_size = Vector2(1000, 0)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -73.0
+offset_top = -23.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+pivot_offset = Vector2(1458, -1112)
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_r5o04")
+theme_override_font_sizes/font_size = 30
+text = "v1234145"
+horizontal_alignment = 2
+script = ExtResource("10_r5o04")
+
+[node name="ResultsOverlay" parent="." unique_id=1942560557 instance=ExtResource("16_2bf7t")]
+unique_name_in_owner = true
+visible = false
+
+[node name="TutorialOverlay" parent="." unique_id=1610644807 instance=ExtResource("8_aypp7")]
+unique_name_in_owner = true
+visible = false
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=181064133]
 
