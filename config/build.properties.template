@@ -1,0 +1,10 @@
+################################################################################
+# Local configuration for build scripts.
+#
+# To use it:
+#   1. Copy to config/build.properties
+#   2. Populate the settings
+
+# Example:
+# "D:\steam\steamapps\common\godot engine\godot.windows.opt.tools.64.exe"
+GODOT_EXE=
