@@ -433,7 +433,13 @@ func _on_validate_timer_timeout() -> void:
 	error_cells = new_error_cells
 	
 	if not old_error_cells.has_all(new_error_cells.keys()):
-		SoundManager.play_sfx("rule_broken")
+		var sfx_error_cells: Array[Vector2i] = []
+		sfx_error_cells.assign(Utils.subtract(new_error_cells.keys(), old_error_cells.keys()))
+		var average_position: Vector2 = Vector2.ZERO
+		for sfx_error_cell: Vector2 in sfx_error_cells:
+			average_position += map_to_global(sfx_error_cell)
+		average_position /= sfx_error_cells.size()
+		SoundManager.play_sfx_at("rule_broken", average_position)
 	if new_error_cells != old_error_cells:
 		error_cells_changed.emit()
 

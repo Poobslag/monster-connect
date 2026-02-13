@@ -284,7 +284,7 @@ func _on_game_board_puzzle_finished(game_board: NurikabeGameBoard) -> void:
 	if game_board == %Player.solving_board:
 		%ResultsOverlay.show_results()
 	else:
-		SoundManager.play_sfx("win")
+		SoundManager.play_sfx_at("win", game_board.get_global_rect().get_center())
 
 
 func _on_command_palette_command_entered(command: String) -> void:
