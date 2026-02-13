@@ -15,6 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Monster Connect"
+config/version="0.01-dev"
 run/main_scene="uid://c1ikxk7sf1v"
 config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/show_image=false
@@ -112,3 +113,7 @@ tutorial={
 2d_physics/layer_2="Movable"
 2d_physics/layer_3="Steppable"
 2d_physics/layer_4="Cursor"
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true
