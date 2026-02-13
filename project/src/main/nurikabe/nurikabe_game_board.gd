@@ -9,6 +9,8 @@ signal board_reset
 signal cell_changed(cell_pos: Vector2i, value: int)
 signal error_cells_changed
 
+const RECENT_EDIT_COOLDOWN: float = 0.5
+
 const MAX_UNDO: int = 200
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
@@ -61,6 +63,7 @@ var hint_model: PuzzleHintModel
 
 var _cells_dirty: bool = false
 
+var _recent_edits: Dictionary[Vector2i, RecentEdit] = {}
 var _undo_stack: Array[UndoAction] = []
 var _redo_stack: Array[UndoAction] = []
 var _finished: bool = false
@@ -149,6 +152,20 @@ func get_clue_cells() -> Array[Vector2i]:
 	return %TileMapClue.clues_by_cell.keys()
 
 
+func is_recently_edited_by_other(cell: Vector2i, player_id: int) -> bool:
+	var recent_edit: RecentEdit = _recent_edits.get(cell)
+	var result: bool
+	if recent_edit == null:
+		result = false
+	elif recent_edit.player_id == player_id:
+		result = false
+	elif recent_edit.timestamp <= Time.get_ticks_msec() - 1000 * RECENT_EDIT_COOLDOWN:
+		result = false
+	else:
+		result = true
+	return result
+
+
 func global_to_map(global_point: Vector2) -> Vector2i:
 	return %TileMapGround.local_to_map(%TileMapGround.to_local(global_point))
 
@@ -190,6 +207,7 @@ func import_grid() -> void:
 ## 	'pos': (Vector2i) The cell to update.[br]
 ## 	'value': (String) The value to assign.[br]
 func set_cells(changes: Array[Dictionary], player_id: int = -1) -> void:
+	# add undo action
 	if player_id != -1:
 		var cell_positions: Array[Vector2i] = []
 		var values: Array[int] = []
@@ -198,13 +216,26 @@ func set_cells(changes: Array[Dictionary], player_id: int = -1) -> void:
 			values.append(change["value"])
 		_push_undo_action(player_id, cell_positions, values)
 	
+	# add recent edit
+	if player_id != -1:
+		for change: Dictionary in changes:
+			_recent_edits[change["pos"]] = RecentEdit.new(player_id)
+	
+	# update cell value
 	for change: Dictionary in changes:
 		_set_cell_internal(change["pos"], change["value"])
 
 
 func set_cell(cell_pos: Vector2i, value: int, player_id: int = -1) -> void:
+	# add undo action
 	if player_id != -1:
 		_push_undo_action(player_id, [cell_pos], [value])
+	
+	# add recent edit
+	if player_id != -1:
+		_recent_edits[cell_pos] = RecentEdit.new(player_id)
+	
+	# update cell value
 	_set_cell_internal(cell_pos, value)
 
 
@@ -456,4 +487,20 @@ class UndoAction:
 			"cell_positions": cell_positions,
 			"old_values": old_values,
 			"new_values": new_values,
+		})
+
+
+class RecentEdit:
+	var player_id: int
+	var timestamp: int
+	
+	func _init(init_player_id: int) -> void:
+		player_id = init_player_id
+		timestamp = Time.get_ticks_msec()
+	
+	
+	func _to_string() -> String:
+		return str({
+			"player_id": player_id,
+			"timestamp": timestamp,
 		})

@@ -93,6 +93,9 @@ func _update_pressed(event: InputEvent) -> void:
 func _handle_lmb_press() -> void:
 	_last_mouse_pos = _get_global_cursor_position()
 	var cell: Vector2i = _cursor_cell()
+	if _is_recently_edited_by_other(cell):
+		return
+	
 	var current_cell_value: int = game_board.get_cell(cell)
 	match current_cell_value:
 		CELL_WALL:
@@ -142,6 +145,8 @@ func _process_drag_cell(cell: Vector2i) -> void:
 	if old_cell_value == CELL_INVALID:
 		return
 	if old_cell_value != _last_set_cell_from:
+		return
+	if _is_recently_edited_by_other(cell):
 		return
 	
 	match _last_set_cell_to:
@@ -230,6 +235,9 @@ func _handle_reset_action() -> void:
 func _handle_rmb_press() -> void:
 	_last_mouse_pos = _get_global_cursor_position()
 	var cell: Vector2i = _cursor_cell()
+	if _is_recently_edited_by_other(cell):
+		return
+
 	var current_cell_value: int = game_board.get_cell(cell)
 	match current_cell_value:
 		CELL_ISLAND:
@@ -250,6 +258,10 @@ func _handle_undo_action() -> void:
 	game_board.undo(monster.id)
 	game_board.validate()
 	SoundManager.play_sfx_at("undo", game_board.get_global_rect().get_center())
+
+
+func _is_recently_edited_by_other(cell: Vector2i) -> bool:
+	return game_board.is_recently_edited_by_other(cell, monster.id)
 
 
 func _cursor_cell() -> Vector2i:
