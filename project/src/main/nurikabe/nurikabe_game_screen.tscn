@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://diafqm0jkanve" path="res://src/main/monster/sim/sim_monster.tscn" id="4_nctqi"]
 [ext_resource type="PackedScene" uid="uid://cf8wyvww44vbg" path="res://src/main/monster/player/player_monster.tscn" id="7_21uqv"]
 [ext_resource type="PackedScene" uid="uid://bcvt254axwueq" path="res://src/main/monster/sim/naive_solver.tscn" id="7_bxie6"]
+[ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe/tutorial_overlay.tscn" id="8_aypp7"]
 [ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="8_mwwr5"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="8_n1qax"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="16_2bf7t"]
@@ -84,6 +85,10 @@ zoom = Vector2(1.2, 1.2)
 unique_name_in_owner = true
 
 [node name="ResultsOverlay" parent="." unique_id=1942560557 instance=ExtResource("16_2bf7t")]
+unique_name_in_owner = true
+visible = false
+
+[node name="TutorialOverlay" parent="." unique_id=1610644807 instance=ExtResource("8_aypp7")]
 unique_name_in_owner = true
 visible = false
 
@@ -166,6 +171,25 @@ theme_override_constants/outline_size = 18
 theme_override_fonts/font = SubResource("FontVariation_n1qax")
 theme_override_font_sizes/font_size = 30
 text = "Reset Puzzle"
+
+[node name="Label7" type="Label" parent="HUD/GridContainer" unique_id=899214976]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_n1qax")
+theme_override_font_sizes/font_size = 30
+text = "T"
+horizontal_alignment = 2
+
+[node name="Label8" type="Label" parent="HUD/GridContainer" unique_id=1834374017]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_n1qax")
+theme_override_font_sizes/font_size = 30
+text = "Tutorial"
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=181064133]
 

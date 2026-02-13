@@ -1,0 +1,96 @@
+[gd_scene format=3 uid="uid://cviiye0styout"]
+
+[ext_resource type="Script" uid="uid://b2b1qyr0m54wq" path="res://src/main/nurikabe/tutorial_overlay.gd" id="1_648ec"]
+[ext_resource type="Theme" uid="uid://bb6vwl0h1flws" path="res://assets/main/ui/kenney/kenney_ui_blue.tres" id="2_t3183"]
+[ext_resource type="Texture2D" uid="uid://csb7xcrng1kfw" path="res://assets/main/nurikabe/tutorial_empty.png" id="3_pjt0l"]
+[ext_resource type="PackedScene" uid="uid://br86bm6bjwv24" path="res://src/main/ui/button_click_effect.tscn" id="4_6j4ps"]
+[ext_resource type="Texture2D" uid="uid://bt1ylaciucejh" path="res://assets/main/nurikabe/tutorial_full.png" id="4_8ie6q"]
+[ext_resource type="FontFile" uid="uid://nnkrh038qmdb" path="res://assets/main/ui/kenney/kenvector_future.ttf" id="5_c6qkt"]
+
+[node name="TutorialOverlay" type="CanvasLayer" unique_id=1610644807]
+process_mode = 3
+script = ExtResource("1_648ec")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=1409147914]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.3137255)
+
+[node name="Panel" type="Panel" parent="." unique_id=792208607]
+custom_minimum_size = Vector2(1200, 900)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_t3183")
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=1614480362]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=875271155]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TextureRect" type="Control" parent="Panel/MarginContainer/VBoxContainer" unique_id=843006834]
+custom_minimum_size = Vector2(900, 700)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Empty" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/TextureRect" unique_id=1844559263]
+layout_mode = 0
+offset_top = 265.0
+offset_right = 315.0
+offset_bottom = 655.0
+texture = ExtResource("3_pjt0l")
+
+[node name="Empty2" type="TextureRect" parent="Panel/MarginContainer/VBoxContainer/TextureRect" unique_id=1075254047]
+layout_mode = 0
+offset_left = 584.0
+offset_top = 265.0
+offset_right = 899.0
+offset_bottom = 655.0
+texture = ExtResource("4_8ie6q")
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/TextureRect" unique_id=2075271899]
+layout_mode = 1
+offset_right = 945.0
+offset_bottom = 261.0
+theme_override_fonts/font = ExtResource("5_c6qkt")
+theme_override_font_sizes/font_size = 36
+text = "Let's play nurikabe!
+
+Each island's number shows its size.
+All walls are connected.
+No 2x2 wall squares."
+
+[node name="Button" type="Button" parent="Panel/MarginContainer/VBoxContainer" unique_id=1556902560]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "Let's play"
+
+[node name="ButtonClickEffect" parent="Panel/MarginContainer/VBoxContainer/Button" unique_id=718752314 instance=ExtResource("4_6j4ps")]
+
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
