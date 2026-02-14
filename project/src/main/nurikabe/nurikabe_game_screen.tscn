@@ -113,9 +113,11 @@ columns = 2
 [node name="Spacer" type="Control" parent="HUD/Controls" unique_id=97767343]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 
 [node name="Spacer2" type="Control" parent="HUD/Controls" unique_id=27563744]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Label" type="Label" parent="HUD/Controls" unique_id=1389433984]
 layout_mode = 2
