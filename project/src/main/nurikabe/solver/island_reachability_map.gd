@@ -107,7 +107,7 @@ func _build() -> void:
 		for liberty: Vector2i in island.liberties:
 			if _adjacent_clues_by_cell[liberty] >= 2:
 				# cell is adjacent to two or more islands, so no islands can reach it
-				_reach_scores_by_cell[liberty] = {island.root: 0}
+				_reach_scores_by_cell[liberty] = {island.root: 0} as Dictionary[Vector2i, int]
 				continue
 			var reachability: int = island.clue - island.size() if island.clue != CELL_MYSTERY_CLUE else 999999
 			_reach_scores_by_cell[liberty][island.root] = reachability
