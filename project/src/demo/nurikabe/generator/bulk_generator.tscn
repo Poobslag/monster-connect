@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://rpgvsnfuo7o5" path="res://src/demo/nurikabe/generator/demo_log.tscn" id="3_nmkj7"]
 [ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="4_whffh"]
 [ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="5_0ugav"]
-[ext_resource type="Script" uid="uid://0pb3o0nnfm07" path="res://src/demo/nurikabe/generator/bulk_generator_idle_state.gd" id="6_0ugav"]
+[ext_resource type="Script" path="res://src/demo/nurikabe/generator/bulk_generator_idle_state.gd" id="6_0ugav"]
 [ext_resource type="Script" uid="uid://54j48jtfkdq" path="res://src/demo/nurikabe/generator/bulk_generator_generate_state.gd" id="6_nmkj7"]
 [ext_resource type="Script" uid="uid://cy1dkfhepugpp" path="res://src/demo/nurikabe/generator/bulk_generator_analyze_state.gd" id="7_nmkj7"]
 
