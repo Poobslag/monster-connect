@@ -163,7 +163,7 @@ func mutate(solver: Solver) -> void:
 		picker.add(mutate_fix_unfinished.bind(solver), 4.0)
 	picker.add(_mutation_library.mutate_shrink_dead_end_wall.bind(solver.board))
 	picker.add(_mutation_library.mutate_break_wall_loop.bind(solver.board))
-	picker.add(_mutation_library.mutate_split_island.bind(solver.board))
+	picker.add(_mutation_library.mutate_cleave_island.bind(solver.board))
 	picker.add(_mutation_library.mutate_rebalance_neighbor_islands.bind(solver.board))
 	picker.add(_mutation_library.mutate_move_clue.bind(solver.board))
 	
@@ -184,7 +184,8 @@ func mutate_fix_errors(solver: Solver) -> bool:
 			break
 		var mutate_options: Array[Callable] = []
 		if not validation_errors.joined_islands.is_empty():
-			mutate_options.append(_mutation_library.mutate_fix_joined_islands)
+			mutate_options.append(_mutation_library.mutate_fix_joined_islands_collapse)
+			mutate_options.append(_mutation_library.mutate_fix_joined_islands_split)
 		if not validation_errors.pools.is_empty():
 			mutate_options.append(_mutation_library.mutate_fix_pools)
 		if not validation_errors.split_walls.is_empty():

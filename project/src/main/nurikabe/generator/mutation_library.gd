@@ -77,7 +77,7 @@ func mutate_shrink_dead_end_wall(board: SolverBoard) -> bool:
 
 
 ## Adds a random wall splitting a clue.
-func mutate_split_island(board: SolverBoard) -> bool:
+func mutate_cleave_island(board: SolverBoard) -> bool:
 	var island: CellGroup = _find_splittable_island(board)
 	if not island:
 		return false
@@ -87,7 +87,7 @@ func mutate_split_island(board: SolverBoard) -> bool:
 		return false
 	
 	var split: IslandSplit = _rng_ops.pick_random(split_options)
-	split_island(board, island, split)
+	cleave_island(board, island, split)
 	return true
 
 
@@ -113,12 +113,23 @@ func mutate_fix_enclosed_walls(board: SolverBoard) -> bool:
 
 
 ## Merges two joined clues into one.
-func mutate_fix_joined_islands(board: SolverBoard) -> bool:
+func mutate_fix_joined_islands_collapse(board: SolverBoard) -> bool:
 	var did_mutate: bool = false
 	for island: CellGroup in board.islands:
 		if island.clue != -1:
 			continue
-		fix_joined_island(board, island)
+		fix_joined_island_collapse(board, island)
+		did_mutate = true
+	return did_mutate
+
+
+## Separates two joined clues into different islands.
+func mutate_fix_joined_islands_split(board: SolverBoard) -> bool:
+	var did_mutate: bool = false
+	for island: CellGroup in board.islands:
+		if island.clue != -1:
+			continue
+		fix_joined_island_split(board, island)
 		did_mutate = true
 	return did_mutate
 
@@ -263,7 +274,7 @@ func mutate_force_partition(board: SolverBoard) -> bool:
 	return did_mutate
 
 
-func fix_joined_island(board: SolverBoard, island: CellGroup) -> void:
+func fix_joined_island_collapse(board: SolverBoard, island: CellGroup) -> void:
 	if island.clue != -1:
 		return
 	
@@ -291,9 +302,36 @@ func fix_joined_island(board: SolverBoard, island: CellGroup) -> void:
 	board.set_clue(clue_cells_wrapped[0]["cell"], island.size())
 
 
+func fix_joined_island_split(board: SolverBoard, island: CellGroup) -> void:
+	if island.clue != -1:
+		return
+	
+	# erase all island cells
+	var remaining_clue_cells: Array[Vector2i] = []
+	for cell: Vector2i in island.cells.duplicate():
+		if not board.has_clue(cell):
+			board.set_cell(cell, CELL_EMPTY)
+		else:
+			remaining_clue_cells.append(cell)
+	
+	while not remaining_clue_cells.is_empty():
+		var clue_cell_index: int = rng.randi_range(0, remaining_clue_cells.size() - 1)
+		var split_island: CellGroup = board.get_island_for_cell(remaining_clue_cells[clue_cell_index])
+		if split_island.liberties.size() == 0:
+			_renumber_island(board, split_island)
+			remaining_clue_cells.remove_at(clue_cell_index)
+			continue
+		
+		board.set_cell(_rng_ops.pick_random(split_island.liberties), CELL_ISLAND)
+		
+		for cell: Vector2i in board.empty_cells.keys():
+			if board.get_island_chain_map().has_chain_conflict(cell, 1):
+				board.set_cell(cell, CELL_WALL)
+
+
 func carve_wall_cells(board: SolverBoard, wall_cell: Vector2i) -> void:
 	board.set_cell(wall_cell, CELL_ISLAND)
-	fix_joined_island(board, board.get_island_for_cell(wall_cell))
+	fix_joined_island_collapse(board, board.get_island_for_cell(wall_cell))
 	mutate_fix_enclosed_walls(board)
 
 
@@ -383,7 +421,7 @@ func move_clue(board: SolverBoard, island: CellGroup) -> void:
 	board.set_clue(new_clue_cell, island.size())
 
 
-func split_island(board: SolverBoard, island: CellGroup, split: IslandSplit) -> void:
+func cleave_island(board: SolverBoard, island: CellGroup, split: IslandSplit) -> void:
 	match split.type:
 		SPLIT_CELL:
 			board.set_cell(split.cell, CELL_WALL)
