@@ -1,7 +1,7 @@
-{"version":"0.01"}
+{"version":"0.02"}
 
 [metadata]
-difficulty 17.82
+difficulty 16.24
 width 12
 height 7
 author poobslag v02
@@ -17,21 +17,21 @@ author poobslag v02
  5 . . . .################
 
 [order]
-28 26 - 26 34 0 9 0 13 14 10 15 17
-33 27 25 27 0 - 0 - 0 13 0 41 16
-1 32 24 31 30 0 19 0 - 0 - 0 16
-0 - 23 22 - 29 18 16 2 40 0 37 16
-- 0 6 20 8 21 30 35 39 16 16 16 38
-2 5 5 7 11 21 21 36 44 41 41 41 41
+28 25 - 25 34 0 9 0 13 14 10 15 17
+33 27 24 27 0 - 0 - 0 13 0 39 16
+1 32 26 31 30 0 23 0 - 0 - 0 16
+0 - 20 19 - 29 18 16 2 37 0 38 16
+- 0 6 21 8 22 30 35 41 16 16 16 40
+2 5 5 7 11 22 22 36 44 41 41 41 41
 3 4 6 6 7 12 47 45 - 46 46 43 48
 - 5 5 7 7 7 46 48 48 48 48 48 42
 
 [reason]
 ix ix - ix ix i1 wb i1 ur p3 pk ie ib
-p3 ic id ic i1 - i1 - ac ur i1 im ul
-wx im Bi p3 im i1 Bw i1 - i1 - i1 ul
-ac - p3 Bg - ix pk uL ix ix i1 Bw ul
-- ac wx Bj cb im im ic Bg ul ul ul ul
+p3 ic Bg ic i1 - i1 - ac ur i1 wx ul
+wx im ix p3 im i1 Bw i1 - i1 - i1 ul
+ac - Bi Bg - ix pk uL ix Bi i1 wx ul
+- ac wx wx cb im im ic im ul ul ul ie
 ix ix ix ix ix ix im p3 Bw im im im im
 id wx wx wx im wx p3 ie - ul ul pk im
 - ix ix ix ix im uL im im im im im uL

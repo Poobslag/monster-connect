@@ -1,1 +1,28 @@
-{"cells":25,"difficulty":2.53456442242847,"version":0.02}
+{"version":"0.02"}
+
+[metadata]
+difficulty 2.53
+width 4
+height 4
+author 
+
+[solution]
+ . . . .##
+ 5########
+## 4 . .##
+#### .####
+ 1###### 1
+
+[order]
+2 2 2 5 5
+- 0 4 3 6
+0 - 2 8 7
+0 1 8 9 0
+- 0 7 0 -
+
+[reason]
+ix ix ix ix im
+- ac wx ci wx
+ac - ix p3 wv
+i1 wx p3 im i1
+- i1 wv i1 -

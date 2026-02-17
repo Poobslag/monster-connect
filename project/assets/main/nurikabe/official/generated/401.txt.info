@@ -1,1 +1,40 @@
-{"cells":90,"difficulty":5.69254742712162,"version":0.02}
+{"version":"0.02"}
+
+[metadata]
+difficulty 5.69
+width 9
+height 8
+author 
+
+[solution]
+#### 5 . . .## 3## 4
+## 2###### .## .## .
+## .## .###### .## .
+###### 2## . .#### .
+ 4## 7#### 3## 1####
+ .## .## 5###### 3##
+ .## .## . . .## .##
+ .## .###### .## .##
+#### . . .##########
+
+[order]
+1 0 - 2 6 22 24 - 0 -
+1 - 0 5 21 25 23 25 1 2
+1 2 2 5 2 25 5 25 25 2
+4 2 0 - 4 2 26 0 3 26
+- 0 - 0 0 - 0 - 0 26
+5 6 2 4 - 0 13 0 - 16
+7 9 7 9 5 19 17 16 15 16
+10 8 10 29 20 18 14 13 14 13
+10 11 30 12 28 27 13 13 13 13
+
+[reason]
+wx ac - ix ix ix id - ac -
+wx - ac im ic ix ci ix wx ix
+wx ix im ix ci im ci ix im ix
+wx im ac - id ix ix i1 ci ix
+- ac - ac ac - i1 - i1 im
+ix id ix id - ac wb i1 - im
+ix id ix id ix ie p3 im ie im
+ix ci ix wx im cb p3 ur p3 ur
+im wx ix ik p3 wx ur ur ur ur
