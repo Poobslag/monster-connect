@@ -10,7 +10,7 @@ func enter() -> void:
 	if generator.board:
 		generator.board.solver_board.cleanup()
 	generator.board = %GameBoard.to_generator_board()
-	create_board()
+	_create_board()
 
 
 func update(_delta: float) -> void:
@@ -18,27 +18,27 @@ func update(_delta: float) -> void:
 	
 	if generator.check_stuck(_stuck_state):
 		object.log_message("error: stuck")
-		create_board()
+		_create_board()
 		return
 	
-	copy_board_from_generator()
+	_copy_board_from_generator()
 	if generator.is_done():
 		var validation_result: SolverBoard.ValidationResult \
 				= generator.board.solver_board.validate(SolverBoard.VALIDATE_STRICT)
 		if validation_result.error_count == 0:
 			# filled with no validation errors
-			output_board()
+			_output_board()
 		else:
 			object.log_message("error: puzzle failed validation")
-		create_board()
+		_create_board()
 
 
-func copy_board_from_generator() -> void:
+func _copy_board_from_generator() -> void:
 	generator.board.solver_board.update_game_board(%GameBoard)
 
 
-func create_board() -> void:
-	while FileAccess.file_exists(user_puzzle_path()):
+func _create_board() -> void:
+	while FileAccess.file_exists(_user_puzzle_path()):
 		puzzle_num += 1
 	
 	var weights: Array[float] = []
@@ -49,8 +49,8 @@ func create_board() -> void:
 	var cells: int = roundi(rng.randfn(puzzle_type["cells_mean"], puzzle_type["cells_spread"]))
 	cells = clampi(cells, puzzle_type["cells_min"], puzzle_type["cells_max"])
 	
-	var puzzle_size: Vector2i = pick_puzzle_size(cells)
-	set_puzzle_size(puzzle_size)
+	var puzzle_size: Vector2i = _pick_puzzle_size(cells)
+	_set_puzzle_size(puzzle_size)
 	
 	var difficulty: float = rng.randfn(puzzle_type["difficulty_mean"], puzzle_type["difficulty_spread"])
 	difficulty = clamp(difficulty, 0.0, 1.0)
@@ -64,7 +64,7 @@ func create_board() -> void:
 ## Pick a random puzzle size close to to the target cell count.[br]
 ## [br]
 ## Enforces reasonable aspect ratios (< 2:1) and a minimum side length of 5.
-func pick_puzzle_size(cells: float) -> Vector2i:
+func _pick_puzzle_size(cells: float) -> Vector2i:
 	var puzzle_size: Vector2i = Vector2i.ONE
 	var width_sigma: float = sqrt(cells) * 0.25
 	var min_width: int = int(ceil(sqrt(cells) / 1.41421))
@@ -77,29 +77,24 @@ func pick_puzzle_size(cells: float) -> Vector2i:
 	return puzzle_size
 
 
-func output_board() -> void:
-	var path: String = user_puzzle_path()
+func _output_board() -> void:
+	var path: String = _user_puzzle_path()
 	var board: SolverBoard = generator.board.solver_board.duplicate()
 	board.erase_solution_cells()
 	if not DirAccess.dir_exists_absolute(BulkGenerator.GENERATED_PUZZLE_DIR):
 		DirAccess.make_dir_recursive_absolute(BulkGenerator.GENERATED_PUZZLE_DIR)
 	FileAccess.open(path, FileAccess.WRITE).store_string(board.to_grid_string())
 	
-	var info_path: String = puzzle_info_path(path)
-	var info_json: Dictionary[String, Variant] = {}
-	info_json["difficulty"] = generator.solver.get_measured_difficulty()
-	info_json["cells"] = generator.solver.board.cells.size()
-	info_json["version"] = 0.02
-	FileAccess.open(info_path, FileAccess.WRITE).store_string(JSON.stringify(info_json))
+	%PuzzleInfoGenerator.write_puzzle_info(path)
 	
 	object.log_message("wrote puzzle #%s to %s; measured_difficulty=%.2f" \
-			% [puzzle_num, path, info_json["difficulty"]])
+			% [puzzle_num, path, generator.solver.get_measured_difficulty()])
 	
 	puzzle_num += 1
 	board.cleanup()
 
 
-func set_puzzle_size(puzzle_size: Vector2i) -> void:
+func _set_puzzle_size(puzzle_size: Vector2i) -> void:
 	var new_grid_string: String = ""
 	for y in puzzle_size.y:
 		new_grid_string += "  ".repeat(puzzle_size.x)
@@ -113,9 +108,5 @@ func set_puzzle_size(puzzle_size: Vector2i) -> void:
 	generator.board = %GameBoard.to_generator_board()
 
 
-func user_puzzle_path() -> String:
+func _user_puzzle_path() -> String:
 	return BulkGenerator.GENERATED_PUZZLE_DIR.path_join("%s.txt" % [puzzle_num])
-
-
-func puzzle_info_path(path: String) -> String:
-	return path + ".info"
