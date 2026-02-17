@@ -1,1 +1,58 @@
-{"cells":120,"difficulty":2.56313364960537,"version":0.02}
+{"version":"0.02"}
+
+[metadata]
+difficulty 2.56
+width 7
+height 14
+author 
+
+[solution]
+######## . . 3##
+## . .##########
+## 3## 2 .## 1##
+ .##############
+ .## . .## .## .
+ 3## .#### 2## .
+## 5 .## .#### .
+######## . 3## .
+ .## 6 .###### 5
+ . 3## .## . 7##
+###### .## .####
+ 1## . .## .## 4
+########## .## .
+ .## .## . .## .
+ 2## 2######## .
+
+[order]
+30 30 29 32 33 34 - 35
+26 28 31 27 25 35 0 36
+25 - 0 - 26 0 - 0
+25 3 24 23 25 10 0 11
+2 24 23 22 7 10 10 11
+- 0 23 21 8 - 6 11
+0 - 9 8 8 0 10 5
+1 20 2 7 5 - 4 2
+19 0 - 4 7 4 0 -
+19 - 0 8 10 2 - 0
+0 18 10 11 12 11 1 1
+- 0 16 13 14 13 12 -
+0 4 15 17 37 15 14 13
+2 0 16 2 38 39 18 15
+- 0 - 17 39 39 16 19
+
+[reason]
+wx wx ci wx p3 ie - im
+wx ix ix im ci im i1 wx
+im - ac - p3 i1 - i1
+ix ci im id wx im i1 im
+ix im ix p3 ci ix im ix
+- ac ix wx im - cb ix
+ac - p3 im ix ac wx ix
+wx wx cb id ix - id ix
+ix ac - ix id id ac -
+ix - ac ix id ix - ac
+i1 wx wx ix id ix wx wx
+- i1 p3 ix id ix wx -
+i1 wx ci im wx ix wx ix
+ix ci p3 ci p3 ix wx ix
+- ac - im wx wx ci ix

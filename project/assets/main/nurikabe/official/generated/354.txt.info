@@ -1,1 +1,34 @@
-{"cells":42,"difficulty":6.86761875601296,"version":0.02}
+{"version":"0.02"}
+
+[metadata]
+difficulty 6.87
+width 5
+height 6
+author 
+
+[solution]
+ . .###### .
+ .#### 1## .
+ .## .#### 3
+ .## . . 4##
+ .##########
+ . .## . . .
+ .10## 6 . .
+
+[order]
+16 15 12 0 2 2
+13 14 0 - 0 2
+13 8 11 0 0 -
+9 10 7 7 - 0
+13 14 5 4 6 1
+17 15 1 3 6 6
+18 - 0 - 6 6
+
+[reason]
+ie p3 wx i1 im ix
+ik wb i1 - i1 ix
+ik ci ix i1 ac -
+pk id ix ix - ac
+ik wb wb cb iB wx
+ie p3 wx ix is is
+ix - ac - is is
