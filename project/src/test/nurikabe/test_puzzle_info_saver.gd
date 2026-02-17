@@ -91,7 +91,7 @@ func test_save_and_load() -> void:
 	saver.save_puzzle_info(TEMP_PUZZLE_INFO_FILENAME, info)
 	
 	info = saver.load_puzzle_info(TEMP_PUZZLE_INFO_FILENAME)
-	assert_eq(info.version, "0.01")
+	assert_eq(info.version, "0.02")
 	assert_eq(info.author, "poobslag v02")
 	assert_almost_eq(info.difficulty, 0.031, 0.001)
 	assert_eq(info.size, Vector2i(10, 9))

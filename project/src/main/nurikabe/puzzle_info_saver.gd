@@ -1,6 +1,6 @@
 class_name PuzzleInfoSaver
 
-const PUZZLE_INFO_VERSION: String = "0.01"
+const PUZZLE_INFO_VERSION: String = "0.02"
 
 func save_puzzle_info(filename: String, info: PuzzleInfo) -> void:
 	var file: FileAccess = FileAccess.open(filename, FileAccess.WRITE)

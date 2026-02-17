@@ -25,9 +25,15 @@ func write_puzzle_info(puzzle_path: String) -> void:
 		print(validation_result)
 		return
 	
+	var info_path: String = _puzzle_info_path(puzzle_path)
+	
+	var old_info: PuzzleInfo
+	if FileAccess.file_exists(info_path):
+		old_info = PuzzleInfoSaver.new().load_puzzle_info(info_path)
+	
 	var info: PuzzleInfo = PuzzleInfo.new()
-	info.version = "0.01"
-	info.author = "poobslag v03"
+	info.version = PuzzleInfoSaver.PUZZLE_INFO_VERSION if old_info == null else old_info.version
+	info.author = "poobslag v03" if old_info == null else old_info.author
 	info.difficulty = solver.get_measured_difficulty()
 	for cell: Vector2i in solver.board.cells:
 		info.size.x = maxi(info.size.x, cell.x)
@@ -36,9 +42,7 @@ func write_puzzle_info(puzzle_path: String) -> void:
 	info.order_string = _get_order_string()
 	info.reason_string = _get_reason_string()
 	
-	var info_path: String = _puzzle_info_path(puzzle_path)
-	var saver: PuzzleInfoSaver = PuzzleInfoSaver.new()
-	saver.save_puzzle_info(info_path, info)
+	PuzzleInfoSaver.new().save_puzzle_info(info_path, info)
 	
 	_generator.log_message("Wrote %s." % [info_path])
 	solver.board.cleanup()
