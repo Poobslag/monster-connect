@@ -112,7 +112,10 @@ func _process(_delta: float) -> void:
 
 
 func play_sfx_at(sound_key: String, pos: Vector2) -> AudioStreamPlayer2D:
-	var sfx_distance: float = pos.distance_to(get_viewport().get_camera_2d().global_position)
+	var listener: Camera2D = get_viewport().get_camera_2d()
+	var sfx_distance: float = 0.0
+	if listener != null:
+		sfx_distance = pos.distance_to(get_viewport().get_camera_2d().global_position)
 	var config: Dictionary[Variant, Variant] = SOUND_CONFIGS.get(sound_key, {})
 	var source_key: String = config.get("source", sound_key)
 	var stream: AudioStream = sounds.get(source_key)
