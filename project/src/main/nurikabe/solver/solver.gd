@@ -835,7 +835,7 @@ func deduce_clued_island_snug(island: CellGroup) -> void:
 	if island.liberties.is_empty():
 		return
 	var extent_size: int = board.get_per_clue_extent_map().get_extent_size(island)
-	if extent_size != island.clue:
+	if extent_size > island.clue:
 		return
 	
 	# diminishing fun returns for large blobs

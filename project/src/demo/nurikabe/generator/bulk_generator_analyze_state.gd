@@ -37,7 +37,7 @@ func update(_delta: float) -> void:
 	
 	var info: PuzzleInfo = PuzzleInfo.new()
 	info.version = "0.01"
-	info.author = "poobslag v02"
+	info.author = "poobslag v03"
 	info.difficulty = solver.get_measured_difficulty()
 	for cell: Vector2i in solver.board.cells:
 		info.size.x = maxi(info.size.x, cell.x)

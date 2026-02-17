@@ -137,6 +137,23 @@ func test_deduce_all_islands_snug() -> void:
 	assert_deductions(solver.deduce_all_clued_island_snugs, expected)
 
 
+func test_deduce_all_islands_snug_too_big() -> void:
+	grid = [
+		" .    ",
+		" 5    ",
+		"  ####",
+		"    ##",
+		"   . 6",
+	]
+	var expected: Array[String] = [
+		"(0, 2)->## island_buffer (1, 4)",
+		"(0, 3)->. island_snug (1, 4)",
+		"(0, 4)->. island_snug (1, 4)",
+		"(1, 3)->. island_snug (1, 4)",
+	]
+	assert_deductions(solver.deduce_all_clued_island_snugs, expected)
+
+
 func test_deduce_unclued_lifeline() -> void:
 	grid = [
 		"    ####",
