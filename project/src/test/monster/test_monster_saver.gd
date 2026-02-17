@@ -15,8 +15,8 @@ func test_load_sim_behavior() -> void:
 	assert_eq(profile.archetypes.get("rat"), 9.0)
 	assert_eq(profile.archetypes.get("pig"), 1.0)
 	
-	assert_almost_eq(profile.behavior.get_stat("puzzle.cursor_speed"), 0.74, 0.001)
-	assert_almost_eq(profile.behavior.get_stat("puzzle.think_speed"), 0.74, 0.001)
+	assert_almost_eq(profile.behavior.get_stat("puzzle.cursor_speed"), 0.92, 0.001)
+	assert_almost_eq(profile.behavior.get_stat("puzzle.think_speed"), 0.83, 0.001)
 	assert_almost_eq(profile.behavior.get_stat("puzzle.pickiness"), 0.0, 0.001)
 
 
