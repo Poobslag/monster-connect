@@ -65,7 +65,7 @@ func test_get_possible_island_splits() -> void:
 	board.cleanup()
 
 
-func test_split_island_cell() -> void:
+func test_cleave_island_cell() -> void:
 	var grid: Array[String] = [
 		"15## 2## .",
 		" .## .## .",
@@ -78,7 +78,7 @@ func test_split_island_cell() -> void:
 	var island: CellGroup = board.get_island_for_cell(Vector2i(0, 0))
 	var island_split: MutationLibrary.IslandSplit = \
 			MutationLibrary.IslandSplit.new(MutationLibrary.SPLIT_CELL, Vector2i(0, 2))
-	mutation_library.split_island(board, island, island_split)
+	mutation_library.cleave_island(board, island, island_split)
 	
 	assert_board(board, [
 			" 2## 2##13",
@@ -90,7 +90,7 @@ func test_split_island_cell() -> void:
 	board.cleanup()
 
 
-func test_split_island_horizontal() -> void:
+func test_cleave_island_horizontal() -> void:
 	var grid: Array[String] = [
 		"15## .## .",
 		" .## 2## .",
@@ -103,7 +103,7 @@ func test_split_island_horizontal() -> void:
 	var island: CellGroup = board.get_island_for_cell(Vector2i(0, 2))
 	var island_split: MutationLibrary.IslandSplit = \
 			MutationLibrary.IslandSplit.new(MutationLibrary.SPLIT_HORIZONTAL, Vector2i(0, 2))
-	mutation_library.split_island(board, island, island_split)
+	mutation_library.cleave_island(board, island, island_split)
 	
 	assert_board(board, [
 			" 2## .## .",
@@ -115,7 +115,7 @@ func test_split_island_horizontal() -> void:
 	board.cleanup()
 
 
-func test_split_island_vertical() -> void:
+func test_cleave_island_vertical() -> void:
 	var grid: Array[String] = [
 		"15## .## .",
 		" .## 2## .",
@@ -128,7 +128,7 @@ func test_split_island_vertical() -> void:
 	var island: CellGroup = board.get_island_for_cell(Vector2i(0, 2))
 	var island_split: MutationLibrary.IslandSplit = \
 			MutationLibrary.IslandSplit.new(MutationLibrary.SPLIT_VERTICAL, Vector2i(1, 0))
-	mutation_library.split_island(board, island, island_split)
+	mutation_library.cleave_island(board, island, island_split)
 	
 	assert_board(board, [
 			" 5## .## .",

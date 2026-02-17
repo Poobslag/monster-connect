@@ -59,7 +59,7 @@ func test_mutate_fix_enclosed_walls_ok() -> void:
 	board.cleanup()
 
 
-func test_mutate_fix_joined_islands() -> void:
+func test_mutate_fix_joined_islands_collapse() -> void:
 	var grid: Array[String] = [
 		" . 2######",
 		"## .## .##",
@@ -69,14 +69,14 @@ func test_mutate_fix_joined_islands() -> void:
 	]
 	var board: SolverBoard = SolverBoard.new()
 	board.from_grid_string("\n".join(grid))
-	mutation_library.mutate_fix_joined_islands(board)
+	mutation_library.mutate_fix_joined_islands_collapse(board)
 	
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).size(), 8)
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 8)
 	board.cleanup()
 
 
-func test_mutate_fix_joined_islands_single() -> void:
+func test_mutate_fix_joined_islands_collapse_single() -> void:
 	var grid: Array[String] = [
 		" . 2######",
 		"## .## .##",
@@ -84,10 +84,25 @@ func test_mutate_fix_joined_islands_single() -> void:
 	]
 	var board: SolverBoard = SolverBoard.new()
 	board.from_grid_string("\n".join(grid))
-	mutation_library.mutate_fix_joined_islands(board)
+	mutation_library.mutate_fix_joined_islands_collapse(board)
 	
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).size(), 8)
 	assert_eq(board.get_island_for_cell(Vector2i(0, 2)).clue, 8)
+	board.cleanup()
+
+
+func test_mutate_fix_joined_islands_split() -> void:
+	var grid: Array[String] = [
+		"###### ?##",
+		" ? . . .##",
+		"#### . . .",
+	]
+	var board: SolverBoard = SolverBoard.new()
+	board.from_grid_string("\n".join(grid))
+	mutation_library.mutate_fix_joined_islands_split(board)
+	
+	var validation_errors: SolverBoard.ValidationResult = board.validate(SolverBoard.VALIDATE_SIMPLE)
+	assert_eq([], validation_errors.joined_islands)
 	board.cleanup()
 
 

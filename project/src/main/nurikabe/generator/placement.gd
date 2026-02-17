@@ -12,6 +12,7 @@ enum Reason {
 	ISLAND_MOAT, # seal an open island with walls
 	SEALED_ISLAND_CLUE, # assign a clue number to a sealed island
 	WALL_GUIDE, # add a clue cell to constrain an open wall
+	RANDOM_CLUE, # add a clue cell at a random board position
 	
 	# advanced techniques
 	ISLAND_BUFFER, # add a clue cell to indirectly constrain an open island (knight's move)

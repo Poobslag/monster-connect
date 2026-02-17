@@ -31,6 +31,7 @@ const ISLAND_EXPANSION: Placement.Reason = Placement.Reason.ISLAND_EXPANSION
 const ISLAND_MOAT: Placement.Reason = Placement.Reason.ISLAND_MOAT
 const SEALED_ISLAND_CLUE: Placement.Reason = Placement.Reason.SEALED_ISLAND_CLUE
 const WALL_GUIDE: Placement.Reason = Placement.Reason.WALL_GUIDE
+const RANDOM_CLUE: Placement.Reason = Placement.Reason.RANDOM_CLUE
 
 ## advanced techniques
 const ISLAND_BUFFER: Placement.Reason = Placement.Reason.ISLAND_BUFFER
@@ -80,6 +81,7 @@ var _basic_techniques: TechniqueScheduler = TechniqueScheduler.new([
 	{"callable": generate_wall_guide, "weight": 1.0},
 	{"callable": generate_island_guide, "weight": 1.0},
 	{"callable": generate_island_buffer, "weight": 0.5},
+	{"callable": generate_random_clue, "weight": 0.5},
 ])
 
 var _advanced_techniques: TechniqueScheduler = TechniqueScheduler.new([
@@ -279,7 +281,7 @@ func attempt_construction_step() -> void:
 
 func generate_wall_guide() -> void:
 	var open_walls: Array[CellGroup] = board.walls.filter(func(wall: CellGroup) -> bool:
-			return wall.liberties.size() == 2)
+			return wall.liberties.size() >= 2)
 	if open_walls.is_empty():
 		return
 	
@@ -310,7 +312,7 @@ func generate_wall_guide() -> void:
 
 func generate_island_guide() -> void:
 	var open_islands: Array[CellGroup] = board.islands.filter(func(wall: CellGroup) -> bool:
-			return wall.liberties.size() == 2)
+			return wall.liberties.size() >= 2)
 	if open_islands.is_empty():
 		return
 	
@@ -460,6 +462,36 @@ func generate_break_in() -> void:
 			placements.placements.back().break_in = true
 			for other_clue: Vector2i in island_plan["supporting_clues"]:
 				add_placement(other_clue, CELL_MYSTERY_CLUE, ISLAND_GUIDE)
+			break
+
+
+func generate_random_clue() -> void:
+	var potential_clue_cells: Array[Vector2i] = []
+	for cell: Vector2i in board.empty_cells:
+		if _has_neighbor_island(cell):
+			continue
+		if board.solver_board.get_island_chain_map().has_chain_conflict(cell, 1):
+			continue
+		
+		potential_clue_cells.append(cell)
+	potential_clue_cells.shuffle()
+	
+	var mercy: int = 0
+	while not potential_clue_cells.is_empty() and mercy < 10:
+		var clue_cell: Vector2i = potential_clue_cells.pop_front()
+		
+		# bifurcate; set the clue and see if there is a contradiction
+		var temp_solver: Solver = _create_temp_solver()
+		temp_solver.board.set_clue(clue_cell, CELL_MYSTERY_CLUE)
+		temp_solver.deduce_island(temp_solver.board.get_island_for_cell(clue_cell))
+		var validation_result: String = temp_solver.board.validate_local([clue_cell])
+		temp_solver.board.cleanup()
+		
+		if validation_result != "":
+			mercy += 1
+			pass
+		else:
+			add_placement(clue_cell, CELL_MYSTERY_CLUE, RANDOM_CLUE)
 			break
 
 
