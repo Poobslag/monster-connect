@@ -667,6 +667,26 @@ func test_island_chain_map_cycle_janko_83() -> void:
 	board.cleanup()
 
 
+func test_wall_quota() -> void:
+	grid = [
+		"   1      ",
+		"         2",
+		"          ",
+		" 4        ",
+		"       3  ",
+	]
+	var board: SolverBoard = SolverTestUtils.init_board(grid)
+	assert_eq(15, board.get_wall_quota())
+	
+	board.set_clue(Vector2i(1, 0), 0)
+	assert_eq(16, board.get_wall_quota())
+	
+	board.set_clue(Vector2i(1, 0), 2)
+	assert_eq(14, board.get_wall_quota())
+	
+	board.cleanup()
+
+
 func assert_groups(actual_groups: Array[CellGroup], expected_props_list: Array[Dictionary]) -> void:
 	var actual_props_list: Array[Dictionary] = []
 	for actual_group: CellGroup in actual_groups:

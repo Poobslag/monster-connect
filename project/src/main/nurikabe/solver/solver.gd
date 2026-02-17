@@ -932,11 +932,11 @@ func deduce_island(island: CellGroup) -> void:
 
 func deduce_wall_expansion(wall: CellGroup) -> void:
 	@warning_ignore("integer_division")
-	if wall.liberties.size() == 1 and (board.walls.size() >= 2 or wall.size() < board.cells.size() / 2):
+	if wall.liberties.size() == 1 and (board.walls.size() >= 2 or wall.size() < board.get_wall_quota()):
 		var squeeze_fill: SqueezeFill = SqueezeFill.new(board)
 		squeeze_fill.skip_cells(wall.cells)
 		squeeze_fill.push_change(wall.liberties.front(), CELL_WALL)
-		squeeze_fill.fill()
+		squeeze_fill.fill(999999 if board.walls.size() >= 2 else board.get_wall_quota() - wall.size() - 1)
 		for change: Vector2i in squeeze_fill.changes:
 			if should_deduce(board, change):
 				add_deduction(change, CELL_WALL, WALL_EXPANSION, [wall.root])

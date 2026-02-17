@@ -695,6 +695,19 @@ func test_deduce_all_walls_wall_expansion_1() -> void:
 	assert_deductions(solver.deduce_all_walls, expected)
 
 
+func test_deduce_all_walls_wall_expansion_last_wall() -> void:
+	grid = [
+		"####  ",
+		"## .  ",
+		" 4 .  ",
+	]
+	var expected: Array[String] = [
+		"(2, 0)->## wall_expansion (0, 0)",
+		"(2, 1)->## wall_expansion (0, 0)",
+	]
+	assert_deductions(solver.deduce_all_walls, expected)
+
+
 func test_deduce_all_walls_wall_expansion_mystery_clue() -> void:
 	grid = [
 		"     ?",

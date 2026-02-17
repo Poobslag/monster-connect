@@ -206,6 +206,12 @@ func get_wall_chokepoint_map() -> SolverChokepointMap:
 		_build_wall_chokepoint_map)
 
 
+func get_wall_quota() -> int:
+	return _get_cached(
+		"wall_quota",
+		_build_wall_quota)
+
+
 func get_per_clue_chokepoint_map() -> PerClueChokepointMap:
 	return _get_cached(
 		"per_clue_chokepoint_map",
@@ -223,6 +229,7 @@ func set_clue(cell_pos: Vector2i, clue: int) -> void:
 		push_error("set_clue: invalid cell_pos (%s)" % [cell_pos])
 		return
 	
+	_cache.erase("wall_quota")
 	if clue == 0:
 		clues.erase(cell_pos)
 	else:
@@ -488,6 +495,18 @@ func _build_island_clues() -> Dictionary[Vector2i, int]:
 
 func _build_island_reachability_map() -> IslandReachabilityMap:
 	return IslandReachabilityMap.new(self)
+
+
+func _build_wall_quota() -> int:
+	var quota: int = cells.size()
+	for island: CellGroup in islands:
+		if island.clue == CELL_MYSTERY_CLUE:
+			@warning_ignore("integer_division")
+			quota = ceili(cells.size() / 2)
+			break
+		
+		quota -= island.clue
+	return quota
 
 
 func _clue_value_for_cells(island: Array[Vector2i]) -> int:
