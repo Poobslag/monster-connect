@@ -28,6 +28,17 @@ func test_get_clue_reachability_avoids_cycles() -> void:
 	assert_eq(irm.get_clue_reachability(Vector2(1, 2)), IslandReachabilityMap.ClueReachability.CHAIN_CYCLE)
 
 
+func test_get_clue_reachability_avoids_cycles_2() -> void:
+	grid = [
+		"#### 4 .  ",
+		" 7####    ",
+		" .   .  ##",
+		"      ## 1",
+	]
+	var irm: IslandReachabilityMap = init_island_reachability_map()
+	assert_eq(irm.get_clue_reachability(Vector2(3, 2)), IslandReachabilityMap.ClueReachability.CHAIN_CYCLE)
+
+
 func test_get_clue_reachability_cycles_janko_3() -> void:
 	grid = [
 		"         3          ",
