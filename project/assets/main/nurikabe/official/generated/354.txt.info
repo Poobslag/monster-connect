@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 6.87
+difficulty 8.16
 width 5
 height 6
 author 
@@ -26,9 +26,9 @@ author
 
 [reason]
 ie p3 wx i1 im ix
-ik wb i1 - i1 ix
+ik iC i1 - i1 ix
 ik ci ix i1 ac -
 pk id ix ix - ac
-ik wb wb cb iB wx
+ik iC iC cb iB wx
 ie p3 wx ix is is
 ix - ac - is is

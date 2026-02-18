@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 15.13
+difficulty 15.25
 width 6
 height 12
 author 
@@ -45,8 +45,8 @@ ix - i1 wx im wx ix
 ix ac - ix ix im ix
 ix wx im wx i1 wx ix
 ix im ix i1 - i1 ix
-Bi ci ix wb i1 wx -
-im wb ix ci ix wx ac
+Bi ci ix iC i1 wx -
+im iC ix ci ix wx ac
 wx p3 ix wx ix ix -
 Bh p3 - ci wx wx ac
 Bh wx im ix ix ix -

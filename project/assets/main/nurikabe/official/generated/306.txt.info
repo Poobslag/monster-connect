@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 3.29
+difficulty 4.25
 width 6
 height 4
 author poobslag v02
@@ -22,7 +22,7 @@ author poobslag v02
 
 [reason]
 wx i1 - i1 im im ix
-wx - i1 wb ix ci ix
+wx - i1 iC ix ci ix
 wx i1 ic p3 ix wx ix
 wx pk ul - ac wx ix
 wx wx wx ac - ix ix

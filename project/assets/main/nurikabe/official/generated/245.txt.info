@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 17.98
+difficulty 19.47
 width 9
 height 8
 author poobslag v02
@@ -18,23 +18,23 @@ author poobslag v02
  . . . .######## . .
 
 [order]
-18 18 4 - 11 14 16 16 16 16
-18 2 13 2 11 17 15 - 16 16
-- 19 19 10 - 0 16 16 16 16
-0 1 12 20 0 - 0 16 6 1
-- 31 30 20 22 0 17 7 - 0
-33 33 29 29 25 25 8 18 0 -
-33 33 32 26 27 23 22 9 19 2
-33 33 33 28 23 23 22 - 3 5
-33 33 33 33 24 23 21 20 20 5
+19 17 4 - 8 16 18 34 34 34
+11 2 15 2 8 10 31 - 34 34
+- 12 12 7 - 0 32 33 34 34
+0 1 9 13 0 - 0 26 21 1
+- 43 42 13 14 0 35 22 - 0
+45 45 41 41 29 23 23 36 0 -
+45 45 44 30 39 28 23 6 37 2
+45 45 45 40 28 27 20 - 3 5
+45 45 45 45 39 25 28 24 38 5
 
 [reason]
-ix ix ix - ix ix iB is is is
-im ci Bw cb iB wx wv - is is
-- ix im Bi - i1 is is is is
-ac wx ci ix i1 - i1 iB Bh wx
+ix ix ix - ix ix Bg is is is
+Bj ci ic cb iB Bw Bh - is is
+- ix im Bi - i1 p3 ie is is
+ac wx ci ix i1 - i1 Bg Bh wx
 - p3 wx im wx i1 wx ix - ac
-is is im ix ix ix ik ix ac -
-is is wv ci wx wx wx Bg wx ix
-is is is p3 im ix ix - cb ix
-is is is is wx im wx im ix ik
+is is im ix ik ik ik ix ac -
+is is iC iC wx im iB Bg wx ix
+is is is p3 im Bi Bi - cb ix
+is is is is wx ci im Bj ix ik

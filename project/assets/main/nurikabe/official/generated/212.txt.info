@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 4.70
+difficulty 7.77
 width 7
 height 10
 author poobslag v02
@@ -23,10 +23,10 @@ author poobslag v02
 3 1 0 - 2 3 - 5
 2 2 - 0 5 4 0 5
 4 2 0 7 5 7 - 5
-25 25 - 8 8 7 8 6
-25 25 20 21 8 9 8 9
-25 24 19 22 13 14 10 9
-3 0 23 - 18 11 15 12
+24 24 - 8 8 7 8 6
+24 24 20 23 8 9 8 9
+24 22 19 23 13 14 10 9
+3 0 21 - 18 11 15 12
 0 - 0 3 17 16 14 13
 2 0 - 2 5 14 13 7
 2 1 0 3 3 5 0 7
@@ -37,9 +37,9 @@ wx wx ac - ix id - ix
 im ix - ac ix wx ac ix
 wx im ac wx ix wx - im
 is is - im ix wx ix wx
-is is ix wv im wx ix wx
-is p3 ci p3 ur p3 ix wx
-wx i1 im - wx ci im wx
+is is ix im im wx ix wx
+is p3 ci ix ur p3 ix wx
+wx i1 Bj - wx ci im wx
 i1 - i1 id im ie p3 ur
 ix i1 - ix ix p3 iC im
 ix wx ac wx wx im ci ix

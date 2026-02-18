@@ -17,13 +17,13 @@ author poobslag v02
  . . . .############ 6 . . .
 
 [order]
-- 12 46 2 - 0 - 4 20 44 8 8 5 5
-13 15 16 45 0 1 43 35 19 0 - 7 6 5
-14 10 5 0 - 2 43 43 2 - 0 1 0 5
-15 - 0 - 0 41 3 39 36 0 - 0 - 2
-11 17 17 0 40 42 39 9 37 33 0 34 0 5
-18 17 53 - 50 48 47 38 0 - 23 26 30 31
-55 55 55 54 49 51 46 46 - 0 21 24 32 28
+- 14 46 2 - 0 - 4 11 44 8 8 5 5
+15 17 18 45 0 1 43 35 10 0 - 7 6 5
+16 12 5 0 - 2 43 43 2 - 0 1 0 5
+17 - 0 - 0 41 3 39 36 0 - 0 - 2
+13 19 19 0 40 42 39 9 37 33 0 34 0 5
+20 19 54 - 50 48 47 38 0 - 23 26 30 31
+55 55 55 53 49 51 46 46 - 0 21 24 32 28
 55 55 55 55 52 51 47 2 45 27 - 22 25 29
 
 [reason]
@@ -32,6 +32,6 @@ ix im p3 wx ac wx im Bg Bh ac - ie p3 ur
 Bi Bj ur i1 - ix ix im ix - i1 wx i1 ur
 im - i1 - i1 Bj ci ix Bi i1 - i1 - i1
 ci ix im i1 Bw p3 ik ik wx Bj i1 ix i1 ur
-wx im wv - id ix wx wx ac - Bi Bi ci p3
-is is is ix ci ix im ix - ac Bg Bh im ik
+wx im Bh - id ix wx wx ac - Bi Bi ci p3
+is is is Bi ci ix im ix - ac Bh Bh im ik
 is is is is wx im wx ci wx Bh - ix ix ib
