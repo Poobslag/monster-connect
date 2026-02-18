@@ -20,9 +20,9 @@ author poobslag v02
  .15###### 4 . . .
 
 [order]
-28 0 - 0 - 0 - 26 23
-28 21 0 1 2 1 27 2 25
-28 27 26 25 2 24 23 24 20
+26 0 - 0 - 0 - 24 21
+26 21 0 1 2 1 25 2 23
+26 25 24 23 2 22 21 22 20
 14 22 21 11 4 13 10 19 18
 11 13 11 11 - 10 10 10 18
 8 10 11 9 10 8 - 0 -
@@ -34,9 +34,9 @@ author poobslag v02
 
 [reason]
 ix i1 - i1 - ac - p3 ur
-ix wv i1 wx ix wx im ci im
+ix iC i1 wx ix wx im ci im
 ix ie p3 im ix p3 ur p3 ix
-ix p3 wv im id wx im wx ix
+ix p3 iC im id wx im wx ix
 ix wx im ix - im ix im ix
 ix wx ix ci im id - ac -
 ix wx ix im ix ix id im wx

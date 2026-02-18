@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 7.91
+difficulty 7.54
 width 5
 height 7
 author 
@@ -17,20 +17,20 @@ author
  . . .######
 
 [order]
-16 - 1 0 - 2
-2 15 0 - 0 2
-10 15 9 0 3 2
-11 15 13 12 14 4
-6 7 14 14 14 12
-6 - 0 10 0 14
-6 0 - 0 - 0
-16 8 2 15 0 5
+18 - 1 0 - 2
+2 17 0 - 0 2
+12 17 6 0 3 2
+16 14 11 10 13 4
+7 8 13 13 13 10
+7 - 0 6 0 13
+7 0 - 0 - 0
+15 9 2 14 0 5
 
 [reason]
 ix - wx i1 - ix
 ci im i1 - i1 ix
-ur ix wv i1 wx ix
-ic ix cb ik is ix
+ur ix iC i1 wx ix
+wx ix cb ik is ix
 ic ix iB is is ix
 ic - ac iC i1 is
 ic ac - i1 - i1

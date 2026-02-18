@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 5.35
+difficulty 5.76
 width 14
 height 8
 author 
@@ -18,23 +18,23 @@ author
  .## .## . . . . . .## . .####
 
 [order]
-23 27 23 11 11 11 9 9 5 5 4 4 1 0 -
-27 26 22 12 11 10 10 6 6 0 - 2 2 - 0
-27 27 21 11 11 11 9 9 2 - 0 2 2 0 1
-27 - 0 - 11 2 10 2 4 1 2 2 0 - 0
-27 20 20 13 2 2 2 6 - 0 - 0 4 0 23
-28 23 14 19 0 - 0 6 0 - 0 - 2 24 23
-- 0 - 0 - 0 - 0 7 2 1 0 25 0 23
-29 30 15 16 2 1 0 23 3 8 33 - 0 - 0
-31 17 31 31 17 32 32 32 32 32 32 34 34 0 18
+20 23 20 11 11 11 9 9 5 5 4 4 1 0 -
+23 24 21 12 11 10 10 6 6 0 - 2 2 - 0
+23 23 25 11 11 11 9 9 2 - 0 2 2 0 1
+23 - 0 - 11 2 10 2 4 1 2 2 0 - 0
+28 23 27 13 2 2 2 6 - 0 - 0 4 0 20
+19 29 14 26 0 - 0 6 0 - 0 - 2 21 20
+- 0 - 0 - 0 - 0 7 2 1 0 22 0 20
+30 31 15 16 2 1 0 20 3 8 34 - 0 - 0
+32 17 32 32 17 33 33 33 33 33 33 35 35 0 18
 
 [reason]
 ur uL ur im ix ix ix ix ix ix ix wx wx i1 -
-uL ie p3 wx im wx wx wx wx ac - im ix - i1
-uL ul wx im ix ix ix ix ix - ac im im i1 wx
+uL p3 p3 wx im wx wx wx wx ac - im ix - i1
+uL ul im im ix ix ix ix ix - ac im im i1 wx
 uL - ac - im im wx ci wx wx ix ix i1 - i1
-uL im ix ix im ix im ix - ac - ac wx i1 ur
-p3 wb ci wv ac - i1 im ac - ac - ix p3 ur
+wx uL ix ix im ix im ix - ac - ac wx i1 ur
+ix wx ci ic ac - i1 im ac - ac - ix p3 ur
 - ac - ac - i1 - i1 p3 ix wx ac im i1 ur
-ix id ix id ix wx i1 wb ci im wx - i1 - i1
+ix id ix id ix wx i1 iC ci im wx - i1 - i1
 ix ci ix im ix ix ix ix ix ix im ix ix i1 wb

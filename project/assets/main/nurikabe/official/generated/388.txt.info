@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 6.22
+difficulty 6.02
 width 6
 height 8
 author 
@@ -18,9 +18,9 @@ author
 ########## 6 .
 
 [order]
-7 7 8 9 20 18 13
-7 4 8 8 17 19 16
-6 6 - 0 12 15 14
+7 7 8 9 15 15 13
+7 4 8 8 14 18 18
+6 6 - 0 12 17 16
 5 5 0 - 6 11 10
 4 4 4 4 5 5 10
 4 1 4 1 0 8 4
@@ -29,8 +29,8 @@ author
 1 0 1 2 2 - 4
 
 [reason]
-ix im im wx im ci ur
-ix ci ix im Bi p3 wx
+ix im im wx wx wx ur
+ix ci ix im Bi ix im
 ix wx - ac ix p3 Bh
 ix wx ac - ie wx im
 ix im ix im p3 ci ix

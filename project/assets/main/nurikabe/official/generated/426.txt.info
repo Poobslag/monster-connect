@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 15.75
+difficulty 15.86
 width 8
 height 9
 author 
@@ -19,25 +19,25 @@ author
  . .##############
 
 [order]
-1 1 1 4 17 2 29 22 21
-0 - 2 25 28 28 - 0 -
-- 0 27 16 26 24 0 20 23
-2 2 27 15 19 18 - 20 20
-2 3 27 27 14 2 0 5 5
-- 27 27 27 2 2 - 0 6
-27 27 27 13 10 2 0 - 7
-27 26 12 12 10 - 12 8 8
+1 1 1 4 17 2 31 22 21
+0 - 2 25 30 30 - 0 -
+- 0 29 16 26 24 0 20 23
+2 2 29 15 19 18 - 20 20
+2 3 29 29 14 2 0 5 5
+- 29 29 29 2 2 - 0 6
+29 27 29 13 10 2 0 - 7
+29 28 12 12 10 - 12 8 8
 - 0 - 11 10 11 9 6 5
-28 28 12 5 10 10 10 5 5
+30 30 12 5 10 10 10 5 5
 
 [reason]
 wx wx wx wx Bh ci ix Bg ix
 ac - ix Bi ix im - ac -
-- ac iB cb wv iC ac im ix
+- ac iB cb iC iC ac im ix
 ix im is ik p3 Bj - ix im
-im wx is is wb im ac ur ur
+im wx is is iC im ac ur ur
 - is is is im ix - ac p3
-is is is p3 uL im ac - ie
-iB wv im im uL - im im im
+is ik is p3 uL im ac - ie
+iB iC im im uL - im im im
 - ac - p3 uL p3 ie p3 ur
 ix ix im ur uL uL uL ur ur

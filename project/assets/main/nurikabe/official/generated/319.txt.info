@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 18.54
+difficulty 19.30
 width 8
 height 16
 author poobslag v02
@@ -26,39 +26,39 @@ author poobslag v02
  . 4 . .#### . . .
 
 [order]
-10 10 12 10 25 10 0 10 38
-10 11 20 21 13 0 - 0 8
-12 19 - 9 9 69 0 37 12
-10 20 2 22 70 9 34 18 2
-36 35 23 - 0 33 - 0 -
-46 24 36 0 - 76 3 1 0
-73 74 75 75 14 3 2 2 -
-71 72 16 39 14 28 4 1 0
-42 41 41 15 - 0 29 5 -
-42 - 40 58 0 - 29 30 6
-42 43 51 58 32 31 27 7 31
-47 45 44 - 50 32 0 26 31
-47 48 51 0 57 0 - 0 -
-49 48 48 - 56 58 0 59 17
-49 52 55 55 0 58 63 64 60
-65 54 53 0 - 0 64 68 68
-62 - 61 66 0 67 68 68 68
+10 10 12 10 24 10 0 10 30
+10 11 19 20 13 0 - 0 8
+12 18 - 9 9 77 0 31 12
+10 19 2 21 76 9 29 27 2
+35 35 22 - 0 28 - 0 -
+47 23 34 0 - 75 3 1 0
+72 73 74 74 14 3 2 2 -
+70 71 16 36 14 40 4 1 0
+43 38 38 15 - 0 39 5 -
+43 - 37 59 0 - 40 32 6
+43 44 52 59 42 41 26 7 33
+48 46 45 - 51 42 0 25 33
+48 49 52 0 58 0 - 0 -
+50 49 49 - 57 59 0 60 17
+50 53 56 56 0 59 64 65 61
+66 55 54 0 - 0 65 69 69
+63 - 62 67 0 68 69 69 69
 
 [reason]
-ur ur uL ur uL ur i1 ur ix
+ur ur uL ur uL ur i1 ur Bi
 ur p3 im p3 pk i1 - i1 pk
-uL Bi - iB ik Bi i1 Bw ul
-ur im cb wx im ik ix Bg ix
-im Bi ix - ac Bg - ac -
-ur ci im ac - ix id wx ac
+uL Bi - iB ik ix i1 im ul
+ur im cb wx wx ik ix Bj ix
+im ix ix - ac Bg - ac -
+ur ci Bj ac - ix id wx ac
 wx p3 ix im ix cb ix ix -
-Bh p3 ik Bg iB Bj ix wx ac
-ic iB ix ix - ac ix wx -
-ic - cb im ac - im wx ix
+Bh p3 ik Bg iB im ix wx ac
+ic iB ix ix - ac Bi wx -
+ic - cb im ac - im Bw ix
 ic ix ic ix im ix p3 ci ix
 ic ix cb - ix im i1 Bw im
 ic ix ic ac id i1 - i1 -
 ic ik iB - ix ix i1 wx ix
-ic ix ix im i1 im wb p3 ix
+ic ix ix im i1 im iC p3 ix
 ic id ci i1 - i1 p3 is is
 ix - ix ix i1 wx is is is

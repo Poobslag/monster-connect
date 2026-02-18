@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 7.09
+difficulty 4.52
 width 15
 height 8
 author 
@@ -18,23 +18,23 @@ author
  . 2############ 6 .######11 . .
 
 [order]
-37 25 38 38 18 18 41 21 21 21 18 18 13 20 11 13
-24 36 35 39 39 39 41 22 21 20 19 7 19 10 12 10
-24 17 35 34 33 40 36 21 - 0 7 7 7 6 9 7
-14 15 16 33 33 33 32 35 0 - 0 - 0 - 5 7
-14 14 2 1 33 2 - 31 33 0 8 6 6 4 6 4
-14 0 - 0 - 32 30 32 30 8 7 5 4 4 2 4
-2 - 0 - 0 26 30 28 30 8 - 2 0 - 3 2
-23 0 1 2 24 24 27 29 30 18 2 2 - 0 1 2
-24 - 23 23 23 26 26 29 - 19 3 1 0 - 2 2
+28 22 29 29 30 31 36 34 37 37 38 39 13 41 11 13
+21 27 26 30 30 30 33 35 27 38 38 7 40 10 12 10
+18 20 26 25 24 32 27 26 - 0 7 7 7 6 9 7
+18 17 18 24 24 24 23 26 0 - 0 - 0 - 5 7
+16 17 2 1 24 2 - 22 24 0 8 6 6 4 6 4
+16 0 - 0 - 23 21 23 21 8 7 5 4 4 2 4
+2 - 0 - 0 17 21 19 21 8 - 2 0 - 3 2
+14 0 1 2 16 16 18 20 21 14 2 2 - 0 1 2
+16 - 14 14 14 17 17 20 - 15 3 1 0 - 2 2
 
 [reason]
-ix ci wx wx ur ur ix uL uL uL ur ur ci im ci ix
-ix wx ix ix ix im ix im ul ie p3 im p3 ix id ix
-ix wx ix wx im wx ix uL - i1 im ix im ix id ix
-ik wx ix im ix im ix wx i1 - i1 - ac - cb ix
-ik iB ix wx ix cb - ci ix i1 im id wx im wx ix
+ix ci wx wx im wx ix ci wx wx im wx ci im ci ix
+ix wx ix ix ix im ix id ix ix ix im p3 ix id ix
+ix wx ix wx im wx ix cb - i1 im ix im ix id ix
+ix wx ix im ix im ix wx i1 - i1 - ac - cb ix
+ix wx ix wx ix cb - ci ix i1 im id wx im wx ix
 ix ac - ac - wx im wx ix im ie p3 im ix ci ix
 ix - ac - ac wx ix ci ix im - im ac - wx ix
-ic ac wx ix ix ix ix cb ix wb im ix - ac wx ix
+ic ac wx ix ix ix ix cb ix ic im ix - ac wx ix
 ix - ic ic ic wx wx wx - p3 wx wx ac - ix ix

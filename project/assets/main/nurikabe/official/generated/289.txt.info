@@ -1,7 +1,7 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 7.47
+difficulty 8.14
 width 11
 height 7
 author poobslag v02
@@ -17,21 +17,21 @@ author poobslag v02
  . . 4 .###### . . . . .
 
 [order]
-9 - 8 8 8 11 19 13 24 24 24 24
-4 4 3 - 9 12 11 18 18 - 24 24
-1 2 5 5 13 10 - 0 23 2 24 1
-0 - 0 6 13 14 0 - 27 25 - 0
-- 0 - 0 - 15 20 28 26 28 0 -
-2 1 2 5 5 21 28 28 28 28 29 2
-2 4 4 3 7 29 22 28 35 36 38 30
-34 16 - 17 31 29 31 32 33 37 38 38
+11 - 10 10 10 13 19 15 41 41 41 41
+4 4 3 - 11 14 13 18 18 - 35 41
+1 2 5 5 15 12 - 0 29 2 36 1
+0 - 0 6 15 16 0 - 23 23 - 0
+- 0 - 0 - 17 20 24 29 37 0 -
+2 1 2 5 5 21 26 30 25 37 39 2
+2 4 4 3 9 27 22 30 33 38 42 40
+30 7 - 8 29 27 28 31 32 34 42 42
 
 [reason]
 ix - ic ic ic wx ix ci is is is is
-wx id ci - ix id ix iB ix - is is
-wx ix ix im ix ci - ac wv cb iB wx
-ac - ac wx im wx ac - wx ix - ac
-- ac - ac - ix wx ix ci ix ac -
-ix wx ix ix im ix im ix im im wx ix
+wx id ci - ix id ix iB ix - ix is
+wx ix ix im ix ci - ac ic cb id wx
+ac - ac wx im wx ac - iB ix - ac
+- ac - ac - ix wx ix ic ix ac -
+ix wx ix ix im ix wx ix ci im wx ix
 im wx id ci iC ix ci im wx p3 is ix
-ix pk - ix ic im ic p3 ie ie is is
+ix pk - ix ic im iC p3 ie ie is is
