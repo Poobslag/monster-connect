@@ -602,7 +602,7 @@ func deduce_all_unreachable_squares() -> void:
 				add_deduction(cell, CELL_WALL, WALL_BUBBLE)
 				add_fun(FUN_FAST, 1.0)
 			IslandReachabilityMap.ClueReachability.CHAIN_CYCLE:
-				var nearest_clue: Vector2i = irm.get_nearest_clued_island_cell(cell)
+				var nearest_clue: Vector2i = irm.get_cycle_root(cell)
 				add_deduction(cell, CELL_WALL, ISLAND_CHAIN_BUFFER, [nearest_clue])
 				add_fun(FUN_THINK, 1.0)
 			IslandReachabilityMap.ClueReachability.CONFLICT:
