@@ -264,6 +264,7 @@ func test_deduce_unclued_lifeline_8() -> void:
 		"## . 7####   . . .10",
 	]
 	var expected: Array[String] = [
+		"(9, 3)->. unclued_lifeline (9, 5)",
 	]
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 

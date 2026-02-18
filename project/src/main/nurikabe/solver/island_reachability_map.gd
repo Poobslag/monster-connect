@@ -22,7 +22,7 @@ var board: SolverBoard
 
 var _adjacent_clues_by_cell: Dictionary[Vector2i, int] = {}
 var _reach_scores_by_cell: Dictionary[Vector2i, Dictionary] = {}
-var _cycles_by_cell: Dictionary[Vector2i, bool] = {}
+var _cycles_by_cell: Dictionary[Vector2i, Vector2i] = {}
 
 func _init(init_board: SolverBoard) -> void:
 	board = init_board
@@ -41,8 +41,15 @@ func get_clue_reachability(cell: Vector2i) -> ClueReachability:
 		else:
 			reachability = ClueReachability.UNREACHABLE
 	else:
-		reachability = ClueReachability.IMPOSSIBLE
+		if _cycles_by_cell.has(cell):
+			reachability = ClueReachability.CHAIN_CYCLE
+		else:
+			reachability = ClueReachability.IMPOSSIBLE
 	return reachability
+
+
+func get_cycle_root(cell: Vector2i) -> Vector2i:
+	return _cycles_by_cell.get(cell, POS_NOT_FOUND)
 
 
 func has_exclusive_root(cell: Vector2i) -> int:
@@ -137,7 +144,7 @@ func _build() -> void:
 						continue
 				if board.get_cell(neighbor) == CELL_EMPTY \
 						and board.get_island_chain_map().causes_chain_conflict(board.get_island_for_cell(root), neighbor):
-					_cycles_by_cell[neighbor] = true
+					_cycles_by_cell[neighbor] = root
 					continue
 				
 				_reach_scores_by_cell[neighbor][root] = reach_score - 1
@@ -155,6 +162,9 @@ func _build() -> void:
 				continue
 			if not _reach_scores_by_cell[neighbor].is_empty():
 				continue
+			if reach_score > 0:
+				# ensure all 'ghost entries' have a negative reachability score
+				reach_score -= 1000
 			_reach_scores_by_cell[neighbor][root] = reach_score - 1
 			if not neighbor in ghost_queue:
 				ghost_queue.append(neighbor)

@@ -301,7 +301,7 @@ func _on_command_palette_command_entered(command: String) -> void:
 	match command.substr(0, 1):
 		"g", "j", "n", "p":
 			if not command.substr(1).is_valid_int():
-				_log_message("Invalid parameter: " % [command.substr(1)])
+				_log_message("Invalid parameter: %s" % [command.substr(1)])
 				return
 			var source: PuzzleArchive.Source
 			match command.substr(0, 1):
