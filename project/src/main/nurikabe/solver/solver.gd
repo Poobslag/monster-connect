@@ -1061,6 +1061,7 @@ func _is_valid_merged_island(islands: Array[CellGroup], merge_cells: int) -> boo
 	return result
 
 
+## Backtrack from the required cells (unclued cells) to the clues which can reach them to find corridor cells.
 func _find_corridor_cells(
 		required_cells_by_root: Dictionary[Vector2i, Array],
 		clue_island: CellGroup) -> Dictionary[Vector2i, int]:
@@ -1077,7 +1078,7 @@ func _find_corridor_cells(
 		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
 			var neighbor: Vector2i = cell + neighbor_dir
 			if corridor_distance_map.has(neighbor):
-					continue
+				continue
 			var reach_score: int = irm.get_reach_score(cell, clue_island.root)
 			var neighbor_reach_score: int = irm.get_reach_score(neighbor, clue_island.root)
 			if neighbor_reach_score != reach_score + 1:

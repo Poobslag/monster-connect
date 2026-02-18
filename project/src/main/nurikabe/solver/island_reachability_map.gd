@@ -156,15 +156,15 @@ func _build() -> void:
 		var cell: Vector2i = ghost_queue.pop_front()
 		var root: Vector2i = _reach_scores_by_cell[cell].keys().front()
 		var reach_score: int = _reach_scores_by_cell[cell][root]
+		if reach_score > 0:
+			# ensure all 'ghost entries' have a negative reachability score
+			reach_score -= 1000
 		for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
 			var neighbor: Vector2i = cell + neighbor_dir
 			if not visitable.has(neighbor):
 				continue
 			if not _reach_scores_by_cell[neighbor].is_empty():
 				continue
-			if reach_score > 0:
-				# ensure all 'ghost entries' have a negative reachability score
-				reach_score -= 1000
 			_reach_scores_by_cell[neighbor][root] = reach_score - 1
 			if not neighbor in ghost_queue:
 				ghost_queue.append(neighbor)
