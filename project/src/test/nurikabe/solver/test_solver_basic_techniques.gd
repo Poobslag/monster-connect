@@ -1,50 +1,5 @@
 extends TestSolver
 
-func test_deduce_all_clue_chokepoints_wall_weaver_1() -> void:
-	grid = [
-		"#### 4 .  ",
-		" 7####    ",
-		" .   .  ##",
-		"      ## 1",
-	]
-	var expected: Array[String] = [
-		"(3, 2)->## wall_weaver (0, 1)",
-	]
-	assert_deductions(solver.deduce_all_clue_chokepoints, expected)
-
-
-func test_deduce_all_clue_chokepoints_wall_weaver_2() -> void:
-	grid = [
-		"## 6    ##",
-		"##      ##",
-		"##    ## 4",
-		" 1##     .",
-		"##   3## .",
-		"          ",
-	]
-	var expected: Array[String] = [
-		"(1, 2)->## wall_weaver (1, 0)",
-		"(3, 1)->## wall_weaver (1, 0)",
-	]
-	assert_deductions(solver.deduce_all_clue_chokepoints, expected)
-
-
-func test_deduce_all_clue_chokepoints_wall_weaver_3() -> void:
-	grid = [
-		"###### . . . .",
-		"## 2## .#### .",
-		"## .####10## 7",
-		" 1##     .####",
-		"##        ## 3",
-		"## .         .",
-		"############  ",
-	]
-	var expected: Array[String] = [
-		"(1, 4)->## wall_weaver (4, 2)",
-		"(2, 3)->## wall_weaver (4, 2)",
-	]
-	assert_deductions(solver.deduce_all_clue_chokepoints, expected)
-
 
 func test_deduce_all_clue_chokepoints_adjacent() -> void:
 	grid = [
@@ -543,7 +498,7 @@ func test_deduce_all_unreachable_squares_3() -> void:
 		" . 7   .",
 	]
 	var expected: Array[String] = [
-		"(2, 0)->## island_chain_buffer (3, 1)",
+		"(2, 0)->## island_chain_buffer (0, 2)",
 		"(2, 2)->## island_divider (0, 2) (3, 1)",
 		"(3, 0)->## unreachable_cell (3, 1)",
 	]
@@ -559,6 +514,74 @@ func test_deduce_all_unreachable_squares_blocked() -> void:
 	]
 	var expected: Array[String] = [
 		"(4, 0)->## unreachable_cell (4, 2)",
+	]
+	assert_deductions(solver.deduce_all_unreachable_squares, expected)
+
+
+func test_deduce_all_unreachable_squares_island_chain_buffer_1() -> void:
+	# 7 can't touch the 1 without creating a split wall
+	grid = [
+		"#### 4 .  ",
+		" 7####    ",
+		" .   .  ##",
+		"      ## 1",
+	]
+	var expected: Array[String] = [
+		"(3, 2)->## island_chain_buffer (0, 1)",
+	]
+	assert_deductions(solver.deduce_all_unreachable_squares, expected)
+
+
+func test_deduce_all_unreachable_squares_island_chain_buffer_2() -> void:
+	# 6 can't touch the 1 or 4 without creating a split wall
+	grid = [
+		"## 6    ##",
+		"##      ##",
+		"##    ## 4",
+		" 1##     .",
+		"##   3## .",
+		"##        ",
+	]
+	var expected: Array[String] = [
+		"(1, 2)->## island_chain_buffer (1, 0)",
+		"(3, 1)->## island_chain_buffer (1, 0)",
+	]
+	assert_deductions(solver.deduce_all_unreachable_squares, expected)
+
+
+func test_deduce_all_unreachable_squares_island_chain_buffer_3() -> void:
+	# 10 can't touch the 1 or 2 without creating a split wall
+	grid = [
+		"###### . . . .",
+		"## 2## .#### .",
+		"## .####10## 7",
+		" 1##     .####",
+		"##        ## 3",
+		"## .         .",
+		"############  ",
+	]
+	var expected: Array[String] = [
+		"(1, 4)->## island_chain_buffer (4, 2)",
+		"(2, 3)->## island_chain_buffer (4, 2)",
+	]
+	assert_deductions(solver.deduce_all_unreachable_squares, expected)
+
+
+func test_deduce_all_unreachable_squares_island_chain_buffer_4() -> void:
+	# no deductions can be made, although this scenario caused a flawed deduction in the old 'wall weaver' logic
+	grid = [
+		" .  ################## 1##",
+		" .  ## . . . . . . .######",
+		" 4## 1############ . .10##",
+		"######## . .## .########  ",
+		" 3 . .## .#### .## .     .",
+		"###### 5 .## . .##   3## 3",
+		" 2 .######## .##    ####  ",
+		"###### . .## .##   . 6 .  ",
+		"## 2 .## 3## .##  ######  ",
+		"########## 9 .## 5 . . .  ",
+	]
+	var expected: Array[String] = [
 	]
 	assert_deductions(solver.deduce_all_unreachable_squares, expected)
 

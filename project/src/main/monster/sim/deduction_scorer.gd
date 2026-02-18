@@ -29,7 +29,6 @@ const UNCLUED_LIFELINE: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE
 const UNCLUED_LIFELINE_BUFFER: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE_BUFFER
 const UNREACHABLE_CELL: Deduction.Reason = Deduction.Reason.UNREACHABLE_CELL
 const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR
-const WALL_WEAVER: Deduction.Reason = Deduction.Reason.WALL_WEAVER
 
 ## advanced techniques
 const ASSUMPTION: Deduction.Reason = Deduction.Reason.ASSUMPTION
@@ -73,7 +72,6 @@ const DEDUCTION_PRIORITY_FOR_REASON: Dictionary[Deduction.Reason, float] = {
 	UNCLUED_LIFELINE_BUFFER: 5.0,
 	UNREACHABLE_CELL: 5.0,
 	WALL_CONNECTOR: 5.0,
-	WALL_WEAVER: 5.0,
 	
 	# advanced techniques; low priority
 	ASSUMPTION: 0.0,
@@ -116,7 +114,6 @@ const DEDUCTION_DELAYS_MIN: Dictionary[Deduction.Reason, float] = {
 	UNCLUED_LIFELINE_BUFFER: 5.4,
 	UNREACHABLE_CELL: 5.4,
 	WALL_CONNECTOR: 5.4,
-	WALL_WEAVER: 5.4,
 	
 	# advanced techniques
 	ASSUMPTION: 10.8,
@@ -157,7 +154,6 @@ const DEDUCTION_DELAYS_MAX: Dictionary[Deduction.Reason, float] = {
 	UNCLUED_LIFELINE_BUFFER: 18.0,
 	UNREACHABLE_CELL: 18.0,
 	WALL_CONNECTOR: 18.0,
-	WALL_WEAVER: 18.0,
 	
 	# advanced techniques
 	ASSUMPTION: 60.0,

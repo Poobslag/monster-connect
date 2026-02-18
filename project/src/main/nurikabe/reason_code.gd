@@ -29,7 +29,6 @@ const UNCLUED_LIFELINE: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE
 const UNCLUED_LIFELINE_BUFFER: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE_BUFFER
 const UNREACHABLE_CELL: Deduction.Reason = Deduction.Reason.UNREACHABLE_CELL
 const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR
-const WALL_WEAVER: Deduction.Reason = Deduction.Reason.WALL_WEAVER
 
 ## advanced techniques
 const ASSUMPTION: Deduction.Reason = Deduction.Reason.ASSUMPTION
@@ -69,7 +68,6 @@ const CODES: Dictionary[String, Deduction.Reason] = {
 	"ur": UNREACHABLE_CELL,
 	"wb": WALL_BUBBLE,
 	"we": WALL_CONNECTOR,
-	"wv": WALL_WEAVER,
 	
 	# advanced techniques
 	"??": ASSUMPTION,

@@ -48,7 +48,6 @@ const UNCLUED_LIFELINE: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE
 const UNCLUED_LIFELINE_BUFFER: Deduction.Reason = Deduction.Reason.UNCLUED_LIFELINE_BUFFER
 const UNREACHABLE_CELL: Deduction.Reason = Deduction.Reason.UNREACHABLE_CELL
 const WALL_CONNECTOR: Deduction.Reason = Deduction.Reason.WALL_CONNECTOR
-const WALL_WEAVER: Deduction.Reason = Deduction.Reason.WALL_WEAVER
 
 ## advanced techniques
 const ASSUMPTION: Deduction.Reason = Deduction.Reason.ASSUMPTION
@@ -587,21 +586,23 @@ func deduce_all_bubbles() -> void:
 
 
 func deduce_all_unreachable_squares() -> void:
+	var irm: IslandReachabilityMap = board.get_island_reachability_map()
+	
 	for cell: Vector2i in board.empty_cells:
 		if not should_deduce(board, cell):
 			continue
-		match board.get_island_reachability_map().get_clue_reachability(cell):
+		match irm.get_clue_reachability(cell):
 			IslandReachabilityMap.ClueReachability.REACHABLE:
 				continue
 			IslandReachabilityMap.ClueReachability.UNREACHABLE:
-				var nearest_clue: Vector2i = board.get_island_reachability_map().get_nearest_clued_island_cell(cell)
+				var nearest_clue: Vector2i = irm.get_nearest_clued_island_cell(cell)
 				add_deduction(cell, CELL_WALL, UNREACHABLE_CELL, [nearest_clue])
 				add_fun(FUN_THINK, 1.0)
 			IslandReachabilityMap.ClueReachability.IMPOSSIBLE:
 				add_deduction(cell, CELL_WALL, WALL_BUBBLE)
 				add_fun(FUN_FAST, 1.0)
 			IslandReachabilityMap.ClueReachability.CHAIN_CYCLE:
-				var nearest_clue: Vector2i = board.get_island_reachability_map().get_nearest_clued_island_cell(cell)
+				var nearest_clue: Vector2i = irm.get_nearest_clued_island_cell(cell)
 				add_deduction(cell, CELL_WALL, ISLAND_CHAIN_BUFFER, [nearest_clue])
 				add_fun(FUN_THINK, 1.0)
 			IslandReachabilityMap.ClueReachability.CONFLICT:
@@ -704,9 +705,6 @@ func deduce_clue_chokepoint(island: CellGroup) -> void:
 	var old_deductions_size: int = deductions.size()
 	if deductions.size() == old_deductions_size:
 		deduce_clue_chokepoint_loose(island)
-	
-	if deductions.size() == old_deductions_size:
-		deduce_clue_chokepoint_wall_weaver(island)
 
 
 func deduce_clue_chokepoint_loose(island: CellGroup) -> void:
@@ -728,41 +726,6 @@ func deduce_clue_chokepoint_loose(island: CellGroup) -> void:
 		else:
 			add_deduction(chokepoint, CELL_WALL, ISLAND_BUFFER, [island.root])
 			add_fun(FUN_FAST, 1.0)
-
-
-func deduce_clue_chokepoint_wall_weaver(island: CellGroup) -> void:
-	if island.liberties.is_empty():
-		return
-	
-	var wall_exclusion_map: GroupMap = board.get_per_clue_chokepoint_map().get_wall_exclusion_map(island)
-	var component_cell_count: int = board.get_per_clue_chokepoint_map().get_component_cell_count(island)
-	if wall_exclusion_map.groups.size() != 1 + component_cell_count - island.clue:
-		return
-	
-	var connectors_by_wall: Dictionary[Vector2i, Array]
-	for cell: Vector2i in board.get_per_clue_chokepoint_map().get_component_cells(island):
-		if not board.get_cell(cell) == CELL_EMPTY:
-			continue
-		var wall_roots: Dictionary[Vector2i, bool] = {}
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor: Vector2i = cell + neighbor_dir
-			if not wall_exclusion_map.roots_by_cell.has(neighbor):
-				continue
-			wall_roots[wall_exclusion_map.roots_by_cell.get(neighbor)] = true
-		if wall_roots.size() >= 2:
-			for wall_root: Vector2i in wall_roots:
-				if not connectors_by_wall.has(wall_root):
-					connectors_by_wall[wall_root] = [] as Array[Vector2i]
-				connectors_by_wall[wall_root].append(cell)
-	
-	for wall_root: Vector2i in connectors_by_wall:
-		if connectors_by_wall[wall_root].size() > 1:
-			continue
-		var connector: Vector2i = connectors_by_wall[wall_root].front()
-		if not should_deduce(board, connector):
-			continue
-		add_deduction(connector, CELL_WALL, WALL_WEAVER, [island.root])
-		add_fun(FUN_THINK, 1.0)
 
 
 func deduce_unclued_lifeline() -> void:

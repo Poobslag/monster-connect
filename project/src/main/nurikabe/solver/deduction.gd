@@ -38,7 +38,6 @@ enum Reason {
 	UNCLUED_LIFELINE_BUFFER, # add a wall to prevent an unclued island from becoming unreachable
 	UNREACHABLE_CELL, # add a wall where no clue can reach
 	WALL_CONNECTOR, # connect two walls through a chokepoint
-	WALL_WEAVER, # finish an island in a way which preserves wall connectivity
 	
 	# Advanced techniques - Require planning several moves ahead
 	ASSUMPTION, # unproven assumption made when bifurcating
