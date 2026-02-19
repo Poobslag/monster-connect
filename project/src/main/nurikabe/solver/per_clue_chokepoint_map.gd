@@ -114,19 +114,19 @@ func _init_chokepoint_map(island: CellGroup) -> void:
 	var reach_score_by_cell: Dictionary[Vector2i, int] = {}
 	var queue: Array[Vector2i] = [island.root]
 	
-	var reachability: int = island.clue - island.size() if island.clue != CELL_MYSTERY_CLUE else 999999
+	var reach_score: int = island.get_remaining_capacity()
 	for other_island_cell: Vector2i in island.cells:
-		reach_score_by_cell[other_island_cell] = reachability + 1
+		reach_score_by_cell[other_island_cell] = reach_score + 1
 	for liberty: Vector2i in island.liberties:
 		if not _visitable.has(liberty):
 			continue
 		if _claimed_by_clue.has(liberty) \
 			and _claimed_by_clue[liberty] != island.root:
 				continue
-		reach_score_by_cell[liberty] = reachability
+		reach_score_by_cell[liberty] = reach_score
 		queue.append(liberty)
 	
-	# propagate reachability using breadth-first expansion
+	# propagate reach_score using breadth-first expansion
 	while not queue.is_empty():
 		var cell: Vector2i = queue.pop_front()
 		

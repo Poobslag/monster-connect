@@ -64,6 +64,21 @@ func get_exclusive_root(cell: Vector2i) -> Vector2i:
 	return _reach_scores_by_cell[cell].keys().front()
 
 
+## Returns the number of additional cells each clued island can still expand into, including this cell.[br]
+## [br]
+## A reach score of 3 means the island can reach that cell and expand twice. A reach score of 1 means the island can
+## reach that cell, but cannot expand any further. A reach score of 0 or less means the island cannot reach the
+## cell.[br]
+## [br]
+## Example: A lone 4 island can expand 3 more cells, so its immediate neighbors have a reach score of 3 and their
+## neighbors have a reach score of 2.
+## [codeblock]
+##   (puzzle)    (reach scores)
+##    . . . .     3 2 1 .
+##    4 . . . ->  . 3 2 1
+##   ## . . .    ## 2 1 .
+##    . .####     . 1####
+## [/codeblock]
 func get_reach_score(cell: Vector2i, root: Vector2i) -> int:
 	if not _reach_scores_by_cell.has(cell):
 		return 0
@@ -88,12 +103,68 @@ func get_nearest_clued_island_cell(cell: Vector2i) -> Vector2i:
 	return nearest_root
 
 
+func print_cells() -> void:
+	if board.cells.is_empty():
+		print("(empty)")
+		return
+	
+	var rect: Rect2i = Rect2i(board.cells.keys()[0].x, board.cells.keys()[0].y, 0, 0)
+	for cell: Vector2i in board.cells:
+		rect = rect.expand(cell)
+	
+	var header_line: String = "+"
+	for x: int in range(rect.position.x, rect.end.x + 1):
+		header_line += "----"
+	print(header_line)
+	
+	for y: int in range(rect.position.y, rect.end.y + 1):
+		var line: String = ""
+		for x: int in range(rect.position.x, rect.end.x + 1):
+			var cell: Vector2i = Vector2i(x, y)
+			var cell_string: String = _cell_string(cell)
+			line += cell_string
+		print("|%s" % [line])
+
+
+func print_reach_scores(root: Vector2i) -> void:
+	var reach_scores: Dictionary[Vector2i, int] = {}
+	for cell in _reach_scores_by_cell:
+		if _reach_scores_by_cell[cell].has(root):
+			reach_scores[cell] = _reach_scores_by_cell[cell][root]
+	if reach_scores.is_empty():
+		print("(empty)")
+		return
+	
+	var rect: Rect2i = Rect2i(reach_scores.keys()[0].x, reach_scores.keys()[0].y, 0, 0)
+	for cell: Vector2i in reach_scores:
+		rect = rect.expand(cell)
+	
+	var header_line: String = "+"
+	for x: int in range(rect.position.x, rect.end.x + 1):
+		header_line += "--"
+	print(header_line)
+	
+	for y: int in range(rect.position.y, rect.end.y + 1):
+		var line: String = ""
+		for x: int in range(rect.position.x, rect.end.x + 1):
+			var cell: Vector2i = Vector2i(x, y)
+			var cell_string: String
+			if board.get_cell(cell) == CELL_WALL:
+				cell_string = NurikabeUtils.CELL_STRING_WALL
+			elif reach_scores.has(cell) and reach_scores[cell] >= 1:
+				cell_string = str(reach_scores[cell])
+			line += cell_string.lpad(2)
+		print("|%s" % [line])
+
+
 func _build() -> void:
 	# collect visitable cells (empty cells, or clueless islands)
 	var visitable: Dictionary[Vector2i, bool] = {}
 	for cell: Vector2i in board.empty_cells:
 		visitable[cell] = true
 		_reach_scores_by_cell[cell] = {} as Dictionary[Vector2i, int]
+	
+	# initialize _absorbed_islands_by_cell
 	for island: CellGroup in board.islands:
 		if island.clue != 0:
 			continue
@@ -118,7 +189,7 @@ func _build() -> void:
 				# cell is adjacent to two or more islands, so no islands can reach it
 				_reach_scores_by_cell[liberty] = {island.root: 0} as Dictionary[Vector2i, int]
 				continue
-			var reachability: int = island.clue - island.size() if island.clue != CELL_MYSTERY_CLUE else 999999
+			var reachability: int = island.get_remaining_capacity()
 			_reach_scores_by_cell[liberty][island.root] = reachability
 			queue.append(liberty)
 	
@@ -170,29 +241,6 @@ func _build() -> void:
 			_reach_scores_by_cell[neighbor][root] = reach_score - 1
 			if not neighbor in ghost_queue:
 				ghost_queue.append(neighbor)
-
-
-func print_cells() -> void:
-	if board.cells.is_empty():
-		print("(empty)")
-		return
-	
-	var rect: Rect2i = Rect2i(board.cells.keys()[0].x, board.cells.keys()[0].y, 0, 0)
-	for cell: Vector2i in board.cells:
-		rect = rect.expand(cell)
-	
-	var header_line: String = "+"
-	for x: int in range(rect.position.x, rect.end.x + 1):
-		header_line += "----"
-	print(header_line)
-	
-	for y: int in range(rect.position.y, rect.end.y + 1):
-		var line: String = ""
-		for x: int in range(rect.position.x, rect.end.x + 1):
-			var cell: Vector2i = Vector2i(x, y)
-			var cell_string: String = _cell_string(cell)
-			line += cell_string
-		print("|%s" % [line])
 
 
 func _cell_string(cell: Vector2i) -> String:

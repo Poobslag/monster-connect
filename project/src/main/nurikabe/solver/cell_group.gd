@@ -27,6 +27,10 @@ func duplicate() -> CellGroup:
 	return copy
 
 
+func get_remaining_capacity() -> int:
+	return clue - cells.size() if clue != NurikabeUtils.CELL_MYSTERY_CLUE else 999999
+
+
 ## Merges two non-overlapping, non-adjacent groups.
 func merge(other_group: CellGroup) -> void:
 	cells.append_array(other_group.cells)
