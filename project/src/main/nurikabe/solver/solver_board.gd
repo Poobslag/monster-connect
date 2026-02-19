@@ -106,7 +106,6 @@ func duplicate() -> SolverBoard:
 		copy.walls[i] = wall.duplicate()
 		for cell: Vector2i in wall.cells:
 			copy.groups_by_cell[cell] = copy.walls[i]
-	copy._cache = _cache.duplicate()
 	return copy
 
 
