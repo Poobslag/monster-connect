@@ -324,6 +324,49 @@ func test_deduce_unclued_lifeline_invalid_bendy() -> void:
 	assert_deductions(solver.deduce_unclued_lifeline, expected)
 
 
+func test_deduce_unclued_lifeline_janko_19() -> void:
+	# the '9' can be partially deduced because it must reach the unclued cell
+	grid = [
+		" 2####  ## 1##",
+		" .## .    ####",
+		"####   .## 1##",
+		"## 1## .####  ",
+		"  ##          ",
+		"              ",
+		"     .##   4  ",
+		"  ## 9########",
+		"   7## 1## .##",
+		"    ###### 2##",
+	]
+	var expected: Array[String] = [
+		"(1, 5)->## unclued_lifeline_buffer (2, 6)",
+		"(1, 6)->## unclued_lifeline_buffer (2, 6)",
+		"(2, 5)->. unclued_lifeline (2, 6)",
+		"(3, 4)->. unclued_lifeline (2, 6)",
+		"(6, 3)->## unclued_lifeline_buffer (2, 6)"
+	]
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
+
+
+func test_deduce_unclued_lifeline_3_ownership() -> void:
+	# the '3' can be partially walled off because it must reach the unclued cell
+	grid = [
+		" 1##    ",
+		"##      ",
+		"       6",
+		"        ",
+		"     3  ",
+		"## .    ",
+		"########",
+	]
+	var expected: Array[String] = [
+		"(2, 3)->## unclued_lifeline_buffer (2, 4)",
+		"(3, 4)->## unclued_lifeline_buffer (2, 4)",
+		"(3, 5)->## unclued_lifeline_buffer (2, 4)",
+	]
+	assert_deductions(solver.deduce_unclued_lifeline, expected)
+
+
 func test_deduce_all_island_dividers() -> void:
 	grid = [
 		" .   3",
@@ -583,6 +626,28 @@ func test_deduce_all_unreachable_squares_island_chain_buffer_4() -> void:
 		"########## 9 .## 5 . . .  ",
 	]
 	var expected: Array[String] = [
+	]
+	assert_deductions(solver.deduce_all_unreachable_squares, expected)
+
+
+func test_deduce_all_unreachable_squares_unclued_blob() -> void:
+	# based on janko 19
+	grid = [
+		" 2######## 1##",
+		" .## . .######",
+		"####   .## 1##",
+		"## 1## .  ##  ",
+		" 5##   .     4",
+		" .##          ",
+		" .## .     2  ",
+		" .## 9########",
+		" .###### 3 . .",
+	]
+	var expected: Array[String] = [
+		"(2, 2)->## unreachable_cell (2, 6)",
+		"(4, 3)->## unreachable_cell (2, 6)",
+		"(4, 4)->## unreachable_cell (2, 6)",
+		"(4, 5)->## unreachable_cell (5, 6)",
 	]
 	assert_deductions(solver.deduce_all_unreachable_squares, expected)
 

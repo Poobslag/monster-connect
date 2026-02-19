@@ -1065,28 +1065,100 @@ func _is_valid_merged_island(islands: Array[CellGroup], merge_cells: int) -> boo
 func _find_corridor_cells(
 		required_cells_by_root: Dictionary[Vector2i, Array],
 		clue_island: CellGroup) -> Dictionary[Vector2i, int]:
+	
+	# bfs from the clue to the required cells, accumulating back references
+	var parents_by_cell: Dictionary[Vector2i, Array] = _compute_irm_parents_by_cell(clue_island)
+	
+	# follow the back references from the required cells back to the clue
 	var queue: Array[Vector2i] = required_cells_by_root[clue_island.root].duplicate()
 	var corridor_distance_map: Dictionary[Vector2i, int] = {}
 	for cell: Vector2i in clue_island.cells:
 		corridor_distance_map[cell] = 0
 	for cell: Vector2i in queue:
 		corridor_distance_map[cell] = 0
-	
-	var irm: IslandReachabilityMap = board.get_island_reachability_map()
 	while not queue.is_empty():
 		var cell: Vector2i = queue.pop_front()
-		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
-			var neighbor: Vector2i = cell + neighbor_dir
-			if corridor_distance_map.has(neighbor):
-				continue
-			var reach_score: int = irm.get_reach_score(cell, clue_island.root)
-			var neighbor_reach_score: int = irm.get_reach_score(neighbor, clue_island.root)
-			if neighbor_reach_score != reach_score + 1:
-				continue
-			corridor_distance_map[neighbor] = 0
-			queue.append(neighbor)
+		for parent: Vector2i in parents_by_cell[cell]:
+			corridor_distance_map[parent] = 0
+			if parents_by_cell.has(parent):
+				queue.append(parent)
 	
 	return corridor_distance_map
+
+
+## Performs a BFS from the clue to the required cells, accumulating back references.
+func _compute_irm_parents_by_cell(clue_island: CellGroup) -> Dictionary[Vector2i, Array]:
+	var queue: Array[Vector2i] = []
+	var parents_by_cell: Dictionary[Vector2i, Array] = {}
+	var irm: IslandReachabilityMap = board.get_island_reachability_map()
+	
+	# Parent each liberty to the clued island root.
+	for liberty: Vector2i in clue_island.liberties:
+		var absorbed_islands: Array[CellGroup] = irm.get_absorbed_islands(clue_island.root, liberty)
+		if not absorbed_islands.is_empty():
+			var absorbed_cells: Array[Vector2i] = irm.get_liberty_expansion_cells(clue_island, liberty)
+			for absorbed_cell: Vector2i in absorbed_cells:
+				if not parents_by_cell.has(absorbed_cell):
+					parents_by_cell[absorbed_cell] = []
+				if absorbed_cell == liberty:
+					if not parents_by_cell[absorbed_cell].has(clue_island.root):
+						parents_by_cell[absorbed_cell].append(clue_island.root)
+				else:
+					if not parents_by_cell[absorbed_cell].has(liberty):
+						parents_by_cell[absorbed_cell].append(liberty)
+				if not absorbed_cell in queue:
+					queue.append(absorbed_cell)
+		else:
+			parents_by_cell[liberty] = [clue_island.root]
+			queue.append(liberty)
+	
+	# bfs from liberties to all reachable cells
+	while not queue.is_empty():
+		var cell: Vector2i = queue.pop_front()
+		var reach_score: int = irm.get_reach_score(cell, clue_island.root)
+		for neighbor_dir: Vector2i in NEIGHBOR_DIRS:
+			var neighbor: Vector2i = cell + neighbor_dir
+			var neighbor_reach_score: int = irm.get_reach_score(neighbor, clue_island.root)
+			if neighbor_reach_score <= 0:
+				continue
+			
+			var absorbed_islands: Array[CellGroup] = irm.get_absorbed_islands(cell, neighbor)
+			if not absorbed_islands.is_empty():
+				var absorption_cost: int = irm.get_absorption_cost(absorbed_islands) + 1
+				if reach_score - absorption_cost < 1:
+					continue
+				
+				var absorbed_cells: Array[Vector2i] = []
+				absorbed_cells.append(neighbor)
+				for adjacent_unclued_island: CellGroup in absorbed_islands:
+					absorbed_cells.append_array(adjacent_unclued_island.cells)
+				
+				for absorbed_cell: Vector2i in absorbed_cells:
+					if irm.get_reach_score(absorbed_cell, clue_island.root) > reach_score - absorption_cost:
+						# can reach cell more efficiently
+						continue
+					if not parents_by_cell.has(absorbed_cell):
+						parents_by_cell[absorbed_cell] = []
+					if absorbed_cell == neighbor:
+						if not parents_by_cell[absorbed_cell].has(cell):
+							parents_by_cell[absorbed_cell].append(cell)
+					else:
+						if not parents_by_cell[absorbed_cell].has(neighbor):
+							parents_by_cell[absorbed_cell].append(neighbor)
+					if not absorbed_cell in queue:
+						queue.append(absorbed_cell)
+			else:
+				if irm.get_reach_score(neighbor, clue_island.root) > reach_score - 1:
+					# can reach cell more efficiently
+					continue
+				if not parents_by_cell.has(neighbor):
+					parents_by_cell[neighbor] = []
+				if not parents_by_cell[neighbor].has(cell):
+					parents_by_cell[neighbor].append(cell)
+				if not neighbor in queue:
+					queue.append(neighbor)
+	
+	return parents_by_cell
 
 
 func _widen_corridor(
@@ -1096,6 +1168,7 @@ func _widen_corridor(
 	if amount == 0:
 		return corridor_distance_map
 	
+	var irm: IslandReachabilityMap = board.get_island_reachability_map()
 	var queue: Array[Vector2i] = corridor_distance_map.keys()
 	while not queue.is_empty():
 		var cell: Vector2i = queue.pop_front()
@@ -1103,7 +1176,7 @@ func _widen_corridor(
 			var neighbor: Vector2i = cell + neighbor_dir
 			if corridor_distance_map.has(neighbor):
 				continue
-			if board.get_island_reachability_map().get_reach_score(neighbor, clue_island.root) < 1:
+			if irm.get_reach_score(neighbor, clue_island.root) < 1:
 				continue
 			corridor_distance_map[neighbor] = corridor_distance_map[cell] + 1
 			if corridor_distance_map[neighbor] < amount:
