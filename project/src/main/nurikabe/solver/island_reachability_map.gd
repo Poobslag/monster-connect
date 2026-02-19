@@ -10,6 +10,8 @@ enum ClueReachability {
 	CHAIN_CYCLE,
 }
 
+const DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz"
+
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
@@ -168,3 +170,45 @@ func _build() -> void:
 			_reach_scores_by_cell[neighbor][root] = reach_score - 1
 			if not neighbor in ghost_queue:
 				ghost_queue.append(neighbor)
+
+
+func print_cells() -> void:
+	if board.cells.is_empty():
+		print("(empty)")
+		return
+	
+	var rect: Rect2i = Rect2i(board.cells.keys()[0].x, board.cells.keys()[0].y, 0, 0)
+	for cell: Vector2i in board.cells:
+		rect = rect.expand(cell)
+	
+	var header_line: String = "+"
+	for x: int in range(rect.position.x, rect.end.x + 1):
+		header_line += "----"
+	print(header_line)
+	
+	for y: int in range(rect.position.y, rect.end.y + 1):
+		var line: String = ""
+		for x: int in range(rect.position.x, rect.end.x + 1):
+			var cell: Vector2i = Vector2i(x, y)
+			var cell_string: String = _cell_string(cell)
+			line += cell_string
+		print("|%s" % [line])
+
+
+func _cell_string(cell: Vector2i) -> String:
+	var result: String = ""
+	if board.get_cell(cell) == CELL_WALL:
+		result = NurikabeUtils.CELL_STRING_WALL
+	else:
+		var reach_scores: Dictionary[Vector2i, int] = _reach_scores_by_cell.get(cell, {} as Dictionary[Vector2i, int])
+		for island_root: Vector2i in reach_scores:
+			if reach_scores[island_root] < 1:
+				continue
+			var clue: int = board.get_island_for_cell(island_root).clue
+			if clue >= 0 and clue < DIGITS.length():
+				result += DIGITS[clue]
+			else:
+				result += "!"
+			if result.length() >= 3:
+				break
+	return result.lpad(4, " ")
