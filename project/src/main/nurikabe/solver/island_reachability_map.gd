@@ -22,6 +22,7 @@ const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
 var board: SolverBoard
 
+var _absorbed_islands_by_cell: Dictionary[Vector2i, Array] = {}
 var _adjacent_clues_by_cell: Dictionary[Vector2i, int] = {}
 var _reach_scores_by_cell: Dictionary[Vector2i, Dictionary] = {}
 var _cycles_by_cell: Dictionary[Vector2i, Vector2i] = {}
@@ -103,6 +104,39 @@ func get_nearest_clued_island_cell(cell: Vector2i) -> Vector2i:
 	return nearest_root
 
 
+func get_absorbed_islands(cell: Vector2i, neighbor: Vector2i) -> Array[CellGroup]:
+	if not _absorbed_islands_by_cell.has(neighbor):
+		return [] as Array[CellGroup]
+	var result: Array[CellGroup] = _absorbed_islands_by_cell.get(neighbor).duplicate()
+	if board.get_cell(cell) == CELL_ISLAND:
+		result.erase(board.get_island_for_cell(cell))
+	return result
+
+
+## Returns cells claimed by expanding from [param island] into [param liberty] including any unclued islands.[br]
+## [br]
+## Rejects cells which would absorb an oversized unclued island or introduce a chain conflict.
+func get_liberty_expansion_cells(island: CellGroup, liberty: Vector2i) -> Array[Vector2i]:
+	var absorbed_islands: Array[CellGroup] = get_absorbed_islands(island.root, liberty)
+	var absorption_cost: int = get_absorption_cost(absorbed_islands)
+	if island.get_remaining_capacity() - absorption_cost <= 0:
+		return []
+	if board.get_island_chain_map().causes_chain_conflict(island, liberty):
+		return []
+	
+	var result: Array[Vector2i] = [liberty]
+	for adjacent_unclued_island: CellGroup in absorbed_islands:
+		result.append_array(adjacent_unclued_island.cells)
+	return result
+
+
+func get_absorption_cost(islands: Array[CellGroup]) -> int:
+	var absorption_cost: int = 0
+	for island: CellGroup in islands:
+		absorption_cost += island.size()
+	return absorption_cost
+
+
 func print_cells() -> void:
 	if board.cells.is_empty():
 		print("(empty)")
@@ -168,6 +202,10 @@ func _build() -> void:
 	for island: CellGroup in board.islands:
 		if island.clue != 0:
 			continue
+		for liberty: Vector2i in island.liberties:
+			if not _absorbed_islands_by_cell.has(liberty):
+				_absorbed_islands_by_cell[liberty] = [] as Array[CellGroup]
+			_absorbed_islands_by_cell[liberty].append(island)
 		for cell: Vector2i in island.cells:
 			visitable[cell] = true
 			_reach_scores_by_cell[cell] = {} as Dictionary[Vector2i, int]
@@ -189,9 +227,21 @@ func _build() -> void:
 				# cell is adjacent to two or more islands, so no islands can reach it
 				_reach_scores_by_cell[liberty] = {island.root: 0} as Dictionary[Vector2i, int]
 				continue
-			var reachability: int = island.get_remaining_capacity()
-			_reach_scores_by_cell[liberty][island.root] = reachability
-			queue.append(liberty)
+			var reach_score: int = island.get_remaining_capacity()
+			var absorbed_islands: Array[CellGroup] = get_absorbed_islands(island.root, liberty)
+			if not absorbed_islands.is_empty():
+				var absorbed_cells: Array[Vector2i] = get_liberty_expansion_cells(island, liberty)
+				var absorption_cost: int = get_absorption_cost(absorbed_islands)
+				for absorbed_cell: Vector2i in absorbed_cells:
+					if _reach_scores_by_cell[absorbed_cell].get(island.root, 0) >= reach_score - absorption_cost:
+						# can already reach island
+						continue
+					_reach_scores_by_cell[absorbed_cell][island.root] = reach_score - absorption_cost
+					if not absorbed_cell in queue:
+						queue.append(absorbed_cell)
+			else:
+				_reach_scores_by_cell[liberty][island.root] = reach_score
+				queue.append(liberty)
 	
 	# propagate reachability using breadth-first expansion
 	var ghost_queue: Array[Vector2i] = []
@@ -208,21 +258,52 @@ func _build() -> void:
 				var neighbor: Vector2i = cell + neighbor_dir
 				if not visitable.has(neighbor):
 					continue
-				if _reach_scores_by_cell.has(neighbor):
+				
+				var absorbed_islands: Array[CellGroup] = get_absorbed_islands(cell, neighbor)
+				if not absorbed_islands.is_empty():
+					var absorption_cost: int = get_absorption_cost(absorbed_islands) + 1
+					if reach_score - absorption_cost <= 0:
+						continue
+					
 					if _adjacent_clues_by_cell.get(neighbor, 0) >= 1:
 						# cell is adjacent to an island, so only one island can reach it
 						continue
-					if _reach_scores_by_cell[neighbor].get(root, 0) >= reach_score - 1:
-						# can already reach island
+					
+					if board.get_cell(neighbor) == CELL_EMPTY \
+							and board.get_island_chain_map().causes_chain_conflict(
+								board.get_island_for_cell(root), neighbor):
+						_cycles_by_cell[neighbor] = root
 						continue
-				if board.get_cell(neighbor) == CELL_EMPTY \
-						and board.get_island_chain_map().causes_chain_conflict(board.get_island_for_cell(root), neighbor):
-					_cycles_by_cell[neighbor] = root
-					continue
-				
-				_reach_scores_by_cell[neighbor][root] = reach_score - 1
-				if not neighbor in queue:
-					queue.append(neighbor)
+					
+					var absorbed_cells: Array[Vector2i] = []
+					absorbed_cells.append(neighbor)
+					for adjacent_unclued_island: CellGroup in absorbed_islands:
+						absorbed_cells.append_array(adjacent_unclued_island.cells)
+					
+					for absorbed_cell: Vector2i in absorbed_cells:
+						if _reach_scores_by_cell[absorbed_cell].get(root, 0) >= reach_score - absorption_cost:
+							# can already reach island
+							continue
+						_reach_scores_by_cell[absorbed_cell][root] = reach_score - absorption_cost
+						if not absorbed_cell in queue:
+							queue.append(absorbed_cell)
+				else:
+					if _reach_scores_by_cell.has(neighbor):
+						if _adjacent_clues_by_cell.get(neighbor, 0) >= 1:
+							# cell is adjacent to an island, so only one island can reach it
+							continue
+						if _reach_scores_by_cell[neighbor].get(root, 0) >= reach_score - 1:
+							# can already reach island
+							continue
+					if board.get_cell(neighbor) == CELL_EMPTY \
+							and board.get_island_chain_map().causes_chain_conflict(
+								board.get_island_for_cell(root), neighbor):
+						_cycles_by_cell[neighbor] = root
+						continue
+					
+					_reach_scores_by_cell[neighbor][root] = reach_score - 1
+					if not neighbor in queue:
+						queue.append(neighbor)
 	
 	# propagate reachability further, to find nearest clued island cells for exhausted islands
 	while not ghost_queue.is_empty():
