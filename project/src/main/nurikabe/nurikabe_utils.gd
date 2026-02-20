@@ -89,6 +89,14 @@ static func cells_from_grid_string(grid_string: String) -> Dictionary[Vector2i, 
 	return cells
 
 
+static func get_puzzle_info_path(path: String) -> String:
+	return path + ".info"
+
+
+static func get_user_puzzle_path(puzzle_num: int) -> String:
+	return BulkGenerator.GENERATED_PUZZLE_DIR.path_join("%s.txt" % [puzzle_num])
+
+
 static func grid_string_from_cells(cells: Dictionary[Vector2i, int]) -> String:
 	var rect: Rect2i = Rect2i(cells.keys()[0].x, cells.keys()[0].y, 0, 0)
 	for cell: Vector2i in cells:

@@ -1,3 +1,4 @@
+class_name PuzzleInfoGenerator
 extends Node
 
 var solver: Solver = Solver.new()
@@ -6,6 +7,14 @@ var _order_by_cell: Dictionary[Vector2i, int] = {}
 var _reason_by_cell: Dictionary[Vector2i, Deduction.Reason] = {}
 
 @onready var _generator: BulkGenerator = get_parent()
+
+func read_puzzle_info(path: String) -> PuzzleInfo:
+	var info_path: String = NurikabeUtils.get_puzzle_info_path(path)
+	var puzzle_info: PuzzleInfo
+	if FileAccess.file_exists(info_path):
+		puzzle_info = PuzzleInfoSaver.new().load_puzzle_info(info_path)
+	return puzzle_info
+
 
 func write_puzzle_info(puzzle_path: String) -> void:
 	%GameBoard.grid_string = NurikabeUtils.load_grid_string_from_file(puzzle_path)
@@ -25,11 +34,9 @@ func write_puzzle_info(puzzle_path: String) -> void:
 		print(validation_result)
 		return
 	
-	var info_path: String = _puzzle_info_path(puzzle_path)
+	var info_path: String = NurikabeUtils.get_puzzle_info_path(puzzle_path)
 	
-	var old_info: PuzzleInfo
-	if FileAccess.file_exists(info_path):
-		old_info = PuzzleInfoSaver.new().load_puzzle_info(info_path)
+	var old_info: PuzzleInfo = read_puzzle_info(puzzle_path)
 	
 	var info: PuzzleInfo = PuzzleInfo.new()
 	info.version = PuzzleInfoSaver.PUZZLE_INFO_VERSION if old_info == null else old_info.version
@@ -92,10 +99,6 @@ func _get_reason_string() -> String:
 			line.append(cell_string)
 		lines.append(" ".join(line))
 	return "\n".join(lines)
-
-
-func _puzzle_info_path(path: String) -> String:
-	return path + ".info"
 
 
 func _step_until_done() -> void:

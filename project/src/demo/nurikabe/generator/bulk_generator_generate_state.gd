@@ -48,7 +48,7 @@ func _copy_board_from_generator() -> void:
 func _create_board() -> void:
 	_start_time = Time.get_ticks_msec()
 	
-	while FileAccess.file_exists(_user_puzzle_path()):
+	while FileAccess.file_exists(NurikabeUtils.get_user_puzzle_path(puzzle_num)):
 		puzzle_num += 1
 	
 	var weights: Array[float] = []
@@ -88,7 +88,7 @@ func _pick_puzzle_size(cells: float) -> Vector2i:
 
 
 func _output_board() -> void:
-	var path: String = _user_puzzle_path()
+	var path: String = NurikabeUtils.get_user_puzzle_path(puzzle_num)
 	var board: SolverBoard = generator.board.solver_board.duplicate()
 	board.erase_solution_cells()
 	if not DirAccess.dir_exists_absolute(BulkGenerator.GENERATED_PUZZLE_DIR):
@@ -116,7 +116,3 @@ func _set_puzzle_size(puzzle_size: Vector2i) -> void:
 	if generator.board:
 		generator.board.solver_board.cleanup()
 	generator.board = %GameBoard.to_generator_board()
-
-
-func _user_puzzle_path() -> String:
-	return BulkGenerator.GENERATED_PUZZLE_DIR.path_join("%s.txt" % [puzzle_num])

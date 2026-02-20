@@ -4,6 +4,7 @@ extends Node
 ## 	[kbd]O[/kbd]: Print memory usage statistics.
 ## 	[kbd]G[/kbd]: Toggle generator, continuously writes new puzzles to GENERATED_PUZZLE_DIR.
 ## 	[kbd]A[/kbd]: Toggle analyzer; analyzes puzzles in PUZZLE_DIR and writes .info files.
+## 	[kbd]C[/kbd]: Compact; delete 25% of the oldest puzzles and renumber the remaining ones.
 
 const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
 const GENERATED_PUZZLE_DIR: String = "res://assets/main/nurikabe/official/generated"
@@ -91,6 +92,8 @@ func _input(event: InputEvent) -> void:
 			toggle_state("generate")
 		KEY_A:
 			toggle_state("analyze")
+		KEY_C:
+			toggle_state("compact")
 
 
 func _process(delta: float) -> void:
