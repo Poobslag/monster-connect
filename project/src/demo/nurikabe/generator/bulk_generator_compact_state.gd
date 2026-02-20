@@ -36,6 +36,8 @@ func update(_delta: float) -> void:
 			var delete_count: int = ceili(_puzzle_data.size() / 4.0)
 			for i in delete_count:
 				queue_2.append(_puzzle_data[i]["path"])
+			if queue_2.is_empty():
+				_populate_queue_3()
 			object.log_message("Analyzed %s puzzles." % [_puzzle_data.size()])
 	elif not queue_2.is_empty():
 		# Phase 2: Delete selected puzzles
@@ -45,8 +47,7 @@ func update(_delta: float) -> void:
 		_delete_count += 1
 		if queue_2.is_empty():
 			object.log_message("Deleted %s puzzles." % [_delete_count])
-			queue_3 = Utils.find_data_files(BulkGenerator.PUZZLE_DIR, "txt")
-			queue_3.sort()
+			_populate_queue_3()
 			_puzzle_num = 1
 	elif not queue_3.is_empty():
 		# Phase 3: Renumber remaining puzzles sequentially
@@ -77,3 +78,9 @@ func update(_delta: float) -> void:
 		object.log_message("Moved %s puzzles." % [_move_count])
 		object.log_message("Compact complete.")
 		change_state("idle")
+
+
+func _populate_queue_3() -> void:
+	queue_3 = Utils.find_data_files(BulkGenerator.PUZZLE_DIR, "txt")
+	queue_3.sort_custom(func(a: String, b: String) -> bool:
+		return a.get_file().get_basename().to_int() < b.get_file().get_basename().to_int())
