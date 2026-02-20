@@ -181,10 +181,10 @@ func _attach_puzzle_info(game_board: NurikabeGameBoard, puzzle_path: String) -> 
 	game_board.puzzle_finished.connect(_on_game_board_puzzle_finished.bind(game_board))
 	game_board.set_meta("puzzle_path", puzzle_path)
 	
-	var info_path: String = puzzle_path + ".info"
+	var info_path: String = NurikabeUtils.get_puzzle_info_path(puzzle_path)
 	if FileAccess.file_exists(info_path):
 		var saver: PuzzleInfoSaver = PuzzleInfoSaver.new()
-		game_board.info = saver.load_puzzle_info(puzzle_path + ".info")
+		game_board.info = saver.load_puzzle_info(info_path)
 	
 	if game_board.info != null:
 		game_board.hint_model = PuzzleHintModel.new(
