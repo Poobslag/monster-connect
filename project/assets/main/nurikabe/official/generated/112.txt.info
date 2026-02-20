@@ -1,31 +1,37 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 2.33
-width 6
-height 5
+difficulty 1.71
+width 7
+height 7
 author poobslag v02
 
 [solution]
-###### 1######
-## .#### 6 .##
-## . . 6## .##
-## . .#### .##
-######## . .##
- 1## 1########
+ .## .###### . 4
+ .## 2## 2## . .
+ .###### .######
+ 4## . .#### .##
+## 4 .## 1## .##
+############ 3##
+ .## .## .#### .
+ 2## 2## 2## 3 .
 
 [order]
-13 15 0 - 0 1 3
-16 14 1 0 - 2 3
-16 17 12 - 0 4 3
-18 18 11 10 5 4 5
-0 1 0 9 9 6 5
-- 0 - 2 7 8 8
+10 10 10 10 14 15 11 -
+10 3 - 0 - 14 15 16
+2 8 8 7 13 12 8 9
+- 0 6 10 0 8 8 8
+0 - 5 0 - 0 8 3
+1 4 2 4 0 4 - 2
+2 0 2 1 2 1 0 2
+- 0 - 0 - 0 - 2
 
 [reason]
-ur wx i1 - i1 wx wx
-wx pk wx i1 - ix wx
-wx ie ix - ac ix wx
-im ix p3 wx wx ix wx
-i1 wx i1 im ix ix wx
-- i1 - i1 ci wx wx
+ix im ix im im wx ix -
+ix cb - ac - im p3 ix
+ix wx id ci p3 ur im wx
+- ac ix ix i1 im ix im
+ac - p3 i1 - i1 ix wx
+wx wx im wx i1 wx - im
+ix ci ix wx ix wx ac ix
+- ac - ac - ac - ix

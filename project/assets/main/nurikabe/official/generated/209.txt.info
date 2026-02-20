@@ -1,34 +1,46 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 0.29
-width 12
-height 6
+difficulty 2.72
+width 14
+height 10
 author poobslag v02
 
 [solution]
- 6 . . . .## 1########## .
-######## .###### . . 4## 2
- 3 . .###### .## .#### 6##
-######## . . .#### 1## .##
- 3 . .#### 7 . .###### .##
-######## .######## . . .##
- 6 . . . .## 2 .##########
+ 6## 3## 5##13 . . . . . . . .
+ .## .## .################## .
+ .## .## . .## .## . . . .## .
+ .######## .## 2## 5######## .
+ .## 4## 4## 6## 4## 4 . .## .
+ .## .## .## .## .#### .######
+#### .## .## .## . .#### 2 .##
+ 3## .## .## .######## 1######
+ .#### 3#### . .## 1###### . .
+ .## . .## 1######## . . . . .
+############## 1## . . .13 . .
 
 [order]
-- 2 2 3 4 0 - 0 10 6 6 1 2
-0 1 2 3 4 4 0 11 7 7 - 0 -
-- 2 2 2 4 8 9 12 13 0 0 - 0
-0 1 2 3 5 10 13 14 0 - 0 2 1
-- 2 2 2 7 - 15 15 15 0 14 2 6
-0 1 2 3 7 5 10 7 16 17 18 15 6
-- 2 2 3 4 6 - 13 13 19 16 16 16
+- 0 - 0 - 0 - 10 10 10 13 13 21 21 24
+2 1 2 1 2 1 9 2 6 12 12 15 15 22 24
+2 2 2 2 2 7 2 2 1 2 13 13 21 21 24
+3 3 2 3 6 7 0 - 0 - 0 15 21 26 24
+4 6 - 0 - 0 - 0 - 0 - 24 25 25 27
+7 5 7 9 7 9 2 1 2 1 22 23 24 2 27
+7 8 10 12 10 9 10 6 2 21 21 0 - 26 26
+- 13 13 11 13 12 10 12 15 0 0 - 0 26 28
+15 14 13 - 13 0 13 13 0 - 0 0 29 30 31
+15 15 16 15 0 - 0 0 18 0 31 31 31 31 31
+15 16 16 17 17 0 0 - 0 19 20 31 - 31 31
 
 [reason]
-- ix ix ix ix i1 - i1 wx wx wx wx ix
-ac wx im wx ix im i1 wx ix ix - ac -
-- ix ix im im wx p3 wx ix i1 ac - ac
-ac wx im wx p3 ie ie wx i1 - i1 ix wx
-- ix ix im im - ix ix im i1 wx ix wx
-ac wx im wx ix ci wx ci wx p3 ix ix wx
-- ix ix ix ix id - ix im im wx wx wx
+- ac - ac - ac - ix ix ix ix ix ix ix ix
+ix wx ix wx ix wx wx im wx wx wx wx wx wx ix
+ix im ix im ix ix im ix wx ix ix ix ix im ix
+ix wx im wx id ix ac - ac - ac wx im wx ix
+ix id - ac - ac - ac - ac - ix ix ci ix
+ix ci ix id ix wx ix wx ix wx wx p3 id ci im
+im wx ix id ix wx ix wx ix ix im i1 - ix im
+- im ix ci ix wx ix wx wx i1 i1 - i1 im wx
+ix wx im - im i1 ix ix i1 - i1 i1 iC p3 is
+ix im p3 ix i1 - i1 i1 wx i1 is is is is is
+im wx ci wx wx i1 i1 - i1 p3 ie is - is is

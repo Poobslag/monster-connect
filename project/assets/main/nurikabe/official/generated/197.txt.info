@@ -1,46 +1,52 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 0.22
-width 8
-height 10
+difficulty 11.10
+width 6
+height 12
 author poobslag v02
 
 [solution]
- .###### 7 . . . .
- .## 1########## .
- .#### . . . .## .
- .## . .##########
- 5## .## 4 . . .##
-## 9 .############
-###### 4 . . .## 4
-11## 5########## .
- .## . . . .## . .
- .################
- . . . . . . . .##
+##############
+## . . .## . .
+## 4######## .
+ .#### . .## .
+ .## .## 3## .
+ 3## 2###### .
+## 6#### .## .
+## . . . .## .
+############ .
+ .## . . .## .
+ .## .###### .
+ .## .## 2## .
+ 4## 6## .##13
 
 [order]
-7 7 0 11 - 13 13 14 15
-7 0 - 0 11 12 13 14 15
-7 6 0 9 9 13 13 13 15
-2 6 5 7 8 11 13 14 15
-- 0 5 3 - 9 13 14 14
-0 - 2 4 2 8 9 14 16
-1 1 0 - 5 9 9 9 -
-- 0 - 0 8 8 9 17 18
-2 4 2 7 7 9 9 12 18
-5 4 6 6 8 8 11 10 14
-5 5 5 7 7 9 9 13 13
+7 7 7 5 5 5 7
+3 8 11 6 5 6 19
+2 - 10 12 15 18 19
+2 2 7 13 14 15 7
+2 1 8 2 - 10 7
+- 0 - 9 15 18 7
+0 - 0 5 16 7 7
+1 2 24 25 17 20 7
+4 23 25 25 25 7 7
+22 3 26 29 26 7 7
+2 21 21 27 28 7 7
+2 1 21 2 - 0 7
+- 0 - 29 29 7 -
 
 [reason]
-ix im i1 wx - ix ix ix ix
-ix i1 - i1 id wx im wx ix
-ix wx i1 ix ix ix ix im ix
-ix wx ix ix id wx im wx im
-- ac ix cb - ix ix ix im
-ac - ix id cb wx im im wx
-wx wx ac - ix ix ix im -
-- ac - ac wx wx im wx ix
-ix wx ix ix ix ix im p3 ix
-ix wx wx wx wx wx wx ci wx
-ix ix ix ix ix ix ix ix im
+uL uL uL ur ur ur uL
+wx p3 ix p3 ur p3 ie
+im - cb im im ic ie
+ix im uL p3 ie im ul
+ix wx p3 ci - id ul
+- ac - im im ic ul
+ac - ac iC p3 uL ul
+wx ix ix ul ie im ul
+wx wx uL uL uL uL ul
+ix ci p3 ie p3 uL ul
+ix iB ik cb id uL ul
+ix wx ix cb - cb ul
+- ac - im ix uL -
