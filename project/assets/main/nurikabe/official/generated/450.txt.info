@@ -1,0 +1,28 @@
+{"version":"0.02"}
+
+[metadata]
+difficulty 17.81
+width 4
+height 4
+author poobslag v03
+
+[solution]
+ 1########
+## .## .##
+## 2## .##
+###### .##
+## . 6 .##
+
+[order]
+- 0 1 10 1
+0 4 5 11 10
+5 - 3 12 14
+6 2 7 13 13
+13 8 - 9 13
+
+[reason]
+- i1 ur ur ur
+i1 Bi im p3 ur
+im - Bg ie wx
+wx Bj ic ul uL
+uL pk - ix uL

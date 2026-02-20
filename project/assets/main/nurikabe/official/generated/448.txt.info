@@ -1,0 +1,40 @@
+{"version":"0.02"}
+
+[metadata]
+difficulty 4.32
+width 10
+height 8
+author poobslag v03
+
+[solution]
+#################### 1
+## . .## .## .## 1####
+## . .## 2## 2#### 1##
+#### . .###### . .####
+## 1## .## . 2## .## .
+###### .######## .## .
+## 1## .## . .## .## .
+ .#### .#### .## .## .
+ . 3## .12## 4## 7## 5
+
+[order]
+16 18 18 14 13 8 7 7 0 0 -
+21 21 17 13 13 7 7 0 - 0 0
+19 20 13 12 - 0 - 6 0 - 2
+15 0 13 11 12 6 0 6 6 2 4
+0 - 0 11 6 6 - 5 4 4 4
+10 0 10 9 7 4 3 3 4 3 4
+2 - 2 9 4 4 2 3 2 3 2
+9 0 8 9 5 1 2 1 2 1 2
+9 - 7 6 - 0 - 0 - 0 -
+
+[reason]
+ur wx wx wx im wx im wx i1 i1 -
+im ix Bi im ix im ix i1 - i1 i1
+Bh p3 ix id - ac - im i1 - i1
+wx i1 ix ix wx im ac ix ix i1 im
+i1 - i1 ix im ix - id ix im ix
+wx i1 wx ix wx im id wx ix wx ix
+i1 - i1 ix im ix ix wx ix wx ix
+ix ac wx ix wx wx ix wx ix wx ix
+ix - id ix - ac - ac - ac -

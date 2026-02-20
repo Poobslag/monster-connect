@@ -1,0 +1,70 @@
+{"version":"0.02"}
+
+[metadata]
+difficulty 13.14
+width 12
+height 18
+author poobslag v03
+
+[solution]
+13 . . . . . . . . . . . .
+##########################
+ 2 .## . . . .10 . . . .##
+###### .##################
+ . .#### 4 .## 3 . .## 1##
+ 3## 2 .## . .###### 5####
+################ 1## . .##
+## 5 . . . .## .###### .##
+ 3############ . . .## .##
+ .##11## 8 . . .##########
+ .## . .######## 5 . . .##
+## 1## . . .## 4###### .##
+###### . . .## . . .######
+ . .## . .########## 2 .##
+ 3########## . . .########
+#### 4 .## 5 .###### 2 .##
+ . .## . .###### 5 .######
+ .########## 2 .## . . .##
+ 4## 4 . . .##############
+
+[order]
+- 2 2 8 24 24 26 26 29 29 31 31 32
+0 1 6 23 23 25 25 27 27 30 30 31 32
+- 5 5 22 24 24 26 - 29 29 31 31 31
+4 2 6 7 21 25 25 0 27 28 29 0 33
+2 5 5 5 - 19 10 - 27 28 0 - 0
+- 0 - 6 6 9 26 26 0 28 - 0 16
+1 1 4 6 7 8 11 0 - 0 29 43 42
+0 - 2 5 8 8 8 12 0 42 44 45 42
+- 0 4 6 7 8 9 13 48 47 46 20 16
+2 4 - 0 - 8 42 42 19 19 36 19 16
+5 0 5 5 6 49 44 0 - 19 37 34 36
+0 - 0 8 67 50 41 - 0 38 35 17 16
+6 0 11 67 67 66 41 40 40 39 18 16 16
+8 8 8 58 66 65 51 41 36 18 - 17 16
+- 6 11 57 59 64 63 37 20 19 0 16 16
+4 3 - 14 15 - 62 61 19 18 - 17 16
+2 5 5 53 56 42 52 19 - 60 18 16 16
+2 1 6 54 54 55 - 59 59 19 18 17 16
+- 0 - 8 55 55 55 19 19 19 36 16 16
+
+[reason]
+- ix ix ix ix ix ix ix ix ix ix ix ix
+ac wx wx wx wx wx wx wx wx wx wx im wx
+- ix im ie ie ie ie - ix ix ix ix im
+id ci wx p3 id wx wx ac wx im wx i1 wx
+ix ix im ci - ul cb - ix ix i1 - i1
+- ac - ix im p3 ix im i1 im - i1 iC
+wx wx id im wx im wx i1 - i1 ix p3 uL
+ac - ix ix ix ix im p3 i1 uL cb ix uL
+- ac id wx wx im wx ie ie p3 im p3 ur
+ix id - ac - ix ul ul uL uL ur uL ur
+ix i1 ix ix id im wx ac - ul ie pk ur
+i1 - i1 ix is p3 im - ac im cb p3 ur
+wx i1 wx is is p3 im ie ie p3 im ur ur
+ix ix im p3 p3 iC uL im ur im - p3 ur
+- wx wx im wx im ie ie p3 uL ac ur ur
+id ci - ix id - p3 iC uL im - p3 ur
+ix ix im Bi p3 uL Bg uL - ix im ur ur
+ix wx wx wx wx im - ix im ul ie p3 ur
+- ac - ix ix ix im uL uL uL ur ur ur

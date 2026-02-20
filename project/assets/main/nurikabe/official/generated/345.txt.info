@@ -1,0 +1,52 @@
+{"version":"0.02"}
+
+[metadata]
+difficulty 8.47
+width 9
+height 12
+author poobslag v03
+
+[solution]
+ . . . . . . . . .10
+####################
+ . . . . 9## . . . .
+ . .############## .
+ . .## .## . . .## 6
+###### . 3#### 4####
+## . 5###### 3## . 2
+## .## .## . .######
+## .## 2###### 3## 7
+## .#### 4 .## .## .
+###### 2## .## .## .
+## 1## .## .###### .
+############## . . .
+
+[order]
+40 30 28 13 13 9 9 7 7 -
+31 39 29 27 10 11 8 8 6 5
+43 41 28 26 - 9 9 7 7 4
+43 43 42 24 25 9 8 8 3 4
+43 37 22 24 9 9 9 2 3 -
+38 36 23 21 - 9 0 - 1 0
+36 24 - 11 18 10 - 0 2 -
+36 36 2 19 15 15 11 3 1 0
+37 35 20 - 0 12 13 - 0 -
+33 34 1 0 - 2 4 15 13 2
+33 0 35 - 0 13 15 15 15 15
+0 - 0 34 15 18 14 15 16 16
+32 0 33 33 23 18 17 17 17 17
+
+[reason]
+ix ix ix ix ix ix ix ix ix -
+ci Bg id id cb wx wx wx wx id
+is Bi ix ix - im ix ix ix ix
+is is Bh im wx im wx wx wx ix
+is p3 ci ix im ix ix ix wx -
+wx uL id ix - im ac - wx ac
+uL ix - cb wx wx - ac ix -
+uL ul ci p3 im ix ix wx wx ac
+im ie im - ac ci id - ac -
+ur p3 wx ac - ix cb ix wx ix
+ur i1 im - ac ix im ix im ix
+i1 - i1 p3 wx ix ci im wx ix
+wb i1 ur ur wx im im ix ix ix
