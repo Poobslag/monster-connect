@@ -1,0 +1,64 @@
+{"version":"0.02"}
+
+[metadata]
+difficulty 14.97
+width 8
+height 16
+author poobslag v02
+
+[solution]
+################ 3
+## . . . . . .## .
+## .######## 8## .
+#### 4## . 3######
+## . .## .## . 2##
+## .############ 9
+###### . . . 4## .
+ .## .######## . .
+ .## .## . . . . .
+ .## .############
+ .## 4## . . 7## 4
+ .###### . . .## .
+ 6## 2 .## .## . .
+##################
+## . . . . . .## 1
+## 7##############
+#### 7 . . . . . .
+
+[order]
+14 35 35 33 33 31 31 27 -
+37 36 34 34 32 32 12 13 20
+17 38 17 33 33 0 - 28 28
+17 38 - 17 31 - 0 29 1
+17 39 40 17 34 30 30 - 0
+14 15 41 17 34 35 30 0 -
+14 14 17 42 36 31 - 4 2
+15 14 18 22 43 32 23 59 5
+16 18 21 22 44 23 23 23 52
+17 18 21 22 58 48 23 24 24
+11 6 - 21 58 47 - 0 -
+5 17 0 4 58 53 58 45 25
+- 0 - 4 4 53 46 46 46
+4 4 3 2 57 54 55 26 0
+1 2 5 5 8 56 50 0 -
+1 - 0 7 7 9 49 14 0
+1 0 - 2 8 8 10 19 51
+
+[reason]
+ur wx wx wx wx wx wx Bj -
+wx ix ix ix ix ix ix cb ix
+uL ix uL wx wx ac - im ix
+uL im - uL ix - ac wx wx
+uL p3 ix uL ix im ix - ac
+ur p3 im uL im wx im ac -
+ur ur uL p3 ix ix - id ix
+p3 ur p3 im im id iB ix ix
+ie im ul im p3 ik ik ik Bi
+ul im ul im iB iB iB ic ic
+ix cb - uL is Bi - ac -
+ix uL ac im is ix is Bg ix
+- ac - ix im ik im ix ix
+wx wx cb ci im cb ur Bh i1
+wx ix ix ix ix ie p3 i1 -
+wx - ac wx wx wx Bw iC i1
+wx ac - ix ix ix ix pk ix

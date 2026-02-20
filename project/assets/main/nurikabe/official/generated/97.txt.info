@@ -1,0 +1,28 @@
+{"version":"0.02"}
+
+[metadata]
+difficulty 0.00
+width 4
+height 4
+author poobslag v02
+
+[solution]
+ .## .## .
+ .## 2## 2
+ 3########
+## 3 . .##
+##########
+
+[order]
+5 3 5 5 8
+2 4 - 0 -
+- 0 4 3 7
+0 - 2 5 5
+1 1 1 4 6
+
+[reason]
+ix ci ix im ix
+ix id - ac -
+- ac id ci wx
+ac - ix ix im
+wx wx wx wx wx

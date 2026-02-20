@@ -1,37 +1,52 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 2.52
+difficulty 6.82
 width 11
-height 7
+height 12
 author poobslag v02
 
 [solution]
-############ . 3 .## . 2
-## 1## . .##############
- 1## 4 .## 1## . . .## 1
-################ 6 . .##
- . 5## 3 . .## 1########
- .## 6########## 2 .## .
- .## . . . . .######## .
- .############## 6 . . .
+ . . . . 5## 1## 2 .## 1
+########################
+ .## . . 3## 1## . 2## .
+ .######## 2## 3###### .
+ . . . 7## .## .## 2## 3
+#### .## 5#### .## .####
+## 1#### . .######## . .
+###### 4## .## . . 3## 3
+## 5## .## .############
+## .## .###### . . . . 7
+## .## .## . 2## . .####
+## . .################ 1
+######## . . . . . 6####
 
 [order]
-1 0 2 8 7 10 17 - 20 3 3 -
-0 - 0 6 9 0 16 19 18 21 0 0
-- 0 - 3 0 - 0 15 20 22 0 -
-3 1 1 4 4 0 14 0 - 23 23 0
-3 - 0 - 6 12 0 - 0 1 23 24
-4 0 - 0 11 7 12 0 - 3 3 25
-4 6 3 10 10 12 12 12 0 3 24 26
-8 5 9 9 11 11 12 13 - 14 14 26
+13 6 5 2 - 0 - 0 - 9 0 -
+7 11 5 4 0 1 0 1 8 2 11 0
+9 5 5 2 - 0 - 0 8 - 6 9
+9 8 4 4 0 - 0 - 8 0 8 5
+9 7 5 - 0 2 1 9 2 - 0 -
+8 0 6 0 - 2 9 9 2 4 3 4
+0 - 0 5 4 8 10 9 8 4 5 2
+11 0 8 - 5 11 9 9 5 - 0 -
+20 - 8 9 11 11 11 9 8 4 1 0
+20 20 17 13 12 11 17 18 19 2 2 -
+20 20 14 16 15 16 - 17 22 21 1 0
+20 17 16 15 15 17 17 21 20 20 0 -
+15 20 15 15 16 17 18 18 20 - 1 0
 
 [reason]
-wx i1 wx wx ci wx p3 - ix im ix -
-i1 - i1 ix ix i1 ic id ci wx ci i1
-- i1 - ix i1 - i1 p3 ie p3 i1 -
-i1 wx wx wx wx i1 wx i1 - ix ix i1
-ix - ac - ix ix i1 - i1 wx im wx
-ix ac - ac wx ci im i1 - ix im p3
-ix wx ix ix ix ix ix im ac im wx ie
-ix ci wx wx wx wx im wx - ix ix ie
+ix ix ix ix - i1 - i1 - ix i1 -
+ci wx im id ac wx i1 wx im ci wx i1
+ix im ix ix - ac - ac ix - ci ix
+ix wx wx wx ac - ac - im ac wx ix
+ix ix ix - ac ix wx ix cb - ac -
+wx i1 p3 ac - im im ix ci ix ci id
+i1 - i1 id ix ix wx im wx im ix ix
+wx i1 wx - id ix im ix ix - ac -
+uL - cb ix im ix im im wx id wx ac
+uL ul im ix wx im im p3 ie ix ix -
+uL ul ci p3 ur p3 - im p3 p3 wx i1
+uL ie p3 ur ur im im wx uL uL i1 -
+ur uL ur ur p3 ie ie ie ul - wx i1

@@ -34,6 +34,7 @@ func update(_delta: float) -> void:
 				return a["author"] < b["author"])
 			@warning_ignore("integer_division")
 			var delete_count: int = ceili(_puzzle_data.size() / 4.0)
+			delete_count = 0
 			for i in delete_count:
 				queue_2.append(_puzzle_data[i]["path"])
 			if queue_2.is_empty():

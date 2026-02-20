@@ -1,46 +1,34 @@
 {"version":"0.02"}
 
 [metadata]
-difficulty 1.52
-width 8
-height 10
-author poobslag v03
+difficulty 6.48
+width 11
+height 6
+author poobslag v02
 
 [solution]
-########## 4 . . .
-## . . .##########
-## 4###### 1## .##
- 2## 2 .#### . .##
- .###### 1## 4####
-#### 3######## 1##
- 1## .## 2 .#### 6
-#### .###### . . .
- .#### .## . .####
- . .## .######## 9
- 5 .## . . . . . .
+############## 9 . . . .
+## 1## 4 . .###### . . .
+#### 5## .## 2 .###### .
+## . .############ 1####
+## .## 1## 4 . . .#### .
+## .####13########## . .
+###### . . . . . . . . .
 
 [order]
-4 4 4 6 7 - 8 9 9
-1 2 6 6 6 0 8 6 8
-0 - 0 2 0 - 0 6 3
-- 0 - 2 0 0 2 2 4
-2 1 0 0 - 0 - 0 1
-0 4 - 13 0 10 0 - 0
-- 0 14 6 - 11 8 0 -
-0 14 14 14 12 8 6 6 2
-23 22 14 17 16 16 10 5 4
-24 23 21 18 19 11 15 13 -
-- 25 21 20 16 16 14 14 14
+6 0 1 7 7 7 13 - 16 16 28 28
+0 - 0 - 4 8 8 4 14 15 28 22
+4 0 - 0 2 3 - 9 9 0 21 22
+7 3 3 0 1 4 3 9 0 - 0 27
+7 8 0 - 0 - 5 18 18 0 23 27
+8 8 8 0 - 0 17 17 18 19 24 25
+10 8 12 11 3 16 16 18 18 19 20 26
 
 [reason]
-wx wx wx im wx - ix ix ix
-wx ix ix ix im i1 wx im wx
-ac - ac im i1 - i1 ix ci
-- ac - ix i1 i1 ix ix wx
-ix wx ac i1 - i1 - i1 wx
-i1 wx - wx i1 wx i1 - i1
-- i1 ix cb - p3 wx i1 -
-i1 im ix im im ci ix ix ix
-p3 iC im p3 im ix ix wx id
-ie p3 im ie wx ci wx wx -
-- ix im ix ix ix ix ix ix
+wb i1 wx ic ic ic wx - ix ix is is
+i1 - i1 - ie ix im ci wx p3 is ik
+wx i1 - ac p3 id - ix im i1 wx ik
+ic ix ix i1 wx wx cb im i1 - i1 im
+ic ix i1 - i1 - ix ix ix i1 iC ix
+im ix im i1 - ac wx wx im wx p3 ix
+wb im wx pk ix ix ix ix ix ix ix ib
