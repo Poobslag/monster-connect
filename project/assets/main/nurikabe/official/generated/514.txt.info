@@ -1,0 +1,61 @@
+{"version":"0.02"}
+
+[metadata]
+difficulty 5.37
+width 9
+height 15
+author poobslag v03
+
+[solution]
+ 1########## 1######
+#### . . 3###### 1##
+ 2 .###### 1## 1## 2
+###### . .######## .
+ 6 .#### . . .## 1##
+ . .## 1## . 7######
+ . .############ .##
+###### . .## .## .##
+## .#### 3## .## .##
+## .## .#### .## .##
+## .## . .## .## .##
+## . 5## .## 5## 6##
+######## . 6## 5## 4
+ . 8## 1###### .## .
+ . .###### . . .## .
+ . . . .########## .
+
+[order]
+- 0 26 29 29 0 - 0 0 1
+0 1 27 28 - 0 0 0 - 0
+- 2 2 24 0 - 0 - 0 -
+0 1 32 32 23 0 24 2 0 2
+- 34 33 0 23 23 25 0 - 0
+41 41 0 - 0 31 - 18 0 4
+41 39 35 0 30 22 16 17 17 17
+40 38 33 33 21 16 16 16 16 6
+34 38 26 20 - 14 16 15 5 4
+37 33 17 20 15 15 13 4 2 4
+30 33 19 16 13 12 2 1 2 1
+30 20 - 12 11 0 - 0 - 0
+30 21 19 0 11 - 0 - 0 -
+36 - 0 - 0 7 1 2 1 2
+36 36 12 0 7 7 7 2 4 2
+36 13 10 9 8 7 6 6 3 5
+
+[reason]
+- i1 ur im im i1 - i1 i1 wx
+i1 wx p3 ie - i1 i1 i1 - i1
+- ix im wx i1 - i1 - i1 -
+ac wx im ix ik i1 wx i1 i1 ix
+- p3 wx i1 ik ik p3 i1 - i1
+is is i1 - i1 p3 - wx i1 wx
+is p3 wx i1 ic wx im wx ix im
+wx im im ix ix im ix im ix wx
+ci ix ur im - cb ix wx ix wx
+wx ix ci ix id wx ix wx ix wx
+ic ix id ix ix wx ix wx ix wx
+ic ix - id ix ac - ac - ac
+ic id wx i1 ix - ac - ac -
+is - i1 - i1 im wx ix wx ix
+is is wx i1 im ix ix ix wx ix
+is ie ie p3 wx im wx wx ci ix

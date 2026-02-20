@@ -1,0 +1,43 @@
+{"version":"0.02"}
+
+[metadata]
+difficulty 17.59
+width 5
+height 9
+author poobslag v03
+
+[solution]
+ . . . . . 6
+############
+ 5 .## .## 8
+ .## 3 .## .
+ .######## .
+ .## 3 .## .
+## 5## .## .
+## .###### .
+## . . .## .
+########## .
+
+[order]
+26 18 9 2 2 -
+19 10 25 16 1 0
+- 23 8 16 13 -
+11 11 - 12 15 14
+21 22 0 5 25 3
+23 0 - 2 3 3
+23 - 0 6 6 17
+24 25 7 6 27 20
+26 25 27 27 27 28
+26 26 26 4 4 28
+
+[reason]
+ix ix Bi ix ix -
+ic ic wx im wx ac
+- is Bg ix ci -
+ix iB - ix id ix
+ix Bw ac Bw wx ik
+is ac - ix iB ik
+iB - ac ix im ix
+wx ix wx im wx ix
+wx ix ix ix im ix
+wx wx wx ur ur ix
