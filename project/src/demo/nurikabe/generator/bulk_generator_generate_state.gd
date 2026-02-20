@@ -1,9 +1,12 @@
 extends State
 
+var generator_timeout: float = 900.0 # 15 minutes
+
 var generator: Generator = Generator.new()
 var puzzle_num: int = 1
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
+var _start_time: int
 var _stuck_state: Dictionary[String, Variant] = {}
 
 func enter() -> void:
@@ -12,7 +15,6 @@ func enter() -> void:
 	generator.board = %GameBoard.to_generator_board()
 	_create_board()
 
-
 func update(_delta: float) -> void:
 	generator.step()
 	
@@ -20,6 +22,12 @@ func update(_delta: float) -> void:
 		object.log_message("error: stuck")
 		_create_board()
 		return
+	
+	if Time.get_ticks_msec() - _start_time > 1000 * generator_timeout:
+		object.log_message("error: timeout after %s seconds" % [(Time.get_ticks_msec() - _start_time) / 1000.0])
+		print("timeout after %s seconds" % [(Time.get_ticks_msec() - _start_time) / 1000.0])
+		generator.board.solver_board.print_cells()
+		_create_board()
 	
 	_copy_board_from_generator()
 	if generator.is_done():
@@ -38,6 +46,8 @@ func _copy_board_from_generator() -> void:
 
 
 func _create_board() -> void:
+	_start_time = Time.get_ticks_msec()
+	
 	while FileAccess.file_exists(_user_puzzle_path()):
 		puzzle_num += 1
 	
