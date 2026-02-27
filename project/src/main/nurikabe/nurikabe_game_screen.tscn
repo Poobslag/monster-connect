@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dkfhvt7xta6qi" path="res://src/main/nurikabe/nurikabe_game_screen.gd" id="1_nc88o"]
 [ext_resource type="PackedScene" uid="uid://dtev03a35ehu4" path="res://src/main/nurikabe/refresher.tscn" id="3_1cqpy"]
 [ext_resource type="PackedScene" uid="uid://diafqm0jkanve" path="res://src/main/monster/sim/sim_monster.tscn" id="4_nctqi"]
+[ext_resource type="PackedScene" uid="uid://daps8s8a0g7ic" path="res://src/main/monster/player/player_camera.tscn" id="6_k5lcv"]
 [ext_resource type="PackedScene" uid="uid://cf8wyvww44vbg" path="res://src/main/monster/player/player_monster.tscn" id="7_21uqv"]
 [ext_resource type="PackedScene" uid="uid://bcvt254axwueq" path="res://src/main/monster/sim/naive_solver.tscn" id="7_bxie6"]
 [ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe/tutorial_overlay.tscn" id="8_aypp7"]
@@ -87,8 +88,8 @@ position = Vector2(961, 540)
 platform_floor_layers = 4294967295
 skin = 4
 
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=2047494306]
-zoom = Vector2(1.2, 1.2)
+[node name="Camera2D" parent="Player" unique_id=772647305 node_paths=PackedStringArray("player") instance=ExtResource("6_k5lcv")]
+player = NodePath("..")
 
 [node name="CommandPalette" parent="." unique_id=1368678133 instance=ExtResource("8_mwwr5")]
 unique_name_in_owner = true
