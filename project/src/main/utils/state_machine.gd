@@ -6,6 +6,8 @@ extends Node
 ## State nodes can be added to this node as children. This class provides logic for switching between its child states,
 ## invoking their methods, and emitting signals.
 
+@export var verbose: bool = false
+
 ## Mapping from lowercase state names to [State] nodes.
 var states: Dictionary[String, State] = {}
 
@@ -54,6 +56,8 @@ func physics_update(delta: float) -> void:
 func change_state(next_state: String) -> void:
 	if current_state:
 		current_state_node.exit()
+	if verbose:
+		print("StateMachine.change_state: %s->%s" % [current_state, next_state])
 	
 	previous_state = current_state
 	current_state = next_state
