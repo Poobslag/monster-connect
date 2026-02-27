@@ -6,9 +6,6 @@ extends Node
 ## 	[kbd]A[/kbd]: Toggle analyzer; analyzes puzzles in PUZZLE_DIR and writes .info files.
 ## 	[kbd]C[/kbd]: Compact; delete 25% of the oldest puzzles and renumber the remaining ones.
 
-const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
-const GENERATED_PUZZLE_DIR: String = "res://assets/main/nurikabe/official/generated"
-
 const PUZZLE_TYPES: Array[Dictionary] = [
 	{
 		"id": "micro",

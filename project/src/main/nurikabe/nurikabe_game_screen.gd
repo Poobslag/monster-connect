@@ -20,7 +20,6 @@ const DEFAULT_SKIN_VALUES: Array[Monster.MonsterSkin] = [
 
 const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe/game_board.tscn")
 const SIM_SCENE: PackedScene = preload("res://src/main/monster/sim/sim_monster.tscn")
-const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
 
 @export var target_sim_count: int = 1
 @export var target_puzzle_count: int = 7
@@ -33,7 +32,7 @@ const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
 ## Force a specific sim to show up. Useful for debugging.
 @export_file("*.txt") var test_sim_path: String
 
-var _all_puzzles: Array[String] = Utils.find_data_files(PUZZLE_DIR, "txt")
+var _all_puzzles: Array[String] = Utils.find_data_files(NurikabeUtils.PUZZLE_DIR, "txt")
 var _puzzle_queue: Array[String] = []
 
 var _debug_paths: Array[Array] = []

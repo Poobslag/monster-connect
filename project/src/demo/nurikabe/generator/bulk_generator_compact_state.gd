@@ -13,7 +13,7 @@ func enter() -> void:
 	_puzzle_num = 1
 	_delete_count = 0
 	_move_count = 0
-	queue_1 = Utils.find_data_files(BulkGenerator.PUZZLE_DIR, "txt")
+	queue_1 = Utils.find_data_files(NurikabeUtils.PUZZLE_DIR, "txt")
 	queue_2.clear()
 	queue_3.clear()
 
@@ -82,6 +82,6 @@ func update(_delta: float) -> void:
 
 
 func _populate_queue_3() -> void:
-	queue_3 = Utils.find_data_files(BulkGenerator.PUZZLE_DIR, "txt")
+	queue_3 = Utils.find_data_files(NurikabeUtils.PUZZLE_DIR, "txt")
 	queue_3.sort_custom(func(a: String, b: String) -> bool:
 		return a.get_file().get_basename().to_int() < b.get_file().get_basename().to_int())

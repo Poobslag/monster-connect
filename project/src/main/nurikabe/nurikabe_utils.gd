@@ -1,6 +1,9 @@
 class_name NurikabeUtils
 extends Node
 
+const PUZZLE_DIR: String = "res://assets/main/nurikabe/official"
+const GENERATED_PUZZLE_DIR: String = "res://assets/main/nurikabe/official/generated"
+
 ## Nurikabe cells:
 ## 	0: Invalid (out of bounds)
 ## 	>0: Clue (any positive integer)
@@ -94,7 +97,7 @@ static func get_puzzle_info_path(path: String) -> String:
 
 
 static func get_user_puzzle_path(puzzle_num: int) -> String:
-	return BulkGenerator.GENERATED_PUZZLE_DIR.path_join("%s.txt" % [puzzle_num])
+	return NurikabeUtils.GENERATED_PUZZLE_DIR.path_join("%s.txt" % [puzzle_num])
 
 
 static func grid_string_from_cells(cells: Dictionary[Vector2i, int]) -> String:

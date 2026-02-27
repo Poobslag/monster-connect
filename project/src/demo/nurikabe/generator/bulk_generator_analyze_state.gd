@@ -4,8 +4,8 @@ var solver: Solver = Solver.new()
 var queue: Array[String] = []
 
 func enter() -> void:
-	queue = Utils.find_data_files(BulkGenerator.PUZZLE_DIR, "txt")
-	object.log_message("Searching %s; found %s files." % [BulkGenerator.PUZZLE_DIR, queue.size()])
+	queue = Utils.find_data_files(NurikabeUtils.PUZZLE_DIR, "txt")
+	object.log_message("Searching %s; found %s files." % [NurikabeUtils.PUZZLE_DIR, queue.size()])
 
 
 func update(_delta: float) -> void:

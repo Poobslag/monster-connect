@@ -91,8 +91,8 @@ func _output_board() -> void:
 	var path: String = NurikabeUtils.get_user_puzzle_path(puzzle_num)
 	var board: SolverBoard = generator.board.solver_board.duplicate()
 	board.erase_solution_cells()
-	if not DirAccess.dir_exists_absolute(BulkGenerator.GENERATED_PUZZLE_DIR):
-		DirAccess.make_dir_recursive_absolute(BulkGenerator.GENERATED_PUZZLE_DIR)
+	if not DirAccess.dir_exists_absolute(NurikabeUtils.GENERATED_PUZZLE_DIR):
+		DirAccess.make_dir_recursive_absolute(NurikabeUtils.GENERATED_PUZZLE_DIR)
 	FileAccess.open(path, FileAccess.WRITE).store_string(board.to_grid_string())
 	
 	%PuzzleInfoGenerator.write_puzzle_info(path)
