@@ -87,10 +87,12 @@ func perform(delta: float) -> bool:
 
 func exit() -> void:
 	_solver.cancel_request(monster)
-	monster.solving_board.cell_changed.disconnect(_on_solving_board_cell_changed)
-	monster.solving_board.error_cells_changed.disconnect(_on_solving_board_error_cells_changed)
-	monster.solving_board.board_reset.disconnect(_on_solving_board_reset)
-
+	
+	if monster.solving_board != null:
+		monster.solving_board.cell_changed.disconnect(_on_solving_board_cell_changed)
+		monster.solving_board.error_cells_changed.disconnect(_on_solving_board_error_cells_changed)
+		monster.solving_board.board_reset.disconnect(_on_solving_board_reset)
+	
 	_curr_deduction = null
 	_next_deduction = null
 	_next_deduction_remaining_time = 0.0
