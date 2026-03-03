@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://c3o1dino53bkn"]
+
+[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/game_board_3d.tscn" id="1_qblsy"]
+[ext_resource type="PackedScene" uid="uid://2lhvmspmb1mu" path="res://assets/main/nurikabe_3d/tile_blank_1.glb" id="2_s6pqa"]
+[ext_resource type="PackedScene" uid="uid://btu5ydf20s6wo" path="res://assets/main/nurikabe_3d/tile_blank_2.glb" id="3_xmo2f"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fc7sn"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_qblsy"]
+sky_material = SubResource("ProceduralSkyMaterial_fc7sn")
+
+[sub_resource type="Environment" id="Environment_ybjts"]
+background_mode = 2
+sky = SubResource("Sky_qblsy")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fc7sn"]
+size = Vector3(40, 2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qblsy"]
+albedo_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qblsy"]
+material = SubResource("StandardMaterial3D_qblsy")
+size = Vector3(40, 2, 40)
+
+[node name="GameScreen" type="Node" unique_id=1826678102]
+
+[node name="World" type="Node3D" parent="." unique_id=952090331]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="World" unique_id=1103614903]
+environment = SubResource("Environment_ybjts")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World" unique_id=481505807]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="World" unique_id=231188776]
+transform = Transform3D(1, 0, 0, 0, 0.3246274, 0.94584197, 0, -0.94584197, 0.32462743, -0.5648556, 16.163456, 7.4540806)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="World" unique_id=861876476]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/StaticBody3D" unique_id=66588350]
+shape = SubResource("BoxShape3D_fc7sn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World/StaticBody3D" unique_id=105943836]
+mesh = SubResource("BoxMesh_qblsy")
+
+[node name="GameBoard3D" parent="World" unique_id=361717472 instance=ExtResource("1_qblsy")]
+
+[node name="tile_blank_1" parent="World/GameBoard3D" unique_id=336929725 instance=ExtResource("2_s6pqa")]
+
+[node name="tile_blank_2" parent="World/GameBoard3D" unique_id=1722264806 instance=ExtResource("3_xmo2f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+
+[node name="_Node3D_95361" parent="World/GameBoard3D" unique_id=1522683148 instance=ExtResource("2_s6pqa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+
+[node name="_Node3D_95362" parent="World/GameBoard3D" unique_id=2127444312 instance=ExtResource("3_xmo2f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+
+[node name="_Node3D_95363" parent="World/GameBoard3D" unique_id=1191916299 instance=ExtResource("2_s6pqa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
+
+[node name="_Node3D_95364" parent="World/GameBoard3D" unique_id=1461827144 instance=ExtResource("3_xmo2f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
+
+[node name="_Node3D_95365" parent="World/GameBoard3D" unique_id=147644187 instance=ExtResource("2_s6pqa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+
+[node name="_Node3D_95366" parent="World/GameBoard3D" unique_id=1017490359 instance=ExtResource("3_xmo2f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
+
+[node name="_Node3D_95367" parent="World/GameBoard3D" unique_id=2087699656 instance=ExtResource("2_s6pqa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
