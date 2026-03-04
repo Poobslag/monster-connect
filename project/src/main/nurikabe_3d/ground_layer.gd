@@ -22,6 +22,14 @@ func set_cell(cell_pos: Vector2i, _value: int) -> void:
 	var tile_scene: PackedScene = TILE_SCENE_1 if (cell_pos.x + cell_pos.y) % 2 == 0 else TILE_SCENE_2
 	var tile: Node3D = tile_scene.instantiate()
 	tile.name = "tile_%s_%s" % [cell_pos.x, cell_pos.y]
+	
+	# Assign tile group and metadata for raycasting. Maps colliders back to their board and cell.
+	tile.add_to_group("board_cells")
+	if not Engine.is_editor_hint():
+		# Metadata is runtime-only. Serializing it would bloat the .tscn.
+		tile.set_meta("board", get_parent())
+		tile.set_meta("cell", cell_pos)
+	
 	add_child(tile)
 	tiles_by_cell[cell_pos] = tile
 	

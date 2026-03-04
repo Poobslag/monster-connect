@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://drvinbeeoqtai"]
-
-[ext_resource type="PackedScene" uid="uid://2lhvmspmb1mu" path="res://assets/main/nurikabe_3d/tile_blank_1.glb" id="1_fikww"]
-
-[node name="Node3D" type="Node3D" unique_id=302906166]
-
-[node name="tile_blank_1" parent="." unique_id=1159369500 instance=ExtResource("1_fikww")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
