@@ -7,7 +7,6 @@
 [ext_resource type="Script" uid="uid://n8fk6rhmnmq4" path="res://src/main/nurikabe_3d/clue_layer.gd" id="5_gtm4t"]
 [ext_resource type="PackedScene" uid="uid://c4geolowecsad" path="res://src/main/nurikabe_3d/clue_label_3d.tscn" id="6_kflf2"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="7_7oba7"]
-[ext_resource type="Script" uid="uid://c0w03v7d08p07" path="res://src/main/nurikabe_3d/clue_label_3d.gd" id="8_udvwd"]
 
 [sub_resource type="FontVariation" id="FontVariation_r2dov"]
 base_font = ExtResource("7_7oba7")
@@ -25,30 +24,30 @@ grid_string = " 3
 unique_name_in_owner = true
 script = ExtResource("2_7ituu")
 
-[node name="tile_0_0" type="Node3D" parent="GroundLayer" unique_id=336929725 instance=ExtResource("3_y4rxg")]
+[node name="tile_0_0" parent="GroundLayer" unique_id=336929725 instance=ExtResource("3_y4rxg")]
 
-[node name="tile_1_0" type="Node3D" parent="GroundLayer" unique_id=1722264806 instance=ExtResource("4_7ituu")]
+[node name="tile_1_0" parent="GroundLayer" unique_id=1722264806 instance=ExtResource("4_7ituu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
 
-[node name="tile_2_0" type="Node3D" parent="GroundLayer" unique_id=1975091907 instance=ExtResource("3_y4rxg")]
+[node name="tile_2_0" parent="GroundLayer" unique_id=1975091907 instance=ExtResource("3_y4rxg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
 
-[node name="tile_0_1" type="Node3D" parent="GroundLayer" unique_id=883802382 instance=ExtResource("4_7ituu")]
+[node name="tile_0_1" parent="GroundLayer" unique_id=883802382 instance=ExtResource("4_7ituu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 
-[node name="tile_1_1" type="Node3D" parent="GroundLayer" unique_id=1066739234 instance=ExtResource("3_y4rxg")]
+[node name="tile_1_1" parent="GroundLayer" unique_id=1066739234 instance=ExtResource("3_y4rxg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
 
-[node name="tile_2_1" type="Node3D" parent="GroundLayer" unique_id=1105192447 instance=ExtResource("4_7ituu")]
+[node name="tile_2_1" parent="GroundLayer" unique_id=1105192447 instance=ExtResource("4_7ituu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
 
-[node name="tile_0_2" type="Node3D" parent="GroundLayer" unique_id=1744328955 instance=ExtResource("3_y4rxg")]
+[node name="tile_0_2" parent="GroundLayer" unique_id=1744328955 instance=ExtResource("3_y4rxg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 
-[node name="tile_1_2" type="Node3D" parent="GroundLayer" unique_id=802244713 instance=ExtResource("4_7ituu")]
+[node name="tile_1_2" parent="GroundLayer" unique_id=802244713 instance=ExtResource("4_7ituu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
 
-[node name="tile_2_2" type="Node3D" parent="GroundLayer" unique_id=1413946462 instance=ExtResource("3_y4rxg")]
+[node name="tile_2_2" parent="GroundLayer" unique_id=1413946462 instance=ExtResource("3_y4rxg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
 
 [node name="IslandLayer" type="Node3D" parent="." unique_id=1995553949]
@@ -57,23 +56,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
 unique_name_in_owner = true
 script = ExtResource("5_gtm4t")
 
-[node name="clue_0_0" type="Label3D" parent="ClueLayer" unique_id=1419934438 instance=ExtResource("6_kflf2")]
+[node name="clue_0_0" parent="ClueLayer" unique_id=1419934438 instance=ExtResource("6_kflf2")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.051, 0.025)
-modulate = Color(0.4, 0.4, 0.4, 1)
-text = "3"
+text = "0"
 font = SubResource("FontVariation_r2dov")
-font_size = 160
-outline_size = 0
-script = ExtResource("8_udvwd")
 
-[node name="clue_2_2" type="Label3D" parent="ClueLayer" unique_id=1783617338 instance=ExtResource("6_kflf2")]
-transform = Transform3D(0.66667, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 2, 0.051, 2.025)
-modulate = Color(0.4, 0.4, 0.4, 1)
-text = "33"
+[node name="clue_2_2" parent="ClueLayer" unique_id=1783617338 instance=ExtResource("6_kflf2")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 2, 0.051, 2.025)
+text = "0"
 font = SubResource("FontVariation_r2dov")
-font_size = 160
-outline_size = 0
-script = ExtResource("8_udvwd")
 
 [node name="WallLayer" type="Node3D" parent="." unique_id=967320962]
 

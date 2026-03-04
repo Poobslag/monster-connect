@@ -1,8 +1,6 @@
 [gd_scene format=3 uid="uid://c3o1dino53bkn"]
 
 [ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/game_board_3d.tscn" id="1_qblsy"]
-[ext_resource type="PackedScene" uid="uid://2lhvmspmb1mu" path="res://assets/main/nurikabe_3d/tile_blank_1.glb" id="2_s6pqa"]
-[ext_resource type="PackedScene" uid="uid://btu5ydf20s6wo" path="res://assets/main/nurikabe_3d/tile_blank_2.glb" id="3_xmo2f"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fc7sn"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -51,29 +49,3 @@ shape = SubResource("BoxShape3D_fc7sn")
 mesh = SubResource("BoxMesh_qblsy")
 
 [node name="GameBoard3D" parent="World" unique_id=361717472 instance=ExtResource("1_qblsy")]
-
-[node name="tile_blank_1" parent="World/GameBoard3D" unique_id=336929725 instance=ExtResource("2_s6pqa")]
-
-[node name="tile_blank_2" parent="World/GameBoard3D" unique_id=1722264806 instance=ExtResource("3_xmo2f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
-
-[node name="_Node3D_95361" parent="World/GameBoard3D" unique_id=1522683148 instance=ExtResource("2_s6pqa")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
-
-[node name="_Node3D_95362" parent="World/GameBoard3D" unique_id=2127444312 instance=ExtResource("3_xmo2f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-
-[node name="_Node3D_95363" parent="World/GameBoard3D" unique_id=1191916299 instance=ExtResource("2_s6pqa")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
-
-[node name="_Node3D_95364" parent="World/GameBoard3D" unique_id=1461827144 instance=ExtResource("3_xmo2f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
-
-[node name="_Node3D_95365" parent="World/GameBoard3D" unique_id=147644187 instance=ExtResource("2_s6pqa")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
-
-[node name="_Node3D_95366" parent="World/GameBoard3D" unique_id=1017490359 instance=ExtResource("3_xmo2f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
-
-[node name="_Node3D_95367" parent="World/GameBoard3D" unique_id=2087699656 instance=ExtResource("2_s6pqa")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
