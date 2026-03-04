@@ -11,6 +11,7 @@ func clear() -> void:
 	tiles_by_cell.clear()
 	for child: Node in get_children():
 		child.queue_free()
+		remove_child(child)
 
 
 func set_cell(cell_pos: Vector2i, _value: int) -> void:
