@@ -2,21 +2,36 @@
 extends Node3D
 
 const LABEL_OFFSET: Vector2 = Vector2(0.0, 0.025)
-const TILE_HEIGHT: float = 0.051
+const TEXT_FLOAT_OFFSET: float = GroundLayer.TEXT_FLOAT_OFFSET
 
 const CLUE_LABEL_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/clue_label_3d.tscn")
 
 var tile_size: Vector2 = Vector2(1, 1)
 var tiles_by_cell: Dictionary[Vector2i, ClueLabel3D] = {}
 
+var _values_by_cell: Dictionary[Vector2i, int] = {}
+
 func clear() -> void:
 	tiles_by_cell.clear()
+	_values_by_cell.clear()
 	for child: Node in get_children():
 		child.queue_free()
 		remove_child(child)
 
 
+func get_cell(cell_pos: Vector2i) -> int:
+	return _values_by_cell.get(cell_pos, -1)
+
+
 func set_cell(cell_pos: Vector2i, value: int) -> void:
+	if _values_by_cell.get(cell_pos, -1) == value:
+		return
+	
+	if value == -1:
+		_values_by_cell.erase(cell_pos)
+	else:
+		_values_by_cell[cell_pos] = value
+	
 	var should_have_clue: bool = NurikabeUtils.is_clue(value)
 	var has_clue: bool = tiles_by_cell.has(cell_pos)
 	
@@ -31,7 +46,7 @@ func set_cell(cell_pos: Vector2i, value: int) -> void:
 		label.scale.x = tile_size.x
 		label.scale.z = tile_size.y
 		label.position.x = cell_pos.x * tile_size.x + LABEL_OFFSET.x * tile_size.x
-		label.position.y = TILE_HEIGHT # elevate the label above the tile
+		label.position.y = TEXT_FLOAT_OFFSET # elevate the label above the tile
 		label.position.z = cell_pos.y * tile_size.y + LABEL_OFFSET.y * tile_size.y
 	elif has_clue and not should_have_clue:
 		tiles_by_cell[cell_pos].queue_free()
@@ -40,3 +55,7 @@ func set_cell(cell_pos: Vector2i, value: int) -> void:
 	if should_have_clue:
 		# assign the tile properties
 		tiles_by_cell[cell_pos].clue = value
+
+
+func get_used_cells() -> Array[Vector2i]:
+	return _values_by_cell.keys()

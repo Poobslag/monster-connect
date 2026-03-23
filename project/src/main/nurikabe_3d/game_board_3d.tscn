@@ -5,52 +5,55 @@
 [ext_resource type="PackedScene" uid="uid://2lhvmspmb1mu" path="res://assets/main/nurikabe_3d/tile_blank_1.glb" id="3_y4rxg"]
 [ext_resource type="PackedScene" uid="uid://btu5ydf20s6wo" path="res://assets/main/nurikabe_3d/tile_blank_2.glb" id="4_7ituu"]
 [ext_resource type="Script" uid="uid://n8fk6rhmnmq4" path="res://src/main/nurikabe_3d/clue_layer.gd" id="5_gtm4t"]
+[ext_resource type="Script" uid="uid://rkarkma2bvou" path="res://src/main/nurikabe_3d/island_layer.gd" id="5_udvwd"]
 [ext_resource type="PackedScene" uid="uid://c4geolowecsad" path="res://src/main/nurikabe_3d/clue_label_3d.tscn" id="6_kflf2"]
-[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="7_7oba7"]
-
-[sub_resource type="FontVariation" id="FontVariation_r2dov"]
-base_font = ExtResource("7_7oba7")
-variation_opentype = {
-2003265652: 600
-}
+[ext_resource type="PackedScene" uid="uid://c2d4bo6af2l27" path="res://assets/main/nurikabe_3d/tile_island.glb" id="6_uupua"]
+[ext_resource type="Script" uid="uid://cknuo7gg74wq7" path="res://src/main/nurikabe_3d/wall_layer.gd" id="8_kflf2"]
+[ext_resource type="PackedScene" uid="uid://c31vm3rlrh3m6" path="res://assets/main/nurikabe_3d/tile_wall.glb" id="10_fjy6h"]
+[ext_resource type="Script" uid="uid://6blr78h86w3m" path="res://src/main/nurikabe_3d/puzzle_input_stub.gd" id="13_wygnd"]
 
 [node name="GameBoard3D" type="Node3D" unique_id=361717472]
 script = ExtResource("1_y4rxg")
-grid_string = " 3    
-      
+grid_string = " 3####
+ .    
     33"
 
 [node name="GroundLayer" type="Node3D" parent="." unique_id=2106659241]
 unique_name_in_owner = true
 script = ExtResource("2_7ituu")
 
-[node name="tile_0_0" parent="GroundLayer" unique_id=336929725 instance=ExtResource("3_y4rxg")]
+[node name="tile_0_0" parent="GroundLayer" unique_id=1367250993 instance=ExtResource("3_y4rxg")]
 
-[node name="tile_1_0" parent="GroundLayer" unique_id=1722264806 instance=ExtResource("4_7ituu")]
+[node name="tile_1_0" parent="GroundLayer" unique_id=2052620802 instance=ExtResource("4_7ituu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
 
-[node name="tile_2_0" parent="GroundLayer" unique_id=1975091907 instance=ExtResource("3_y4rxg")]
+[node name="tile_2_0" parent="GroundLayer" unique_id=1923051289 instance=ExtResource("3_y4rxg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
 
-[node name="tile_0_1" parent="GroundLayer" unique_id=883802382 instance=ExtResource("4_7ituu")]
+[node name="tile_0_1" parent="GroundLayer" unique_id=225613994 instance=ExtResource("4_7ituu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 
-[node name="tile_1_1" parent="GroundLayer" unique_id=1066739234 instance=ExtResource("3_y4rxg")]
+[node name="tile_1_1" parent="GroundLayer" unique_id=2093577880 instance=ExtResource("3_y4rxg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
 
-[node name="tile_2_1" parent="GroundLayer" unique_id=1105192447 instance=ExtResource("4_7ituu")]
+[node name="tile_2_1" parent="GroundLayer" unique_id=64326343 instance=ExtResource("4_7ituu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
 
-[node name="tile_0_2" parent="GroundLayer" unique_id=1744328955 instance=ExtResource("3_y4rxg")]
+[node name="tile_0_2" parent="GroundLayer" unique_id=189791859 instance=ExtResource("3_y4rxg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 
-[node name="tile_1_2" parent="GroundLayer" unique_id=802244713 instance=ExtResource("4_7ituu")]
+[node name="tile_1_2" parent="GroundLayer" unique_id=292874223 instance=ExtResource("4_7ituu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
 
-[node name="tile_2_2" parent="GroundLayer" unique_id=1413946462 instance=ExtResource("3_y4rxg")]
+[node name="tile_2_2" parent="GroundLayer" unique_id=1884291913 instance=ExtResource("3_y4rxg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
 
 [node name="IslandLayer" type="Node3D" parent="." unique_id=1995553949]
+unique_name_in_owner = true
+script = ExtResource("5_udvwd")
+
+[node name="island_0_1" parent="IslandLayer" unique_id=113366340 instance=ExtResource("6_uupua")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.051, 1)
 
 [node name="ClueLayer" type="Node3D" parent="." unique_id=1700644307]
 unique_name_in_owner = true
@@ -58,14 +61,25 @@ script = ExtResource("5_gtm4t")
 
 [node name="clue_0_0" parent="ClueLayer" unique_id=1419934438 instance=ExtResource("6_kflf2")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.051, 0.025)
-text = "0"
-font = SubResource("FontVariation_r2dov")
+text = "3"
+clue = 3
 
-[node name="clue_2_2" parent="ClueLayer" unique_id=1783617338 instance=ExtResource("6_kflf2")]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 2, 0.051, 2.025)
-text = "0"
-font = SubResource("FontVariation_r2dov")
+[node name="clue_2_2" parent="ClueLayer" unique_id=2042436605 instance=ExtResource("6_kflf2")]
+transform = Transform3D(0.66667, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 2, 0.051, 2.025)
+text = "33"
+clue = 33
 
 [node name="WallLayer" type="Node3D" parent="." unique_id=967320962]
+unique_name_in_owner = true
+script = ExtResource("8_kflf2")
+
+[node name="wall_1_0" parent="WallLayer" unique_id=1945276998 instance=ExtResource("10_fjy6h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.3, 0)
+
+[node name="wall_2_0" parent="WallLayer" unique_id=1214962971 instance=ExtResource("10_fjy6h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.3, 0)
 
 [node name="ErrorLayer" type="Node3D" parent="." unique_id=1237334604]
+
+[node name="PuzzleInputStub" type="Node" parent="." unique_id=1025847770]
+script = ExtResource("13_wygnd")
