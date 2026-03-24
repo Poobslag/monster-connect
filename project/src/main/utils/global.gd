@@ -2,6 +2,8 @@
 extends Node
 ## Globally accessible utilities.
 
+const LAYER_CLICKABLE = 5
+
 ## Game's main viewport size, as specified in the project settings.
 var window_size: Vector2i = Vector2i(
 	ProjectSettings.get_setting("display/window/size/viewport_width") as int,

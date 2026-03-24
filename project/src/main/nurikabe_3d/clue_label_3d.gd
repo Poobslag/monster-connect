@@ -2,6 +2,7 @@
 class_name ClueLabel3D
 extends Label3D
 
+@export
 var clue: int:
 	set(value):
 		if clue == value:
