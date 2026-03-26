@@ -11,7 +11,6 @@ var _last_set_cell_from: int = CELL_INVALID
 var _last_set_cell_to: int = CELL_INVALID
 var _mb_press_cell: Vector2i = POS_NOT_FOUND
 
-@onready var board: NurikabeGameBoard3D = get_parent()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -21,33 +20,78 @@ func _input(event: InputEvent) -> void:
 			_handle_lmb_release()
 
 
+func _process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+	
+	var board_hit: Dictionary[String, Variant] = get_board_hit_at_mouse()
+	if board_hit:
+		var board: NurikabeGameBoard3D = board_hit["board"]
+		var cell: Vector2i = board_hit["cell"]
+		%Cursor.visible = true
+		%Cursor.position = board.map_to_global(cell)
+	else:
+		%Cursor.visible = false
+
+
+func get_board_hit_at_mouse() -> Dictionary[String, Variant]:
+	var board_hit: Dictionary[String, Variant] = {}
+	
+	var space: PhysicsDirectSpaceState3D = get_viewport().get_world_3d().direct_space_state
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
+	
+	var ray_origin: Vector3 = camera.project_ray_origin(mouse_pos)
+	var ray_end: Vector3 = ray_origin + camera.project_ray_normal(mouse_pos) * 200.0
+	
+	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(ray_origin, ray_end)
+	var query_result: Dictionary = space.intersect_ray(query)
+	
+	if not query_result.is_empty():
+		var board_cell: Node3D = Utils.find_parent_in_group(query_result["collider"], "board_cells")
+		if board_cell != null:
+			board_hit["board"] = board_cell.get_meta("board")
+			board_hit["cell"] = board_cell.get_meta("cell")
+	
+	return board_hit
+
+
 func _handle_lmb_press() -> void:
-	var board_hit: Dictionary[String, Variant] = board.get_board_hit_at_mouse()
+	var board_hit: Dictionary[String, Variant] = get_board_hit_at_mouse()
 	if not board_hit:
 		return
 	
-	_mb_press_cell = board_hit["cell"]
-	var cell_value: int = board.get_cell(_mb_press_cell)
+	var board: NurikabeGameBoard3D = board_hit["board"]
+	var cell: Vector2i = board_hit["cell"]
+	var cell_value: int = board.get_cell(cell)
 	if cell_value == CELL_EMPTY:
+		_mb_press_cell = cell
 		_last_set_cell_from = CELL_EMPTY
 		_last_set_cell_to = CELL_WALL
 		board.set_half_cell(_mb_press_cell, 0)
 		board.set_cell(_mb_press_cell, CELL_WALL)
 	elif cell_value == CELL_WALL:
+		_mb_press_cell = cell
 		_last_set_cell_from = CELL_WALL
 		_last_set_cell_to = CELL_ISLAND
 		board.set_half_cell(_mb_press_cell, 0)
 		board.set_cell(_mb_press_cell, CELL_ISLAND)
 	elif cell_value == CELL_ISLAND:
+		_mb_press_cell = cell
 		_last_set_cell_from = CELL_ISLAND
 		_last_set_cell_to = CELL_EMPTY
 		board.set_half_cell(_mb_press_cell, 0)
 
 
 func _handle_lmb_release() -> void:
+	var board_hit: Dictionary[String, Variant] = get_board_hit_at_mouse()
+	if not board_hit:
+		return
+	
 	if _mb_press_cell == POS_NOT_FOUND:
 		return
 	
+	var board: NurikabeGameBoard3D = board_hit["board"]
 	if _last_set_cell_to == CELL_EMPTY:
 		board.clear_half_cells(0)
 		board.set_cell(_mb_press_cell, CELL_EMPTY)

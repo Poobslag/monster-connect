@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://c3o1dino53bkn"]
 
 [ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/game_board_3d.tscn" id="1_qblsy"]
+[ext_resource type="PackedScene" uid="uid://cjec7qvd1lq82" path="res://src/main/nurikabe_3d/nurikabe_cursor_3d.tscn" id="2_ybjts"]
+[ext_resource type="Script" uid="uid://6blr78h86w3m" path="res://src/main/nurikabe_3d/puzzle_input_stub.gd" id="3_s6pqa"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fc7sn"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -49,3 +51,14 @@ shape = SubResource("BoxShape3D_fc7sn")
 mesh = SubResource("BoxMesh_qblsy")
 
 [node name="GameBoard3D" parent="World" unique_id=361717472 instance=ExtResource("1_qblsy")]
+
+[node name="PuzzleCursorManager" type="Node3D" parent="World" unique_id=521709786]
+
+[node name="Cursor" parent="World/PuzzleCursorManager" unique_id=2138987604 instance=ExtResource("2_ybjts")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.391075, 0, 0.9315777)
+outline_color = Color(0.20784314, 0.20784314, 0.25490198, 1)
+cursor_color = Color(0.78039217, 0.7137255, 1, 1)
+
+[node name="PuzzleInputStub" type="Node" parent="." unique_id=1543648191]
+script = ExtResource("3_s6pqa")
