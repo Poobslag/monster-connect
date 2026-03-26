@@ -126,6 +126,16 @@ func from_game_board(game_board: NurikabeGameBoard) -> void:
 			set_cell(cell_pos, cell_value)
 
 
+func from_game_board_3d(game_board: NurikabeGameBoard3D) -> void:
+	groups_need_rebuild = true
+	for cell_pos: Vector2i in game_board.get_used_cells():
+		var cell_value: int = game_board.get_cell(cell_pos)
+		if NurikabeUtils.is_clue(cell_value):
+			set_clue(cell_pos, cell_value)
+		else:
+			set_cell(cell_pos, cell_value)
+
+
 func from_grid_string(grid_string: String) -> void:
 	groups_need_rebuild = true
 	var loaded_cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)

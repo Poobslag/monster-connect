@@ -3,7 +3,9 @@ extends Node3D
 
 const TEXT_FLOAT_OFFSET: float = GroundLayer.TEXT_FLOAT_OFFSET
 const ISLAND_HALF_SCENE: PackedScene = preload("res://assets/main/nurikabe_3d/tile_island_half.glb")
+const ISLAND_ERROR_SCENE: PackedScene = preload("res://assets/main/nurikabe_3d/tile_island_error.glb")
 const ISLAND_SCENE: PackedScene = preload("res://assets/main/nurikabe_3d/tile_island.glb")
+const ISLAND_HALF_ERROR_SCENE: PackedScene = preload("res://assets/main/nurikabe_3d/tile_island_half_error.glb")
 
 var tile_size: Vector2 = Vector2(1, 1)
 var tiles_by_cell: Dictionary[Vector2i, Node3D] = {}
@@ -36,8 +38,12 @@ func set_cell(cell_pos: Vector2i, value: int) -> void:
 			pass
 		0:
 			_add_cell(cell_pos, ISLAND_SCENE)
+		1:
+			_add_cell(cell_pos, ISLAND_ERROR_SCENE)
 		3:
 			_add_cell(cell_pos, ISLAND_HALF_SCENE)
+		4:
+			_add_cell(cell_pos, ISLAND_HALF_ERROR_SCENE)
 
 
 func get_used_cells() -> Array[Vector2i]:
