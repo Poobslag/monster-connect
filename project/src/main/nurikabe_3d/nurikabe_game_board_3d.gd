@@ -24,7 +24,9 @@ var _values_by_cell: Dictionary[Vector2i, int] = {}
 
 func _ready() -> void:
 	%GroundLayer.tile_size = tile_size
+	%IslandLayer.tile_size = tile_size
 	%ClueLayer.tile_size = tile_size
+	%WallLayer.tile_size = tile_size
 	
 	if not Engine.is_editor_hint():
 		import_grid()
@@ -93,6 +95,10 @@ func get_cell(cell_pos: Vector2i) -> int:
 	return _values_by_cell.get(cell_pos, -1)
 
 
+func map_to_global(cell: Vector2i) -> Vector3:
+	return global_transform * Vector3(cell.x * tile_size.x, 0, cell.y * tile_size.y)
+
+
 func set_half_cell(cell_pos: Vector2i, player_id: int) -> void:
 	half_cells[cell_pos] = player_id
 	_cells_dirty = true
@@ -102,29 +108,6 @@ func set_half_cells(cell_positions: Array[Vector2i], player_id: int) -> void:
 	for cell_pos: Vector2i in cell_positions:
 		half_cells[cell_pos] = player_id
 	_cells_dirty = true
-
-
-## Note: This method should be moved to an input manager, is the logic is global and not per-board.
-func get_board_hit_at_mouse() -> Dictionary[String, Variant]:
-	var board_hit: Dictionary[String, Variant] = {}
-	
-	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
-	var camera: Camera3D = get_viewport().get_camera_3d()
-	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
-	
-	var ray_origin: Vector3 = camera.project_ray_origin(mouse_pos)
-	var ray_end: Vector3 = ray_origin + camera.project_ray_normal(mouse_pos) * 200.0
-	
-	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(ray_origin, ray_end)
-	var query_result: Dictionary = space.intersect_ray(query)
-	
-	if not query_result.is_empty():
-		var board_cell: Node3D = Utils.find_parent_in_group(query_result["collider"], "board_cells")
-		if board_cell != null:
-			board_hit["board"] = board_cell.get_meta("board")
-			board_hit["cell"] = board_cell.get_meta("cell")
-	
-	return board_hit
 
 
 func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:

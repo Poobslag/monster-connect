@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://c2d4bo6af2l27" path="res://assets/main/nurikabe_3d/tile_island.glb" id="6_uupua"]
 [ext_resource type="Script" uid="uid://cknuo7gg74wq7" path="res://src/main/nurikabe_3d/wall_layer.gd" id="8_kflf2"]
 [ext_resource type="PackedScene" uid="uid://c31vm3rlrh3m6" path="res://assets/main/nurikabe_3d/tile_wall.glb" id="10_fjy6h"]
-[ext_resource type="Script" uid="uid://6blr78h86w3m" path="res://src/main/nurikabe_3d/puzzle_input_stub.gd" id="13_wygnd"]
 
 [node name="GameBoard3D" type="Node3D" unique_id=361717472]
 script = ExtResource("1_y4rxg")
@@ -80,6 +79,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.3, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.3, 0)
 
 [node name="ErrorLayer" type="Node3D" parent="." unique_id=1237334604]
-
-[node name="PuzzleInputStub" type="Node" parent="." unique_id=1025847770]
-script = ExtResource("13_wygnd")

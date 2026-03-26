@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://cjec7qvd1lq82"]
+
+[ext_resource type="Script" uid="uid://dxqexrepfoq8u" path="res://src/main/nurikabe_3d/nurikabe_cursor_3d.gd" id="1_d6h5s"]
+[ext_resource type="PackedScene" uid="uid://7arffuju3k3f" path="res://assets/main/nurikabe_3d/cursor_outline.glb" id="1_u55fm"]
+[ext_resource type="PackedScene" uid="uid://dic6mks6fal5y" path="res://assets/main/nurikabe_3d/cursor_center.glb" id="2_d6h5s"]
+
+[node name="Cursor" type="Node3D" unique_id=2138987604]
+script = ExtResource("1_d6h5s")
+
+[node name="Outline" parent="." unique_id=804101938 instance=ExtResource("1_u55fm")]
+unique_name_in_owner = true
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, 0)
+
+[node name="Center" parent="." unique_id=1399947966 instance=ExtResource("2_d6h5s")]
+unique_name_in_owner = true
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, 0)
