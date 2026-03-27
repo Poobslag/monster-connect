@@ -5,7 +5,8 @@ extends Node3D
 const TILE_SCENE_1: PackedScene = preload("res://assets/main/nurikabe_3d/tile_blank_1.glb")
 const TILE_SCENE_2: PackedScene = preload("res://assets/main/nurikabe_3d/tile_blank_2.glb")
 const GROUND_HEIGHT: float = 0.050
-const TEXT_FLOAT_OFFSET: float = 0.051
+const TEXT_FLOAT_OFFSET: float = 0.052
+const ERROR_FLOAT_OFFSET: float = 0.051
 
 var tile_size: Vector2 = Vector2(1, 1)
 var tiles_by_cell: Dictionary[Vector2i, Node3D] = {}

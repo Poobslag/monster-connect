@@ -6,10 +6,16 @@ const TEXT_FLOAT_OFFSET: float = GroundLayer.TEXT_FLOAT_OFFSET
 
 const CLUE_LABEL_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/clue_label_3d.tscn")
 
+@export var error_cells: Dictionary[Vector2i, bool] = {}:
+	set(value):
+		error_cells = value
+		_dirty = true
+
 var tile_size: Vector2 = Vector2(1, 1)
 var tiles_by_cell: Dictionary[Vector2i, ClueLabel3D] = {}
 
 var _values_by_cell: Dictionary[Vector2i, int] = {}
+var _dirty: bool = false
 
 func clear() -> void:
 	tiles_by_cell.clear()
@@ -17,6 +23,13 @@ func clear() -> void:
 	for child: Node in get_children():
 		child.queue_free()
 		remove_child(child)
+
+
+func _process(_delta: float) -> void:
+	if _dirty:
+		for cell: Vector2i in tiles_by_cell:
+			tiles_by_cell[cell].error = cell in error_cells
+		_dirty = false
 
 
 func get_cell(cell_pos: Vector2i) -> int:

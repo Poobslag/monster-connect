@@ -81,10 +81,12 @@ const SOUND_CONFIGS: Dictionary[String, Dictionary] = {
 }
 
 ## Players that are currently playing a sound.
+var _in_use_player_3ds: Dictionary[AudioStreamPlayer3D, bool] = {}
 var _in_use_player_2ds: Dictionary[AudioStreamPlayer2D, bool] = {}
 var _in_use_players: Dictionary[AudioStreamPlayer, bool] = {}
 
 ## Players that are idle and available to play a sound.
+var _available_player_3ds: Dictionary[AudioStreamPlayer3D, bool] = {}
 var _available_player_2ds: Dictionary[AudioStreamPlayer2D, bool] = {}
 var _available_players: Dictionary[AudioStreamPlayer, bool] = {}
 
@@ -109,6 +111,10 @@ func _process(_delta: float) -> void:
 		if not player_2d.playing:
 			_in_use_player_2ds.erase(player_2d)
 			_available_player_2ds[player_2d] = true
+	for player_3d: AudioStreamPlayer3D in _in_use_player_3ds.keys():
+		if not player_3d.playing:
+			_in_use_player_3ds.erase(player_3d)
+			_available_player_3ds[player_3d] = true
 
 
 func play_sfx_at(sound_key: String, pos: Vector2) -> AudioStreamPlayer2D:
@@ -144,6 +150,48 @@ func play_sfx_at(sound_key: String, pos: Vector2) -> AudioStreamPlayer2D:
 	var player: AudioStreamPlayer2D = _available_player_2ds.keys()[0]
 	_available_player_2ds.erase(player)
 	_in_use_player_2ds[player] = true
+	player.global_position = pos
+	player.volume_db = _volume_db_from_config(config) + SPATIAL_VOLUME_DB_OFFSET
+	player.pitch_scale = _pitch_scale_from_config(config)
+	player.stream = stream
+	player.play()
+	
+	return player
+
+
+func play_sfx_at_3d(sound_key: String, pos: Vector3) -> AudioStreamPlayer3D:
+	var listener: Camera3D = get_viewport().get_camera_3d()
+	var sfx_distance: float = 0.0
+	if listener != null:
+		sfx_distance = pos.distance_to(get_viewport().get_camera_3d().global_position)
+	var config: Dictionary[Variant, Variant] = SOUND_CONFIGS.get(sound_key, {})
+	var source_key: String = config.get("source", sound_key)
+	var stream: AudioStream = sounds.get(source_key)
+	if sfx_distance > MAX_DISTANCE:
+		return null
+	
+	if stream == null:
+		push_warning("Invalid sound key: %s" % [source_key])
+		return null
+	
+	if _available_player_3ds.is_empty():
+		push_warning("AudioStreamPlayer3D pool is empty.")
+		return null
+	
+	var now: int = Time.get_ticks_msec()
+	var last_played: int = _last_played_msec_by_key.get(source_key, 0)
+	var suppress_msec: int = SOUND_CONFIGS.get(source_key, {}).get("suppress_msec", DEFAULT_SUPPRESS_MSEC)
+	if last_played + suppress_msec > now:
+		# suppress sound effect; sound was played too recently
+		return null
+	
+	if sfx_distance < MAX_DISTANCE * 0.5:
+		# only suppress repeat sfx for sounds that are loud enough
+		_last_played_msec_by_key[source_key] = now
+	
+	var player: AudioStreamPlayer3D = _available_player_3ds.keys()[0]
+	_available_player_3ds.erase(player)
+	_in_use_player_3ds[player] = true
 	player.global_position = pos
 	player.volume_db = _volume_db_from_config(config) + SPATIAL_VOLUME_DB_OFFSET
 	player.pitch_scale = _pitch_scale_from_config(config)
@@ -227,6 +275,22 @@ func _fill_audio_stream_player_pool() -> void:
 		player_2d.panning_strength = 0.5
 		add_child(player_2d)
 		_available_player_2ds[player_2d] = true
+	
+	for _i in POOL_SIZE:
+		var player_3d := AudioStreamPlayer3D.new()
+		player_3d.finished.connect(func() -> void:
+			# Return the player to the available pool.
+			#
+			# Note: The 'finished' signal is only emitted when the sound ends naturally. If a sound is stopped
+			# manually using AudioStreamPlayer.stop(), it will not emit 'finished'. The [method _process] method
+			# handles detection of manually stopped sounds.
+			_in_use_player_3ds.erase(player_3d)
+			_available_player_3ds[player_3d] = true)
+		player_3d.bus = "Sfx"
+		player_3d.max_distance = MAX_DISTANCE
+		player_3d.panning_strength = 0.5
+		add_child(player_3d)
+		_available_player_3ds[player_3d] = true
 
 
 ## Recursively loads all .wav files from [constant BASE_DIR] into the [member sounds] cache.

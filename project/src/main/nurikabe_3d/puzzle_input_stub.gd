@@ -95,9 +95,12 @@ func _handle_lmb_release() -> void:
 	if _last_set_cell_to == CELL_EMPTY:
 		board.clear_half_cells(0)
 		board.set_cell(_mb_press_cell, CELL_EMPTY)
+		board.validate()
 	elif _last_set_cell_to == CELL_WALL:
 		board.clear_half_cells(0)
 		board.set_cell(_mb_press_cell, CELL_WALL)
+		board.validate()
 	elif _last_set_cell_to == CELL_ISLAND:
 		board.clear_half_cells(0)
 		board.set_cell(_mb_press_cell, CELL_ISLAND)
+		board.validate()

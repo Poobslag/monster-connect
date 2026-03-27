@@ -51,12 +51,17 @@ shape = SubResource("BoxShape3D_fc7sn")
 mesh = SubResource("BoxMesh_qblsy")
 
 [node name="GameBoard3D" parent="World" unique_id=361717472 instance=ExtResource("1_qblsy")]
+grid_string = "              
+           3  
+   2          
+             3
+              
+ 2   4   2    "
 
 [node name="PuzzleCursorManager" type="Node3D" parent="World" unique_id=521709786]
 
 [node name="Cursor" parent="World/PuzzleCursorManager" unique_id=2138987604 instance=ExtResource("2_ybjts")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.391075, 0, 0.9315777)
 outline_color = Color(0.20784314, 0.20784314, 0.25490198, 1)
 cursor_color = Color(0.78039217, 0.7137255, 1, 1)
 
