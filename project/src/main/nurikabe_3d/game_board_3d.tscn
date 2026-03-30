@@ -21,6 +21,7 @@ script = ExtResource("5_udvwd")
 [node name="ClueLayer" type="Node3D" parent="." unique_id=1700644307]
 unique_name_in_owner = true
 script = ExtResource("5_gtm4t")
+lowlight_cells = null
 
 [node name="WallLayer" type="Node3D" parent="." unique_id=967320962]
 unique_name_in_owner = true

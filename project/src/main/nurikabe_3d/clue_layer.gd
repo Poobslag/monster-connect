@@ -11,6 +11,11 @@ const CLUE_LABEL_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/clue_l
 		error_cells = value
 		_dirty = true
 
+@export var lowlight_cells: Dictionary[Vector2i, bool] = {}:
+	set(value):
+		lowlight_cells = value
+		_dirty = true
+
 var tile_size: Vector2 = Vector2(1, 1)
 var tiles_by_cell: Dictionary[Vector2i, ClueLabel3D] = {}
 
@@ -29,6 +34,7 @@ func _process(_delta: float) -> void:
 	if _dirty:
 		for cell: Vector2i in tiles_by_cell:
 			tiles_by_cell[cell].error = cell in error_cells
+			tiles_by_cell[cell].lowlight = cell in lowlight_cells
 		_dirty = false
 
 

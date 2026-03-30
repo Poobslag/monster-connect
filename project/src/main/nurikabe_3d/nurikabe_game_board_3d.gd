@@ -90,12 +90,13 @@ func refresh_cells() -> void:
 	_cells_dirty = false
 	
 	%ClueLayer.error_cells = error_cells
+	%ClueLayer.lowlight_cells = lowlight_cells
 	
 	for cell: Vector2i in %GroundLayer.get_used_cells():
 		%ErrorLayer.set_cell(cell, 0 if cell in error_cells else -1)
 	
 	for cell: Vector2i in %IslandLayer.get_used_cells():
-		var island_id: int = 1 if error_cells.has(cell) else 0
+		var island_id: int = 1 if cell in error_cells else 2 if cell in lowlight_cells else 0
 		if half_cells.has(cell):
 			island_id += 3
 		%IslandLayer.set_cell(cell, island_id)
