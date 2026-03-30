@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://bosmnjoj2i4o3"]
-
-[ext_resource type="Script" uid="uid://bk3c7nvecnxrr" path="res://src/main/nurikabe_3d/tile_layer_3d.gd" id="1_0ytuk"]
-
-[node name="TileLayer3D" type="Node3D" unique_id=2136397652]
-script = ExtResource("1_0ytuk")

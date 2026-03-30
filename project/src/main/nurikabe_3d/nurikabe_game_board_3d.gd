@@ -10,6 +10,10 @@ const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
 const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
+const GROUND_HEIGHT: float = 0.100
+const TEXT_FLOAT_OFFSET: float = 0.102
+const ERROR_FLOAT_OFFSET: float = 0.101
+
 @export_multiline var grid_string: String
 
 @export_tool_button("Import Grid String") var import_grid_action: Callable = import_grid
@@ -34,15 +38,18 @@ var half_cells: Dictionary[Vector2i, int] = {}:
 		half_cells = value
 		_cells_dirty = true
 
+var puzzle_dimensions: Vector2i
+
 var _cells_dirty: bool = false
 var _values_by_cell: Dictionary[Vector2i, int] = {}
 var _finished: bool = false
 
 func _ready() -> void:
-	%GroundLayer.tile_size = tile_size
-	%IslandLayer.tile_size = tile_size
+	%GroundMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
+	%IslandMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
 	%ClueLayer.tile_size = tile_size
-	%WallLayer.tile_size = tile_size
+	%WallMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
+	%ErrorMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
 	
 	if not Engine.is_editor_hint():
 		import_grid()
@@ -71,10 +78,11 @@ func has_half_cells(player_id: int) -> bool:
 
 
 func import_grid() -> void:
-	%GroundLayer.clear()
-	%IslandLayer.clear()
+	%GroundMap.clear()
+	%IslandMap.clear()
 	%ClueLayer.clear()
-	%WallLayer.clear()
+	%WallMap.clear()
+	%ErrorMap.clear()
 	_values_by_cell.clear()
 	
 	var cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)
@@ -82,6 +90,11 @@ func import_grid() -> void:
 		set_cell(cell, cells[cell])
 	
 	half_cells = {}
+	
+	puzzle_dimensions = Vector2i.ZERO
+	for cell: Vector2i in cells:
+		puzzle_dimensions.x = max(puzzle_dimensions.x, cell.x + 1)
+		puzzle_dimensions.y = max(puzzle_dimensions.y, cell.y + 1)
 
 
 func refresh_cells() -> void:
@@ -92,20 +105,23 @@ func refresh_cells() -> void:
 	%ClueLayer.error_cells = error_cells
 	%ClueLayer.lowlight_cells = lowlight_cells
 	
-	for cell: Vector2i in %GroundLayer.get_used_cells():
-		%ErrorLayer.set_cell(cell, 0 if cell in error_cells else -1)
+	for cell: Vector3i in %GroundMap.get_used_cells():
+		var cell_2: Vector2i = Vector2i(cell.x, cell.z)
+		%ErrorMap.set_cell_item(cell, 0 if cell_2 in error_cells else -1)
 	
-	for cell: Vector2i in %IslandLayer.get_used_cells():
-		var island_id: int = 1 if cell in error_cells else 2 if cell in lowlight_cells else 0
-		if half_cells.has(cell):
+	for cell: Vector3i in %IslandMap.get_used_cells():
+		var cell_2: Vector2i = Vector2i(cell.x, cell.z)
+		var island_id: int = 1 if cell_2 in error_cells else 2 if cell_2 in lowlight_cells else 0
+		if half_cells.has(cell_2):
 			island_id += 3
-		%IslandLayer.set_cell(cell, island_id)
+		%IslandMap.set_cell_item(cell, island_id)
 	
-	for cell: Vector2i in %WallLayer.get_used_cells():
-		var wall_id: int = 1 if error_cells.has(cell) else 0
-		if half_cells.has(cell):
+	for cell: Vector3i in %WallMap.get_used_cells():
+		var cell_2: Vector2i = Vector2i(cell.x, cell.z)
+		var wall_id: int = 1 if error_cells.has(cell_2) else 0
+		if half_cells.has(cell_2):
 			wall_id += 2
-		%WallLayer.set_cell(cell, wall_id)
+		%WallMap.set_cell_item(cell, wall_id)
 
 
 func set_cell(cell_pos: Vector2i, value: int, _player_id: int = -1) -> void:
@@ -153,7 +169,7 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 		_values_by_cell[cell_pos] = value
 	
 	var ground_id: int = 0 if (cell_pos.x + cell_pos.y) % 2 == 0 else 1
-	%GroundLayer.set_cell(cell_pos, ground_id)
+	%GroundMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), ground_id)
 	
 	var island_id: int
 	if value != CELL_ISLAND:
@@ -162,7 +178,7 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 		island_id = 0
 		if half_cells.has(cell_pos):
 			island_id += 3
-	%IslandLayer.set_cell(cell_pos, island_id)
+	%IslandMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), island_id)
 	
 	%ClueLayer.set_cell(cell_pos, value)
 	
@@ -173,7 +189,7 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 		wall_id = 0
 		if half_cells.has(cell_pos):
 			wall_id += 2
-	%WallLayer.set_cell(cell_pos, wall_id)
+	%WallMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), wall_id)
 
 
 func _on_validate_timer_timeout() -> void:

@@ -1,319 +1,39 @@
 [gd_scene format=3 uid="uid://xb4lw3ia031v"]
 
 [ext_resource type="Script" uid="uid://cicxtvf82qgd6" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.gd" id="1_y4rxg"]
+[ext_resource type="MeshLibrary" uid="uid://jowpik4p1fcv" path="res://assets/main/nurikabe_3d/island.meshlib" id="3_7oba7"]
+[ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe_3d/wall.meshlib" id="4_udvwd"]
+[ext_resource type="MeshLibrary" uid="uid://g2bu4ug2kg6j" path="res://assets/main/nurikabe_3d/error.meshlib" id="5_fjy6h"]
 [ext_resource type="Script" uid="uid://n8fk6rhmnmq4" path="res://src/main/nurikabe_3d/clue_layer.gd" id="5_gtm4t"]
-[ext_resource type="Script" uid="uid://dmusjtf8vrjk6" path="res://src/main/nurikabe_3d/island_layer.gd" id="5_udvwd"]
-[ext_resource type="PackedScene" uid="uid://bosmnjoj2i4o3" path="res://src/main/nurikabe_3d/tile_layer_3d.tscn" id="7_0m552"]
-[ext_resource type="PackedScene" uid="uid://c2d4bo6af2l27" path="res://assets/main/nurikabe_3d/tile_island.glb" id="7_u7dsd"]
-[ext_resource type="Script" uid="uid://n7b8po0vqpgi" path="res://src/main/nurikabe_3d/ground_layer.gd" id="8_7oba7"]
-[ext_resource type="PackedScene" uid="uid://cdutltxcsj5ul" path="res://assets/main/nurikabe_3d/tile_island_error.glb" id="8_lo5cy"]
-[ext_resource type="PackedScene" uid="uid://cqai6ysm86ih3" path="res://assets/main/nurikabe_3d/tile_island_lowlight.glb" id="9_6ikeh"]
-[ext_resource type="PackedScene" uid="uid://2lhvmspmb1mu" path="res://assets/main/nurikabe_3d/tile_blank_1.glb" id="9_udvwd"]
-[ext_resource type="PackedScene" uid="uid://btu5ydf20s6wo" path="res://assets/main/nurikabe_3d/tile_blank_2.glb" id="10_fjy6h"]
-[ext_resource type="PackedScene" uid="uid://dkd0r4eswg4xk" path="res://assets/main/nurikabe_3d/tile_island_half.glb" id="10_hpwa4"]
-[ext_resource type="PackedScene" uid="uid://t667680c5umy" path="res://assets/main/nurikabe_3d/tile_island_half_error.glb" id="11_y0jfq"]
-[ext_resource type="PackedScene" uid="uid://dbrvxrtrmr3in" path="res://assets/main/nurikabe_3d/tile_island_half_lowlight.glb" id="12_ert4m"]
-[ext_resource type="Script" uid="uid://d38jnjcc4ht6p" path="res://src/main/nurikabe_3d/wall_layer.gd" id="19_cjwyn"]
-[ext_resource type="PackedScene" uid="uid://c31vm3rlrh3m6" path="res://assets/main/nurikabe_3d/tile_wall.glb" id="19_hpwa4"]
-[ext_resource type="Script" uid="uid://d3sihj1whft7a" path="res://src/main/nurikabe_3d/error_layer.gd" id="20_l6n5x"]
-[ext_resource type="PackedScene" uid="uid://binoxp55ed1rw" path="res://assets/main/nurikabe_3d/tile_wall_error.glb" id="20_y0jfq"]
-[ext_resource type="PackedScene" uid="uid://dtf8350mo8dsx" path="res://assets/main/nurikabe_3d/tile_wall_half.glb" id="21_ert4m"]
-[ext_resource type="PackedScene" uid="uid://cmss7hsaapr3u" path="res://assets/main/nurikabe_3d/tile_wall_half_error.glb" id="22_tl3ev"]
-[ext_resource type="PackedScene" uid="uid://c3gb6wp2gnr03" path="res://assets/main/nurikabe_3d/tile_ground_error.glb" id="23_hpwa4"]
+[ext_resource type="MeshLibrary" uid="uid://dhgxso5vkoqta" path="res://assets/main/nurikabe_3d/ground.meshlib" id="21_lo5cy"]
 
 [node name="GameBoard3D" type="Node3D" unique_id=361717472]
 script = ExtResource("1_y4rxg")
 
-[node name="GroundLayer" parent="." unique_id=2136397652 instance=ExtResource("7_0m552")]
+[node name="GroundMap" type="GridMap" parent="." unique_id=264530718]
 unique_name_in_owner = true
-script = ExtResource("8_7oba7")
-tile_scenes = Dictionary[int, PackedScene]({
-0: ExtResource("9_udvwd"),
-1: ExtResource("10_fjy6h")
-})
-
-[node name="tile_0_0" parent="GroundLayer" unique_id=1367250993 instance=ExtResource("9_udvwd")]
-
-[node name="tile_1_0" parent="GroundLayer" unique_id=2052620802 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
-
-[node name="tile_2_0" parent="GroundLayer" unique_id=2145468125 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
-
-[node name="tile_3_0" parent="GroundLayer" unique_id=578291966 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0)
-
-[node name="tile_4_0" parent="GroundLayer" unique_id=146686586 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
-
-[node name="tile_5_0" parent="GroundLayer" unique_id=1656748672 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
-
-[node name="tile_6_0" parent="GroundLayer" unique_id=1942959333 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0)
-
-[node name="tile_0_1" parent="GroundLayer" unique_id=399442195 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-
-[node name="tile_1_1" parent="GroundLayer" unique_id=1802561875 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
-
-[node name="tile_2_1" parent="GroundLayer" unique_id=846362333 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
-
-[node name="tile_3_1" parent="GroundLayer" unique_id=2049429385 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 1)
-
-[node name="tile_4_1" parent="GroundLayer" unique_id=539921545 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 1)
-
-[node name="tile_5_1" parent="GroundLayer" unique_id=460107580 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 1)
-
-[node name="tile_6_1" parent="GroundLayer" unique_id=1365600383 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 1)
-
-[node name="tile_0_2" parent="GroundLayer" unique_id=1442475602 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
-
-[node name="tile_1_2" parent="GroundLayer" unique_id=775018607 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
-
-[node name="tile_2_2" parent="GroundLayer" unique_id=1307916451 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
-
-[node name="tile_3_2" parent="GroundLayer" unique_id=829161275 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 2)
-
-[node name="tile_4_2" parent="GroundLayer" unique_id=2042992390 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 2)
-
-[node name="tile_5_2" parent="GroundLayer" unique_id=1669950324 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 2)
-
-[node name="tile_6_2" parent="GroundLayer" unique_id=1950909634 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
-
-[node name="tile_0_3" parent="GroundLayer" unique_id=555241506 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
-
-[node name="tile_1_3" parent="GroundLayer" unique_id=2031874019 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
-
-[node name="tile_2_3" parent="GroundLayer" unique_id=914422092 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 3)
-
-[node name="tile_3_3" parent="GroundLayer" unique_id=154504198 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 3)
-
-[node name="tile_4_3" parent="GroundLayer" unique_id=1404471129 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 3)
-
-[node name="tile_5_3" parent="GroundLayer" unique_id=164111540 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 3)
-
-[node name="tile_6_3" parent="GroundLayer" unique_id=1972575775 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 3)
-
-[node name="tile_0_4" parent="GroundLayer" unique_id=243110821 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
-
-[node name="tile_1_4" parent="GroundLayer" unique_id=532482833 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 4)
-
-[node name="tile_2_4" parent="GroundLayer" unique_id=1021447717 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 4)
-
-[node name="tile_3_4" parent="GroundLayer" unique_id=1295761783 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 4)
-
-[node name="tile_4_4" parent="GroundLayer" unique_id=808091608 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
-
-[node name="tile_5_4" parent="GroundLayer" unique_id=295762437 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 4)
-
-[node name="tile_6_4" parent="GroundLayer" unique_id=906935727 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 4)
-
-[node name="tile_0_5" parent="GroundLayer" unique_id=1570845819 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
-
-[node name="tile_1_5" parent="GroundLayer" unique_id=492248050 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 5)
-
-[node name="tile_2_5" parent="GroundLayer" unique_id=1413208165 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 5)
-
-[node name="tile_3_5" parent="GroundLayer" unique_id=1403115369 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 5)
-
-[node name="tile_4_5" parent="GroundLayer" unique_id=1827019308 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 5)
-
-[node name="tile_5_5" parent="GroundLayer" unique_id=280348557 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
-
-[node name="tile_6_5" parent="GroundLayer" unique_id=1432900886 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 5)
-
-[node name="@Node3D@23508" parent="GroundLayer" unique_id=1625991100 instance=ExtResource("9_udvwd")]
-
-[node name="@Node3D@23509" parent="GroundLayer" unique_id=1093060438 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
-
-[node name="@Node3D@23510" parent="GroundLayer" unique_id=1538349818 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
-
-[node name="@Node3D@23511" parent="GroundLayer" unique_id=691094091 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0)
-
-[node name="@Node3D@23512" parent="GroundLayer" unique_id=1534550005 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
-
-[node name="@Node3D@23513" parent="GroundLayer" unique_id=654077119 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
-
-[node name="@Node3D@23514" parent="GroundLayer" unique_id=800906268 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0)
-
-[node name="@Node3D@23515" parent="GroundLayer" unique_id=919496511 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-
-[node name="@Node3D@23516" parent="GroundLayer" unique_id=418955702 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
-
-[node name="@Node3D@23517" parent="GroundLayer" unique_id=606237879 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
-
-[node name="@Node3D@23518" parent="GroundLayer" unique_id=1676251242 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 1)
-
-[node name="@Node3D@23519" parent="GroundLayer" unique_id=1961805118 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 1)
-
-[node name="@Node3D@23520" parent="GroundLayer" unique_id=1607609491 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 1)
-
-[node name="@Node3D@23521" parent="GroundLayer" unique_id=1256419234 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 1)
-
-[node name="@Node3D@23522" parent="GroundLayer" unique_id=212992850 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
-
-[node name="@Node3D@23523" parent="GroundLayer" unique_id=680520564 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
-
-[node name="@Node3D@23524" parent="GroundLayer" unique_id=774989803 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
-
-[node name="@Node3D@23525" parent="GroundLayer" unique_id=199103919 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 2)
-
-[node name="@Node3D@23526" parent="GroundLayer" unique_id=1126572066 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 2)
-
-[node name="@Node3D@23527" parent="GroundLayer" unique_id=522991814 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 2)
-
-[node name="@Node3D@23528" parent="GroundLayer" unique_id=1108319545 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
-
-[node name="@Node3D@23529" parent="GroundLayer" unique_id=2108726915 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
-
-[node name="@Node3D@23530" parent="GroundLayer" unique_id=912066225 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
-
-[node name="@Node3D@23531" parent="GroundLayer" unique_id=1260444396 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 3)
-
-[node name="@Node3D@23532" parent="GroundLayer" unique_id=440795746 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 3)
-
-[node name="@Node3D@23533" parent="GroundLayer" unique_id=1352914388 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 3)
-
-[node name="@Node3D@23534" parent="GroundLayer" unique_id=1885286215 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 3)
-
-[node name="@Node3D@23535" parent="GroundLayer" unique_id=875737962 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 3)
-
-[node name="@Node3D@23536" parent="GroundLayer" unique_id=343998155 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
-
-[node name="@Node3D@23537" parent="GroundLayer" unique_id=1088457819 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 4)
-
-[node name="@Node3D@23538" parent="GroundLayer" unique_id=1506576080 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 4)
-
-[node name="@Node3D@23539" parent="GroundLayer" unique_id=1253822513 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 4)
-
-[node name="@Node3D@23540" parent="GroundLayer" unique_id=684090235 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
-
-[node name="@Node3D@23541" parent="GroundLayer" unique_id=1750230436 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 4)
-
-[node name="@Node3D@23542" parent="GroundLayer" unique_id=448777854 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 4)
-
-[node name="@Node3D@23543" parent="GroundLayer" unique_id=584219540 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
-
-[node name="@Node3D@23544" parent="GroundLayer" unique_id=1762696626 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 5)
-
-[node name="@Node3D@23545" parent="GroundLayer" unique_id=464318055 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 5)
-
-[node name="@Node3D@23546" parent="GroundLayer" unique_id=667771302 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 5)
-
-[node name="@Node3D@23547" parent="GroundLayer" unique_id=213078226 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 5)
-
-[node name="@Node3D@23548" parent="GroundLayer" unique_id=2038745371 instance=ExtResource("9_udvwd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
-
-[node name="@Node3D@23549" parent="GroundLayer" unique_id=14918386 instance=ExtResource("10_fjy6h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 5)
-
-[node name="IslandLayer" parent="." unique_id=626022863 instance=ExtResource("7_0m552")]
+mesh_library = ExtResource("21_lo5cy")
+cell_size = Vector3(1, 1, 1)
+collision_layer = 17
+
+[node name="IslandMap" type="GridMap" parent="." unique_id=1375406240]
 unique_name_in_owner = true
-script = ExtResource("5_udvwd")
-tile_scenes = Dictionary[int, PackedScene]({
-0: ExtResource("7_u7dsd"),
-1: ExtResource("8_lo5cy"),
-2: ExtResource("9_6ikeh"),
-3: ExtResource("10_hpwa4"),
-4: ExtResource("11_y0jfq"),
-5: ExtResource("12_ert4m")
-})
+mesh_library = ExtResource("3_7oba7")
+cell_size = Vector3(1, 1, 1)
 
 [node name="ClueLayer" type="Node3D" parent="." unique_id=1700644307]
 unique_name_in_owner = true
 script = ExtResource("5_gtm4t")
 
-[node name="WallLayer" parent="." unique_id=306070301 instance=ExtResource("7_0m552")]
+[node name="WallMap" type="GridMap" parent="." unique_id=472100902]
 unique_name_in_owner = true
-script = ExtResource("19_cjwyn")
-tile_scenes = Dictionary[int, PackedScene]({
-0: ExtResource("19_hpwa4"),
-1: ExtResource("20_y0jfq"),
-2: ExtResource("21_ert4m"),
-3: ExtResource("22_tl3ev")
-})
+mesh_library = ExtResource("4_udvwd")
+cell_size = Vector3(1, 1, 1)
 
-[node name="ErrorLayer" parent="." unique_id=519283625 instance=ExtResource("7_0m552")]
+[node name="ErrorMap" type="GridMap" parent="." unique_id=1343692462]
 unique_name_in_owner = true
-script = ExtResource("20_l6n5x")
-tile_scenes = Dictionary[int, PackedScene]({
-0: ExtResource("23_hpwa4")
-})
+mesh_library = ExtResource("5_fjy6h")
+cell_size = Vector3(1, 1, 1)
 
 [node name="ValidateTimer" type="Timer" parent="." unique_id=397237380]
 unique_name_in_owner = true

@@ -107,15 +107,6 @@ static func find_parent_of_type(node: Node, type: Variant) -> Node:
 	return curr
 
 
-static func find_parent_in_group(node: Node, group: StringName) -> Node:
-	var curr: Node = node.get_parent()
-	while curr != null:
-		if curr.is_in_group(group):
-			break
-		curr = curr.get_parent()
-	return curr
-
-
 ## Returns a list of group members within the specified parent node.
 static func get_subtree_members(parent: Node, group: String) -> Array[Node]:
 	if not parent:

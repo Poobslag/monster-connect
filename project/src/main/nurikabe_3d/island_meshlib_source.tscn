@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://72ww2f7dbc75"]
+
+[ext_resource type="PackedScene" uid="uid://c2d4bo6af2l27" path="res://assets/main/nurikabe_3d/tile_island.glb" id="1_dhajy"]
+[ext_resource type="PackedScene" uid="uid://cdutltxcsj5ul" path="res://assets/main/nurikabe_3d/tile_island_error.glb" id="2_26j8m"]
+[ext_resource type="PackedScene" uid="uid://cqai6ysm86ih3" path="res://assets/main/nurikabe_3d/tile_island_lowlight.glb" id="3_gt3bj"]
+[ext_resource type="PackedScene" uid="uid://dkd0r4eswg4xk" path="res://assets/main/nurikabe_3d/tile_island_half.glb" id="4_1qmeq"]
+[ext_resource type="PackedScene" uid="uid://t667680c5umy" path="res://assets/main/nurikabe_3d/tile_island_half_error.glb" id="5_pkm15"]
+[ext_resource type="PackedScene" uid="uid://dbrvxrtrmr3in" path="res://assets/main/nurikabe_3d/tile_island_half_lowlight.glb" id="6_tdogb"]
+
+[node name="Node3D" type="Node3D" unique_id=2025555396]
+
+[node name="tile_island" parent="." unique_id=113366340 instance=ExtResource("1_dhajy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.934442, 0, -2.7643619)
+
+[node name="tile_island_error" parent="." unique_id=1456896978 instance=ExtResource("2_26j8m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.934442, 0, -2.7643619)
+
+[node name="tile_island_lowlight" parent="." unique_id=738814670 instance=ExtResource("3_gt3bj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.934442, 0, -2.7643619)
+
+[node name="tile_island_half" parent="." unique_id=1971079296 instance=ExtResource("4_1qmeq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.934442, 0, -2.7643619)
+
+[node name="tile_island_half_error" parent="." unique_id=1897253218 instance=ExtResource("5_pkm15")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.934442, 0, -2.7643619)
+
+[node name="tile_island_half_lowlight" parent="." unique_id=534965554 instance=ExtResource("6_tdogb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.934442, 0, -2.7643619)

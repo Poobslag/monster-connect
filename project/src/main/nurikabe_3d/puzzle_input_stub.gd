@@ -30,6 +30,10 @@ func _process(_delta: float) -> void:
 		var cell: Vector2i = board_hit["cell"]
 		%Cursor.visible = true
 		%Cursor.position = board.map_to_global(cell)
+		%Cursor.position += Vector3(
+				board.tile_size.x * 0.5,
+				NurikabeGameBoard3D.GROUND_HEIGHT,
+				board.tile_size.y * 0.5)
 	else:
 		%Cursor.visible = false
 
@@ -45,13 +49,15 @@ func get_board_hit_at_mouse() -> Dictionary[String, Variant]:
 	var ray_end: Vector3 = ray_origin + camera.project_ray_normal(mouse_pos) * 200.0
 	
 	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(ray_origin, ray_end)
+	query.collision_mask = 0b00000000_00000000_00000000_00010000
 	var query_result: Dictionary = space.intersect_ray(query)
 	
 	if not query_result.is_empty():
-		var board_cell: Node3D = Utils.find_parent_in_group(query_result["collider"], "board_cells")
-		if board_cell != null:
-			board_hit["board"] = board_cell.get_meta("board")
-			board_hit["cell"] = board_cell.get_meta("cell")
+		if query_result["collider"] is GridMap:
+			var grid_map: GridMap = query_result["collider"]
+			var cell_3: Vector3i = grid_map.local_to_map(grid_map.to_local(query_result["position"]))
+			board_hit["board"] = grid_map.get_parent()
+			board_hit["cell"] = Vector2i(cell_3.x, cell_3.z)
 	
 	return board_hit
 

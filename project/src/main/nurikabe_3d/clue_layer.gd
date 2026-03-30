@@ -2,7 +2,7 @@
 extends Node3D
 
 const LABEL_OFFSET: Vector2 = Vector2(0.0, 0.025)
-const TEXT_FLOAT_OFFSET: float = GroundLayer.TEXT_FLOAT_OFFSET
+const TEXT_FLOAT_OFFSET: float = NurikabeGameBoard3D.TEXT_FLOAT_OFFSET
 
 const CLUE_LABEL_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/clue_label_3d.tscn")
 
@@ -65,9 +65,9 @@ func set_cell(cell_pos: Vector2i, value: int) -> void:
 		
 		label.scale.x = tile_size.x
 		label.scale.z = tile_size.y
-		label.position.x = cell_pos.x * tile_size.x + LABEL_OFFSET.x * tile_size.x
+		label.position.x = (cell_pos.x + 0.5) * tile_size.x + LABEL_OFFSET.x * tile_size.x
 		label.position.y = TEXT_FLOAT_OFFSET # elevate the label above the tile
-		label.position.z = cell_pos.y * tile_size.y + LABEL_OFFSET.y * tile_size.y
+		label.position.z = (cell_pos.y + 0.5) * tile_size.y + LABEL_OFFSET.y * tile_size.y
 	elif has_clue and not should_have_clue:
 		tiles_by_cell[cell_pos].queue_free()
 		tiles_by_cell.erase(cell_pos)
