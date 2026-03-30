@@ -6,6 +6,8 @@ const TEXT_FLOAT_OFFSET: float = GroundLayer.TEXT_FLOAT_OFFSET
 
 const CLUE_LABEL_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/clue_label_3d.tscn")
 
+@export var tile_size: Vector2 = Vector2.ONE
+
 @export var error_cells: Dictionary[Vector2i, bool] = {}:
 	set(value):
 		error_cells = value
@@ -16,7 +18,6 @@ const CLUE_LABEL_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/clue_l
 		lowlight_cells = value
 		_dirty = true
 
-var tile_size: Vector2 = Vector2(1, 1)
 var tiles_by_cell: Dictionary[Vector2i, ClueLabel3D] = {}
 
 var _values_by_cell: Dictionary[Vector2i, int] = {}
