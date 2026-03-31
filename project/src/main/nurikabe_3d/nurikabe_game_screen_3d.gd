@@ -1,0 +1,241 @@
+extends Control
+
+const DEBUG_COLORS: Array[Color] = [
+	Color("#F7D046"), # yellow
+	Color("#2E86FF"), # blue
+	Color("#E74C3C"), # red
+	Color("#8E44AD"), # purple
+	Color("#F39C12"), # orange
+	Color("#27AE60"), # green
+	Color("#8E5A2A"), # brown
+]
+
+const DEFAULT_SKIN_VALUES: Array[Monster.MonsterSkin] = [
+	Monster.MonsterSkin.BEIGE,
+	Monster.MonsterSkin.GREEN,
+	Monster.MonsterSkin.PINK,
+	Monster.MonsterSkin.PURPLE,
+	Monster.MonsterSkin.YELLOW,
+]
+
+const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn")
+
+@export var target_puzzle_count: int = 7
+@export var show_puzzle_ids: bool = false
+
+## Force all puzzles to use the same fixed path. Useful for debugging.
+@export_file("*.txt") var test_puzzle_path: String
+
+var _all_puzzles: Array[String] = Utils.find_data_files(NurikabeUtils.PUZZLE_DIR, "txt")
+var _puzzle_queue: Array[String] = []
+
+func _ready() -> void:
+	clear_game_boards()
+	refresh_game_boards()
+	
+	%TutorialOverlay.show_tutorial()
+
+
+func _enter_tree() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+
+
+func _exit_tree() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+
+func _input(event: InputEvent) -> void:
+	if Utils.key_press(event) == KEY_SLASH:
+		%CommandPalette.open()
+	elif event.is_action_pressed("tutorial"):
+		if %ResultsOverlay.visible:
+			%ResultsOverlay.hide_results()
+		if %TutorialOverlay.visible:
+			%TutorialOverlay.hide_tutorial()
+		else:
+			%TutorialOverlay.show_tutorial()
+
+
+func clear_game_boards() -> void:
+	for game_board: NurikabeGameBoard3D in get_game_boards():
+		remove_game_board(game_board)
+
+
+func remove_game_board(game_board: NurikabeGameBoard3D) -> void:
+	game_board.queue_free()
+
+
+func get_game_boards() -> Array[NurikabeGameBoard3D]:
+	var result: Array[NurikabeGameBoard3D] = []
+	result.assign(%GameBoards.get_children().filter(
+		func(node: Node) -> bool:
+			return node is NurikabeGameBoard3D and not node.is_queued_for_deletion()))
+	return result
+
+
+func refresh_game_boards() -> void:
+	# remove all empty/solved puzzles
+	for game_board: NurikabeGameBoard3D in get_game_boards():
+		if game_board.is_finished() or not game_board.is_started():
+			remove_game_board(game_board)
+	
+	# add puzzles to reach the target puzzle count
+	var new_puzzle_count: int = target_puzzle_count - get_game_boards().size()
+	for _i: int in new_puzzle_count:
+		add_random_puzzle()
+
+
+func add_random_puzzle() -> void:
+	var puzzle_path: String = test_puzzle_path if test_puzzle_path else _next_puzzle_path()
+	var game_board: NurikabeGameBoard3D = GAME_BOARD_SCENE.instantiate()
+	
+	_attach_puzzle_info(game_board, puzzle_path)
+	_generate_board_label_text(game_board)
+	_generate_board_string_id(game_board)
+	_position_board_in_world(game_board)
+
+
+func _attach_puzzle_info(game_board: NurikabeGameBoard3D, puzzle_path: String) -> void:
+	var new_grid_string: String = NurikabeUtils.load_grid_string_from_file(puzzle_path)
+	
+	if not test_puzzle_path:
+		var mirrored: bool = randf() < 0.5
+		if mirrored:
+			new_grid_string = NurikabeUtils.mirror_grid_string(new_grid_string)
+		game_board.set_meta("mirrored", mirrored)
+		var rotated_turns: int = randi_range(0, 3)
+		game_board.set_meta("rotation_turns", rotated_turns)
+		new_grid_string = NurikabeUtils.rotate_grid_string(new_grid_string, rotated_turns)
+	
+	game_board.grid_string = new_grid_string
+	game_board.import_grid()
+	game_board.puzzle_finished.connect(_on_game_board_puzzle_finished.bind(game_board))
+	game_board.set_meta("puzzle_path", puzzle_path)
+	
+	var info_path: String = NurikabeUtils.get_puzzle_info_path(puzzle_path)
+	if FileAccess.file_exists(info_path):
+		var saver: PuzzleInfoSaver = PuzzleInfoSaver.new()
+		game_board.info = saver.load_puzzle_info(info_path)
+	
+	if game_board.info != null:
+		game_board.hint_model = PuzzleHintModel.new(
+				game_board.info,
+				game_board.get_meta("mirrored", false),
+				game_board.get_meta("rotation_turns", 0))
+
+
+func _generate_board_label_text(game_board: NurikabeGameBoard3D) -> void:
+	if game_board.info == null:
+		return
+	if show_puzzle_ids:
+		var puzzle_path: String = game_board.get_meta("puzzle_path")
+		game_board.label_text = "#%s - %s" % [
+				puzzle_path.get_file().get_basename(),
+				_difficulty_label(game_board.info.get("difficulty")),
+			]
+	else:
+		game_board.label_text = _difficulty_label(game_board.info.get("difficulty"))
+
+
+func _generate_board_string_id(game_board: NurikabeGameBoard3D) -> void:
+	var clue_cell_values: Array[int] = []
+	var clue_cells: Array[Vector2i] = game_board.get_clue_cells()
+	var clue_cells_str: String
+	for clue_cell: Vector2i in clue_cells:
+		clue_cell_values.append(game_board.get_cell(clue_cell))
+		if clue_cell_values.size() >= 3:
+			break
+	clue_cells_str = "-".join(clue_cell_values) if clue_cells else "0"
+	
+	var puzzle_path: String = game_board.get_meta("puzzle_path")
+	game_board.string_id = "%s-%sx%s-%s-%s" % [
+		puzzle_path.get_file().get_basename(),
+		game_board.puzzle_dimensions.x, game_board.puzzle_dimensions.y,
+		game_board.label_text.to_lower().left(3),
+		clue_cells_str,
+	]
+
+
+func _position_board_in_world(game_board: NurikabeGameBoard3D) -> void:
+	%GameBoards.add_child(game_board)
+	
+	var angle: float = randf_range(0, 2 * PI)
+	var dist: float = randf_range(0, 0.8)
+	for _mercy in 100:
+		game_board.position = Vector3.RIGHT.rotated(Vector3.UP, angle) * dist
+		if not _overlaps_world_occupants(game_board):
+			break
+		angle = fmod(angle + 0.2, 2 * PI)
+		dist = dist * 1.10 + 1.6
+
+
+func _difficulty_label(score: float) -> String:
+	var result: String = ""
+	if score < 2:
+		result = "Easy"
+	elif score < 5:
+		result = "Medium"
+	elif score < 8:
+		result = "Hard"
+	else:
+		result = "Expert"
+	return result
+
+
+func _existing_game_board_has_path(path: String) -> bool:
+	var result: bool = false
+	for existing_board: NurikabeGameBoard3D in get_game_boards():
+		if existing_board.get_meta("puzzle_path") == path:
+			result = true
+			break
+	return result
+
+
+func _next_puzzle_path() ->  String:
+	var puzzle_path: String
+	
+	for _mercy in 50:
+		if _puzzle_queue.is_empty():
+			_puzzle_queue = _all_puzzles.duplicate()
+			_puzzle_queue.shuffle()
+		puzzle_path = _puzzle_queue.pop_front()
+		if not _existing_game_board_has_path(puzzle_path):
+			break
+	
+	return puzzle_path
+
+
+func _overlaps_world_occupants(new_board: NurikabeGameBoard3D) -> bool:
+	var result: bool = false
+	for occupant: Node3D in Utils.get_subtree_members(self, "world_occupants"):
+		if occupant.is_queued_for_deletion():
+			continue
+		if occupant == new_board:
+			continue
+		if occupant.get_aabb().grow(1.0).intersects(new_board.get_aabb().grow(1.0)):
+			result = true
+			break
+	return result
+
+
+func _on_refresher_refresh_requested() -> void:
+	refresh_game_boards()
+
+
+func _on_game_board_puzzle_finished(_game_board: NurikabeGameBoard3D) -> void:
+	if not %TutorialOverlay.visible:
+		%ResultsOverlay.show_results()
+
+
+func _on_command_palette_command_entered(command: String) -> void:
+	match command:
+		"/ids":
+			SoundManager.play_sfx("cheat_enabled")
+			show_puzzle_ids = true
+			for game_board: NurikabeGameBoard3D in get_game_boards():
+				_generate_board_label_text(game_board)
+		"/noids":
+			SoundManager.play_sfx("cheat_disabled")
+			show_puzzle_ids = false
+			for game_board: NurikabeGameBoard3D in get_game_boards():
+				_generate_board_label_text(game_board)

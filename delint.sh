@@ -288,7 +288,7 @@ RESULT=$(grep -R -n " := " --include="*.gd" project/src \
   | grep -v " := \(true\|false\)" \
   | grep -v " := \(\"\|'\|r\"\|&\"\|^\"\)" \
   | grep -v " := \(\[\|\{\)" \
-  | grep -v " := \(Color\|Vector\|Vector2i\|PackedFloat32Array\|PackedStringArray\)" \
+  | grep -v " := \(Color\|Vector\|PackedFloat32Array\|PackedStringArray\)" \
   | grep -v " := [A-Z][A-Za-z0-9]*\.new()" \
   )
 if [ -n "$RESULT" ]; then
