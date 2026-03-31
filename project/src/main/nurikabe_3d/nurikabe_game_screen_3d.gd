@@ -10,6 +10,8 @@ const DEBUG_COLORS: Array[Color] = [
 	Color("#8E5A2A"), # brown
 ]
 
+const DEBUG_PATH_WIDTH: float = 0.06
+
 const DEFAULT_SKIN_VALUES: Array[Monster.MonsterSkin] = [
 	Monster.MonsterSkin.BEIGE,
 	Monster.MonsterSkin.GREEN,
@@ -21,6 +23,7 @@ const DEFAULT_SKIN_VALUES: Array[Monster.MonsterSkin] = [
 const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn")
 
 @export var target_puzzle_count: int = 7
+@export var draw_debug_paths: bool = false
 @export var show_puzzle_ids: bool = false
 
 ## Force all puzzles to use the same fixed path. Useful for debugging.
@@ -34,6 +37,8 @@ func _ready() -> void:
 	refresh_game_boards()
 	
 	%TutorialOverlay.show_tutorial()
+	
+	%DebugPaths.visible = draw_debug_paths
 
 
 func _enter_tree() -> void:
@@ -74,6 +79,9 @@ func get_game_boards() -> Array[NurikabeGameBoard3D]:
 
 
 func refresh_game_boards() -> void:
+	for child in %DebugPaths.get_children():
+		child.queue_free()
+	
 	# remove all empty/solved puzzles
 	for game_board: NurikabeGameBoard3D in get_game_boards():
 		if game_board.is_finished() or not game_board.is_started():
@@ -157,16 +165,49 @@ func _generate_board_string_id(game_board: NurikabeGameBoard3D) -> void:
 
 
 func _position_board_in_world(game_board: NurikabeGameBoard3D) -> void:
+	var debug_path: Array[Vector3] = []
+	
 	%GameBoards.add_child(game_board)
 	
 	var angle: float = randf_range(0, 2 * PI)
 	var dist: float = randf_range(0, 0.8)
 	for _mercy in 100:
 		game_board.position = Vector3.RIGHT.rotated(Vector3.UP, angle) * dist
+		debug_path.append(game_board.position)
 		if not _overlaps_world_occupants(game_board):
 			break
 		angle = fmod(angle + 0.2, 2 * PI)
 		dist = dist * 1.10 + 1.6
+	
+	if draw_debug_paths:
+		_add_debug_path(debug_path)
+
+
+func _add_debug_path(debug_path: Array[Vector3]) -> void:
+	if debug_path.size() < 2:
+		return
+	
+	for i in debug_path.size() - 1:
+		var from: Vector3 = debug_path[i]
+		if i != 0:
+			from.y += 1.0
+		var to: Vector3 = debug_path[i + 1]
+		if i != debug_path.size() - 2:
+			to.y += 1.0
+		var segment_length: float = from.distance_to(to)
+		if segment_length < 0.001:
+			continue
+		var mesh_instance := MeshInstance3D.new()
+		var line_material := StandardMaterial3D.new()
+		line_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		line_material.albedo_color = DEBUG_COLORS[%GameBoards.get_child_count() % DEBUG_COLORS.size()]
+		mesh_instance.material_override = line_material
+		var mesh := BoxMesh.new()
+		mesh.size = Vector3(DEBUG_PATH_WIDTH, DEBUG_PATH_WIDTH, segment_length)
+		mesh_instance.mesh = mesh
+		mesh_instance.position = (from + to) / 2.0
+		mesh_instance.basis = Basis.looking_at((to - from).normalized(), Vector3.UP)
+		%DebugPaths.add_child(mesh_instance)
 
 
 func _difficulty_label(score: float) -> String:
