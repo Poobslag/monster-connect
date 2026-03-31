@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://vn0ch8gypr53"]
 
 [ext_resource type="Script" uid="uid://d1fvuu28jgpu" path="res://src/demo/nurikabe_3d/demo_game_board_3d.gd" id="1_3pu41"]
-[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/game_board_3d.tscn" id="2_ocio7"]
+[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn" id="2_ocio7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o028g"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)

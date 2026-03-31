@@ -7,7 +7,7 @@ extends Node
 
 const CANDIDATE_SCALES: Array[float] = [1.0, 0.5, 0.33, 0.25]
 const BOARD_SPACING: int = 20
-const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe/game_board.tscn")
+const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe/nurikabe_game_board.tscn")
 const DEMO_MUTATOR_LABEL_SCENE: PackedScene = preload("res://src/demo/nurikabe/generator/demo_mutator_label.tscn")
 const LABEL_HEIGHT: float = 200
 

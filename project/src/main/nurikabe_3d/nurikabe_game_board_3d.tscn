@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://xb4lw3ia031v"]
+
+[ext_resource type="Script" uid="uid://cicxtvf82qgd6" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.gd" id="1_qbvnj"]
+[ext_resource type="MeshLibrary" uid="uid://dhgxso5vkoqta" path="res://assets/main/nurikabe_3d/ground.meshlib" id="2_dqa1y"]
+[ext_resource type="MeshLibrary" uid="uid://jowpik4p1fcv" path="res://assets/main/nurikabe_3d/island.meshlib" id="3_d75un"]
+[ext_resource type="Script" uid="uid://n8fk6rhmnmq4" path="res://src/main/nurikabe_3d/clue_layer.gd" id="4_6s04n"]
+[ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe_3d/wall.meshlib" id="5_aqkwp"]
+[ext_resource type="MeshLibrary" uid="uid://g2bu4ug2kg6j" path="res://assets/main/nurikabe_3d/error.meshlib" id="6_5x44w"]
+
+[node name="GameBoard" type="Node3D" unique_id=361717472]
+script = ExtResource("1_qbvnj")
+
+[node name="GroundMap" type="GridMap" parent="." unique_id=264530718]
+unique_name_in_owner = true
+mesh_library = ExtResource("2_dqa1y")
+cell_size = Vector3(1, 1, 1)
+collision_layer = 17
+
+[node name="IslandMap" type="GridMap" parent="." unique_id=1375406240]
+unique_name_in_owner = true
+mesh_library = ExtResource("3_d75un")
+cell_size = Vector3(1, 1, 1)
+
+[node name="ClueLayer" type="Node3D" parent="." unique_id=1700644307]
+unique_name_in_owner = true
+script = ExtResource("4_6s04n")
+
+[node name="WallMap" type="GridMap" parent="." unique_id=472100902]
+unique_name_in_owner = true
+mesh_library = ExtResource("5_aqkwp")
+cell_size = Vector3(1, 1, 1)
+
+[node name="ErrorMap" type="GridMap" parent="." unique_id=1343692462]
+unique_name_in_owner = true
+mesh_library = ExtResource("6_5x44w")
+cell_size = Vector3(1, 1, 1)
+
+[node name="ValidateTimer" type="Timer" parent="." unique_id=397237380]
+unique_name_in_owner = true
+wait_time = 0.05
+one_shot = true
+
+[connection signal="timeout" from="ValidateTimer" to="." method="_on_validate_timer_timeout"]
