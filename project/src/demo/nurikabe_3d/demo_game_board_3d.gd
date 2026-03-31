@@ -3,7 +3,7 @@ extends Node
 ## 	[kbd][Q,W,E,R][/kbd]: Change puzzle count to 5/15/50/150.
 ## 	[kbd][A,S,D,F][/kbd]: Change puzzle size to 5x5/10x10/20x20/30x30.
 
-const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/game_board_3d.tscn")
+const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn")
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND

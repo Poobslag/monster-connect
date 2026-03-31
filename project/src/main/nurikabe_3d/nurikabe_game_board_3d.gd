@@ -38,7 +38,26 @@ var half_cells: Dictionary[Vector2i, int] = {}:
 		half_cells = value
 		_cells_dirty = true
 
+var label_text: String = "":
+	set(value):
+		label_text = value
+		%Label3D.text = value
+		%Label3D.visible = true if label_text else false
+
 var puzzle_dimensions: Vector2i
+
+## Unique identifier string for this puzzle, used for debugging and logging.[br]
+## [br]
+## Format: "{archive-num}-{width}x{height}-{difficulty}-{clue1}-{clue2}-{clue3}"[br]
+## Example: "284-16x15-med-4-2-3"[br]
+## 	- Puzzle #284 in the archive
+## 	- 16 cells wide, 15 cells tall
+## 	- Medium difficulty
+## 	- First three clues (reading order) are 4, 2, 3
+var string_id: String
+
+var info: PuzzleInfo
+var hint_model: PuzzleHintModel
 
 var _cells_dirty: bool = false
 var _values_by_cell: Dictionary[Vector2i, int] = {}
@@ -63,6 +82,15 @@ func clear_half_cells(player_id: int) -> void:
 	for cell: Vector2i in get_half_cells(player_id):
 		half_cells.erase(cell)
 	_cells_dirty = true
+
+
+func get_aabb() -> AABB:
+	var size := Vector3(
+		puzzle_dimensions.x * tile_size.x,
+		1,
+		puzzle_dimensions.y * tile_size.y,
+	)
+	return AABB(global_position, size)
 
 
 func get_half_cells(player_id: int) -> Array[Vector2i]:
@@ -135,6 +163,10 @@ func get_cell(cell_pos: Vector2i) -> int:
 
 func get_used_cells() -> Array[Vector2i]:
 	return _values_by_cell.keys()
+
+
+func get_clue_cells() -> Array[Vector2i]:
+	return %ClueLayer.tiles_by_cell.keys()
 
 
 func map_to_global(cell: Vector2i) -> Vector3:

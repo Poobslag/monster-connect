@@ -1,14 +1,27 @@
 [gd_scene format=3 uid="uid://xb4lw3ia031v"]
 
 [ext_resource type="Script" uid="uid://cicxtvf82qgd6" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.gd" id="1_qbvnj"]
+[ext_resource type="FontFile" uid="uid://nnkrh038qmdb" path="res://assets/main/ui/kenney/kenvector_future.ttf" id="2_aqkwp"]
 [ext_resource type="MeshLibrary" uid="uid://dhgxso5vkoqta" path="res://assets/main/nurikabe_3d/ground.meshlib" id="2_dqa1y"]
 [ext_resource type="MeshLibrary" uid="uid://jowpik4p1fcv" path="res://assets/main/nurikabe_3d/island.meshlib" id="3_d75un"]
 [ext_resource type="Script" uid="uid://n8fk6rhmnmq4" path="res://src/main/nurikabe_3d/clue_layer.gd" id="4_6s04n"]
 [ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe_3d/wall.meshlib" id="5_aqkwp"]
 [ext_resource type="MeshLibrary" uid="uid://g2bu4ug2kg6j" path="res://assets/main/nurikabe_3d/error.meshlib" id="6_5x44w"]
 
-[node name="GameBoard" type="Node3D" unique_id=361717472]
+[node name="GameBoard" type="Node3D" unique_id=361717472 groups=["world_occupants"]]
 script = ExtResource("1_qbvnj")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=86304974]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.01, 0)
+visible = false
+offset = Vector2(30, 15)
+text = "Medium"
+font = ExtResource("2_aqkwp")
+font_size = 100
+outline_size = 0
+horizontal_alignment = 0
+vertical_alignment = 2
 
 [node name="GroundMap" type="GridMap" parent="." unique_id=264530718]
 unique_name_in_owner = true
