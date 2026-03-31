@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://mcir660yfag2"]
 
 [ext_resource type="Script" uid="uid://dbbofwi6kvo1s" path="res://src/demo/nurikabe/generator/bulk_generator.gd" id="1_7nk3a"]
-[ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_o1grh"]
+[ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/nurikabe_game_board.tscn" id="1_o1grh"]
 [ext_resource type="PackedScene" uid="uid://rpgvsnfuo7o5" path="res://src/demo/nurikabe/generator/demo_log.tscn" id="3_nmkj7"]
 [ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="4_whffh"]
 [ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="5_0ugav"]

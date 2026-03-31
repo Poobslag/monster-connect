@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c1ikxk7sf1v"]
 
-[ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/game_board.tscn" id="1_0ph7c"]
+[ext_resource type="PackedScene" uid="uid://b06aw2k2o1thk" path="res://src/main/nurikabe/nurikabe_game_board.tscn" id="1_0ph7c"]
 [ext_resource type="Script" uid="uid://dkfhvt7xta6qi" path="res://src/main/nurikabe/nurikabe_game_screen.gd" id="1_nc88o"]
 [ext_resource type="PackedScene" uid="uid://dtev03a35ehu4" path="res://src/main/nurikabe/refresher.tscn" id="3_1cqpy"]
 [ext_resource type="PackedScene" uid="uid://diafqm0jkanve" path="res://src/main/monster/sim/sim_monster.tscn" id="4_nctqi"]

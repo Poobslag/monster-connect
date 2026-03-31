@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c3o1dino53bkn"]
 
-[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/game_board_3d.tscn" id="1_qblsy"]
+[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn" id="1_qblsy"]
 [ext_resource type="PackedScene" uid="uid://cjec7qvd1lq82" path="res://src/main/nurikabe_3d/nurikabe_cursor_3d.tscn" id="2_ybjts"]
 [ext_resource type="Script" uid="uid://6blr78h86w3m" path="res://src/main/nurikabe_3d/puzzle_input_stub.gd" id="3_s6pqa"]
 

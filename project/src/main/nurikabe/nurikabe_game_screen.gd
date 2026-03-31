@@ -18,7 +18,7 @@ const DEFAULT_SKIN_VALUES: Array[Monster.MonsterSkin] = [
 	Monster.MonsterSkin.YELLOW,
 ]
 
-const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe/game_board.tscn")
+const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe/nurikabe_game_board.tscn")
 const SIM_SCENE: PackedScene = preload("res://src/main/monster/sim/sim_monster.tscn")
 
 @export var target_sim_count: int = 1
