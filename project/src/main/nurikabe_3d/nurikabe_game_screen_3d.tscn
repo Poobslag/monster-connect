@@ -87,6 +87,10 @@ grid_string = "
               
  2   4   2    "
 
+[node name="DebugPaths" type="Node3D" parent="World" unique_id=391076868]
+unique_name_in_owner = true
+visible = false
+
 [node name="PuzzleCursorManager" type="Node3D" parent="World" unique_id=521709786]
 
 [node name="Cursor" parent="World/PuzzleCursorManager" unique_id=2138987604 instance=ExtResource("2_ybjts")]
