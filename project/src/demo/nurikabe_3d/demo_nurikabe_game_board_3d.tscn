@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://vn0ch8gypr53"]
 
-[ext_resource type="Script" uid="uid://d1fvuu28jgpu" path="res://src/demo/nurikabe_3d/demo_game_board_3d.gd" id="1_3pu41"]
-[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn" id="2_ocio7"]
+[ext_resource type="Script" uid="uid://d1fvuu28jgpu" path="res://src/demo/nurikabe_3d/demo_nurikabe_game_board_3d.gd" id="1_5ceu1"]
+[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn" id="2_26fqw"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o028g"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -27,7 +27,7 @@ material = SubResource("StandardMaterial3D_qblsy")
 size = Vector3(400, 2, 400)
 
 [node name="DemoGameBoard3D" type="Node" unique_id=793071521]
-script = ExtResource("1_3pu41")
+script = ExtResource("1_5ceu1")
 
 [node name="World" type="Node3D" parent="." unique_id=2130877074]
 
@@ -54,4 +54,4 @@ mesh = SubResource("BoxMesh_qbkkh")
 [node name="GameBoards" type="Node3D" parent="World" unique_id=854335336]
 unique_name_in_owner = true
 
-[node name="GameBoard3D" parent="World/GameBoards" unique_id=361717472 instance=ExtResource("2_ocio7")]
+[node name="GameBoard3D" parent="World/GameBoards" unique_id=361717472 instance=ExtResource("2_26fqw")]
