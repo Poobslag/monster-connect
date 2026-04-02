@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn" id="1_qblsy"]
 [ext_resource type="Script" uid="uid://bav0ctyriea71" path="res://src/main/nurikabe_3d/nurikabe_game_screen_3d.gd" id="1_xmo2f"]
+[ext_resource type="PackedScene" uid="uid://bpt0adhn4mlv6" path="res://src/main/monster_3d/player/player_monster_3d.tscn" id="2_io7k0"]
 [ext_resource type="PackedScene" uid="uid://cjec7qvd1lq82" path="res://src/main/nurikabe_3d/nurikabe_cursor_3d.tscn" id="2_ybjts"]
 [ext_resource type="Script" uid="uid://6blr78h86w3m" path="res://src/main/nurikabe_3d/puzzle_input_stub.gd" id="3_s6pqa"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_afp4w"]
@@ -67,14 +68,8 @@ shadow_enabled = true
 transform = Transform3D(1, 0, 0, 0, 0.30901697, 0.95105654, 0, -0.95105654, 0.30901697, 0, 9, 4)
 current = true
 
-[node name="StaticBody3D" type="StaticBody3D" parent="World" unique_id=861876476]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="World/StaticBody3D" unique_id=66588350]
-shape = SubResource("BoxShape3D_fc7sn")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="World/StaticBody3D" unique_id=105943836]
-mesh = SubResource("BoxMesh_qblsy")
+[node name="Player" parent="World" unique_id=1759522099 instance=ExtResource("2_io7k0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8817594, 1, 2.3086739)
 
 [node name="GameBoards" type="Node3D" parent="World" unique_id=1439298949]
 unique_name_in_owner = true
@@ -97,6 +92,16 @@ visible = false
 unique_name_in_owner = true
 outline_color = Color(0.20784314, 0.20784314, 0.25490198, 1)
 cursor_color = Color(0.78039217, 0.7137255, 1, 1)
+
+[node name="Ground" type="StaticBody3D" parent="World" unique_id=861876476]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Ground" unique_id=66588350]
+shape = SubResource("BoxShape3D_fc7sn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World/Ground" unique_id=105943836]
+mesh = SubResource("BoxMesh_qblsy")
 
 [node name="CommandPalette" parent="." unique_id=1368678133 instance=ExtResource("5_ccw2j")]
 unique_name_in_owner = true

@@ -78,7 +78,7 @@ func reset() -> void:
 
 
 func update() -> void:
-	return
+	pass
 
 
 func _update_pressed(event: InputEvent) -> void:
