@@ -41,14 +41,6 @@ func _ready() -> void:
 	%DebugPaths.visible = draw_debug_paths
 
 
-func _enter_tree() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-
-
-func _exit_tree() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-
-
 func _input(event: InputEvent) -> void:
 	if Utils.key_press(event) == KEY_SLASH:
 		%CommandPalette.open()

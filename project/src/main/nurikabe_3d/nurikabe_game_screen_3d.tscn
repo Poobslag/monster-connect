@@ -230,10 +230,12 @@ metadata/_edit_use_anchors_ = true
 [node name="ResultsOverlay" parent="." unique_id=1174010181 instance=ExtResource("7_c1lbt")]
 unique_name_in_owner = true
 visible = false
+show_mouse_while_visible = false
 
 [node name="TutorialOverlay" parent="." unique_id=1610644807 instance=ExtResource("8_sso2b")]
 unique_name_in_owner = true
 visible = false
+show_mouse_while_visible = false
 
 [node name="PuzzleInputStub" type="Node" parent="." unique_id=1543648191]
 script = ExtResource("3_s6pqa")

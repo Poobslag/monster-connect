@@ -1,21 +1,26 @@
 extends CanvasLayer
 
+@export var show_mouse_while_visible: bool = true
+
 func _ready() -> void:
 	if visible:
 		get_tree().paused = true
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		if show_mouse_while_visible:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
 func show_tutorial() -> void:
 	show()
 	get_tree().paused = true
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if show_mouse_while_visible:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
 func hide_tutorial() -> void:
 	hide()
 	get_tree().paused = false
-	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	if show_mouse_while_visible:
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 
 
 func _on_button_pressed() -> void:
