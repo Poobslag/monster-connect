@@ -2,21 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://538gulic74f7"
-path.s3tc="res://.godot/imported/cursor_outline_cursor_outline.png-02260f1f060dbaeaec3f3dd3fa03674a.s3tc.ctex"
-path.etc2="res://.godot/imported/cursor_outline_cursor_outline.png-02260f1f060dbaeaec3f3dd3fa03674a.etc2.ctex"
+uid="uid://bybcxq1j7jp5l"
+path.s3tc="res://.godot/imported/tile_island_half_banana_tile_island_half.png-6455e43329c3d29a9df05444fef6be3e.s3tc.ctex"
+path.etc2="res://.godot/imported/tile_island_half_banana_tile_island_half.png-6455e43329c3d29a9df05444fef6be3e.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "eb1099ab554f443b76364831153a9bc9"
+"md5": "7cff231325da25f37e9aa2262251b081"
 }
 
 [deps]
 
-source_file="res://assets/main/nurikabe_3d/cursor_outline_cursor_outline.png"
-dest_files=["res://.godot/imported/cursor_outline_cursor_outline.png-02260f1f060dbaeaec3f3dd3fa03674a.s3tc.ctex", "res://.godot/imported/cursor_outline_cursor_outline.png-02260f1f060dbaeaec3f3dd3fa03674a.etc2.ctex"]
+source_file="res://assets/main/nurikabe_3d/tile_island_half_banana_tile_island_half.png"
+dest_files=["res://.godot/imported/tile_island_half_banana_tile_island_half.png-6455e43329c3d29a9df05444fef6be3e.s3tc.ctex", "res://.godot/imported/tile_island_half_banana_tile_island_half.png-6455e43329c3d29a9df05444fef6be3e.etc2.ctex"]
 
 [params]
 

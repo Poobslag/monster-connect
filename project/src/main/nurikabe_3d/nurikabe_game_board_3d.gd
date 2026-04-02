@@ -11,8 +11,6 @@ const CELL_WALL: int = NurikabeUtils.CELL_WALL
 const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const GROUND_HEIGHT: float = 0.100
-const TEXT_FLOAT_OFFSET: float = 0.102
-const ERROR_FLOAT_OFFSET: float = 0.101
 
 @export_multiline var grid_string: String
 
