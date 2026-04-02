@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://2lhvmspmb1mu"
+uid="uid://bgibh05o0pwgi"
 path="res://.godot/imported/tile_blank_1.glb-35d5a69fa0a6e04fe11f6f98e053fec1.scn"
 
 [deps]
@@ -39,7 +39,7 @@ materials/extract_format=0
 materials/extract_path=""
 _subresources={
 "nodes": {
-"PATH:Cube_001": {
+"PATH:obj_tile_blank_1": {
 "generate/physics": true,
 "physics/shape_type": 1
 }

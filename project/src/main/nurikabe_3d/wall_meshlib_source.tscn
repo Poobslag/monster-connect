@@ -1,16 +1,16 @@
 [gd_scene format=3 uid="uid://bab38udq0mqv4"]
 
-[ext_resource type="PackedScene" uid="uid://c31vm3rlrh3m6" path="res://assets/main/nurikabe_3d/tile_wall.glb" id="1_ohrpn"]
-[ext_resource type="PackedScene" uid="uid://binoxp55ed1rw" path="res://assets/main/nurikabe_3d/tile_wall_error.glb" id="2_477le"]
-[ext_resource type="PackedScene" uid="uid://dtf8350mo8dsx" path="res://assets/main/nurikabe_3d/tile_wall_half.glb" id="3_8ggvv"]
-[ext_resource type="PackedScene" uid="uid://cmss7hsaapr3u" path="res://assets/main/nurikabe_3d/tile_wall_half_error.glb" id="4_7t8um"]
+[ext_resource type="PackedScene" uid="uid://cxji80dkh7p4m" path="res://assets/main/nurikabe_3d/tile_wall.glb" id="1_ohrpn"]
+[ext_resource type="PackedScene" uid="uid://csblehq5880e5" path="res://assets/main/nurikabe_3d/tile_wall_error.glb" id="2_477le"]
+[ext_resource type="PackedScene" uid="uid://dbjsvgf0307cw" path="res://assets/main/nurikabe_3d/tile_wall_half.glb" id="3_8ggvv"]
+[ext_resource type="PackedScene" uid="uid://r6jmj3e7l3vb" path="res://assets/main/nurikabe_3d/tile_wall_half_error.glb" id="4_7t8um"]
 
 [node name="Node3D" type="Node3D" unique_id=1189481919]
 
-[node name="tile_wall" parent="." unique_id=1945276998 instance=ExtResource("1_ohrpn")]
+[node name="tile_wall" parent="." unique_id=1264856938 instance=ExtResource("1_ohrpn")]
 
-[node name="tile_wall_error" parent="." unique_id=52531420 instance=ExtResource("2_477le")]
+[node name="tile_wall_error" parent="." unique_id=1981639202 instance=ExtResource("2_477le")]
 
-[node name="tile_wall_half" parent="." unique_id=362967111 instance=ExtResource("3_8ggvv")]
+[node name="tile_wall_half" parent="." unique_id=639905791 instance=ExtResource("3_8ggvv")]
 
-[node name="tile_wall_half_error" parent="." unique_id=380920944 instance=ExtResource("4_7t8um")]
+[node name="tile_wall_half_error" parent="." unique_id=280070924 instance=ExtResource("4_7t8um")]

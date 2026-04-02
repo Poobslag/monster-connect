@@ -27,26 +27,34 @@ vertical_alignment = 2
 unique_name_in_owner = true
 mesh_library = ExtResource("2_dqa1y")
 cell_size = Vector3(1, 1, 1)
+cell_center_y = false
 collision_layer = 17
 
 [node name="IslandMap" type="GridMap" parent="." unique_id=1375406240]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.102, 0)
 mesh_library = ExtResource("3_d75un")
 cell_size = Vector3(1, 1, 1)
+cell_center_y = false
 
 [node name="ClueLayer" type="Node3D" parent="." unique_id=1700644307]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.102, 0)
 script = ExtResource("4_6s04n")
 
 [node name="WallMap" type="GridMap" parent="." unique_id=472100902]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 mesh_library = ExtResource("5_aqkwp")
 cell_size = Vector3(1, 1, 1)
+cell_center_y = false
 
 [node name="ErrorMap" type="GridMap" parent="." unique_id=1343692462]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.101, 0)
 mesh_library = ExtResource("6_5x44w")
 cell_size = Vector3(1, 1, 1)
+cell_center_y = false
 
 [node name="ValidateTimer" type="Timer" parent="." unique_id=397237380]
 unique_name_in_owner = true
