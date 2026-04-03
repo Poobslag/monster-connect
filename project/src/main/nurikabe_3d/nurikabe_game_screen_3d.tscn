@@ -69,7 +69,7 @@ transform = Transform3D(1, 0, 0, 0, 0.30901697, 0.95105654, 0, -0.95105654, 0.30
 current = true
 
 [node name="Player" parent="World" unique_id=1759522099 instance=ExtResource("2_io7k0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8817594, 1, 2.3086739)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.882, 0, 2.309)
 
 [node name="GameBoards" type="Node3D" parent="World" unique_id=1439298949]
 unique_name_in_owner = true
