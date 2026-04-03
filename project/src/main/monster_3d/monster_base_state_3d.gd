@@ -1,6 +1,10 @@
 class_name MonsterBaseState3D
 extends State
 
+const JUMP_THRESHOLD: float = 0.10
+
+var position_delta: Vector3 = Vector3.ZERO
+
 var monster: Monster3D:
 	get: return object
 
@@ -19,7 +23,9 @@ func accelerate(delta: float, direction: Vector2 = input) -> void:
 
 
 func move(delta: float, update_direction: bool = true, direction: Vector2 = input) -> void:
+	var old_position: Vector3 = monster.position
 	accelerate(delta, direction)
 	if update_direction:
 		monster.direction = direction
 	monster.move_and_slide()
+	position_delta = monster.position - old_position
