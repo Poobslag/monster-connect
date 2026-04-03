@@ -56,8 +56,9 @@ func get_board_hit_at_mouse() -> Dictionary[String, Variant]:
 		if query_result["collider"] is GridMap:
 			var grid_map: GridMap = query_result["collider"]
 			var cell_3: Vector3i = grid_map.local_to_map(grid_map.to_local(query_result["position"]))
-			board_hit["board"] = grid_map.get_parent()
-			board_hit["cell"] = Vector2i(cell_3.x, cell_3.z)
+			if grid_map.get_cell_item(cell_3) != -1:
+				board_hit["board"] = grid_map.get_parent()
+				board_hit["cell"] = Vector2i(cell_3.x, cell_3.z)
 	
 	return board_hit
 
