@@ -86,12 +86,16 @@ func _physics_process(delta: float) -> void:
 	if direction.length() > STEP_RAY_THRESHOLD:
 		var separation_ray_dir: Vector2 = direction.normalized() * STEP_RAY_DISTANCE
 		%StepRayCenter.position = Vector3(separation_ray_dir.x, STEP_RAY_HEIGHT, separation_ray_dir.y)
-		%StepRayLeft.position = %StepRayCenter.position.rotated(Vector3.UP, STEP_RAY_SPREAD)
-		%StepRayRight.position = %StepRayCenter.position.rotated(Vector3.UP, -STEP_RAY_SPREAD)
+		%StepRayLeft1.position = %StepRayCenter.position.rotated(Vector3.UP, STEP_RAY_SPREAD * 0.5)
+		%StepRayLeft2.position = %StepRayCenter.position.rotated(Vector3.UP, STEP_RAY_SPREAD)
+		%StepRayRight1.position = %StepRayCenter.position.rotated(Vector3.UP, -STEP_RAY_SPREAD * 0.5)
+		%StepRayRight2.position = %StepRayCenter.position.rotated(Vector3.UP, -STEP_RAY_SPREAD)
 	else:
 		%StepRayCenter.position = Vector3(0, STEP_RAY_HEIGHT, 0)
-		%StepRayRight.position = %StepRayCenter.position
-		%StepRayLeft.position = %StepRayCenter.position
+		%StepRayRight1.position = %StepRayCenter.position
+		%StepRayRight2.position = %StepRayCenter.position
+		%StepRayLeft1.position = %StepRayCenter.position
+		%StepRayLeft2.position = %StepRayCenter.position
 	
 	refresh()
 	update_input(delta)
