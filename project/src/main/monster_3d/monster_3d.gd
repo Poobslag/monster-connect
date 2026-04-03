@@ -33,8 +33,8 @@ const FALL_DURATION: float = 0.3
 const MAX_SPEED: float = 4.375
 const ACCELERATION: float = 31.25
 
-const STEP_RAY_DISTANCE: float = 0.65
-const STEP_RAY_HEIGHT: float = 0.65
+const STEP_RAY_DISTANCE: float = 0.5
+const STEP_RAY_HEIGHT: float = 0.5
 const STEP_RAY_THRESHOLD: float = 0.1
 const STEP_RAY_SPREAD: float = 0.25 * PI
 
@@ -59,7 +59,7 @@ var direction: Vector2 = Vector2.ZERO:
 
 var id: int
 
-@onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
+@onready var sprite: AnimatedSprite3D = %AnimatedSprite3D
 @onready var fsm: StateMachine = %StateMachine
 @onready var gravity: Vector3 = \
 		ProjectSettings.get_setting("physics/3d/default_gravity_vector") \
@@ -119,4 +119,4 @@ func _refresh_skin() -> void:
 	if not is_inside_tree():
 		return
 	
-	%AnimatedSprite2D.sprite_frames = SPRITE_FRAMES_BY_SKIN[skin]
+	%AnimatedSprite3D.sprite_frames = SPRITE_FRAMES_BY_SKIN[skin]

@@ -14,7 +14,7 @@ func play(animation: String) -> void:
 
 
 func accelerate(delta: float, direction: Vector2 = input) -> void:
-	var direction_3d := Vector3(direction.x, 0, direction.y)
+	var direction_3d := Vector3(direction.x, monster.velocity.y, direction.y)
 	monster.velocity = monster.velocity.move_toward(Monster3D.MAX_SPEED * direction_3d, Monster3D.ACCELERATION * delta)
 
 
