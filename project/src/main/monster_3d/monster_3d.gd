@@ -33,7 +33,14 @@ const FALL_DURATION: float = 0.3
 const MAX_SPEED: float = 4.375
 const ACCELERATION: float = 31.25
 
+const STEP_RAY_DISTANCE: float = 0.65
+const STEP_RAY_HEIGHT: float = 0.65
+const STEP_RAY_THRESHOLD: float = 0.1
+const STEP_RAY_SPREAD: float = 0.25 * PI
+
 static var _next_id: int = 0
+
+var _dirty: bool = false
 
 @export var skin: MonsterSkin = MonsterSkin.PURPLE:
 	set(value):
@@ -42,6 +49,7 @@ static var _next_id: int = 0
 		skin = value
 		_refresh_skin()
 
+## Movement direction. Length is at most 1.0.
 var direction: Vector2 = Vector2.ZERO:
 	set(value):
 		if value == direction:
@@ -49,12 +57,13 @@ var direction: Vector2 = Vector2.ZERO:
 		direction = value
 		_dirty = true
 
-var _dirty: bool = false
-
 var id: int
 
 @onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var fsm: StateMachine = %StateMachine
+@onready var gravity: Vector3 = \
+		ProjectSettings.get_setting("physics/3d/default_gravity_vector") \
+		* ProjectSettings.get_setting("physics/3d/default_gravity")
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
@@ -74,8 +83,21 @@ func _physics_process(delta: float) -> void:
 		# don't run physics simulation in editor
 		return
 	
+	if direction.length() > STEP_RAY_THRESHOLD:
+		var separation_ray_dir: Vector2 = direction.normalized() * STEP_RAY_DISTANCE
+		%StepRayCenter.position = Vector3(separation_ray_dir.x, STEP_RAY_HEIGHT, separation_ray_dir.y)
+		%StepRayLeft.position = %StepRayCenter.position.rotated(Vector3.UP, STEP_RAY_SPREAD)
+		%StepRayRight.position = %StepRayCenter.position.rotated(Vector3.UP, -STEP_RAY_SPREAD)
+	else:
+		%StepRayCenter.position = Vector3(0, STEP_RAY_HEIGHT, 0)
+		%StepRayRight.position = %StepRayCenter.position
+		%StepRayLeft.position = %StepRayCenter.position
+	
 	refresh()
 	update_input(delta)
+	if not is_on_floor():
+		velocity += gravity * delta
+	
 	fsm.physics_update(delta)
 
 
