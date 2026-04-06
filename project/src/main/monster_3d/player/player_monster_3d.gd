@@ -3,7 +3,7 @@ extends Monster3D
 
 signal solving_board_changed
 
-var solving_board: NurikabeGameBoard:
+var solving_board: NurikabeGameBoard3D:
 	set(value):
 		if solving_board == value:
 			return
