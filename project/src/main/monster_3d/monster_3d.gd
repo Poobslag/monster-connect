@@ -40,8 +40,6 @@ const STEP_RAY_SPREAD: float = 0.25 * PI
 
 static var _next_id: int = 0
 
-var _dirty: bool = false
-
 @export var skin: MonsterSkin = MonsterSkin.PURPLE:
 	set(value):
 		if skin == value:
@@ -59,8 +57,11 @@ var direction: Vector2 = Vector2.ZERO:
 
 var id: int
 
+var _dirty: bool = false
+
 @onready var sprite: AnimatedSprite3D = %AnimatedSprite3D
 @onready var fsm: StateMachine = %StateMachine
+@onready var cursor_3d: Node3D = %Cursor
 @onready var gravity: Vector3 = \
 		ProjectSettings.get_setting("physics/3d/default_gravity_vector") \
 		* ProjectSettings.get_setting("physics/3d/default_gravity")

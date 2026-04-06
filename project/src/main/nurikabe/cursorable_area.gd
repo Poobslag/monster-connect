@@ -75,7 +75,7 @@ func update_cursor(area: Area2D) -> void:
 func remove_all_cursors() -> void:
 	for area: Area2D in _cursors_by_area.duplicate():
 		remove_cursor(area)
-	for cursor in %Cursors.get_children():
+	for cursor: Node in %Cursors.get_children():
 		cursor.queue_free()
 
 
