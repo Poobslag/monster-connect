@@ -24,10 +24,10 @@ func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	
-	var board_hit: Dictionary[String, Variant] = get_board_hit_at_mouse()
-	if board_hit:
-		var board: NurikabeGameBoard3D = board_hit["board"]
-		var cell: Vector2i = board_hit["cell"]
+	var mouse_hit: Dictionary[String, Variant] = get_hit_at_mouse()
+	if _is_valid_board_hit(mouse_hit):
+		var board: NurikabeGameBoard3D = mouse_hit["board"]
+		var cell: Vector2i = mouse_hit["cell"]
 		%Cursor.visible = true
 		%Cursor.position = board.map_to_global(cell)
 		%Cursor.position += Vector3(
@@ -36,9 +36,12 @@ func _process(_delta: float) -> void:
 				board.tile_size.y * 0.5)
 	else:
 		%Cursor.visible = false
+	
+	if mouse_hit:
+		%Player.cursor_3d.global_position = mouse_hit["position"]
 
 
-func get_board_hit_at_mouse() -> Dictionary[String, Variant]:
+func get_hit_at_mouse() -> Dictionary[String, Variant]:
 	var board_hit: Dictionary[String, Variant] = {}
 	
 	var space: PhysicsDirectSpaceState3D = get_viewport().get_world_3d().direct_space_state
@@ -53,23 +56,33 @@ func get_board_hit_at_mouse() -> Dictionary[String, Variant]:
 	var query_result: Dictionary = space.intersect_ray(query)
 	
 	if not query_result.is_empty():
-		if query_result["collider"] is GridMap:
-			var grid_map: GridMap = query_result["collider"]
-			var cell_3: Vector3i = grid_map.local_to_map(grid_map.to_local(query_result["position"]))
-			if grid_map.get_cell_item(cell_3) != -1:
-				board_hit["board"] = grid_map.get_parent()
-				board_hit["cell"] = Vector2i(cell_3.x, cell_3.z)
+		board_hit.assign(query_result)
+		board_hit["type"] = "unknown"
+	
+	if not query_result.is_empty() and query_result["collider"] is GridMap:
+		board_hit["type"] = "board"
+		var grid_map: GridMap = query_result["collider"]
+		var cell_3: Vector3i = grid_map.local_to_map(grid_map.to_local(query_result["position"]))
+		board_hit["board"] = grid_map.get_parent()
+		if grid_map.get_cell_item(cell_3) == -1:
+			board_hit["cell"] = POS_NOT_FOUND
+		else:
+			board_hit["cell"] = Vector2i(cell_3.x, cell_3.z)
 	
 	return board_hit
 
 
+func _is_valid_board_hit(mouse_hit: Dictionary[String, Variant]) -> bool:
+	return mouse_hit and mouse_hit["type"] == "board" and mouse_hit["cell"] != POS_NOT_FOUND
+
+
 func _handle_lmb_press() -> void:
-	var board_hit: Dictionary[String, Variant] = get_board_hit_at_mouse()
-	if not board_hit:
+	var mouse_hit: Dictionary[String, Variant] = get_hit_at_mouse()
+	if not _is_valid_board_hit(mouse_hit):
 		return
 	
-	var board: NurikabeGameBoard3D = board_hit["board"]
-	var cell: Vector2i = board_hit["cell"]
+	var board: NurikabeGameBoard3D = mouse_hit["board"]
+	var cell: Vector2i = mouse_hit["cell"]
 	var cell_value: int = board.get_cell(cell)
 	if cell_value == CELL_EMPTY:
 		_mb_press_cell = cell
@@ -91,14 +104,15 @@ func _handle_lmb_press() -> void:
 
 
 func _handle_lmb_release() -> void:
-	var board_hit: Dictionary[String, Variant] = get_board_hit_at_mouse()
-	if not board_hit:
+	var mouse_hit: Dictionary[String, Variant] = get_hit_at_mouse()
+	
+	if not _is_valid_board_hit(mouse_hit):
 		return
 	
 	if _mb_press_cell == POS_NOT_FOUND:
 		return
 	
-	var board: NurikabeGameBoard3D = board_hit["board"]
+	var board: NurikabeGameBoard3D = mouse_hit["board"]
 	if _last_set_cell_to == CELL_EMPTY:
 		board.clear_half_cells(0)
 		board.set_cell(_mb_press_cell, CELL_EMPTY)

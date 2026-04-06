@@ -11,6 +11,8 @@
 [ext_resource type="Script" uid="uid://48je0hlydow6" path="res://src/main/ui/version_label.gd" id="6_io7k0"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="7_c1lbt"]
 [ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe/tutorial_overlay.tscn" id="8_sso2b"]
+[ext_resource type="Script" uid="uid://hwr3gqftgfm5" path="res://src/main/nurikabe_3d/cursor_layer.gd" id="9_sso2b"]
+[ext_resource type="PackedScene" uid="uid://dv3wpirlmcqmy" path="res://src/main/monster/cursor.tscn" id="10_bu18b"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fc7sn"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -66,16 +68,21 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 light_energy = 0.5
 shadow_enabled = true
 
-[node name="Player" parent="World" unique_id=1759522099 instance=ExtResource("2_io7k0")]
+[node name="Monsters" type="Node3D" parent="World" unique_id=2063390851]
+unique_name_in_owner = true
+
+[node name="Player" parent="World/Monsters" unique_id=1759522099 instance=ExtResource("2_io7k0")]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.882, 0, 2.309)
 
 [node name="Camera3D" type="Camera3D" parent="World" unique_id=231188776 node_paths=PackedStringArray("target")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
 process_mode = 3
-transform = Transform3D(0.99999833, -0.0015114986, 0.0008726641, 0, 0.49999994, 0.86602545, -0.0017453281, -0.866024, 0.4999992, -1.882, 8.5, 7.809)
 current = true
 script = ExtResource("3_c1lbt")
 lerp_speed = 6.0
-target = NodePath("../Player")
+target = NodePath("../Monsters/Player")
 offset = Vector3(0, 8.5, 5.5)
 drift_amount = 2.0
 
@@ -103,6 +110,7 @@ cursor_color = Color(0.78039217, 0.7137255, 1, 1)
 
 [node name="Ground" type="StaticBody3D" parent="World" unique_id=861876476]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+collision_layer = 17
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/Ground" unique_id=66588350]
@@ -239,6 +247,16 @@ text = "v1234145"
 horizontal_alignment = 2
 script = ExtResource("6_io7k0")
 metadata/_edit_use_anchors_ = true
+
+[node name="CursorLayer" type="Control" parent="HUD" unique_id=79822044]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_sso2b")
+cursor_scene = ExtResource("10_bu18b")
 
 [node name="ResultsOverlay" parent="." unique_id=1174010181 instance=ExtResource("7_c1lbt")]
 unique_name_in_owner = true
