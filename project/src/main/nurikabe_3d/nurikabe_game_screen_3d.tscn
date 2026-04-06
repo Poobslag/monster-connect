@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bav0ctyriea71" path="res://src/main/nurikabe_3d/nurikabe_game_screen_3d.gd" id="1_xmo2f"]
 [ext_resource type="PackedScene" uid="uid://bpt0adhn4mlv6" path="res://src/main/monster_3d/player/player_monster_3d.tscn" id="2_io7k0"]
 [ext_resource type="PackedScene" uid="uid://cjec7qvd1lq82" path="res://src/main/nurikabe_3d/nurikabe_cursor_3d.tscn" id="2_ybjts"]
-[ext_resource type="Script" uid="uid://leum7avrpoyo" path="res://src/main/nurikabe_3d/player_camera.gd" id="3_c1lbt"]
+[ext_resource type="PackedScene" uid="uid://hcbb3vxqxmjc" path="res://src/main/nurikabe_3d/player_camera_3d.tscn" id="3_bu18b"]
 [ext_resource type="Script" uid="uid://6blr78h86w3m" path="res://src/main/nurikabe_3d/puzzle_input_stub.gd" id="3_s6pqa"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_afp4w"]
 [ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="5_ccw2j"]
@@ -75,17 +75,12 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.882, 0, 2.309)
 
-[node name="Camera3D" type="Camera3D" parent="World" unique_id=231188776 node_paths=PackedStringArray("target")]
-unique_name_in_owner = true
-process_mode = 3
+[node name="Camera3D" parent="World" unique_id=814605849 node_paths=PackedStringArray("player") instance=ExtResource("3_bu18b")]
 transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
-current = true
 fov = 18.8
-script = ExtResource("3_c1lbt")
-lerp_speed = 6.0
-target = NodePath("../Monsters/Player")
-offset = Vector3(0, 46.75, 26.4)
-drift_amount = 0.5
+player = NodePath("../Monsters/Player")
+player_offset = Vector3(0, 46.75, 26.4)
+drift_amount = 0.25
 
 [node name="GameBoards" type="Node3D" parent="World" unique_id=1439298949]
 unique_name_in_owner = true

@@ -24,6 +24,7 @@ func _process(_delta: float) -> void:
 		%Player.cursor_board = board
 	else:
 		%Cursor.visible = false
+		%Player.cursor_board = null
 	
 	if mouse_hit:
 		%Player.cursor_3d.global_position = mouse_hit["position"]
