@@ -63,18 +63,21 @@ environment = SubResource("Environment_ybjts")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="World" unique_id=481505807]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_energy = 0.5
 shadow_enabled = true
 
 [node name="Player" parent="World" unique_id=1759522099 instance=ExtResource("2_io7k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.882, 0, 2.309)
 
 [node name="Camera3D" type="Camera3D" parent="World" unique_id=231188776 node_paths=PackedStringArray("target")]
-transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
+process_mode = 3
+transform = Transform3D(0.99999833, -0.0015114986, 0.0008726641, 0, 0.49999994, 0.86602545, -0.0017453281, -0.866024, 0.4999992, -1.882, 8.5, 7.809)
 current = true
 script = ExtResource("3_c1lbt")
 lerp_speed = 6.0
 target = NodePath("../Player")
 offset = Vector3(0, 8.5, 5.5)
+drift_amount = 2.0
 
 [node name="GameBoards" type="Node3D" parent="World" unique_id=1439298949]
 unique_name_in_owner = true
