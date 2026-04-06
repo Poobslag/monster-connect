@@ -80,11 +80,12 @@ unique_name_in_owner = true
 process_mode = 3
 transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
 current = true
+fov = 18.8
 script = ExtResource("3_c1lbt")
 lerp_speed = 6.0
 target = NodePath("../Monsters/Player")
-offset = Vector3(0, 8.5, 5.5)
-drift_amount = 2.0
+offset = Vector3(0, 46.75, 26.4)
+drift_amount = 0.5
 
 [node name="GameBoards" type="Node3D" parent="World" unique_id=1439298949]
 unique_name_in_owner = true
