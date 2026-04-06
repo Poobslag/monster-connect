@@ -53,6 +53,14 @@ func _input(event: InputEvent) -> void:
 			%TutorialOverlay.show_tutorial()
 
 
+func _enter_tree() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+
+
+func _exit_tree() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+
 func clear_game_boards() -> void:
 	for game_board: NurikabeGameBoard3D in get_game_boards():
 		remove_game_board(game_board)

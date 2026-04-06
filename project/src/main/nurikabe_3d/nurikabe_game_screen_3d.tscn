@@ -77,8 +77,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.882, 0, 2.309)
 
 [node name="Camera3D" type="Camera3D" parent="World" unique_id=231188776 node_paths=PackedStringArray("target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
 process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
 current = true
 script = ExtResource("3_c1lbt")
 lerp_speed = 6.0
@@ -255,18 +255,17 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("9_sso2b")
 cursor_scene = ExtResource("10_bu18b")
 
 [node name="ResultsOverlay" parent="." unique_id=1174010181 instance=ExtResource("7_c1lbt")]
 unique_name_in_owner = true
 visible = false
-show_mouse_while_visible = false
 
 [node name="TutorialOverlay" parent="." unique_id=1610644807 instance=ExtResource("8_sso2b")]
 unique_name_in_owner = true
 visible = false
-show_mouse_while_visible = false
 
 [node name="PuzzleInputStub" type="Node" parent="." unique_id=1543648191]
 script = ExtResource("3_s6pqa")

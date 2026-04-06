@@ -3,7 +3,14 @@ class_name NurikabeGameBoard3D
 extends Node3D
 
 signal puzzle_finished
+
+signal board_reset
+signal cell_changed(cell_pos: Vector2i, value: int)
 signal error_cells_changed
+
+const RECENT_EDIT_COOLDOWN: float = 0.5
+
+const MAX_UNDO: int = 200
 
 const CELL_INVALID: int = NurikabeUtils.CELL_INVALID
 const CELL_ISLAND: int = NurikabeUtils.CELL_ISLAND
@@ -18,16 +25,9 @@ const GROUND_HEIGHT: float = 0.100
 
 @export var tile_size: Vector2 = Vector2(1, 1)
 
-var allow_unclued_islands: bool = false
-
 var error_cells: Dictionary[Vector2i, bool] = {}:
 	set(value):
 		error_cells = value
-		_cells_dirty = true
-
-var lowlight_cells: Dictionary[Vector2i, bool] = {}:
-	set(value):
-		lowlight_cells = value
 		_cells_dirty = true
 
 ## Cells currently being edited. The value is the most recent monster id performing the edit.
@@ -35,6 +35,13 @@ var half_cells: Dictionary[Vector2i, int] = {}:
 	set(value):
 		half_cells = value
 		_cells_dirty = true
+
+var lowlight_cells: Dictionary[Vector2i, bool] = {}:
+	set(value):
+		lowlight_cells = value
+		_cells_dirty = true
+
+var allow_unclued_islands: bool = false
 
 var label_text: String = "":
 	set(value):
@@ -59,6 +66,10 @@ var hint_model: PuzzleHintModel
 
 var _cells_dirty: bool = false
 var _values_by_cell: Dictionary[Vector2i, int] = {}
+
+var _recent_edits: Dictionary[Vector2i, RecentEdit] = {}
+var _undo_stack: Array[UndoAction] = []
+var _redo_stack: Array[UndoAction] = []
 var _finished: bool = false
 
 func _ready() -> void:
@@ -74,6 +85,25 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	refresh_cells()
+
+
+func reset() -> void:
+	import_grid()
+	board_reset.emit()
+
+
+func is_started() -> bool:
+	var result: bool = false
+	for cell: Vector2i in get_used_cells():
+		var cell_value: int = get_cell(cell)
+		if cell_value == CELL_ISLAND or cell_value == CELL_WALL:
+			result = true
+			break
+	return result
+
+
+func is_finished() -> bool:
+	return _finished
 
 
 func clear_half_cells(player_id: int) -> void:
@@ -103,26 +133,6 @@ func has_half_cells(player_id: int) -> bool:
 	return half_cells.values().has(player_id)
 
 
-func import_grid() -> void:
-	%GroundMap.clear()
-	%IslandMap.clear()
-	%ClueLayer.clear()
-	%WallMap.clear()
-	%ErrorMap.clear()
-	_values_by_cell.clear()
-	
-	var cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)
-	for cell: Vector2i in cells:
-		set_cell(cell, cells[cell])
-	
-	half_cells = {}
-	
-	puzzle_dimensions = Vector2i.ZERO
-	for cell: Vector2i in cells:
-		puzzle_dimensions.x = max(puzzle_dimensions.x, cell.x + 1)
-		puzzle_dimensions.y = max(puzzle_dimensions.y, cell.y + 1)
-
-
 func refresh_cells() -> void:
 	if not _cells_dirty:
 		return
@@ -150,15 +160,6 @@ func refresh_cells() -> void:
 		%WallMap.set_cell_item(cell, wall_id)
 
 
-func set_cell(cell_pos: Vector2i, value: int, _player_id: int = -1) -> void:
-	# update cell value
-	_set_cell_internal(cell_pos, value)
-
-
-func get_cell(cell_pos: Vector2i) -> int:
-	return _values_by_cell.get(cell_pos, -1)
-
-
 func get_used_cells() -> Array[Vector2i]:
 	return _values_by_cell.keys()
 
@@ -167,8 +168,101 @@ func get_clue_cells() -> Array[Vector2i]:
 	return %ClueLayer.tiles_by_cell.keys()
 
 
+func is_recently_edited_by_other(cell: Vector2i, player_id: int) -> bool:
+	var recent_edit: RecentEdit = _recent_edits.get(cell)
+	var result: bool
+	if recent_edit == null:
+		result = false
+	elif recent_edit.player_id == player_id:
+		result = false
+	elif recent_edit.timestamp <= Time.get_ticks_msec() - 1000 * RECENT_EDIT_COOLDOWN:
+		result = false
+	else:
+		result = true
+	return result
+
+
+func global_to_map(global_point: Vector3) -> Vector2i:
+	var local_pos: Vector3 = global_transform.affine_inverse() * global_point
+	return Vector2i(int(local_pos.x / tile_size.x), int(local_pos.z / tile_size.y))
+
+
 func map_to_global(cell: Vector2i) -> Vector3:
 	return global_transform * Vector3(cell.x * tile_size.x, 0, cell.y * tile_size.y)
+
+
+func import_grid() -> void:
+	%GroundMap.clear()
+	%IslandMap.clear()
+	%ClueLayer.clear()
+	%WallMap.clear()
+	%ErrorMap.clear()
+	_values_by_cell.clear()
+	
+	var cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)
+	for cell: Vector2i in cells:
+		set_cell(cell, cells[cell])
+	
+	puzzle_dimensions = Vector2i.ZERO
+	for cell: Vector2i in cells:
+		puzzle_dimensions.x = max(puzzle_dimensions.x, cell.x + 1)
+		puzzle_dimensions.y = max(puzzle_dimensions.y, cell.y + 1)
+	
+	_undo_stack.clear()
+	_redo_stack.clear()
+	
+	error_cells = {}
+	half_cells = {}
+	lowlight_cells = {}
+
+
+## Sets the specified cells on the game board.[br]
+## [br]
+## Accepts a dictionary with the following keys:[br]
+## 	'pos': (Vector2i) The cell to update.[br]
+## 	'value': (String) The value to assign.[br]
+func set_cells(changes: Array[Dictionary], player_id: int = -1) -> void:
+	# add undo action
+	if player_id != -1:
+		var cell_positions: Array[Vector2i] = []
+		var values: Array[int] = []
+		for change: Dictionary in changes:
+			cell_positions.append(change["pos"])
+			values.append(change["value"])
+		_push_undo_action(player_id, cell_positions, values)
+	
+	# add recent edit
+	if player_id != -1:
+		for change: Dictionary in changes:
+			_recent_edits[change["pos"]] = RecentEdit.new(player_id)
+	
+	# update cell value
+	for change: Dictionary in changes:
+		_set_cell_internal(change["pos"], change["value"])
+
+
+func set_cell(cell_pos: Vector2i, value: int, player_id: int = -1) -> void:
+	# add undo action
+	if player_id != -1:
+		_push_undo_action(player_id, [cell_pos], [value])
+	
+	# add recent edit
+	if player_id != -1:
+		_recent_edits[cell_pos] = RecentEdit.new(player_id)
+	
+	# update cell value
+	_set_cell_internal(cell_pos, value)
+
+
+func get_cells() -> Dictionary[Vector2i, int]:
+	var cells: Dictionary[Vector2i, int] = {}
+	for cell_pos: Vector2i in get_used_cells():
+		cells[cell_pos] = get_cell(cell_pos)
+	return cells
+
+
+func get_cell(cell_pos: Vector2i) -> int:
+	return _values_by_cell.get(cell_pos, CELL_INVALID)
 
 
 func set_half_cell(cell_pos: Vector2i, player_id: int) -> void:
@@ -188,8 +282,53 @@ func to_solver_board() -> SolverBoard:
 	return board
 
 
+func undo(player_id: int) -> void:
+	var undo_index: int = 0
+	while undo_index < _undo_stack.size():
+		if _undo_stack[undo_index].player_id != player_id:
+			undo_index += 1
+			continue
+		if not _can_apply_undo_action(_undo_stack[undo_index]):
+			_undo_stack.remove_at(undo_index)
+			continue
+		var undo_action: UndoAction = _undo_stack[undo_index]
+		_undo_stack.remove_at(undo_index)
+		_apply_undo_action(undo_action)
+		_redo_stack.push_front(undo_action)
+		break
+
+
+func redo(player_id: int) -> void:
+	for redo_index in _redo_stack.size():
+		if _redo_stack[redo_index].player_id != player_id:
+			continue
+		if _can_apply_undo_action(_redo_stack[redo_index], true):
+			var redo_action: UndoAction = _redo_stack[redo_index]
+			_redo_stack.remove_at(redo_index)
+			_apply_undo_action(redo_action, true)
+			_undo_stack.push_front(redo_action)
+			break
+		else:
+			_redo_stack.remove_at(redo_index)
+
+
 func validate() -> void:
 	%ValidateTimer.start()
+
+
+func _apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> void:
+	var target_values: Array[int] = undo_action.new_values if is_redo else undo_action.old_values
+	for i in undo_action.cell_positions.size():
+		_set_cell_internal(undo_action.cell_positions[i], target_values[i])
+
+
+func _can_apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> bool:
+	var conflict_count: int = 0
+	var expected_values: Array[int] = undo_action.old_values if is_redo else undo_action.new_values
+	for i in undo_action.cell_positions.size():
+		if get_cell(undo_action.cell_positions[i]) != expected_values[i]:
+			conflict_count += 1
+	return conflict_count == 0
 
 
 func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
@@ -220,6 +359,26 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 		if half_cells.has(cell_pos):
 			wall_id += 2
 	%WallMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), wall_id)
+	
+	cell_changed.emit(cell_pos, value)
+
+
+func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: Array[int]) -> void:
+	var old_values: Array[int] = []
+	for cell_position in cell_positions:
+		old_values.append(get_cell(cell_position))
+	var undo_action: UndoAction = UndoAction.new()
+	undo_action.player_id = player_id
+	undo_action.cell_positions = cell_positions
+	undo_action.new_values = values
+	undo_action.old_values = old_values
+	_undo_stack.push_front(undo_action)
+	
+	if _undo_stack.size() > MAX_UNDO:
+		_undo_stack.pop_back()
+	for i in range(_redo_stack.size() - 1, -1, -1):
+		if _redo_stack[i].player_id == player_id:
+			_redo_stack.remove_at(i)
 
 
 func _on_validate_timer_timeout() -> void:
@@ -285,3 +444,34 @@ func _on_validate_timer_timeout() -> void:
 		SoundManager.play_sfx_at_3d("rule_broken", average_position)
 	if new_error_cells != old_error_cells:
 		error_cells_changed.emit()
+
+
+class UndoAction:
+	var player_id: int
+	var cell_positions: Array[Vector2i]
+	var old_values: Array[int]
+	var new_values: Array[int]
+	
+	func _to_string() -> String:
+		return str({
+			"player_id": player_id,
+			"cell_positions": cell_positions,
+			"old_values": old_values,
+			"new_values": new_values,
+		})
+
+
+class RecentEdit:
+	var player_id: int
+	var timestamp: int
+	
+	func _init(init_player_id: int) -> void:
+		player_id = init_player_id
+		timestamp = Time.get_ticks_msec()
+	
+	
+	func _to_string() -> String:
+		return str({
+			"player_id": player_id,
+			"timestamp": timestamp,
+		})

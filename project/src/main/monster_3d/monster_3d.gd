@@ -56,6 +56,7 @@ var direction: Vector2 = Vector2.ZERO:
 		_dirty = true
 
 var id: int
+var cursor_board: NurikabeGameBoard3D
 
 var _dirty: bool = false
 

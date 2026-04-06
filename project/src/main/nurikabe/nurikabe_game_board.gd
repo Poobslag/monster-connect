@@ -321,6 +321,10 @@ func redo(player_id: int) -> void:
 			_redo_stack.remove_at(redo_index)
 
 
+func validate() -> void:
+	%ValidateTimer.start()
+
+
 func _apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> void:
 	var target_values: Array[int] = undo_action.new_values if is_redo else undo_action.old_values
 	for i in undo_action.cell_positions.size():
@@ -334,16 +338,6 @@ func _can_apply_undo_action(undo_action: UndoAction, is_redo: bool = false) -> b
 		if get_cell(undo_action.cell_positions[i]) != expected_values[i]:
 			conflict_count += 1
 	return conflict_count == 0
-
-
-func _erase_cell(cell_pos: Vector2i) -> void:
-	%TileMapGround.erase_cell(cell_pos)
-	%TileMapIsland.erase_cell(cell_pos)
-	%TileMapClue.erase_cell(cell_pos)
-	%TileMapError.erase_cell(cell_pos)
-	%TileMapWall.erase_cell(cell_pos)
-	if not Engine.is_editor_hint():
-		%SteppableTiles.erase_cell(cell_pos)
 
 
 func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
@@ -388,10 +382,6 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 		_cells_dirty = true
 	
 	cell_changed.emit(cell_pos, value)
-
-
-func validate() -> void:
-	%ValidateTimer.start()
 
 
 func _push_undo_action(player_id: int, cell_positions: Array[Vector2i], values: Array[int]) -> void:

@@ -7,19 +7,6 @@ const CELL_EMPTY: int = NurikabeUtils.CELL_EMPTY
 
 const POS_NOT_FOUND: Vector2i = NurikabeUtils.POS_NOT_FOUND
 
-var _last_set_cell_from: int = CELL_INVALID
-var _last_set_cell_to: int = CELL_INVALID
-var _mb_press_cell: Vector2i = POS_NOT_FOUND
-
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.is_pressed():
-			_handle_lmb_press()
-		else:
-			_handle_lmb_release()
-
-
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
@@ -34,6 +21,7 @@ func _process(_delta: float) -> void:
 				board.tile_size.x * 0.5,
 				NurikabeGameBoard3D.GROUND_HEIGHT,
 				board.tile_size.y * 0.5)
+		%Player.cursor_board = board
 	else:
 		%Cursor.visible = false
 	
@@ -74,54 +62,3 @@ func get_hit_at_mouse() -> Dictionary[String, Variant]:
 
 func _is_valid_board_hit(mouse_hit: Dictionary[String, Variant]) -> bool:
 	return mouse_hit and mouse_hit["type"] == "board" and mouse_hit["cell"] != POS_NOT_FOUND
-
-
-func _handle_lmb_press() -> void:
-	var mouse_hit: Dictionary[String, Variant] = get_hit_at_mouse()
-	if not _is_valid_board_hit(mouse_hit):
-		return
-	
-	var board: NurikabeGameBoard3D = mouse_hit["board"]
-	var cell: Vector2i = mouse_hit["cell"]
-	var cell_value: int = board.get_cell(cell)
-	if cell_value == CELL_EMPTY:
-		_mb_press_cell = cell
-		_last_set_cell_from = CELL_EMPTY
-		_last_set_cell_to = CELL_WALL
-		board.set_half_cell(_mb_press_cell, 0)
-		board.set_cell(_mb_press_cell, CELL_WALL)
-	elif cell_value == CELL_WALL:
-		_mb_press_cell = cell
-		_last_set_cell_from = CELL_WALL
-		_last_set_cell_to = CELL_ISLAND
-		board.set_half_cell(_mb_press_cell, 0)
-		board.set_cell(_mb_press_cell, CELL_ISLAND)
-	elif cell_value == CELL_ISLAND:
-		_mb_press_cell = cell
-		_last_set_cell_from = CELL_ISLAND
-		_last_set_cell_to = CELL_EMPTY
-		board.set_half_cell(_mb_press_cell, 0)
-
-
-func _handle_lmb_release() -> void:
-	var mouse_hit: Dictionary[String, Variant] = get_hit_at_mouse()
-	
-	if not _is_valid_board_hit(mouse_hit):
-		return
-	
-	if _mb_press_cell == POS_NOT_FOUND:
-		return
-	
-	var board: NurikabeGameBoard3D = mouse_hit["board"]
-	if _last_set_cell_to == CELL_EMPTY:
-		board.clear_half_cells(0)
-		board.set_cell(_mb_press_cell, CELL_EMPTY)
-		board.validate()
-	elif _last_set_cell_to == CELL_WALL:
-		board.clear_half_cells(0)
-		board.set_cell(_mb_press_cell, CELL_WALL)
-		board.validate()
-	elif _last_set_cell_to == CELL_ISLAND:
-		board.clear_half_cells(0)
-		board.set_cell(_mb_press_cell, CELL_ISLAND)
-		board.validate()
