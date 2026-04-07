@@ -263,9 +263,11 @@ func _on_refresher_refresh_requested() -> void:
 	refresh_game_boards()
 
 
-func _on_game_board_puzzle_finished(_game_board: NurikabeGameBoard3D) -> void:
-	if not %TutorialOverlay.visible:
+func _on_game_board_puzzle_finished(game_board: NurikabeGameBoard3D) -> void:
+	if game_board == %Player.solving_board and not %TutorialOverlay.visible:
 		%ResultsOverlay.show_results()
+	else:
+		SoundManager.play_sfx_at_3d("win", game_board.get_aabb().get_center())
 
 
 func _on_command_palette_command_entered(command: String) -> void:
