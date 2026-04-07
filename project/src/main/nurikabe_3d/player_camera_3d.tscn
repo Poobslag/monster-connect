@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://hcbb3vxqxmjc"]
+
+[ext_resource type="Script" uid="uid://leum7avrpoyo" path="res://src/main/nurikabe_3d/player_camera.gd" id="1_jfjg8"]
+[ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="2_hsw5h"]
+[ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="3_o20cd"]
+[ext_resource type="Script" uid="uid://by8u4cryppxs0" path="res://src/main/monster_3d/player/camera_follow_player.gd" id="4_sico6"]
+[ext_resource type="Script" uid="uid://d3i3c71tw1mbh" path="res://src/main/monster_3d/player/camera_follow_puzzle.gd" id="5_h5rpl"]
+[ext_resource type="Script" uid="uid://bybkaywr3mabl" path="res://src/main/monster_3d/player/camera_to_player.gd" id="6_qqxt3"]
+[ext_resource type="Script" uid="uid://d1vpgky7eimh2" path="res://src/main/monster_3d/player/camera_to_puzzle.gd" id="7_aypve"]
+
+[node name="Camera3D" type="Camera3D" unique_id=814605849]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, 0, 0, 0)
+current = true
+script = ExtResource("1_jfjg8")
+drift_amount = 2.0
+
+[node name="StateMachine" parent="." unique_id=303428373 instance=ExtResource("2_hsw5h")]
+unique_name_in_owner = true
+
+[node name="FollowPlayer" parent="StateMachine" unique_id=1655920970 instance=ExtResource("3_o20cd")]
+unique_name_in_owner = true
+script = ExtResource("4_sico6")
+
+[node name="FollowPuzzle" parent="StateMachine" unique_id=1973910282 instance=ExtResource("3_o20cd")]
+unique_name_in_owner = true
+script = ExtResource("5_h5rpl")
+
+[node name="ToPlayer" parent="StateMachine" unique_id=956529867 instance=ExtResource("3_o20cd")]
+unique_name_in_owner = true
+script = ExtResource("6_qqxt3")
+
+[node name="ToPuzzle" parent="StateMachine" unique_id=357157246 instance=ExtResource("3_o20cd")]
+unique_name_in_owner = true
+script = ExtResource("7_aypve")
