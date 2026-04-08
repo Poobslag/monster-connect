@@ -1,6 +1,6 @@
 @tool
-class_name SimMonster
-extends Monster
+class_name SimMonster3D
+extends Monster3D
 
 const BOREDOM_INCREASE_RATE_MIN: float = 0.5 # 30 per minute
 const BOREDOM_INCREASE_RATE_AVG: float = 1.6 # 100 per minute
@@ -9,9 +9,9 @@ const BOREDOM_INCREASE_RATE_MAX: float = 5.0 # 300 per minute
 const BOREDOM_DECREASE_RATE_MIN: float = 1.6 # 100 per minute
 const BOREDOM_DECREASE_RATE_MAX: float = 3.2 # 200 per minute
 
-@onready var input: SimInput = %Input
+@onready var input: SimInput3D = %Input
 
-var solving_board: NurikabeGameBoard
+var solving_board: NurikabeGameBoard3D
 
 var memory: Dictionary[String, Variant] = {}
 var behavior: SimBehavior
@@ -52,12 +52,12 @@ func decrease_boredom(delta: float) -> void:
 
 
 ## Returns the global cursor position after any queued cursor commands.
-func get_final_cursor_position() -> Vector2:
-	var result: Vector2
+func get_final_cursor_position() -> Vector3:
+	var result: Vector3
 	if not input.cursor_commands.is_empty():
 		result = input.cursor_commands.back().pos
 	else:
-		result = cursor.global_position
+		result = cursor_3d.global_position
 	return result
 
 

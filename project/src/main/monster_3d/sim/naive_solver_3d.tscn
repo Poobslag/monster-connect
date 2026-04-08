@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://dtoj0jveijtnu"]
+
+[ext_resource type="Script" uid="uid://b6fhby3sg06oa" path="res://src/main/monster_3d/sim/naive_solver_3d.gd" id="1_4ratc"]
+
+[node name="NaiveSolver" type="Node" unique_id=1129839505 groups=["naive_solvers"]]
+script = ExtResource("1_4ratc")
+verbose = null
+
+[node name="VerboseTimer" type="Timer" parent="." unique_id=985385314]
+unique_name_in_owner = true
+wait_time = 5.0
+
+[connection signal="timeout" from="VerboseTimer" to="." method="_on_verbose_timer_timeout"]

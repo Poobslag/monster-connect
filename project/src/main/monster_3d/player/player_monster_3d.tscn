@@ -1,100 +1,26 @@
-[gd_scene format=3 uid="uid://bpt0adhn4mlv6"]
+[gd_scene format=3 uid="uid://bao7tfk1frjf3"]
 
 [ext_resource type="Script" uid="uid://pa88mlvrc6a2" path="res://src/main/monster_3d/player/player_monster_3d.gd" id="1_qkgg5"]
+[ext_resource type="PackedScene" uid="uid://bfde7tasssdaw" path="res://src/main/monster_3d/monster_3d.tscn" id="1_sktxa"]
 [ext_resource type="Script" uid="uid://1jwbqynv70kd" path="res://src/main/monster_3d/player/player_input_3d.gd" id="2_55sg1"]
-[ext_resource type="SpriteFrames" uid="uid://cwnjt3aehcpwu" path="res://src/main/monster/monster_frames_purple.tres" id="2_l8lur"]
 [ext_resource type="Script" uid="uid://d1c8314qqw7ye" path="res://src/main/monster_3d/player/player_move_handler_3d.gd" id="3_7uf62"]
-[ext_resource type="Texture2D" uid="uid://4q335xxs2p" path="res://icon.svg" id="3_j2o0b"]
 [ext_resource type="Script" uid="uid://c4mg0f0hbqbq7" path="res://src/main/monster_3d/puzzle_handler_3d.gd" id="4_0fs47"]
-[ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="5_mi6b7"]
-[ext_resource type="Script" uid="uid://2i8wfhww1fc7" path="res://src/main/monster_3d/monster_state_idle_3d.gd" id="6_l8lur"]
-[ext_resource type="Script" uid="uid://pkk134v8rp2n" path="res://src/main/monster_3d/monster_state_walk_3d.gd" id="7_j2o0b"]
-[ext_resource type="Script" uid="uid://cxgx2wnm7l3am" path="res://src/main/monster_3d/monster_state_fall_3d.gd" id="8_wxuvc"]
-[ext_resource type="Script" uid="uid://b7pmjbdippft8" path="res://src/main/monster_3d/monster_state_jump_3d.gd" id="9_ky7k8"]
+[ext_resource type="Script" uid="uid://jryjcqhqika0" path="res://src/main/monster_3d/player/player_cursor_3d.gd" id="6_8plio"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_afp4w"]
-radius = 0.4
-height = 1.5
-
-[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_l8lur"]
-length = 0.5
-
-[node name="PlayerMonster" type="CharacterBody3D" unique_id=1759522099 groups=["monsters"]]
-collision_layer = 2
-collision_mask = 3
+[node name="PlayerMonster" unique_id=1759522099 instance=ExtResource("1_sktxa")]
 script = ExtResource("1_qkgg5")
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=873267440]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 1.0006628, -0.8109976)
-sprite_frames = ExtResource("2_l8lur")
-animation = &"idle"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1133307201]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
-shape = SubResource("CapsuleShape3D_afp4w")
-
-[node name="StepRayCenter" type="CollisionShape3D" parent="." unique_id=1816157262]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.5, 0.5)
-shape = SubResource("SeparationRayShape3D_l8lur")
-
-[node name="StepRayLeft1" type="CollisionShape3D" parent="." unique_id=1853386944]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.5, 0.5)
-shape = SubResource("SeparationRayShape3D_l8lur")
-
-[node name="StepRayLeft2" type="CollisionShape3D" parent="." unique_id=1557434237]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.5, 0.5)
-shape = SubResource("SeparationRayShape3D_l8lur")
-
-[node name="StepRayRight1" type="CollisionShape3D" parent="." unique_id=376649811]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.5, 0.5)
-shape = SubResource("SeparationRayShape3D_l8lur")
-
-[node name="StepRayRight2" type="CollisionShape3D" parent="." unique_id=1978704546]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.5, 0.5)
-shape = SubResource("SeparationRayShape3D_l8lur")
-
-[node name="Cursor" type="Sprite3D" parent="." unique_id=1538327647]
-unique_name_in_owner = true
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
-visible = false
-billboard = 1
-no_depth_test = true
-render_priority = 1
-texture = ExtResource("3_j2o0b")
-
-[node name="Input" type="Node" parent="." unique_id=1664257790]
+[node name="Input" type="Node" parent="." index="8" unique_id=35637649]
 unique_name_in_owner = true
 script = ExtResource("2_55sg1")
 
-[node name="MoveHandler" type="Node" parent="Input" unique_id=704242215]
+[node name="MoveHandler" type="Node" parent="Input" index="0" unique_id=504004461]
 unique_name_in_owner = true
 script = ExtResource("3_7uf62")
 
-[node name="PuzzleHandler" type="Node" parent="Input" unique_id=174754286]
+[node name="PuzzleHandler" type="Node" parent="Input" index="1" unique_id=1804421983]
 unique_name_in_owner = true
 script = ExtResource("4_0fs47")
 
-[node name="StateMachine" parent="." unique_id=303428373 instance=ExtResource("5_mi6b7")]
-unique_name_in_owner = true
-
-[node name="Idle" type="Node" parent="StateMachine" unique_id=331629829]
-script = ExtResource("6_l8lur")
-metadata/_custom_type_script = "uid://csrp3opu5586b"
-
-[node name="Walk" type="Node" parent="StateMachine" unique_id=1013518069]
-script = ExtResource("7_j2o0b")
-metadata/_custom_type_script = "uid://csrp3opu5586b"
-
-[node name="Fall" type="Node" parent="StateMachine" unique_id=318287105]
-script = ExtResource("8_wxuvc")
-metadata/_custom_type_script = "uid://csrp3opu5586b"
-
-[node name="Jump" type="Node" parent="StateMachine" unique_id=1902512996]
-script = ExtResource("9_ky7k8")
-metadata/_custom_type_script = "uid://csrp3opu5586b"
+[node name="Cursor" parent="." index="9" unique_id=917193400]
+script = ExtResource("6_8plio")

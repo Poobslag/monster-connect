@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://co5vdj6q7g3uc"]
+
+[ext_resource type="PackedScene" uid="uid://bfde7tasssdaw" path="res://src/main/monster_3d/monster_3d.tscn" id="1_tsdk6"]
+[ext_resource type="Script" uid="uid://untalfnjbxck" path="res://src/main/monster_3d/sim/sim_monster_3d.gd" id="2_qvuoj"]
+[ext_resource type="Script" uid="uid://cf68m8k08xr83" path="res://src/main/monster_3d/sim/sim_input_3d.gd" id="3_p2wo3"]
+[ext_resource type="Script" uid="uid://c4mg0f0hbqbq7" path="res://src/main/monster_3d/puzzle_handler_3d.gd" id="4_e44qu"]
+[ext_resource type="PackedScene" uid="uid://brsgwgx20jk02" path="res://src/main/monster_3d/sim/sim_brain_3d.tscn" id="5_e44qu"]
+[ext_resource type="Script" uid="uid://bha0wlwi2saiq" path="res://src/main/monster_3d/sim/sim_cursor_3d.gd" id="6_vpv3i"]
+
+[node name="Monster" unique_id=1759522099 instance=ExtResource("1_tsdk6")]
+script = ExtResource("2_qvuoj")
+
+[node name="Input" type="Node" parent="." index="8" unique_id=268172173]
+unique_name_in_owner = true
+script = ExtResource("3_p2wo3")
+
+[node name="PuzzleHandler" type="Node" parent="Input" index="0" unique_id=634468738]
+unique_name_in_owner = true
+script = ExtResource("4_e44qu")
+
+[node name="Brain" parent="." index="9" unique_id=1508044241 instance=ExtResource("5_e44qu")]
+
+[node name="Cursor" parent="." index="10" unique_id=917193400]
+script = ExtResource("6_vpv3i")
+
+[node name="PuzzleCursor" parent="." index="11" unique_id=2138987604]
+cursor_color = Color(0.78, 0.714, 1, 1)
+
+[node name="NameLabel" parent="." index="12" unique_id=1381013122]
+outline_modulate = Color(0.78, 0.714, 1, 1)

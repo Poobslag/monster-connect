@@ -1,3 +1,4 @@
+@tool
 class_name Monster3D
 extends CharacterBody3D
 
@@ -17,6 +18,15 @@ const SPRITE_FRAMES_BY_SKIN: Dictionary[MonsterSkin, SpriteFrames] = {
 	MonsterSkin.PINK: preload("res://src/main/monster/monster_frames_pink.tres"),
 	MonsterSkin.PURPLE: preload("res://src/main/monster/monster_frames_purple.tres"),
 	MonsterSkin.YELLOW: preload("res://src/main/monster/monster_frames_yellow.tres"),
+}
+
+const CURSOR_COLOR_BY_SKIN: Dictionary[MonsterSkin, Color] = {
+	MonsterSkin.NONE: Color.BLACK,
+	MonsterSkin.BEIGE: Color(0.886, 0.765, 0.671, 1.0),
+	MonsterSkin.GREEN: Color(0.365, 0.831, 0.667, 1.0),
+	MonsterSkin.PINK: Color(1.0, 0.541, 0.682, 1.0),
+	MonsterSkin.PURPLE: Color(0.78, 0.714, 1.0, 1.0),
+	MonsterSkin.YELLOW: Color(0.98, 0.729, 0.176, 1.0),
 }
 
 const FONT_COLOR_BY_SKIN: Dictionary[MonsterSkin, Color] = {
@@ -57,6 +67,10 @@ var direction: Vector2 = Vector2.ZERO:
 
 var id: int
 var cursor_board: NurikabeGameBoard3D
+var display_name: String = "":
+	set(value):
+		display_name = value
+		%NameLabel.text = display_name
 
 var _dirty: bool = false
 
@@ -126,3 +140,5 @@ func _refresh_skin() -> void:
 		return
 	
 	%AnimatedSprite3D.sprite_frames = SPRITE_FRAMES_BY_SKIN[skin]
+	%NameLabel.outline_modulate = FONT_COLOR_BY_SKIN[skin]
+	%PuzzleCursor.cursor_color = CURSOR_COLOR_BY_SKIN[skin]

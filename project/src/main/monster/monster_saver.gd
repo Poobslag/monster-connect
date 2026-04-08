@@ -43,6 +43,7 @@ func _parse_metadata_line(line: String, profile: SimProfile) -> void:
 		"skin":
 			if SimMonster.MonsterSkin.has(value.to_upper()):
 				profile.skin = SimMonster.MonsterSkin[value.to_upper()]
+				profile.skin_3d = SimMonster3D.MonsterSkin[value.to_upper()]
 			else:
 				push_warning("Unknown skin: %s" % [value])
 		_:

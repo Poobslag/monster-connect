@@ -1,3 +1,4 @@
+@tool
 class_name PlayerMonster3D
 extends Monster3D
 

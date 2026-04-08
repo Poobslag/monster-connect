@@ -6,6 +6,7 @@ var name: String
 var author: String
 var description: String
 var skin: SimMonster.MonsterSkin = SimMonster.MonsterSkin.NONE
+var skin_3d: SimMonster3D.MonsterSkin = SimMonster3D.MonsterSkin.NONE
 var behavior: SimBehavior = SimBehavior.new()
 var archetypes: Dictionary[String, float] = {}
 

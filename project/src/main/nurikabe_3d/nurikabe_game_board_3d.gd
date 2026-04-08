@@ -188,7 +188,7 @@ func global_to_map(global_point: Vector3) -> Vector2i:
 
 
 func map_to_global(cell: Vector2i) -> Vector3:
-	return global_transform * Vector3(cell.x * tile_size.x, 0, cell.y * tile_size.y)
+	return global_transform * (Vector3(cell.x * tile_size.x, 0, cell.y * tile_size.y) + Vector3(0.5, 0.0, 0.5))
 
 
 func import_grid() -> void:

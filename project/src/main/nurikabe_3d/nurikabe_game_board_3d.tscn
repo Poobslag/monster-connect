@@ -8,7 +8,7 @@
 [ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe_3d/wall.meshlib" id="5_aqkwp"]
 [ext_resource type="MeshLibrary" uid="uid://g2bu4ug2kg6j" path="res://assets/main/nurikabe_3d/error.meshlib" id="6_5x44w"]
 
-[node name="GameBoard" type="Node3D" unique_id=361717472 groups=["world_occupants"]]
+[node name="GameBoard" type="Node3D" unique_id=361717472 groups=["game_boards", "world_occupants"]]
 script = ExtResource("1_qbvnj")
 
 [node name="Label3D" type="Label3D" parent="." unique_id=86304974]
