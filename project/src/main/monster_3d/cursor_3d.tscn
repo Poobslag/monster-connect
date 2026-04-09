@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://cnk7hw71h3ykm"]
+
+[ext_resource type="Texture2D" uid="uid://4q335xxs2p" path="res://icon.svg" id="1_eofaa"]
+
+[node name="Cursor" type="Sprite3D" unique_id=917193400]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+visible = false
+billboard = 1
+no_depth_test = true
+render_priority = 1
+texture = ExtResource("1_eofaa")

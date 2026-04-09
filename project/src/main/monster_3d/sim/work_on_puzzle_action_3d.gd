@@ -1,4 +1,4 @@
-class_name WorkOnPuzzleAction
+class_name WorkOnPuzzleAction3D
 extends GoapAction
 
 const SOLVER_COOLDOWN_MIN: float = 3.5
@@ -48,8 +48,8 @@ var _patience_duration: float = PATIENCE_DURATION_AVG
 ## Values > 0.5 risk deadlock, even the closest sim may refuse to work.
 var _patient_distance_ratio: float = PATIENT_DISTANCE_RATIO_AVG
 
-@onready var _solver: NaiveSolver = NaiveSolver.find_instance(self)
-@onready var monster: SimMonster = Utils.find_parent_of_type(self, SimMonster)
+@onready var _solver: NaiveSolver3D = NaiveSolver3D.find_instance(self)
+@onready var monster: SimMonster3D = Utils.find_parent_of_type(self, SimMonster3D)
 
 func _ready() -> void:
 	# wait for monster.behavior
@@ -71,7 +71,7 @@ func enter() -> void:
 	monster.solving_board.cell_changed.connect(_on_solving_board_cell_changed)
 	monster.solving_board.error_cells_changed.connect(_on_solving_board_error_cells_changed)
 	monster.solving_board.board_reset.connect(_on_solving_board_reset)
-	_board_size_factor = monster.solving_board.get_global_cursorable_rect().size.length() / 500.0
+	_board_size_factor = monster.solving_board.get_aabb().size.length() / 7.8
 	_idle_cooldown_remaining = randf_range(0, _idle_cooldown)
 
 
@@ -106,9 +106,9 @@ func exit() -> void:
 
 
 func _choose_deduction() -> void:
-	var search_center: Vector2 = monster.get_final_cursor_position()
+	var search_center: Vector3 = monster.get_final_cursor_position()
 	var best_score: float = 0.0
-	var teammate: Monster = _find_teammate()
+	var teammate: Monster3D = _find_teammate()
 	
 	var impatience_factor: float = clamp(_impatience_timer / _patience_duration, 0.0, 1.0)
 	var min_distance_ratio: float = lerp(_patient_distance_ratio, 0.0, impatience_factor)
@@ -131,16 +131,16 @@ func _choose_deduction() -> void:
 		monster.remove_pending_deduction_at(_next_deduction.pos)
 
 
-func _find_teammate() -> Monster:
-	var teammate: Monster = null
+func _find_teammate() -> Monster3D:
+	var teammate: Monster3D = null
 	var teammate_dist: float = 999999
-	for other_monster: Monster in get_tree().get_nodes_in_group("monsters"):
+	for other_monster: Monster3D in get_tree().get_nodes_in_group("monsters"):
 		if other_monster == monster:
 			continue
 		if other_monster.cursor_board != monster.cursor_board:
 			continue
-		var other_monster_dist: float = other_monster.cursor.global_position.distance_to(
-				monster.cursor.global_position)
+		var other_monster_dist: float = other_monster.cursor_3d.global_position.distance_to(
+				monster.cursor_3d.global_position)
 		if other_monster_dist < teammate_dist:
 			teammate = other_monster
 			teammate_dist = other_monster_dist
@@ -150,15 +150,15 @@ func _find_teammate() -> Monster:
 func _execute_curr_deduction() -> void:
 	if _solver.verbose:
 		print("monster %s deduction: %s" % [monster.id, _curr_deduction])
-	var target_pos: Vector2 = monster.solving_board.map_to_global(_curr_deduction.pos)
-	var commands: Array[SimInput.CursorCommand] = []
+	var target_pos: Vector3 = monster.solving_board.map_to_global(_curr_deduction.pos)
+	var commands: Array[SimInput3D.CursorCommand] = []
 	match _curr_deduction.value:
 		CELL_WALL:
-			commands.append(monster.input.queue_cursor_command(SimInput.LMB_PRESS, target_pos))
-			commands.append(monster.input.queue_cursor_command(SimInput.LMB_RELEASE, target_pos, 0.1))
+			commands.append(monster.input.queue_cursor_command(SimInput3D.LMB_PRESS, target_pos))
+			commands.append(monster.input.queue_cursor_command(SimInput3D.LMB_RELEASE, target_pos, 0.1))
 		CELL_ISLAND:
-			commands.append(monster.input.queue_cursor_command(SimInput.RMB_PRESS, target_pos))
-			commands.append(monster.input.queue_cursor_command(SimInput.RMB_RELEASE, target_pos, 0.1))
+			commands.append(monster.input.queue_cursor_command(SimInput3D.RMB_PRESS, target_pos))
+			commands.append(monster.input.queue_cursor_command(SimInput3D.RMB_RELEASE, target_pos, 0.1))
 	_cursor_commands_by_cell[_curr_deduction.pos] = commands
 	_interested_cells[_curr_deduction.pos] = Time.get_ticks_msec()
 
@@ -267,43 +267,43 @@ func _process_idle_cursor(delta: float) -> void:
 		_idle_cooldown_remaining -= delta
 		return
 	
-	var board_rect: Rect2 = monster.solving_board.get_global_cursorable_rect()
-	var pos: Vector2 = monster.cursor.global_position
+	var board_aabb: AABB = monster.solving_board.get_aabb()
+	var pos: Vector3 = monster.cursor_3d.global_position
 	
 	# move the cursor randomly, "bouncing off" the edge of the board
-	var pos_delta: Vector2 = Vector2(randf_range(-60, 60), randf_range(-60, 60))
-	if not board_rect.has_point(Vector2(pos.x, pos.y + pos_delta.y)):
-		pos_delta.y *= -1
-	if not board_rect.has_point(Vector2(pos.x + pos_delta.x, pos.y)):
+	var pos_delta: Vector3 = Vector3(randf_range(-1.0, 1.0), 0, randf_range(-1.0, 1.0))
+	if not board_aabb.has_point(Vector3(pos.x, board_aabb.position.y, pos.z + pos_delta.z)):
+		pos_delta.z *= -1
+	if not board_aabb.has_point(Vector3(pos.x + pos_delta.x, board_aabb.position.y, pos.z)):
 		pos_delta.x *= -1
 	
-	pos = (pos + pos_delta).clamp(board_rect.position, board_rect.end)
-	monster.input.queue_cursor_command(SimInput.MOVE, pos, 0.0, 0.33)
+	pos = (pos + pos_delta).clamp(board_aabb.position, board_aabb.end)
+	monster.input.queue_cursor_command(SimInput3D.MOVE, pos, 0.0, 0.33)
 	_idle_cooldown_remaining = _idle_cooldown
 
 
 func _score_deduction(
 		deduction: Deduction,
-		search_center: Vector2,
-		teammate: Monster,
+		search_center: Vector3,
+		teammate: Monster3D,
 		min_distance_ratio: float) -> float:
 	# some deductions score negative; these represent deductions which are too close to the player cursor
 	var score: float = 0.0
 	var distance_ratio: float = _get_distance_ratio(deduction, search_center, teammate)
 	if distance_ratio >= min_distance_ratio:
-		var deduction_global_pos: Vector2 = monster.solving_board.map_to_global(deduction.pos)
+		var deduction_global_pos: Vector3 = monster.solving_board.map_to_global(deduction.pos)
 		var cursor_dist: float = search_center.distance_to(deduction_global_pos)
 		# prefer closer deductions; add a little randomness so sims don't overlap each other so much
-		score += 10.0 * _score_distance(cursor_dist, 300) + randf_range(0.0, 1.0)
+		score += 10.0 * _score_distance(cursor_dist, 4.7) + randf_range(0.0, 1.0)
 	return score
 
 
-func _get_distance_ratio(deduction: Deduction, search_center: Vector2, teammate: Monster) -> float:
-	var deduction_global_pos: Vector2 = monster.solving_board.map_to_global(deduction.pos)
+func _get_distance_ratio(deduction: Deduction, search_center: Vector3, teammate: Monster3D) -> float:
+	var deduction_global_pos: Vector3 = monster.solving_board.map_to_global(deduction.pos)
 	var cursor_dist: float = search_center.distance_to(deduction_global_pos)
 	var distance_ratio: float = 999999.0
 	if teammate:
-		var teammate_cursor_dist: float = teammate.cursor.global_position.distance_to(deduction_global_pos)
+		var teammate_cursor_dist: float = teammate.cursor_3d.global_position.distance_to(deduction_global_pos)
 		distance_ratio = max(teammate_cursor_dist, 0.1) / max(cursor_dist, 0.1)
 	return distance_ratio
 
@@ -315,14 +315,14 @@ func _score_distance(distance: float, decay_factor: float) -> float:
 
 func _on_solving_board_cell_changed(cell_pos: Vector2i, _value: int) -> void:
 	if _cursor_commands_by_cell.has(cell_pos):
-		var cursor_press_command: SimInput.CursorCommand = null
-		for cursor_command: SimInput.CursorCommand in _cursor_commands_by_cell[cell_pos]:
-			if cursor_command.action in [SimInput.LMB_PRESS, SimInput.RMB_PRESS] \
+		var cursor_press_command: SimInput3D.CursorCommand = null
+		for cursor_command: SimInput3D.CursorCommand in _cursor_commands_by_cell[cell_pos]:
+			if cursor_command.action in [SimInput3D.LMB_PRESS, SimInput3D.RMB_PRESS] \
 					and monster.input.has_cursor_command(cursor_command):
 				cursor_press_command = cursor_command
 				break
 		if cursor_press_command != null:
-			for cursor_command: SimInput.CursorCommand in _cursor_commands_by_cell[cell_pos]:
+			for cursor_command: SimInput3D.CursorCommand in _cursor_commands_by_cell[cell_pos]:
 				monster.input.dequeue_cursor_command(cursor_command)
 		
 		_cursor_commands_by_cell.erase(cell_pos)

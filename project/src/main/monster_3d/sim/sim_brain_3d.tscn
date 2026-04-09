@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://brsgwgx20jk02"]
+
+[ext_resource type="Script" uid="uid://c2y0d1jv6uouq" path="res://src/main/monster_3d/sim/sim_brain_3d.gd" id="1_6gkoa"]
+[ext_resource type="Script" uid="uid://dawycm5wbtgn4" path="res://src/main/monster_3d/sim/find_puzzle_action_3d.gd" id="2_foj1v"]
+[ext_resource type="Script" uid="uid://b2ogh6do4voqk" path="res://src/main/monster_3d/sim/idle_action_3d.gd" id="3_h887j"]
+[ext_resource type="Script" uid="uid://b3w1pu1x50ma3" path="res://src/main/monster_3d/sim/leave_puzzle_action_3d.gd" id="4_4e4sj"]
+[ext_resource type="Script" uid="uid://i8ouvsjih811" path="res://src/main/monster_3d/sim/work_on_puzzle_action_3d.gd" id="5_wyasu"]
+
+[node name="Brain" type="Node" unique_id=1508044241]
+script = ExtResource("1_6gkoa")
+
+[node name="FindPuzzleAction" type="Node" parent="." unique_id=1810392827]
+unique_name_in_owner = true
+script = ExtResource("2_foj1v")
+
+[node name="IdleAction" type="Node" parent="." unique_id=739922676]
+unique_name_in_owner = true
+script = ExtResource("3_h887j")
+
+[node name="LeavePuzzleAction" type="Node" parent="." unique_id=2018535047]
+unique_name_in_owner = true
+script = ExtResource("4_4e4sj")
+
+[node name="WorkOnPuzzleAction" type="Node" parent="." unique_id=722424598]
+unique_name_in_owner = true
+script = ExtResource("5_wyasu")

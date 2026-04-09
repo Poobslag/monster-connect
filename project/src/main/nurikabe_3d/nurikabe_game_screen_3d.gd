@@ -12,16 +12,18 @@ const DEBUG_COLORS: Array[Color] = [
 
 const DEBUG_PATH_WIDTH: float = 0.06
 
-const DEFAULT_SKIN_VALUES: Array[Monster.MonsterSkin] = [
-	Monster.MonsterSkin.BEIGE,
-	Monster.MonsterSkin.GREEN,
-	Monster.MonsterSkin.PINK,
-	Monster.MonsterSkin.PURPLE,
-	Monster.MonsterSkin.YELLOW,
+const DEFAULT_SKIN_VALUES: Array[Monster3D.MonsterSkin] = [
+	Monster3D.MonsterSkin.BEIGE,
+	Monster3D.MonsterSkin.GREEN,
+	Monster3D.MonsterSkin.PINK,
+	Monster3D.MonsterSkin.PURPLE,
+	Monster3D.MonsterSkin.YELLOW,
 ]
 
 const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn")
+const SIM_SCENE: PackedScene = preload("res://src/main/monster_3d/sim/sim_monster_3d.tscn")
 
+@export var target_sim_count: int = 1
 @export var target_puzzle_count: int = 7
 @export var draw_debug_paths: bool = false
 @export var show_puzzle_ids: bool = false
@@ -29,10 +31,15 @@ const GAME_BOARD_SCENE: PackedScene = preload("res://src/main/nurikabe_3d/nurika
 ## Force all puzzles to use the same fixed path. Useful for debugging.
 @export_file("*.txt") var test_puzzle_path: String
 
+## Force a specific sim to show up. Useful for debugging.
+@export_file("*.txt") var test_sim_path: String
+
 var _all_puzzles: Array[String] = Utils.find_data_files(NurikabeUtils.PUZZLE_DIR, "txt")
 var _puzzle_queue: Array[String] = []
 
 func _ready() -> void:
+	clear_sims()
+	refresh_sims()
 	clear_game_boards()
 	refresh_game_boards()
 	
@@ -101,6 +108,50 @@ func add_random_puzzle() -> void:
 	_generate_board_label_text(game_board)
 	_generate_board_string_id(game_board)
 	_position_board_in_world(game_board)
+
+
+func clear_sims() -> void:
+	for sim: SimMonster3D in get_sims():
+		remove_sim(sim)
+
+
+func get_sims() -> Array[SimMonster3D]:
+	var sims: Array[SimMonster3D] = []
+	for monster: Monster3D in get_tree().get_nodes_in_group("monsters"):
+		if monster is SimMonster3D and not monster.is_queued_for_deletion():
+			sims.append(monster)
+	return sims
+
+
+func remove_sim(sim: SimMonster3D) -> void:
+	sim.queue_free()
+
+
+func refresh_sims() -> void:
+	var sims: Array[SimMonster3D] = get_sims()
+	var new_sim_count: int = target_sim_count - sims.size()
+	
+	for _i in new_sim_count:
+		var sim: SimMonster3D = add_sim(sims.size())
+		sims.append(sim)
+
+
+func add_sim(sim_index: int) -> SimMonster3D:
+	var sim: SimMonster3D = SIM_SCENE.instantiate()
+	var profile: SimProfile
+	if test_sim_path:
+		profile = SimLibrary.get_profile(test_sim_path)
+	else:
+		profile = SimLibrary.get_next_profile()
+	if profile.skin == SimMonster3D.MonsterSkin.NONE:
+		sim.skin = DEFAULT_SKIN_VALUES[sim_index % DEFAULT_SKIN_VALUES.size()]
+	else:
+		sim.skin = profile.skin_3d
+	sim.behavior = profile.behavior
+	sim.display_name = profile.name
+	sim.position = Vector3(randf_range(-15.6, 15.6), 0, randf_range(-15.6, 15.6))
+	%Monsters.add_child(sim)
+	return sim
 
 
 func _attach_puzzle_info(game_board: NurikabeGameBoard3D, puzzle_path: String) -> void:
