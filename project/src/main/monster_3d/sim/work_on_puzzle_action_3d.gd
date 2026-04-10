@@ -71,7 +71,7 @@ func enter() -> void:
 	monster.solving_board.cell_changed.connect(_on_solving_board_cell_changed)
 	monster.solving_board.error_cells_changed.connect(_on_solving_board_error_cells_changed)
 	monster.solving_board.board_reset.connect(_on_solving_board_reset)
-	_board_size_factor = monster.solving_board.get_aabb().size.length() / 7.8
+	_board_size_factor = monster.solving_board.get_global_aabb().size.length() / 7.8
 	_idle_cooldown_remaining = randf_range(0, _idle_cooldown)
 
 
@@ -267,7 +267,7 @@ func _process_idle_cursor(delta: float) -> void:
 		_idle_cooldown_remaining -= delta
 		return
 	
-	var board_aabb: AABB = monster.solving_board.get_aabb()
+	var board_aabb: AABB = monster.solving_board.get_global_aabb()
 	var pos: Vector3 = monster.cursor_3d.global_position
 	
 	# move the cursor randomly, "bouncing off" the edge of the board

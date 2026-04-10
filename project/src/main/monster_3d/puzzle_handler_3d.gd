@@ -224,12 +224,12 @@ func _handle_mouse_motion() -> void:
 func _handle_redo_action() -> void:
 	game_board.redo(monster.id)
 	game_board.validate()
-	SoundManager.play_sfx_at_3d("redo", game_board.get_aabb().get_center())
+	SoundManager.play_sfx_at_3d("redo", game_board.get_global_aabb().get_center())
 
 
 func _handle_reset_action() -> void:
 	game_board.reset()
-	SoundManager.play_sfx_at_3d("reset", game_board.get_aabb().get_center())
+	SoundManager.play_sfx_at_3d("reset", game_board.get_global_aabb().get_center())
 
 
 func _handle_rmb_press() -> void:
@@ -257,7 +257,7 @@ func _handle_rmb_press() -> void:
 func _handle_undo_action() -> void:
 	game_board.undo(monster.id)
 	game_board.validate()
-	SoundManager.play_sfx_at_3d("undo", game_board.get_aabb().get_center())
+	SoundManager.play_sfx_at_3d("undo", game_board.get_global_aabb().get_center())
 
 
 func _is_recently_edited_by_other(cell: Vector2i) -> bool:

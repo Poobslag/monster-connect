@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 ## [br]
 ## The focus point is adjusted slightly to compensate for camera pitch.
 func get_puzzle_position() -> Vector3:
-	var puzzle_aabb: AABB = player.solving_board.get_aabb()
+	var puzzle_aabb: AABB = player.solving_board.get_global_aabb()
 	return puzzle_aabb.position + Vector3(
 		puzzle_aabb.size.x * 0.5,
 		puzzle_aabb.size.y * 0.0,
@@ -59,7 +59,7 @@ func get_puzzle_position() -> Vector3:
 
 
 func get_puzzle_offset() -> Vector3:
-	var target_size: Vector3 = player.solving_board.get_aabb().size
+	var target_size: Vector3 = player.solving_board.get_global_aabb().size
 	var vfov: float = deg_to_rad(fov) # Camera.fov is vertical
 	var hfov: float = deg_to_rad(get_camera_projection().get_fov()) # Projection.fov is horizontal
 	

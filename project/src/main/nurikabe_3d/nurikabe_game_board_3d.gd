@@ -112,7 +112,7 @@ func clear_half_cells(player_id: int) -> void:
 	_cells_dirty = true
 
 
-func get_aabb() -> AABB:
+func get_global_aabb() -> AABB:
 	var size := Vector3(
 		puzzle_dimensions.x * tile_size.x,
 		1,
