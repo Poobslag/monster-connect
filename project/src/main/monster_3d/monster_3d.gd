@@ -73,6 +73,7 @@ var display_name: String = "":
 		%NameLabel.text = display_name
 
 var _dirty: bool = false
+var _fade_tween: Tween
 
 @onready var sprite: AnimatedSprite3D = %AnimatedSprite3D
 @onready var fsm: StateMachine = %StateMachine
@@ -142,3 +143,13 @@ func _refresh_skin() -> void:
 	%AnimatedSprite3D.sprite_frames = SPRITE_FRAMES_BY_SKIN[skin]
 	%NameLabel.outline_modulate = FONT_COLOR_BY_SKIN[skin]
 	%PuzzleCursor.cursor_color = CURSOR_COLOR_BY_SKIN[skin]
+
+
+func _on_click_area_mouse_entered() -> void:
+	_fade_tween = Utils.recreate_tween(self, _fade_tween)
+	_fade_tween.tween_property(%AnimatedSprite3D, "modulate:a", 0.33, 0.25)
+
+
+func _on_click_area_mouse_exited() -> void:
+	_fade_tween = Utils.recreate_tween(self, _fade_tween)
+	_fade_tween.tween_property(%AnimatedSprite3D, "modulate:a", 1.0, 0.25)
