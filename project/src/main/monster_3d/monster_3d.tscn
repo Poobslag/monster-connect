@@ -24,9 +24,13 @@ variation_opentype = {
 2003265652: 600
 }
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_ndyio"]
+size = Vector3(1.864, 2.243, 0.5)
+
 [node name="Monster" type="CharacterBody3D" unique_id=1759522099 groups=["monsters"]]
 collision_layer = 2
 collision_mask = 3
+input_ray_pickable = false
 script = ExtResource("1_1uutg")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=873267440]
@@ -103,3 +107,12 @@ outline_render_priority = 0
 font = SubResource("FontVariation_g5m8m")
 font_size = 100
 outline_size = 64
+
+[node name="ClickArea" type="Area3D" parent="." unique_id=806811605]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ClickArea" unique_id=2061960286]
+transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.70710677, 0, -0.70710677, 0.7071068, -0.005, 0.7, -0.7)
+shape = SubResource("BoxShape3D_ndyio")
+
+[connection signal="mouse_entered" from="ClickArea" to="." method="_on_click_area_mouse_entered"]
+[connection signal="mouse_exited" from="ClickArea" to="." method="_on_click_area_mouse_exited"]
