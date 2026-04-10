@@ -72,7 +72,7 @@ func perform(delta: float) -> bool:
 	
 	# move towards the nearest game board; if we're close enough, assign it
 	if target_game_board != null:
-		var puzzle_aabb: AABB = target_game_board.get_aabb()
+		var puzzle_aabb: AABB = target_game_board.get_global_aabb()
 		var puzzle_rect: Rect2 = Rect2(puzzle_aabb.position.x, puzzle_aabb.position.z,
 				puzzle_aabb.size.x, puzzle_aabb.size.z)
 		var monster_pos_2d: Vector2 = Vector2(monster.global_position.x, monster.global_position.z)
@@ -109,7 +109,7 @@ func _find_target() -> void:
 		candidate["board"] = game_board
 		candidate["score"] = 0.0
 		
-		var distance: float = game_board.get_aabb().get_center().distance_to(monster.position)
+		var distance: float = game_board.get_global_aabb().get_center().distance_to(monster.position)
 		distance += randf_range(0, 7.8)
 		var distance_match: float = _calculate_match_factor(distance, 15.6)
 		candidate["score"] += distance_match * _distance_weight

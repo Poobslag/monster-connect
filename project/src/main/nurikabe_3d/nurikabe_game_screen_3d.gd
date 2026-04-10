@@ -304,7 +304,7 @@ func _overlaps_world_occupants(new_board: NurikabeGameBoard3D) -> bool:
 			continue
 		if occupant == new_board:
 			continue
-		if occupant.get_aabb().grow(1.0).intersects(new_board.get_aabb().grow(1.0)):
+		if occupant.get_global_aabb().grow(1.0).intersects(new_board.get_global_aabb().grow(1.0)):
 			result = true
 			break
 	return result
@@ -318,7 +318,7 @@ func _on_game_board_puzzle_finished(game_board: NurikabeGameBoard3D) -> void:
 	if game_board == %Player.solving_board and not %TutorialOverlay.visible:
 		%ResultsOverlay.show_results()
 	else:
-		SoundManager.play_sfx_at_3d("win", game_board.get_aabb().get_center())
+		SoundManager.play_sfx_at_3d("win", game_board.get_global_aabb().get_center())
 
 
 func _on_command_palette_command_entered(command: String) -> void:

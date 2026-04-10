@@ -17,7 +17,7 @@ func update() -> void:
 
 
 func _detect_puzzle_exit() -> void:
-	var puzzle_aabb: AABB = monster.solving_board.get_aabb()
+	var puzzle_aabb: AABB = monster.solving_board.get_global_aabb()
 	var puzzle_rect: Rect2 = Rect2(puzzle_aabb.position.x, puzzle_aabb.position.z,
 			puzzle_aabb.size.x, puzzle_aabb.size.z)
 	var monster_pos_2d: Vector2 = Vector2(monster.global_position.x, monster.global_position.z)
