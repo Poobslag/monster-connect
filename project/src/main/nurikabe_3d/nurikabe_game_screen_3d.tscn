@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn" id="1_qblsy"]
 [ext_resource type="Script" uid="uid://bav0ctyriea71" path="res://src/main/nurikabe_3d/nurikabe_game_screen_3d.gd" id="1_xmo2f"]
+[ext_resource type="PackedScene" uid="uid://c0ji5rkplpua5" path="res://src/main/nurikabe_3d/refresher.tscn" id="2_bu18b"]
 [ext_resource type="PackedScene" uid="uid://bao7tfk1frjf3" path="res://src/main/monster_3d/player/player_monster_3d.tscn" id="2_io7k0"]
 [ext_resource type="PackedScene" uid="uid://hcbb3vxqxmjc" path="res://src/main/nurikabe_3d/player_camera_3d.tscn" id="3_bu18b"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_afp4w"]
@@ -66,12 +67,14 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 light_energy = 0.75
 shadow_enabled = true
 
+[node name="Refresher" parent="World" unique_id=696047061 instance=ExtResource("2_bu18b")]
+
 [node name="Monsters" type="Node3D" parent="World" unique_id=2063390851]
 unique_name_in_owner = true
 
 [node name="Player" parent="World/Monsters" unique_id=1759522099 instance=ExtResource("2_io7k0")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.882, 0, 2.309)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
 
 [node name="Camera3D" parent="World" unique_id=814605849 node_paths=PackedStringArray("player") instance=ExtResource("3_bu18b")]
 transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
@@ -256,4 +259,5 @@ visible = false
 
 [node name="NaiveSolver" parent="." unique_id=1129839505 instance=ExtResource("14_gh55q")]
 
+[connection signal="refresh_requested" from="World/Refresher" to="." method="_on_refresher_refresh_requested"]
 [connection signal="command_entered" from="CommandPalette" to="." method="_on_command_palette_command_entered"]

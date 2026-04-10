@@ -31,7 +31,8 @@ script = ExtResource("1_1uutg")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=873267440]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 1.0006628, -0.8109976)
+transform = Transform3D(1, 0, 0, 0, 0.7071067, 0.7071067, 0, -0.7071067, 0.7071067, 0, 0, 0)
+offset = Vector2(0, 128)
 sprite_frames = ExtResource("2_irsbp")
 animation = &"idle"
 
@@ -94,7 +95,8 @@ cursor_color = Color(0.78039217, 0.7137255, 1, 1)
 
 [node name="NameLabel" type="Label3D" parent="." unique_id=1381013122]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 1.7155017, -1.505456)
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+offset = Vector2(0, 480)
 no_depth_test = true
 render_priority = 1
 outline_render_priority = 0
