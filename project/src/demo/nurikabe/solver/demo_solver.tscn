@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://cqrkd1t3kqq65"]
+
+[ext_resource type="Script" uid="uid://cuaqd1y1ogdup" path="res://src/demo/nurikabe/solver/demo_solver.gd" id="1_j6hjy"]
+[ext_resource type="PackedScene" uid="uid://b281ondbtbbn" path="res://src/demo/nurikabe/demo_world.tscn" id="2_7rp5c"]
+[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe/nurikabe_game_board.tscn" id="2_ek55o"]
+[ext_resource type="PackedScene" uid="uid://bvqse57y0q5mx" path="res://src/demo/nurikabe/demo_log.tscn" id="4_ek55o"]
+[ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="4_qqva7"]
+[ext_resource type="Script" uid="uid://bvoy1f5e7f8ao" path="res://src/demo/nurikabe/solver/demo_puzzle_archive.gd" id="5_bgqtr"]
+
+[node name="Demo" type="Node" unique_id=899144001]
+script = ExtResource("1_j6hjy")
+
+[node name="World" parent="." unique_id=945458918 instance=ExtResource("2_7rp5c")]
+
+[node name="Camera3D" parent="World" index="2" unique_id=1692340161]
+transform = Transform3D(0.9999984, -0.0015114986, 0.0008726641, 0, 0.49999994, 0.86602545, -0.0017453282, -0.866024, 0.4999992, 14.332708, 58.06349, 42.686752)
+
+[node name="GameBoard" parent="World" unique_id=361717472 instance=ExtResource("2_ek55o")]
+unique_name_in_owner = true
+grid_string = "                    
+     4              
+                    
+         2          
+       3         6  
+ 5                  
+                    
+     5         7    
+                   4
+         4          
+                   3
+             8      
+           2     2  
+                    
+     4              
+11     7       4    
+                    
+                 4  
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1965286464]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameBoardHolder" type="Control" parent="HBoxContainer" unique_id=58280937]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+
+[node name="DemoLog" parent="HBoxContainer" unique_id=10762396 instance=ExtResource("4_ek55o")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PerformanceSuiteTimer" type="Timer" parent="." unique_id=688118249]
+unique_name_in_owner = true
+wait_time = 0.25
+
+[node name="CommandPalette" parent="." unique_id=904274984 instance=ExtResource("4_qqva7")]
+unique_name_in_owner = true
+
+[node name="PuzzleArchive" type="Node" parent="." unique_id=632844870]
+unique_name_in_owner = true
+script = ExtResource("5_bgqtr")
+
+[connection signal="timeout" from="PerformanceSuiteTimer" to="." method="_on_performance_suite_timer_timeout"]
+[connection signal="command_entered" from="CommandPalette" to="." method="_on_command_palette_command_entered"]
+
+[editable path="World"]

@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://d2ay3g5c6v5hr"]
+
+[ext_resource type="PackedScene" uid="uid://bgibh05o0pwgi" path="res://assets/main/nurikabe/tile_blank_1.glb" id="1_ejhkn"]
+[ext_resource type="PackedScene" uid="uid://jcaql8cq7b1v" path="res://assets/main/nurikabe/tile_blank_2.glb" id="2_nk5k1"]
+
+[node name="Node3D" type="Node3D" unique_id=382747052]
+
+[node name="tile_blank_1" parent="." unique_id=1651472737 instance=ExtResource("1_ejhkn")]
+
+[node name="tile_blank_2" parent="." unique_id=1362024541 instance=ExtResource("2_nk5k1")]

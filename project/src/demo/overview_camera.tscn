@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bnimlc6d65s2u"]
+
+[ext_resource type="Script" uid="uid://b3rmb8m64es0o" path="res://src/demo/overview_camera.gd" id="1_5ck2q"]
+
+[node name="Camera3D" type="Camera3D" unique_id=1692340161]
+transform = Transform3D(0.99999845, -0.0015114987, 0.0008726641, 0, 0.49999997, 0.86602545, -0.0017453283, -0.8660241, 0.4999992, 0, 46.75, 26.4)
+current = true
+fov = 18.8
+script = ExtResource("1_5ck2q")

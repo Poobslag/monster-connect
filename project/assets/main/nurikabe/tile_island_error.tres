@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://ced1375qosp87"]
+
+[ext_resource type="Texture2D" uid="uid://bpctm64ofusmk" path="res://assets/main/nurikabe/tile_island_error_tile_island_error.png" id="1_eqi5f"]
+
+[resource]
+resource_name = "tile_island_error"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_eqi5f")
+roughness = 0.5

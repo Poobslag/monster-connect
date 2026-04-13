@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://c2x71ly25prup"]
+
+[ext_resource type="Texture2D" uid="uid://xsihvfr6vs62" path="res://assets/main/nurikabe/tile_ground_error_tile_ground_error.png" id="1_3dvhf"]
+
+[resource]
+resource_name = "tile_ground_error"
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("1_3dvhf")
+roughness = 0.5

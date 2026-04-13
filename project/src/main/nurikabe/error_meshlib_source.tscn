@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dps6x4w0flsn8"]
+
+[ext_resource type="PackedScene" uid="uid://x2q7l4i0u6wp" path="res://assets/main/nurikabe/tile_ground_error.glb" id="1_v1fag"]
+
+[node name="Node3D" type="Node3D" unique_id=339619922]
+
+[node name="tile_ground_error" parent="." unique_id=1097924000 instance=ExtResource("1_v1fag")]

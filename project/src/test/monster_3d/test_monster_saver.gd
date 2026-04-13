@@ -10,7 +10,7 @@ func test_load_sim_behavior() -> void:
 	assert_eq(profile.author, "Poobslag")
 	assert_eq(profile.description, "A recluse ratatouilled by a colony of ants living inside his brain. " \
 			+ "His hobbies include sugar and fealty.")
-	assert_eq(profile.skin, Monster3D.MonsterSkin.YELLOW)
+	assert_eq(profile.skin, Monster.MonsterSkin.YELLOW)
 	
 	assert_eq(profile.archetypes.get("rat"), 9.0)
 	assert_eq(profile.archetypes.get("pig"), 1.0)
@@ -27,7 +27,7 @@ func test_load_sim_behavior_empty() -> void:
 	assert_eq(profile.name, "")
 	assert_eq(profile.author, "")
 	assert_eq(profile.description, "")
-	assert_eq(profile.skin, Monster3D.MonsterSkin.NONE)
+	assert_eq(profile.skin, Monster.MonsterSkin.NONE)
 	
 	assert_almost_eq(profile.behavior.get_stat("puzzle.cursor_speed"), 0.5, 0.001)
 	assert_almost_eq(profile.behavior.get_stat("puzzle.think_speed"), 0.5, 0.001)
