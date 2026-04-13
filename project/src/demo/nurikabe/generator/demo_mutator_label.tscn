@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://cnr1birfttcp7"]
-
-[node name="DemoMutatorLabel" type="RichTextLabel" unique_id=1380269213]
-offset_right = 40.0
-offset_bottom = 40.0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.5019608)
-theme_override_constants/outline_size = 5
-theme_override_font_sizes/normal_font_size = 24
-fit_content = true

@@ -146,7 +146,7 @@ func add_sim(sim_index: int) -> SimMonster3D:
 	if profile.skin == SimMonster3D.MonsterSkin.NONE:
 		sim.skin = DEFAULT_SKIN_VALUES[sim_index % DEFAULT_SKIN_VALUES.size()]
 	else:
-		sim.skin = profile.skin_3d
+		sim.skin = profile.skin
 	sim.behavior = profile.behavior
 	sim.display_name = profile.name
 	sim.position = Vector3(randf_range(-15.6, 15.6), 0, randf_range(-15.6, 15.6))

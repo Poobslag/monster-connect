@@ -8,10 +8,10 @@
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_afp4w"]
 [ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="5_ccw2j"]
 [ext_resource type="Script" uid="uid://48je0hlydow6" path="res://src/main/ui/version_label.gd" id="6_io7k0"]
+[ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe_3d/results_overlay.tscn" id="7_c1lbt"]
+[ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe_3d/tutorial_overlay.tscn" id="8_sso2b"]
 [ext_resource type="Script" uid="uid://hwr3gqftgfm5" path="res://src/main/nurikabe_3d/cursor_layer.gd" id="9_sso2b"]
 [ext_resource type="PackedScene" uid="uid://dv3wpirlmcqmy" path="res://src/main/nurikabe_3d/cursor_2d.tscn" id="10_bu18b"]
-[ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe_3d/results_overlay.tscn" id="11_bu18b"]
-[ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe_3d/tutorial_overlay.tscn" id="12_sso2b"]
 [ext_resource type="PackedScene" uid="uid://dtoj0jveijtnu" path="res://src/main/monster_3d/sim/naive_solver_3d.tscn" id="14_gh55q"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fc7sn"]
@@ -79,7 +79,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
 
 [node name="Camera3D" parent="World" unique_id=814605849 node_paths=PackedStringArray("player") instance=ExtResource("3_bu18b")]
-transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 46.75, 26.4)
+transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
 fov = 18.8
 player = NodePath("../Monsters/Player")
 player_offset = Vector3(0, 46.75, 26.4)
@@ -251,11 +251,11 @@ mouse_filter = 2
 script = ExtResource("9_sso2b")
 cursor_scene = ExtResource("10_bu18b")
 
-[node name="ResultsOverlay" parent="." unique_id=1174010181 instance=ExtResource("11_bu18b")]
+[node name="ResultsOverlay" parent="." unique_id=1174010181 instance=ExtResource("7_c1lbt")]
 unique_name_in_owner = true
 visible = false
 
-[node name="TutorialOverlay" parent="." unique_id=1610644807 instance=ExtResource("12_sso2b")]
+[node name="TutorialOverlay" parent="." unique_id=1610644807 instance=ExtResource("8_sso2b")]
 unique_name_in_owner = true
 visible = false
 

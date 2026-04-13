@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://hcbb3vxqxmjc"]
 
-[ext_resource type="Script" uid="uid://leum7avrpoyo" path="res://src/main/nurikabe_3d/player_camera.gd" id="1_jfjg8"]
+[ext_resource type="Script" path="res://src/main/nurikabe_3d/player_camera_3d.gd" id="1_jfjg8"]
 [ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="2_hsw5h"]
 [ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="3_o20cd"]
 [ext_resource type="Script" uid="uid://by8u4cryppxs0" path="res://src/main/monster_3d/player/camera_follow_player.gd" id="4_sico6"]

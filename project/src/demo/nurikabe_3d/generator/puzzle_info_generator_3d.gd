@@ -56,7 +56,7 @@ func write_puzzle_info(puzzle_path: String) -> void:
 
 
 func copy_board_from_solver() -> void:
-	solver.board.update_game_board_3d(%GameBoard)
+	solver.board.update_game_board(%GameBoard)
 
 
 func _get_solution_string() -> String:
