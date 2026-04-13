@@ -42,7 +42,7 @@ func update(_delta: float) -> void:
 
 
 func _copy_board_from_generator() -> void:
-	generator.board.solver_board.update_game_board_3d(%GameBoard)
+	generator.board.solver_board.update_game_board(%GameBoard)
 
 
 func _create_board() -> void:

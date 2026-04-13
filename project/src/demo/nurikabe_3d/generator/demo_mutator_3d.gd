@@ -66,7 +66,7 @@ func refresh_candidates() -> void:
 		var game_board: NurikabeGameBoard3D = %GameBoards.get_child(i)
 		var label: Label3D = %Labels.get_child(i)
 		
-		mutator.candidates[i].board.update_game_board_3d(game_board)
+		mutator.candidates[i].board.update_game_board(game_board)
 		game_board.position = next_game_board_position
 		var game_board_aabb: AABB = game_board.get_global_aabb()
 		label.position = game_board_aabb.position + Vector3(0, 0, game_board_aabb.size.z)

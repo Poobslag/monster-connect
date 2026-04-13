@@ -12,12 +12,12 @@ enum MonsterSkin {
 }
 
 const SPRITE_FRAMES_BY_SKIN: Dictionary[MonsterSkin, SpriteFrames] = {
-	MonsterSkin.NONE: preload("res://src/main/monster/monster_frames_beige.tres"),
-	MonsterSkin.BEIGE: preload("res://src/main/monster/monster_frames_beige.tres"),
-	MonsterSkin.GREEN: preload("res://src/main/monster/monster_frames_green.tres"),
-	MonsterSkin.PINK: preload("res://src/main/monster/monster_frames_pink.tres"),
-	MonsterSkin.PURPLE: preload("res://src/main/monster/monster_frames_purple.tres"),
-	MonsterSkin.YELLOW: preload("res://src/main/monster/monster_frames_yellow.tres"),
+	MonsterSkin.NONE: preload("res://src/main/monster_3d/monster_frames_beige.tres"),
+	MonsterSkin.BEIGE: preload("res://src/main/monster_3d/monster_frames_beige.tres"),
+	MonsterSkin.GREEN: preload("res://src/main/monster_3d/monster_frames_green.tres"),
+	MonsterSkin.PINK: preload("res://src/main/monster_3d/monster_frames_pink.tres"),
+	MonsterSkin.PURPLE: preload("res://src/main/monster_3d/monster_frames_purple.tres"),
+	MonsterSkin.YELLOW: preload("res://src/main/monster_3d/monster_frames_yellow.tres"),
 }
 
 const CURSOR_COLOR_BY_SKIN: Dictionary[MonsterSkin, Color] = {

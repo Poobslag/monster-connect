@@ -13,7 +13,7 @@ func update(_start_time: int) -> bool:
 
 
 func out_of_time(start_time: int) -> bool:
-	return Time.get_ticks_usec() - start_time >= NaiveSolver.BUDGET_USEC
+	return Time.get_ticks_usec() - start_time >= NaiveSolver3D.BUDGET_USEC
 
 
 func should_deduce(cell: Vector2i) -> bool:

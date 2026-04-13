@@ -40,7 +40,7 @@ func prepare(start_time: int) -> void:
 	while _next_cell_index < _cell_list.size():
 		_build_group(_cell_list[_next_cell_index])
 		_next_cell_index += 1
-		if Time.get_ticks_usec() - start_time > NaiveSolver.BUDGET_USEC:
+		if Time.get_ticks_usec() - start_time > NaiveSolver3D.BUDGET_USEC:
 			break
 
 

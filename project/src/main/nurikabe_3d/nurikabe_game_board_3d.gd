@@ -282,13 +282,13 @@ func set_half_cells(cell_positions: Array[Vector2i], player_id: int) -> void:
 
 func to_generator_board() -> GeneratorBoard:
 	var board: GeneratorBoard = GeneratorBoard.new()
-	board.from_game_board_3d(self)
+	board.from_game_board(self)
 	return board
 
 
 func to_solver_board() -> SolverBoard:
 	var board: SolverBoard = SolverBoard.new()
-	board.from_game_board_3d(self)
+	board.from_game_board(self)
 	return board
 
 

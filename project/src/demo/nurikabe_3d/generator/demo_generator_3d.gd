@@ -200,7 +200,7 @@ func step_solver() -> void:
 
 
 func copy_board_from_generator() -> void:
-	generator.board.solver_board.update_game_board_3d(%GameBoard)
+	generator.board.solver_board.update_game_board(%GameBoard)
 
 
 func _log_message(s: String) -> void:

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bfde7tasssdaw"]
 
 [ext_resource type="Script" uid="uid://bcrlm1rkt8pxs" path="res://src/main/monster_3d/monster_3d.gd" id="1_1uutg"]
-[ext_resource type="SpriteFrames" uid="uid://cwnjt3aehcpwu" path="res://src/main/monster/monster_frames_purple.tres" id="2_irsbp"]
+[ext_resource type="SpriteFrames" uid="uid://cwnjt3aehcpwu" path="res://src/main/monster_3d/monster_frames_purple.tres" id="2_irsbp"]
 [ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="7_vxbur"]
 [ext_resource type="PackedScene" uid="uid://cnk7hw71h3ykm" path="res://src/main/monster_3d/cursor_3d.tscn" id="8_sjmu3"]
 [ext_resource type="Script" uid="uid://2i8wfhww1fc7" path="res://src/main/monster_3d/monster_state_idle_3d.gd" id="8_tu2lt"]

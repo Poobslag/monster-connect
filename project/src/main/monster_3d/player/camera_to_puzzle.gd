@@ -15,7 +15,7 @@ func enter() -> void:
 	_final_position = camera.get_puzzle_position()
 	_final_offset = camera.get_puzzle_offset()
 	_tween = create_tween()
-	_tween.tween_property(self, "amount", 1.0, PlayerCamera.PAN_DURATION) \
+	_tween.tween_property(self, "amount", 1.0, PlayerCamera3D.PAN_DURATION) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
