@@ -164,6 +164,15 @@ func update_game_board(game_board: NurikabeGameBoard) -> void:
 			game_board.set_cell(cell, get_cell(cell))
 
 
+func update_game_board_3d(game_board: NurikabeGameBoard3D) -> void:
+	for cell: Vector2i in cells:
+		if has_clue(cell):
+			game_board.set_cell(cell, get_clue(cell))
+		else:
+			game_board.set_cell(cell, get_cell(cell))
+	game_board.refresh_puzzle_dimensions()
+
+
 func find_clue_cell(island: CellGroup) -> Vector2i:
 	var clue_cells: Array[Vector2i] = island.cells.filter(func(cell: Vector2i) -> bool:
 			return has_clue(cell))
