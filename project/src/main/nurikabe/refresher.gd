@@ -41,7 +41,7 @@ func _on_click_area_mouse_entered() -> void:
 	scale_tween.tween_property(%AnimatedSprite2D, "scale", 1.7 * Vector2.ONE, 0.05) \
 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_flash_sprite(0.5)
-	SoundManager.play_sfx("button_hover")
+	SoundManager.play_sfx_at("button_hover", global_position)
 
 
 func _on_click_area_mouse_exited() -> void:
@@ -67,7 +67,7 @@ func _on_click_area_input_event(_viewport: Node, event: InputEvent, _shape_idx: 
 		_flash_sprite()
 		
 		SoundManager.play_sfx("refresh_puzzles")
-		SoundManager.play_sfx("button_click")
+		SoundManager.play_sfx_at("button_click", global_position)
 		get_viewport().set_input_as_handled()
 
 
