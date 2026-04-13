@@ -53,6 +53,11 @@ func from_game_board(game_board: NurikabeGameBoard) -> void:
 	solver_board.allow_unclued_islands = true
 
 
+func from_game_board_3d(game_board: NurikabeGameBoard3D) -> void:
+	solver_board.from_game_board_3d(game_board)
+	solver_board.allow_unclued_islands = true
+
+
 func is_filled() -> bool:
 	var result: bool = false
 	if solver_board.is_filled():

@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://bnlpi6sgu40m0"]
+
+[ext_resource type="Script" uid="uid://b7urgtgptpfxj" path="res://src/demo/nurikabe_3d/generator/bulk_generator_3d.gd" id="1_yh0jg"]
+[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe_3d/nurikabe_game_board_3d.tscn" id="2_0e2y2"]
+[ext_resource type="PackedScene" uid="uid://bvqse57y0q5mx" path="res://src/demo/nurikabe_3d/demo_log_3d.tscn" id="2_h2n1q"]
+[ext_resource type="PackedScene" uid="uid://b281ondbtbbn" path="res://src/demo/nurikabe_3d/demo_world_3d.tscn" id="2_vsh3u"]
+[ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="4_3tgpi"]
+[ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="5_ta2l7"]
+[ext_resource type="Script" uid="uid://dm2sm0t1pw0y0" path="res://src/demo/nurikabe_3d/generator/bulk_generator_3d_idle_state.gd" id="7_0e2y2"]
+[ext_resource type="Script" uid="uid://dt0d68olwsmbd" path="res://src/demo/nurikabe_3d/generator/bulk_generator_3d_analyze_state.gd" id="8_vsh3u"]
+[ext_resource type="Script" uid="uid://dn3in5408lb36" path="res://src/demo/nurikabe_3d/generator/bulk_generator_3d_generate_state.gd" id="9_3tgpi"]
+[ext_resource type="Script" uid="uid://de7408cfkrjp" path="res://src/demo/nurikabe_3d/generator/bulk_generator_3d_compact_state.gd" id="10_ta2l7"]
+[ext_resource type="Script" uid="uid://b57hmo7gjj5u1" path="res://src/demo/nurikabe_3d/generator/puzzle_info_generator_3d.gd" id="11_0e2y2"]
+
+[node name="BulkGenerator" type="Node" unique_id=1244809172]
+script = ExtResource("1_yh0jg")
+
+[node name="World" parent="." unique_id=945458918 instance=ExtResource("2_vsh3u")]
+
+[node name="Camera3D" parent="World" index="2" unique_id=1692340161]
+transform = Transform3D(0.99999845, -0.0015114987, 0.0008726641, 0, 0.49999997, 0.86602545, -0.0017453283, -0.8660241, 0.4999992, 17.566256, 58.06349, 46.2012)
+
+[node name="GameBoard" parent="World" unique_id=361717472 instance=ExtResource("2_0e2y2")]
+unique_name_in_owner = true
+grid_string = "          
+          
+          
+          
+          
+"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=376191410]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameBoardHolder" type="Control" parent="HBoxContainer" unique_id=117474950]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+
+[node name="DemoLog" parent="HBoxContainer" unique_id=10762396 instance=ExtResource("2_h2n1q")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="StateMachine" parent="." unique_id=1786798224 instance=ExtResource("4_3tgpi")]
+unique_name_in_owner = true
+
+[node name="Idle" parent="StateMachine" unique_id=1013458497 instance=ExtResource("5_ta2l7")]
+script = ExtResource("7_0e2y2")
+
+[node name="Analyze" parent="StateMachine" unique_id=740463026 instance=ExtResource("5_ta2l7")]
+script = ExtResource("8_vsh3u")
+
+[node name="Generate" parent="StateMachine" unique_id=1496435631 instance=ExtResource("5_ta2l7")]
+script = ExtResource("9_3tgpi")
+
+[node name="Compact" parent="StateMachine" unique_id=1655920970 instance=ExtResource("5_ta2l7")]
+script = ExtResource("10_ta2l7")
+
+[node name="PuzzleInfoGenerator" type="Node" parent="." unique_id=1884607927]
+unique_name_in_owner = true
+script = ExtResource("11_0e2y2")
+
+[editable path="World"]

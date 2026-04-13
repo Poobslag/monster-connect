@@ -203,10 +203,7 @@ func import_grid() -> void:
 	for cell: Vector2i in cells:
 		set_cell(cell, cells[cell])
 	
-	puzzle_dimensions = Vector2i.ZERO
-	for cell: Vector2i in cells:
-		puzzle_dimensions.x = max(puzzle_dimensions.x, cell.x + 1)
-		puzzle_dimensions.y = max(puzzle_dimensions.y, cell.y + 1)
+	refresh_puzzle_dimensions()
 	
 	_undo_stack.clear()
 	_redo_stack.clear()
@@ -214,6 +211,13 @@ func import_grid() -> void:
 	error_cells = {}
 	half_cells = {}
 	lowlight_cells = {}
+
+
+func refresh_puzzle_dimensions() -> void:
+	puzzle_dimensions = Vector2i.ZERO
+	for cell: Vector2i in _values_by_cell:
+		puzzle_dimensions.x = max(puzzle_dimensions.x, cell.x + 1)
+		puzzle_dimensions.y = max(puzzle_dimensions.y, cell.y + 1)
 
 
 ## Sets the specified cells on the game board.[br]
@@ -274,6 +278,12 @@ func set_half_cells(cell_positions: Array[Vector2i], player_id: int) -> void:
 	for cell_pos: Vector2i in cell_positions:
 		half_cells[cell_pos] = player_id
 	_cells_dirty = true
+
+
+func to_generator_board() -> GeneratorBoard:
+	var board: GeneratorBoard = GeneratorBoard.new()
+	board.from_game_board_3d(self)
+	return board
 
 
 func to_solver_board() -> SolverBoard:
