@@ -92,11 +92,11 @@ func _input(event: InputEvent) -> void:
 			_log_message("seed: %s" % [fixed_seed])
 		KEY_D:
 			if Input.is_key_pressed(KEY_SHIFT):
-				generator.target_difficulty -= 0.1
+				generator.difficulty -= 0.1
 			else:
-				generator.target_difficulty += 0.1
-			generator.target_difficulty = clamp(generator.target_difficulty, 0.0, 1.0)
-			_log_message("target_difficulty: %s" % [generator.target_difficulty])
+				generator.difficulty += 0.1
+			generator.difficulty = clamp(generator.difficulty, 0.0, 1.0)
+			_log_message("difficulty: %s" % [generator.difficulty])
 		KEY_M:
 			var values: Array[String] = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 			Utils.shuffle_weighted(values, PackedFloat32Array([0, 1, 2, 3, 4, 5, 6, 7, 8]))
