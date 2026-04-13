@@ -1,0 +1,265 @@
+[gd_scene format=3 uid="uid://c3o1dino53bkn"]
+
+[ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe/nurikabe_game_board_3d.tscn" id="1_qblsy"]
+[ext_resource type="Script" uid="uid://bav0ctyriea71" path="res://src/main/nurikabe/nurikabe_game_screen_3d.gd" id="1_xmo2f"]
+[ext_resource type="PackedScene" uid="uid://c0ji5rkplpua5" path="res://src/main/nurikabe/refresher.tscn" id="2_bu18b"]
+[ext_resource type="PackedScene" uid="uid://bao7tfk1frjf3" path="res://src/main/monster/player/player_monster.tscn" id="2_io7k0"]
+[ext_resource type="PackedScene" uid="uid://hcbb3vxqxmjc" path="res://src/main/nurikabe/player_camera_3d.tscn" id="3_bu18b"]
+[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="5_afp4w"]
+[ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="5_ccw2j"]
+[ext_resource type="Script" uid="uid://48je0hlydow6" path="res://src/main/ui/version_label.gd" id="6_io7k0"]
+[ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="7_c1lbt"]
+[ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe/tutorial_overlay.tscn" id="8_sso2b"]
+[ext_resource type="Script" uid="uid://hwr3gqftgfm5" path="res://src/main/nurikabe/cursor_layer.gd" id="9_sso2b"]
+[ext_resource type="PackedScene" uid="uid://dv3wpirlmcqmy" path="res://src/main/nurikabe/cursor_2d.tscn" id="10_bu18b"]
+[ext_resource type="PackedScene" uid="uid://dtoj0jveijtnu" path="res://src/main/monster/sim/naive_solver_3d.tscn" id="14_gh55q"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fc7sn"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_qblsy"]
+sky_material = SubResource("ProceduralSkyMaterial_fc7sn")
+
+[sub_resource type="Environment" id="Environment_ybjts"]
+background_mode = 2
+sky = SubResource("Sky_qblsy")
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fc7sn"]
+size = Vector3(300, 2, 300)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qblsy"]
+albedo_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qblsy"]
+material = SubResource("StandardMaterial3D_qblsy")
+size = Vector3(300, 2, 300)
+
+[sub_resource type="FontVariation" id="FontVariation_bu18b"]
+base_font = ExtResource("5_afp4w")
+variation_opentype = {
+2003265652: 600
+}
+spacing_top = -12
+spacing_bottom = -12
+
+[sub_resource type="FontVariation" id="FontVariation_gh55q"]
+base_font = ExtResource("5_afp4w")
+variation_opentype = {
+2003265652: 600
+}
+spacing_top = -12
+spacing_bottom = -12
+
+[node name="GameScreen" type="Control" unique_id=21118420]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_xmo2f")
+target_sim_count = 3
+target_puzzle_count = 15
+
+[node name="World" type="Node3D" parent="." unique_id=952090331]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="World" unique_id=1103614903]
+environment = SubResource("Environment_ybjts")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World" unique_id=481505807]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_energy = 0.75
+shadow_enabled = true
+
+[node name="Refresher" parent="World" unique_id=696047061 instance=ExtResource("2_bu18b")]
+
+[node name="Monsters" type="Node3D" parent="World" unique_id=2063390851]
+unique_name_in_owner = true
+
+[node name="Player" parent="World/Monsters" unique_id=1759522099 instance=ExtResource("2_io7k0")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
+
+[node name="Camera3D" parent="World" unique_id=814605849 node_paths=PackedStringArray("player") instance=ExtResource("3_bu18b")]
+transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 8.5, 7.809)
+fov = 18.8
+player = NodePath("../Monsters/Player")
+player_offset = Vector3(0, 46.75, 26.4)
+drift_amount = 0.25
+
+[node name="GameBoards" type="Node3D" parent="World" unique_id=1439298949]
+unique_name_in_owner = true
+
+[node name="GameBoard" parent="World/GameBoards" unique_id=361717472 instance=ExtResource("1_qblsy")]
+grid_string = "              
+           3  
+   2          
+             3
+              
+ 2   4   2    "
+
+[node name="DebugPaths" type="Node3D" parent="World" unique_id=391076868]
+unique_name_in_owner = true
+visible = false
+
+[node name="Ground" type="StaticBody3D" parent="World" unique_id=861876476]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+collision_layer = 17
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Ground" unique_id=66588350]
+shape = SubResource("BoxShape3D_fc7sn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World/Ground" unique_id=105943836]
+mesh = SubResource("BoxMesh_qblsy")
+
+[node name="CommandPalette" parent="." unique_id=1368678133 instance=ExtResource("5_ccw2j")]
+unique_name_in_owner = true
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1485849603]
+
+[node name="Controls" type="GridContainer" parent="HUD" unique_id=1600120627]
+custom_minimum_size = Vector2(1000, 1000)
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -1040.0
+offset_right = 1040.0
+offset_bottom = -40.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 8
+columns = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Spacer" type="Control" parent="HUD/Controls" unique_id=246140780]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Spacer2" type="Control" parent="HUD/Controls" unique_id=357375979]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/Controls" unique_id=179760157]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_bu18b")
+theme_override_font_sizes/font_size = 30
+text = "W/A/S/D"
+horizontal_alignment = 2
+
+[node name="Label2" type="Label" parent="HUD/Controls" unique_id=1852465556]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_bu18b")
+theme_override_font_sizes/font_size = 30
+text = "Move"
+
+[node name="Label3" type="Label" parent="HUD/Controls" unique_id=302429043]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_bu18b")
+theme_override_font_sizes/font_size = 30
+text = "Z/X"
+horizontal_alignment = 2
+
+[node name="Label4" type="Label" parent="HUD/Controls" unique_id=2104808475]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_bu18b")
+theme_override_font_sizes/font_size = 30
+text = "Undo, Redo"
+
+[node name="Label5" type="Label" parent="HUD/Controls" unique_id=1876413738]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_bu18b")
+theme_override_font_sizes/font_size = 30
+text = "R"
+horizontal_alignment = 2
+
+[node name="Label6" type="Label" parent="HUD/Controls" unique_id=429160203]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_bu18b")
+theme_override_font_sizes/font_size = 30
+text = "Reset Puzzle"
+
+[node name="Label7" type="Label" parent="HUD/Controls" unique_id=361880651]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_bu18b")
+theme_override_font_sizes/font_size = 30
+text = "T"
+horizontal_alignment = 2
+
+[node name="Label8" type="Label" parent="HUD/Controls" unique_id=346210773]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_bu18b")
+theme_override_font_sizes/font_size = 30
+text = "Tutorial"
+
+[node name="VersionLabel" type="Label" parent="HUD" unique_id=61324609]
+custom_minimum_size = Vector2(1000, 0)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -73.0
+offset_top = -23.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+pivot_offset = Vector2(1458, -1112)
+theme_override_colors/font_outline_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+theme_override_constants/outline_size = 18
+theme_override_fonts/font = SubResource("FontVariation_gh55q")
+theme_override_font_sizes/font_size = 30
+text = "v1234145"
+horizontal_alignment = 2
+script = ExtResource("6_io7k0")
+metadata/_edit_use_anchors_ = true
+
+[node name="CursorLayer" type="Control" parent="HUD" unique_id=79822044]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("9_sso2b")
+cursor_scene = ExtResource("10_bu18b")
+
+[node name="ResultsOverlay" parent="." unique_id=1174010181 instance=ExtResource("7_c1lbt")]
+unique_name_in_owner = true
+visible = false
+
+[node name="TutorialOverlay" parent="." unique_id=1610644807 instance=ExtResource("8_sso2b")]
+unique_name_in_owner = true
+visible = false
+
+[node name="NaiveSolver" parent="." unique_id=1129839505 instance=ExtResource("14_gh55q")]
+
+[connection signal="refresh_requested" from="World/Refresher" to="." method="_on_refresher_refresh_requested"]
+[connection signal="command_entered" from="CommandPalette" to="." method="_on_command_palette_command_entered"]
