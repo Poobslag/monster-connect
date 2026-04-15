@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://gbtrokobnu0w"]
 
 [ext_resource type="PackedScene" uid="uid://dpyg754qr8t7b" path="res://src/demo/blob.tscn" id="1_taxlp"]
+[ext_resource type="PackedScene" uid="uid://bnimlc6d65s2u" path="res://src/demo/overview_camera.tscn" id="2_7rngu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_taxlp"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -18,6 +19,9 @@ glow_enabled = true
 [sub_resource type="PlaneMesh" id="PlaneMesh_taxlp"]
 size = Vector2(5, 5)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_taxlp"]
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+
 [node name="BlobExperiment" type="Node" unique_id=1047040401]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=716756396]
@@ -29,8 +33,8 @@ shadow_enabled = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=126200284]
 mesh = SubResource("PlaneMesh_taxlp")
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1361371423]
-transform = Transform3D(1, 0, 0, 0, 0.8594867, 0.5111581, 0, -0.5111581, 0.8594867, 0, 1.1262739, 1.6697732)
+surface_material_override/0 = SubResource("StandardMaterial3D_taxlp")
 
 [node name="blob" parent="." unique_id=341459275 instance=ExtResource("1_taxlp")]
+
+[node name="Camera3D" parent="." unique_id=1692340161 instance=ExtResource("2_7rngu")]
