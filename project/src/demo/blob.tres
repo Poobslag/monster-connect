@@ -1,10 +1,19 @@
 [gd_resource type="VisualShader" format=3 uid="uid://btikwanr4k1yv"]
 
+[sub_resource type="VisualShaderNodeSmoothStep" id="VisualShaderNodeSmoothStep_gnrtp"]
+default_input_values = [0, 0.58, 1, 0.62, 2, 0.5]
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_gnrtp"]
+default_input_values = [0, 0.0, 1, 0.25]
+operator = 2
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_cnlx4"]
+
 [sub_resource type="VisualShaderNodeColorConstant" id="VisualShaderNodeColorConstant_gnrtp"]
-constant = Color(0.5666666, 0, 1, 1)
+constant = Color(0.731736, 0.00027896583, 0.69673806, 1)
 
 [sub_resource type="VisualShaderNodeFresnel" id="VisualShaderNodeFresnel_gnrtp"]
-default_input_values = [2, false, 3, 0.1]
+default_input_values = [2, false, 3, 0.5]
 
 [sub_resource type="VisualShaderNodeFloatConstant" id="VisualShaderNodeFloatConstant_gnrtp"]
 constant = 0.1
@@ -15,20 +24,30 @@ constant = 0.8
 [sub_resource type="VisualShaderNodeFresnel" id="VisualShaderNodeFresnel_cnlx4"]
 default_input_values = [2, true, 3, 1.0]
 
+[sub_resource type="VisualShaderNodeFresnel" id="VisualShaderNodeFresnel_2jk2y"]
+default_input_values = [2, false, 3, 0.25]
+
 [resource]
 modes/cull = 1
-modes/diffuse = 3
 flags/depth_prepass_alpha = true
 nodes/vertex/0/position = Vector2(420, 200)
 nodes/fragment/0/position = Vector2(1000, 200)
 nodes/fragment/2/node = SubResource("VisualShaderNodeColorConstant_gnrtp")
 nodes/fragment/2/position = Vector2(-20, 200)
 nodes/fragment/3/node = SubResource("VisualShaderNodeFresnel_gnrtp")
-nodes/fragment/3/position = Vector2(-120, 420)
+nodes/fragment/3/position = Vector2(-320, 280)
 nodes/fragment/4/node = SubResource("VisualShaderNodeFloatConstant_gnrtp")
-nodes/fragment/4/position = Vector2(160, 540)
+nodes/fragment/4/position = Vector2(320, 680)
 nodes/fragment/5/node = SubResource("VisualShaderNodeFloatConstant_cnlx4")
-nodes/fragment/5/position = Vector2(160, 680)
+nodes/fragment/5/position = Vector2(340, 860)
 nodes/fragment/6/node = SubResource("VisualShaderNodeFresnel_cnlx4")
-nodes/fragment/6/position = Vector2(180, 820)
-nodes/fragment/connections = PackedInt32Array(2, 0, 0, 0, 3, 0, 0, 1, 6, 0, 0, 11, 4, 0, 0, 3, 5, 0, 0, 4)
+nodes/fragment/6/position = Vector2(300, 1080)
+nodes/fragment/8/node = SubResource("VisualShaderNodeFresnel_2jk2y")
+nodes/fragment/8/position = Vector2(-240, 540)
+nodes/fragment/11/node = SubResource("VisualShaderNodeSmoothStep_gnrtp")
+nodes/fragment/11/position = Vector2(-40, 320)
+nodes/fragment/12/node = SubResource("VisualShaderNodeFloatOp_gnrtp")
+nodes/fragment/12/position = Vector2(232.99197, 348.43213)
+nodes/fragment/13/node = SubResource("VisualShaderNodeFloatOp_cnlx4")
+nodes/fragment/13/position = Vector2(460, 440)
+nodes/fragment/connections = PackedInt32Array(2, 0, 0, 0, 6, 0, 0, 11, 4, 0, 0, 3, 5, 0, 0, 4, 3, 0, 11, 2, 11, 0, 12, 0, 12, 0, 13, 0, 13, 0, 0, 1, 8, 0, 13, 1)
