@@ -18,6 +18,7 @@ config/name="Monster Connect"
 config/version="0.07-dev"
 run/main_scene="uid://c3o1dino53bkn"
 config/features=PackedStringArray("4.6", "Forward Plus")
+run/max_fps=240
 boot_splash/show_image=false
 config/icon="res://icon.svg"
 
@@ -42,6 +43,7 @@ window/size/window_width_override=960
 window/size/window_height_override=540
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/vsync/vsync_mode=0
 
 [editor_plugins]
 
