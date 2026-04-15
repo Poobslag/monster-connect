@@ -2,21 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bdg34cxwajpab"
-path.s3tc="res://.godot/imported/tile_wall_tile_blank_2.png-070b814c6269ae8fd935efb645dc6ea4.s3tc.ctex"
-path.etc2="res://.godot/imported/tile_wall_tile_blank_2.png-070b814c6269ae8fd935efb645dc6ea4.etc2.ctex"
+uid="uid://dk843i5ra2kdd"
+path.s3tc="res://.godot/imported/tile_island_half_lowlight_tile_island_half_lowlight_brown.png-34c997b0258162acceaf7aab0afcc6f2.s3tc.ctex"
+path.etc2="res://.godot/imported/tile_island_half_lowlight_tile_island_half_lowlight_brown.png-34c997b0258162acceaf7aab0afcc6f2.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "0d47f419f67c5bf0bfd8f636c4c01be5"
+"md5": "e19aba3ade7036ff22180dc9bcb69fa0"
 }
 
 [deps]
 
-source_file="res://assets/main/nurikabe/tile_wall_tile_blank_2.png"
-dest_files=["res://.godot/imported/tile_wall_tile_blank_2.png-070b814c6269ae8fd935efb645dc6ea4.s3tc.ctex", "res://.godot/imported/tile_wall_tile_blank_2.png-070b814c6269ae8fd935efb645dc6ea4.etc2.ctex"]
+source_file="res://assets/main/nurikabe/tile_island_half_lowlight_tile_island_half_lowlight_brown.png"
+dest_files=["res://.godot/imported/tile_island_half_lowlight_tile_island_half_lowlight_brown.png-34c997b0258162acceaf7aab0afcc6f2.s3tc.ctex", "res://.godot/imported/tile_island_half_lowlight_tile_island_half_lowlight_brown.png-34c997b0258162acceaf7aab0afcc6f2.etc2.ctex"]
 
 [params]
 

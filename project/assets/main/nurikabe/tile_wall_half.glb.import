@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dbjsvgf0307cw"
+uid="uid://vt24ejqdvl3q"
 path="res://.godot/imported/tile_wall_half.glb-cbb9f0a7329424e195323cd82cdb477c.scn"
 
 [deps]
@@ -39,9 +39,11 @@ materials/extract_format=0
 materials/extract_path=""
 _subresources={
 "nodes": {
-"PATH:obj_tile_wall_half": {
+"PATH:obj_tile_wall_001": {
 "generate/physics": true,
-"physics/shape_type": 1
+"physics/shape_type": 3,
+"primitive/position": Vector3(0, 0.1, 0),
+"primitive/size": Vector3(0.6, 0.2, 0.6)
 }
 }
 }

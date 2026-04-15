@@ -4,6 +4,7 @@ $$$ = MUST be attributed in the game's credits (license requires it)
 
 Fonts:
  $$ Baloo2 by Ek Type (SIL Open Font License, Version 1.1)
+ $$ Fredoka One by Milena B Brandao (SIL Open Font License, Version 1.1)
 
 Images:
  $$ New Platformer Pack by Kenney (CC0) - https://kenney.nl/assets/new-platformer-pack
@@ -17,6 +18,7 @@ Sounds:
 Fonts
 --------------------------------------------------------------------------------
 project/assets/main/ui/baloo2.ttf Baloo2 by Ek Type
+project/assets/main/ui/fredoka_one.ttf Fredoka One by Milena B Brandao
 
 Images
 --------------------------------------------------------------------------------

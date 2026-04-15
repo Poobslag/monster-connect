@@ -204,6 +204,7 @@ func import_grid() -> void:
 		set_cell(cell, cells[cell])
 	
 	refresh_puzzle_dimensions()
+	refresh_ground_and_clues()
 	
 	_undo_stack.clear()
 	_redo_stack.clear()
@@ -211,6 +212,23 @@ func import_grid() -> void:
 	error_cells = {}
 	half_cells = {}
 	lowlight_cells = {}
+
+
+func refresh_ground_and_clues() -> void:
+	for cell_pos: Vector2i in _values_by_cell:
+		var value: int = get_cell(cell_pos)
+		var ground_id: int = 0
+		if NurikabeUtils.is_clue(value):
+			ground_id = 2
+		else:
+			for neighbor_dir: Vector2i in NurikabeUtils.NEIGHBOR_DIRS:
+				var neighbor: Vector2i = cell_pos + neighbor_dir
+				if NurikabeUtils.is_clue(get_cell(neighbor)):
+					ground_id = 1
+					break
+		%GroundMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), ground_id)
+		
+		%ClueLayer.set_cell(cell_pos, value)
 
 
 func refresh_puzzle_dimensions() -> void:
@@ -347,9 +365,6 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 	else:
 		_values_by_cell[cell_pos] = value
 	
-	var ground_id: int = 0 if (cell_pos.x + cell_pos.y) % 2 == 0 else 1
-	%GroundMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), ground_id)
-	
 	var island_id: int
 	if value != CELL_ISLAND:
 		island_id = -1
@@ -358,8 +373,6 @@ func _set_cell_internal(cell_pos: Vector2i, value: int) -> void:
 		if half_cells.has(cell_pos):
 			island_id += 3
 	%IslandMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), island_id)
-	
-	%ClueLayer.set_cell(cell_pos, value)
 	
 	var wall_id: int
 	if value != CELL_WALL:

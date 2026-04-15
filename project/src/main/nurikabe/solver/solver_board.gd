@@ -153,6 +153,7 @@ func update_game_board(game_board: NurikabeGameBoard3D) -> void:
 		else:
 			game_board.set_cell(cell, get_cell(cell))
 	game_board.refresh_puzzle_dimensions()
+	game_board.refresh_ground_and_clues()
 
 
 func find_clue_cell(island: CellGroup) -> Vector2i:

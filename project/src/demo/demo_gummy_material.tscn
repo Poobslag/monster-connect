@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://gbtrokobnu0w"]
+
+[ext_resource type="Script" uid="uid://npt4f2c7brn2" path="res://src/demo/demo_gummy_material.gd" id="1_h0ruf"]
+[ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe/wall.meshlib" id="2_e1te6"]
+[ext_resource type="PackedScene" uid="uid://bnimlc6d65s2u" path="res://src/demo/overview_camera.tscn" id="3_vmucp"]
+[ext_resource type="PackedScene" uid="uid://clt1eubljds4g" path="res://src/main/utils/fps_label.tscn" id="4_s4jeg"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_taxlp"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_7rngu"]
+sky_material = SubResource("ProceduralSkyMaterial_taxlp")
+
+[sub_resource type="Environment" id="Environment_jt1ld"]
+background_mode = 2
+sky = SubResource("Sky_7rngu")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_taxlp"]
+size = Vector2(500, 500)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_taxlp"]
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="Demo" type="Node" unique_id=1047040401]
+script = ExtResource("1_h0ruf")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=716756396]
+environment = SubResource("Environment_jt1ld")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1492594219]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=126200284]
+mesh = SubResource("PlaneMesh_taxlp")
+surface_material_override/0 = SubResource("StandardMaterial3D_taxlp")
+
+[node name="GridMap" type="GridMap" parent="." unique_id=1154144312]
+unique_name_in_owner = true
+mesh_library = ExtResource("2_e1te6")
+cell_size = Vector3(1, 1, 1)
+
+[node name="Camera3D" parent="." unique_id=1692340161 instance=ExtResource("3_vmucp")]
+
+[node name="Control" type="Control" parent="." unique_id=186980721]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="FpsLabel" parent="Control" unique_id=460640064 instance=ExtResource("4_s4jeg")]
+layout_mode = 1

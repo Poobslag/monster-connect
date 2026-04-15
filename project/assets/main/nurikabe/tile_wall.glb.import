@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cxji80dkh7p4m"
+uid="uid://s62co6xwu4rp"
 path="res://.godot/imported/tile_wall.glb-2ceecc4c171a8c1a54fb8666a442db0d.scn"
 
 [deps]
@@ -41,7 +41,9 @@ _subresources={
 "nodes": {
 "PATH:obj_tile_wall": {
 "generate/physics": true,
-"physics/shape_type": 1
+"physics/shape_type": 3,
+"primitive/position": Vector3(0, 0.3, 0),
+"primitive/size": Vector3(0.8, 0.6, 0.8)
 }
 }
 }

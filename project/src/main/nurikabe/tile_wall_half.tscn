@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dgg6cif6gplo3"]
+
+[ext_resource type="PackedScene" uid="uid://vt24ejqdvl3q" path="res://assets/main/nurikabe/brown/tile_wall_half.glb" id="1_3oeq0"]
+[ext_resource type="Material" uid="uid://cflixy2bd483a" path="res://assets/main/nurikabe/gummy_material.tres" id="2_3oeq0"]
+
+[node name="tile_wall_half" unique_id=1786543459 instance=ExtResource("1_3oeq0")]
+
+[node name="obj_tile_wall_001" parent="." index="0" unique_id=1748822878]
+surface_material_override/0 = ExtResource("2_3oeq0")

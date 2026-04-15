@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://c4pwd5x7iu13p"]
+
+[ext_resource type="PackedScene" uid="uid://dxwrjiggyw8y7" path="res://assets/main/nurikabe/brown/tile_island_half_lowlight.glb" id="1_yr5fs"]
+[ext_resource type="Texture2D" uid="uid://dk843i5ra2kdd" path="res://assets/main/nurikabe/brown/tile_island_half_lowlight_tile_island_half_lowlight_brown.png" id="2_0tw5h"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rvii6"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.5019608)
+albedo_texture = ExtResource("2_0tw5h")
+
+[node name="tile_island_half_lowlight" unique_id=903200014 instance=ExtResource("1_yr5fs")]
+
+[node name="obj_tile_island_half_lowlight" parent="." index="0" unique_id=1759877823]
+surface_material_override/0 = SubResource("StandardMaterial3D_rvii6")

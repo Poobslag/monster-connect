@@ -1,7 +1,7 @@
 @tool
 extends Node3D
 
-const LABEL_OFFSET: Vector2 = Vector2(0.0, 0.025)
+const LABEL_OFFSET: Vector2 = Vector2(0.0, 0.000)
 
 const CLUE_LABEL_SCENE: PackedScene = preload("res://src/main/nurikabe/clue_label.tscn")
 

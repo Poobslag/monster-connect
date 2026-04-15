@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe/nurikabe_game_board.tscn" id="5_crad4"]
 [ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="6_g14o2"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="7_dsdbk"]
+[ext_resource type="PackedScene" uid="uid://clt1eubljds4g" path="res://src/main/utils/fps_label.tscn" id="7_vr7lx"]
 [ext_resource type="Script" uid="uid://48je0hlydow6" path="res://src/main/ui/version_label.gd" id="8_6gjo7"]
 [ext_resource type="Script" uid="uid://hwr3gqftgfm5" path="res://src/main/nurikabe/cursor_layer.gd" id="9_medt7"]
 [ext_resource type="PackedScene" uid="uid://dv3wpirlmcqmy" path="res://src/main/nurikabe/cursor_2d.tscn" id="10_w77me"]
@@ -24,13 +25,19 @@ sky_material = SubResource("ProceduralSkyMaterial_fc7sn")
 [sub_resource type="Environment" id="Environment_ybjts"]
 background_mode = 2
 sky = SubResource("Sky_qblsy")
+ambient_light_source = 2
+ambient_light_color = Color(1, 0.9607843, 0.8784314, 1)
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.5
 glow_enabled = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fc7sn"]
 size = Vector3(300, 2, 300)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qblsy"]
-albedo_color = Color(0.3019608, 0.3019608, 0.3019608, 1)
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.69411767, 0.84705883, 0.2784314, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_qblsy"]
 material = SubResource("StandardMaterial3D_qblsy")
@@ -70,8 +77,11 @@ environment = SubResource("Environment_ybjts")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="World" unique_id=481505807]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
-light_energy = 0.75
+light_color = Color(1, 0.9607843, 0.8784314, 1)
+light_energy = 0.5
+light_angular_distance = 0.5
 shadow_enabled = true
+sky_mode = 1
 
 [node name="Refresher" parent="World" unique_id=696047061 instance=ExtResource("2_vr7lx")]
 
@@ -119,6 +129,8 @@ mesh = SubResource("BoxMesh_qblsy")
 unique_name_in_owner = true
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1485849603]
+
+[node name="FpsLabel" parent="HUD" unique_id=460640064 instance=ExtResource("7_vr7lx")]
 
 [node name="Controls" type="GridContainer" parent="HUD" unique_id=1600120627]
 custom_minimum_size = Vector2(1000, 1000)
