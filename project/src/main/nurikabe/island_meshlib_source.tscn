@@ -1,22 +1,22 @@
 [gd_scene format=3 uid="uid://72ww2f7dbc75"]
 
-[ext_resource type="PackedScene" uid="uid://ner6l2gwmjba" path="res://assets/main/nurikabe/tile_island.glb" id="1_dhajy"]
+[ext_resource type="PackedScene" uid="uid://cguq8l7lh4uoi" path="res://assets/main/nurikabe/brown/tile_island.glb" id="1_fm54v"]
 [ext_resource type="PackedScene" uid="uid://teqidsayvpq7" path="res://assets/main/nurikabe/tile_island_error.glb" id="2_26j8m"]
-[ext_resource type="PackedScene" uid="uid://cck6l734idrkn" path="res://assets/main/nurikabe/tile_island_lowlight.glb" id="3_gt3bj"]
-[ext_resource type="PackedScene" uid="uid://d26i72xlo6n7e" path="res://assets/main/nurikabe/tile_island_half.glb" id="4_1qmeq"]
+[ext_resource type="PackedScene" uid="uid://dgm4vt6wrlf4o" path="res://src/main/nurikabe/brown/tile_island_lowlight.tscn" id="3_fm54v"]
+[ext_resource type="PackedScene" uid="uid://dqje55istdb5v" path="res://assets/main/nurikabe/brown/tile_island_half.glb" id="4_ke1l6"]
 [ext_resource type="PackedScene" uid="uid://dhtn2km2jr30u" path="res://assets/main/nurikabe/tile_island_half_error.glb" id="5_pkm15"]
-[ext_resource type="PackedScene" uid="uid://brcvrbs08ebxn" path="res://assets/main/nurikabe/tile_island_half_lowlight.glb" id="6_tdogb"]
+[ext_resource type="PackedScene" uid="uid://c4pwd5x7iu13p" path="res://src/main/nurikabe/brown/tile_island_half_lowlight.tscn" id="6_fm54v"]
 
 [node name="Node3D" type="Node3D" unique_id=2025555396]
 
-[node name="tile_island" parent="." unique_id=1209130625 instance=ExtResource("1_dhajy")]
+[node name="tile_island" parent="." unique_id=1409789139 instance=ExtResource("1_fm54v")]
 
 [node name="tile_island_error" parent="." unique_id=731150294 instance=ExtResource("2_26j8m")]
 
-[node name="tile_island_lowlight" parent="." unique_id=473885883 instance=ExtResource("3_gt3bj")]
+[node name="tile_island_lowlight" parent="." unique_id=1549473189 instance=ExtResource("3_fm54v")]
 
-[node name="tile_island_half" parent="." unique_id=828107281 instance=ExtResource("4_1qmeq")]
+[node name="tile_island_half" parent="." unique_id=2111171484 instance=ExtResource("4_ke1l6")]
 
 [node name="tile_island_half_error" parent="." unique_id=1962250433 instance=ExtResource("5_pkm15")]
 
-[node name="tile_island_half_lowlight" parent="." unique_id=568907492 instance=ExtResource("6_tdogb")]
+[node name="tile_island_half_lowlight" parent="." unique_id=903200014 instance=ExtResource("6_fm54v")]

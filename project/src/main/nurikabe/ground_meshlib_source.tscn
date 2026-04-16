@@ -1,10 +1,13 @@
 [gd_scene format=3 uid="uid://d2ay3g5c6v5hr"]
 
-[ext_resource type="PackedScene" uid="uid://bgibh05o0pwgi" path="res://assets/main/nurikabe/tile_blank_1.glb" id="1_ejhkn"]
-[ext_resource type="PackedScene" uid="uid://jcaql8cq7b1v" path="res://assets/main/nurikabe/tile_blank_2.glb" id="2_nk5k1"]
+[ext_resource type="PackedScene" uid="uid://dw1t5yy2nrvfp" path="res://assets/main/nurikabe/brown/tile_blank_1.glb" id="1_w0wyq"]
+[ext_resource type="PackedScene" uid="uid://dt7w1ha2ojjyn" path="res://assets/main/nurikabe/brown/tile_blank_2.glb" id="2_rql5x"]
+[ext_resource type="PackedScene" uid="uid://cdsnwco6neemm" path="res://assets/main/nurikabe/brown/tile_blank_3.glb" id="3_g40bs"]
 
 [node name="Node3D" type="Node3D" unique_id=382747052]
 
-[node name="tile_blank_1" parent="." unique_id=1651472737 instance=ExtResource("1_ejhkn")]
+[node name="tile_blank_1" parent="." unique_id=1918837239 instance=ExtResource("1_w0wyq")]
 
-[node name="tile_blank_2" parent="." unique_id=1362024541 instance=ExtResource("2_nk5k1")]
+[node name="tile_blank_2" parent="." unique_id=1471826230 instance=ExtResource("2_rql5x")]
+
+[node name="tile_blank_3" parent="." unique_id=1125887033 instance=ExtResource("3_g40bs")]
