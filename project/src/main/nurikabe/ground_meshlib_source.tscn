@@ -6,8 +6,8 @@
 
 [node name="Node3D" type="Node3D" unique_id=382747052]
 
-[node name="tile_blank_1" parent="." unique_id=1918837239 instance=ExtResource("1_w0wyq")]
+[node name="tile_blank_1" parent="." unique_id=2024871717 instance=ExtResource("1_w0wyq")]
 
-[node name="tile_blank_2" parent="." unique_id=1471826230 instance=ExtResource("2_rql5x")]
+[node name="tile_blank_2" parent="." unique_id=170098284 instance=ExtResource("2_rql5x")]
 
-[node name="tile_blank_3" parent="." unique_id=1125887033 instance=ExtResource("3_g40bs")]
+[node name="tile_blank_3" parent="." unique_id=60018611 instance=ExtResource("3_g40bs")]
