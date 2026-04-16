@@ -1,7 +1,7 @@
 extends Node
 ## [b]Keys:[/b][br]
-## 	[kbd][Escape][/kbd]: Erase all blobs
-## 	[kbd][Q,W,E,R,T,Y][/kbd]: Change blob count to 20/100/500/2000/10000/50000
+## 	[kbd][Escape][/kbd]: Erase all walls
+## 	[kbd][Q,W,E,R,T,Y][/kbd]: Change wall count to 20/100/500/2000/10000/50000
 
 func _input(event: InputEvent) -> void:
 	match Utils.key_press(event):

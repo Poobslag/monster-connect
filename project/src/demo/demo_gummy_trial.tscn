@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://gbtrokobnu0w"]
 
-[ext_resource type="Script" uid="uid://npt4f2c7brn2" path="res://src/demo/demo_blob_experiment.gd" id="1_c2ndb"]
-[ext_resource type="MeshLibrary" uid="uid://cxfbsct78hhfi" path="res://assets/demo/nurikabe/blob_experiment.meshlib" id="2_77ntr"]
-[ext_resource type="PackedScene" uid="uid://bnimlc6d65s2u" path="res://src/demo/overview_camera.tscn" id="4_riq5o"]
-[ext_resource type="PackedScene" uid="uid://clt1eubljds4g" path="res://src/demo/fps_label.tscn" id="5_lsamg"]
+[ext_resource type="Script" uid="uid://npt4f2c7brn2" path="res://src/demo/demo_gummy_trial.gd" id="1_hv0de"]
+[ext_resource type="MeshLibrary" uid="uid://cxfbsct78hhfi" path="res://assets/demo/nurikabe/gummy_trial.meshlib" id="2_2qi22"]
+[ext_resource type="PackedScene" uid="uid://bnimlc6d65s2u" path="res://src/demo/overview_camera.tscn" id="3_x14i1"]
+[ext_resource type="PackedScene" uid="uid://clt1eubljds4g" path="res://src/demo/fps_label.tscn" id="4_hd4ct"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_taxlp"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -24,8 +24,8 @@ size = Vector2(500, 500)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_taxlp"]
 albedo_color = Color(0.5, 0.5, 0.5, 1)
 
-[node name="BlobExperiment" type="Node" unique_id=1047040401]
-script = ExtResource("1_c2ndb")
+[node name="Demo" type="Node" unique_id=1047040401]
+script = ExtResource("1_hv0de")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=716756396]
 environment = SubResource("Environment_jt1ld")
@@ -40,10 +40,10 @@ surface_material_override/0 = SubResource("StandardMaterial3D_taxlp")
 
 [node name="GridMap" type="GridMap" parent="." unique_id=1154144312]
 unique_name_in_owner = true
-mesh_library = ExtResource("2_77ntr")
+mesh_library = ExtResource("2_2qi22")
 cell_size = Vector3(1, 1, 1)
 
-[node name="Camera3D" parent="." unique_id=1692340161 instance=ExtResource("4_riq5o")]
+[node name="Camera3D" parent="." unique_id=1692340161 instance=ExtResource("3_x14i1")]
 
 [node name="Control" type="Control" parent="." unique_id=186980721]
 layout_mode = 3
@@ -54,7 +54,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
-[node name="Label" parent="Control" unique_id=460640064 instance=ExtResource("5_lsamg")]
+[node name="Label" parent="Control" unique_id=460640064 instance=ExtResource("4_hd4ct")]
 layout_mode = 1
 anchors_preset = -1
 offset_left = 20.0
