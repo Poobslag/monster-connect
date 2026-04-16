@@ -14,5 +14,5 @@ shader = ExtResource("2_dp5qj")
 
 [node name="tile_wall" unique_id=490540574 instance=ExtResource("1_dp5qj")]
 
-[node name="obj_tile_wall" parent="." index="0" unique_id=1742970825]
+[node name="obj_tile_wall" parent="." index="0" unique_id=935951927]
 surface_material_override/0 = SubResource("ShaderMaterial_ntbbo")

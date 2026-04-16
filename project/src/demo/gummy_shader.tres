@@ -46,6 +46,7 @@ default_input_values = [2, true, 3, 1.0]
 default_input_values = [2, false, 3, 0.25]
 
 [resource]
+modes/depth_draw = 1
 modes/cull = 1
 flags/depth_prepass_alpha = true
 nodes/vertex/0/position = Vector2(420, 200)
