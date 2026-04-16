@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://npt4f2c7brn2" path="res://src/demo/demo_blob_experiment.gd" id="1_c2ndb"]
 [ext_resource type="MeshLibrary" uid="uid://cxfbsct78hhfi" path="res://assets/demo/nurikabe/blob_experiment.meshlib" id="2_77ntr"]
-[ext_resource type="PackedScene" uid="uid://dpyg754qr8t7b" path="res://src/demo/blob.tscn" id="3_i1a86"]
 [ext_resource type="PackedScene" uid="uid://bnimlc6d65s2u" path="res://src/demo/overview_camera.tscn" id="4_riq5o"]
 [ext_resource type="PackedScene" uid="uid://clt1eubljds4g" path="res://src/demo/fps_label.tscn" id="5_lsamg"]
 
@@ -43,9 +42,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_taxlp")
 unique_name_in_owner = true
 mesh_library = ExtResource("2_77ntr")
 cell_size = Vector3(1, 1, 1)
-
-[node name="blob" parent="." unique_id=341459275 instance=ExtResource("3_i1a86")]
-visible = false
 
 [node name="Camera3D" parent="." unique_id=1692340161 instance=ExtResource("4_riq5o")]
 

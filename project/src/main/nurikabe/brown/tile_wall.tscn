@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dqxe7vg3bbejf"]
+
+[ext_resource type="PackedScene" uid="uid://s62co6xwu4rp" path="res://assets/main/nurikabe/brown/tile_wall.glb" id="1_dp5qj"]
+[ext_resource type="Shader" uid="uid://btikwanr4k1yv" path="res://src/demo/blob.tres" id="2_xqqdn"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_laewd"]
+transparency = 1
+albedo_color = Color(0.5666666, 0, 1, 0.5019608)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ntbbo"]
+render_priority = 0
+next_pass = SubResource("StandardMaterial3D_laewd")
+shader = ExtResource("2_xqqdn")
+
+[node name="tile_wall" unique_id=490540574 instance=ExtResource("1_dp5qj")]
+
+[node name="obj_tile_wall" parent="." index="0" unique_id=1742970825]
+surface_material_override/0 = SubResource("ShaderMaterial_ntbbo")

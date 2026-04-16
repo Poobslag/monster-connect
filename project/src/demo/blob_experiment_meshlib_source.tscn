@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dci7rod50760w"]
 
-[ext_resource type="PackedScene" uid="uid://dpyg754qr8t7b" path="res://src/demo/blob.tscn" id="1_pyjyo"]
+[ext_resource type="PackedScene" uid="uid://dqxe7vg3bbejf" path="res://src/main/nurikabe/brown/tile_wall.tscn" id="1_pyjyo"]
 
 [node name="Node3D" type="Node3D" unique_id=326009600]
 
-[node name="blob" parent="." unique_id=341459275 instance=ExtResource("1_pyjyo")]
+[node name="tile_wall" parent="." unique_id=490540574 instance=ExtResource("1_pyjyo")]

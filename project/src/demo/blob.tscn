@@ -3,13 +3,13 @@
 [ext_resource type="PackedScene" uid="uid://da2ugpfkfha87" path="res://assets/demo/blob.glb" id="1_2er8g"]
 [ext_resource type="Shader" uid="uid://btikwanr4k1yv" path="res://src/demo/blob.tres" id="2_laewd"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_laewd"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o2cxm"]
 transparency = 1
 albedo_color = Color(0.5666666, 0, 1, 0.5019608)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_csl3k"]
 render_priority = 0
-next_pass = SubResource("StandardMaterial3D_laewd")
+next_pass = SubResource("StandardMaterial3D_o2cxm")
 shader = ExtResource("2_laewd")
 
 [node name="blob" unique_id=341459275 instance=ExtResource("1_2er8g")]
