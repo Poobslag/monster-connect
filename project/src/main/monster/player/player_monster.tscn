@@ -10,9 +10,6 @@
 [node name="PlayerMonster" unique_id=1759522099 instance=ExtResource("1_sktxa")]
 script = ExtResource("1_qkgg5")
 
-[node name="CollisionShape3D" parent="." index="1" unique_id=1133307201]
-disabled = true
-
 [node name="Input" type="Node" parent="." index="8" unique_id=35637649]
 unique_name_in_owner = true
 script = ExtResource("2_55sg1")
