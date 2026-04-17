@@ -161,7 +161,7 @@ if [ -n "$RESULT" ]; then
 fi
 
 # temporary files
-RESULT=$(find project -name "*.TMP" -o -name "*.gd~" -o -name "*.tmp")
+RESULT=$(find project -name "*.TMP" -o -name "*.gd~" -o -name "*.tmp" -o -name "*.meshlib.depren")
 if [ -n "$RESULT" ]; then
   echo ""
   echo "Temporary files:"
