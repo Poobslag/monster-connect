@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://jcaql8cq7b1v"
+uid="uid://dt7w1ha2ojjyn"
 path="res://.godot/imported/tile_blank_2.glb-7a08cc79ed12e29e774b63586e652a8e.scn"
 
 [deps]
@@ -38,10 +38,19 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={
+"materials": {
+"Material.007": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://src/main/nurikabe/brown/tile_blank_2_material.tres",
+"use_external/path": "uid://c42nocfdl8862"
+}
+},
 "nodes": {
 "PATH:obj_tile_blank_2": {
 "generate/physics": true,
-"physics/shape_type": 1
+"physics/shape_type": 3,
+"primitive/position": Vector3(0, 0.1, 0),
+"primitive/size": Vector3(0.95, 0.2, 0.95)
 }
 }
 }

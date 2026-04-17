@@ -43,8 +43,8 @@ const FALL_DURATION: float = 0.3
 const MAX_SPEED: float = 4.375
 const ACCELERATION: float = 31.25
 
-const STEP_RAY_DISTANCE: float = 0.5
-const STEP_RAY_HEIGHT: float = 0.5
+const STEP_RAY_DISTANCE: float = 0.8
+const STEP_RAY_HEIGHT: float = 0.8
 const STEP_RAY_THRESHOLD: float = 0.1
 const STEP_RAY_SPREAD: float = 0.25 * PI
 

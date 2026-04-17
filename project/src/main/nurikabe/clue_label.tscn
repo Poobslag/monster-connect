@@ -1,19 +1,14 @@
 [gd_scene format=3 uid="uid://c4geolowecsad"]
 
-[ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="1_65oko"]
+[ext_resource type="FontFile" uid="uid://c4gt2iqo3rfu" path="res://assets/main/ui/fredoka_one.ttf" id="1_wuugp"]
 [ext_resource type="Script" uid="uid://c0w03v7d08p07" path="res://src/main/nurikabe/clue_label.gd" id="2_nsbs8"]
-
-[sub_resource type="FontVariation" id="FontVariation_r2dov"]
-base_font = ExtResource("1_65oko")
-variation_opentype = {
-2003265652: 600
-}
 
 [node name="ClueLabel" type="Label3D" unique_id=1419934438]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
-modulate = Color(0.4, 0.4, 0.4, 1)
-text = "0"
-font = SubResource("FontVariation_r2dov")
-font_size = 160
+modulate = Color(1, 0.8117647, 0.7882353, 1)
+text = "1"
+font = ExtResource("1_wuugp")
+font_size = 112
 outline_size = 0
 script = ExtResource("2_nsbs8")
+clue = 1

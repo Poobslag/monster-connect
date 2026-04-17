@@ -2,21 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://df6msi7cgkagd"
-path.s3tc="res://.godot/imported/tile_island_half_tile_island_half.png-13f4d49eb6849d6d6e8ce81db800d2ba.s3tc.ctex"
-path.etc2="res://.godot/imported/tile_island_half_tile_island_half.png-13f4d49eb6849d6d6e8ce81db800d2ba.etc2.ctex"
+uid="uid://hih254kpu5f0"
+path.s3tc="res://.godot/imported/tile_island_half_tile_island_half_brown.png-de2339ebf8b4805a40b4cac09ba48fe0.s3tc.ctex"
+path.etc2="res://.godot/imported/tile_island_half_tile_island_half_brown.png-de2339ebf8b4805a40b4cac09ba48fe0.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "7cff231325da25f37e9aa2262251b081"
+"md5": "96f0a3d0a5d1d64824896c7038c4b611"
 }
 
 [deps]
 
-source_file="res://assets/main/nurikabe/tile_island_half_tile_island_half.png"
-dest_files=["res://.godot/imported/tile_island_half_tile_island_half.png-13f4d49eb6849d6d6e8ce81db800d2ba.s3tc.ctex", "res://.godot/imported/tile_island_half_tile_island_half.png-13f4d49eb6849d6d6e8ce81db800d2ba.etc2.ctex"]
+source_file="res://assets/main/nurikabe/tile_island_half_tile_island_half_brown.png"
+dest_files=["res://.godot/imported/tile_island_half_tile_island_half_brown.png-de2339ebf8b4805a40b4cac09ba48fe0.s3tc.ctex", "res://.godot/imported/tile_island_half_tile_island_half_brown.png-de2339ebf8b4805a40b4cac09ba48fe0.etc2.ctex"]
 
 [params]
 
