@@ -168,7 +168,7 @@ if [ -n "$RESULT" ]; then
   echo "$RESULT"
   if [ "$CLEAN" ]; then
     # remove temporary files
-    find project \( -name "*.TMP" -o -name "*.gd~" -o -name "*.tmp" \) -exec rm {} +
+    find project \( -name "*.TMP" -o -name "*.gd~" -o -name "*.tmp" -o -name "*.meshlib.depren" \) -exec rm {} +
     echo "...Temporary files deleted."
   fi
 fi
