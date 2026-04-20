@@ -11,6 +11,12 @@
 [ext_resource type="Script" uid="uid://cxgx2wnm7l3am" path="res://src/main/monster/monster_state_fall.gd" id="10_jt5qt"]
 [ext_resource type="Script" uid="uid://b7pmjbdippft8" path="res://src/main/monster/monster_state_jump.gd" id="11_4htbr"]
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_wvhc2"]
+radius = 0.6
+height = 1.5
+radial_segments = 16
+rings = 4
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_afp4w"]
 radius = 0.4
 height = 1.5
@@ -33,9 +39,15 @@ collision_mask = 3
 input_ray_pickable = false
 script = ExtResource("1_1uutg")
 
+[node name="ShadowCaster" type="MeshInstance3D" parent="." unique_id=678959204]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+cast_shadow = 3
+mesh = SubResource("CapsuleMesh_wvhc2")
+
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=873267440]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.7071067, 0.7071067, 0, -0.7071067, 0.7071067, 0, 0, 0)
+cast_shadow = 0
 offset = Vector2(0, 128)
 sprite_frames = ExtResource("2_irsbp")
 animation = &"idle"
