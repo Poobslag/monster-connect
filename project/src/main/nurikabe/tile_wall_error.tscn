@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://kv82b6c1ko77"]
+
+[ext_resource type="PackedScene" uid="uid://csblehq5880e5" path="res://assets/main/nurikabe/tile_wall_error.glb" id="1_jlyc0"]
+[ext_resource type="Material" uid="uid://brexnemk5fojj" path="res://src/main/nurikabe/tile_wall_x_material.tres" id="3_2dgdb"]
+[ext_resource type="Material" uid="uid://kkwb5lnsywxr" path="res://src/main/nurikabe/tile_wall_error_material.tres" id="3_o4iyn"]
+
+[node name="tile_wall_error" unique_id=15731217 instance=ExtResource("1_jlyc0")]
+
+[node name="obj_tile_wall_error" parent="." index="0" unique_id=955203489]
+surface_material_override/0 = ExtResource("3_o4iyn")
+surface_material_override/1 = ExtResource("3_2dgdb")

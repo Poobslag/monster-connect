@@ -66,6 +66,7 @@ var hint_model: PuzzleHintModel
 
 var _cells_dirty: bool = false
 var _values_by_cell: Dictionary[Vector2i, int] = {}
+var _ground_ids_by_cell: Dictionary[Vector2i, int] = {}
 
 var _recent_edits: Dictionary[Vector2i, RecentEdit] = {}
 var _undo_stack: Array[UndoAction] = []
@@ -77,7 +78,6 @@ func _ready() -> void:
 	%IslandMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
 	%ClueLayer.tile_size = tile_size
 	%WallMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
-	%ErrorMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
 	
 	if not Engine.is_editor_hint():
 		import_grid()
@@ -143,7 +143,10 @@ func refresh_cells() -> void:
 	
 	for cell: Vector3i in %GroundMap.get_used_cells():
 		var cell_2: Vector2i = Vector2i(cell.x, cell.z)
-		%ErrorMap.set_cell_item(cell, 0 if cell_2 in error_cells else -1)
+		var ground_id: int = _ground_ids_by_cell.get(cell_2)
+		if cell_2 in error_cells:
+			ground_id = 3
+		%GroundMap.set_cell_item(cell, ground_id)
 	
 	for cell: Vector3i in %IslandMap.get_used_cells():
 		var cell_2: Vector2i = Vector2i(cell.x, cell.z)
@@ -196,7 +199,6 @@ func import_grid() -> void:
 	%IslandMap.clear()
 	%ClueLayer.clear()
 	%WallMap.clear()
-	%ErrorMap.clear()
 	_values_by_cell.clear()
 	
 	var cells: Dictionary[Vector2i, int] = NurikabeUtils.cells_from_grid_string(grid_string)
@@ -226,7 +228,9 @@ func refresh_ground_and_clues() -> void:
 				if NurikabeUtils.is_clue(get_cell(neighbor)):
 					ground_id = 1
 					break
-		%GroundMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), ground_id)
+		_ground_ids_by_cell[cell_pos] = ground_id
+		
+		%GroundMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), _ground_ids_by_cell[cell_pos])
 		
 		%ClueLayer.set_cell(cell_pos, value)
 

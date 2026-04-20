@@ -291,6 +291,8 @@ func _set_half_cell(cell_pos: Vector2i, player_id: int) -> void:
 func _set_cells(changes: Array[Dictionary], player_id: int = -1) -> void:
 	var filtered_changes: Array[Dictionary] = changes.filter(func(change: Dictionary) -> bool:
 		return _is_editable(change["pos"]))
+	for change: Dictionary in changes:
+		game_board.error_cells.erase(change["pos"])
 	game_board.set_cells(filtered_changes, player_id)
 
 

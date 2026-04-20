@@ -39,21 +39,18 @@ materials/extract_format=0
 materials/extract_path="res://assets/main/nurikabe"
 _subresources={
 "materials": {
-"tile_wall_error_red": {
+"Material.008": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://assets/main/nurikabe/tile_wall_error_red.tres",
-"use_external/path": "uid://cwe4lo1d2s28t"
-},
-"tile_wall_error_white": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://assets/main/nurikabe/tile_wall_error_white.tres",
-"use_external/path": "uid://quoqu0ek7lop"
+"use_external/fallback_path": "res://assets/main/nurikabe/Material.008.tres",
+"use_external/path": "uid://d2i7pk5tu460d"
 }
 },
 "nodes": {
 "PATH:obj_tile_wall_error": {
 "generate/physics": true,
-"physics/shape_type": 1
+"physics/shape_type": 3,
+"primitive/position": Vector3(0, 0.275, 0),
+"primitive/size": Vector3(0.8, 0.55, 0.8)
 }
 }
 }

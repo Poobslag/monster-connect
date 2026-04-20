@@ -6,7 +6,6 @@
 [ext_resource type="MeshLibrary" uid="uid://jowpik4p1fcv" path="res://assets/main/nurikabe/island.meshlib" id="3_d75un"]
 [ext_resource type="Script" uid="uid://n8fk6rhmnmq4" path="res://src/main/nurikabe/clue_layer.gd" id="4_6s04n"]
 [ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe/wall.meshlib" id="5_aqkwp"]
-[ext_resource type="MeshLibrary" uid="uid://g2bu4ug2kg6j" path="res://assets/main/nurikabe/error.meshlib" id="6_5x44w"]
 [ext_resource type="PackedScene" uid="uid://c4geolowecsad" path="res://src/main/nurikabe/clue_label.tscn" id="6_qlxsn"]
 
 [node name="GameBoard" type="Node3D" unique_id=361717472 groups=["game_boards", "world_occupants"]]
@@ -115,13 +114,6 @@ mesh_library = ExtResource("5_aqkwp")
 cell_size = Vector3(1, 1, 1)
 cell_center_y = false
 collision_layer = 17
-
-[node name="ErrorMap" type="GridMap" parent="." unique_id=1343692462]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.201, 0)
-mesh_library = ExtResource("6_5x44w")
-cell_size = Vector3(1, 1, 1)
-cell_center_y = false
 
 [node name="ValidateTimer" type="Timer" parent="." unique_id=397237380]
 unique_name_in_owner = true

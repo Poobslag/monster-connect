@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://c8lq0x76jwngc"]
+
+[ext_resource type="PackedScene" uid="uid://teqidsayvpq7" path="res://assets/main/nurikabe/tile_island_error.glb" id="1_qpvch"]
+[ext_resource type="Texture2D" uid="uid://bpctm64ofusmk" path="res://assets/main/nurikabe/tile_island_error_tile_island_error.png" id="2_kktx0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kktx0"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("2_kktx0")
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 0.5
+
+[node name="tile_island_error" unique_id=342007648 instance=ExtResource("1_qpvch")]
+
+[node name="obj_tile_island_error" parent="." index="0" unique_id=47312072]
+surface_material_override/0 = SubResource("StandardMaterial3D_kktx0")
