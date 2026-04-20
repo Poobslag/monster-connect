@@ -2,21 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpctm64ofusmk"
-path.s3tc="res://.godot/imported/tile_island_error_tile_island_error.png-536645ab6902d71f418a2aa348435f65.s3tc.ctex"
-path.etc2="res://.godot/imported/tile_island_error_tile_island_error.png-536645ab6902d71f418a2aa348435f65.etc2.ctex"
+uid="uid://d17hs5lsnxxm3"
+path.s3tc="res://.godot/imported/tile_wall_error_tile_x.png-6f709a4ed731bc6b1d9454ac9beada2b.s3tc.ctex"
+path.etc2="res://.godot/imported/tile_wall_error_tile_x.png-6f709a4ed731bc6b1d9454ac9beada2b.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "6640d34d39910f78f8a7b41b49a09988"
+"md5": "5430e14d6b0d358cb33044e83149b8fc"
 }
 
 [deps]
 
-source_file="res://assets/main/nurikabe/tile_island_error_tile_island_error.png"
-dest_files=["res://.godot/imported/tile_island_error_tile_island_error.png-536645ab6902d71f418a2aa348435f65.s3tc.ctex", "res://.godot/imported/tile_island_error_tile_island_error.png-536645ab6902d71f418a2aa348435f65.etc2.ctex"]
+source_file="res://assets/main/nurikabe/tile_wall_error_tile_x.png"
+dest_files=["res://.godot/imported/tile_wall_error_tile_x.png-6f709a4ed731bc6b1d9454ac9beada2b.s3tc.ctex", "res://.godot/imported/tile_wall_error_tile_x.png-6f709a4ed731bc6b1d9454ac9beada2b.etc2.ctex"]
 
 [params]
 

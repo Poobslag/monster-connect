@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://x2q7l4i0u6wp"
-path="res://.godot/imported/tile_ground_error.glb-74025e26a26bef666a1a820b935ff0ae.scn"
+uid="uid://cdlrvptus0col"
+path="res://.godot/imported/tile_blank_error.glb-d73ea673264e2774c86a3f1202579d19.scn"
 
 [deps]
 
-source_file="res://assets/main/nurikabe/tile_ground_error.glb"
-dest_files=["res://.godot/imported/tile_ground_error.glb-74025e26a26bef666a1a820b935ff0ae.scn"]
+source_file="res://assets/main/nurikabe/tile_blank_error.glb"
+dest_files=["res://.godot/imported/tile_blank_error.glb-d73ea673264e2774c86a3f1202579d19.scn"]
 
 [params]
 
@@ -34,9 +34,18 @@ animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
 import_script/path=""
-materials/extract=1
+materials/extract=0
 materials/extract_format=0
-materials/extract_path="res://assets/main/nurikabe"
-_subresources={}
+materials/extract_path=""
+_subresources={
+"nodes": {
+"PATH:obj_tile_blank_error": {
+"generate/physics": true,
+"physics/shape_type": 3,
+"primitive/position": Vector3(0, 0.1, 0),
+"primitive/size": Vector3(1, 0.2, 1)
+}
+}
+}
 gltf/naming_version=2
 gltf/embedded_image_handling=1

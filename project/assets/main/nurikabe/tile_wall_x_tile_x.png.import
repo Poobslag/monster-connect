@@ -2,21 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xsihvfr6vs62"
-path.s3tc="res://.godot/imported/tile_ground_error_tile_ground_error.png-bff723cb92f2086a47bec6d0b1d15afd.s3tc.ctex"
-path.etc2="res://.godot/imported/tile_ground_error_tile_ground_error.png-bff723cb92f2086a47bec6d0b1d15afd.etc2.ctex"
+uid="uid://gs0vbfa5iivg"
+path.s3tc="res://.godot/imported/tile_wall_x_tile_x.png-80cd6232da985f6dc1353c954d11f15a.s3tc.ctex"
+path.etc2="res://.godot/imported/tile_wall_x_tile_x.png-80cd6232da985f6dc1353c954d11f15a.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "ea5033a497c999527db72dc2c396a1d2"
+"md5": "5430e14d6b0d358cb33044e83149b8fc"
 }
 
 [deps]
 
-source_file="res://assets/main/nurikabe/tile_ground_error_tile_ground_error.png"
-dest_files=["res://.godot/imported/tile_ground_error_tile_ground_error.png-bff723cb92f2086a47bec6d0b1d15afd.s3tc.ctex", "res://.godot/imported/tile_ground_error_tile_ground_error.png-bff723cb92f2086a47bec6d0b1d15afd.etc2.ctex"]
+source_file="res://assets/main/nurikabe/tile_wall_x_tile_x.png"
+dest_files=["res://.godot/imported/tile_wall_x_tile_x.png-80cd6232da985f6dc1353c954d11f15a.s3tc.ctex", "res://.godot/imported/tile_wall_x_tile_x.png-80cd6232da985f6dc1353c954d11f15a.etc2.ctex"]
 
 [params]
 
