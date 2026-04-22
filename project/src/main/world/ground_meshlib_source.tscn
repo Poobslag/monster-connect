@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://b8kpag3oshpy4"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ul73"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.69411767, 0.84705883, 0.2784314, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wohii"]
+material = SubResource("StandardMaterial3D_2ul73")
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wohii"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.6570667, 0.8, 0.264, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_y235l"]
+material = SubResource("StandardMaterial3D_wohii")
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y235l"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.91764706, 0.8745098, 0.37254903, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_b27y8"]
+material = SubResource("StandardMaterial3D_y235l")
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ueygx"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.87, 0.82722497, 0.35670003, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_18r2k"]
+material = SubResource("StandardMaterial3D_ueygx")
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b27y8"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.39999998, 0.7999999, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ueygx"]
+material = SubResource("StandardMaterial3D_b27y8")
+size = Vector3(2, 1, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_18r2k"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.37999997, 0.7599999, 0.95, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3o0ad"]
+material = SubResource("StandardMaterial3D_18r2k")
+size = Vector3(2, 1, 2)
+
+[node name="Node3D" type="Node3D" unique_id=1520752852]
+
+[node name="GrassA" type="MeshInstance3D" parent="." unique_id=505358316]
+mesh = SubResource("BoxMesh_wohii")
+
+[node name="GrassB" type="MeshInstance3D" parent="." unique_id=1530718009]
+mesh = SubResource("BoxMesh_y235l")
+
+[node name="PathA" type="MeshInstance3D" parent="." unique_id=1771926374]
+mesh = SubResource("BoxMesh_b27y8")
+
+[node name="PathB" type="MeshInstance3D" parent="." unique_id=246445635]
+mesh = SubResource("BoxMesh_18r2k")
+
+[node name="WaterA" type="MeshInstance3D" parent="." unique_id=287234233]
+mesh = SubResource("BoxMesh_ueygx")
+
+[node name="WaterB" type="MeshInstance3D" parent="." unique_id=1402816848]
+mesh = SubResource("BoxMesh_3o0ad")
