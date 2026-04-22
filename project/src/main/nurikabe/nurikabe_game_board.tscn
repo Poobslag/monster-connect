@@ -4,7 +4,7 @@
 [ext_resource type="FontFile" uid="uid://nnkrh038qmdb" path="res://assets/main/ui/kenney/kenvector_future.ttf" id="2_aqkwp"]
 [ext_resource type="MeshLibrary" uid="uid://dhgxso5vkoqta" path="res://assets/main/nurikabe/ground.meshlib" id="2_dqa1y"]
 [ext_resource type="MeshLibrary" uid="uid://jowpik4p1fcv" path="res://assets/main/nurikabe/island.meshlib" id="3_d75un"]
-[ext_resource type="Script" uid="uid://n8fk6rhmnmq4" path="res://src/main/nurikabe/clue_layer.gd" id="4_6s04n"]
+[ext_resource type="Script" path="res://src/main/nurikabe/clue_layer.gd" id="4_6s04n"]
 [ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe/wall.meshlib" id="5_aqkwp"]
 [ext_resource type="PackedScene" uid="uid://c4geolowecsad" path="res://src/main/nurikabe/clue_label.tscn" id="6_qlxsn"]
 

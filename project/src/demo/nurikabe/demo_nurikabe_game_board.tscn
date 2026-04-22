@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://vn0ch8gypr53"]
 
-[ext_resource type="Script" uid="uid://d1fvuu28jgpu" path="res://src/demo/nurikabe/demo_nurikabe_game_board.gd" id="1_5ceu1"]
+[ext_resource type="Script" path="res://src/demo/nurikabe/demo_nurikabe_game_board.gd" id="1_5ceu1"]
 [ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe/nurikabe_game_board.tscn" id="2_26fqw"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o028g"]

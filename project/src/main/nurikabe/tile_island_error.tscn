@@ -16,5 +16,5 @@ emission_energy_multiplier = 0.5
 
 [node name="tile_island_error" unique_id=342007648 instance=ExtResource("1_qpvch")]
 
-[node name="obj_tile_island_error" parent="." index="0" unique_id=47312072]
+[node name="obj_tile_island_error" parent="." index="0" unique_id=208534603]
 surface_material_override/0 = SubResource("StandardMaterial3D_kktx0")

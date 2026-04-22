@@ -6,6 +6,6 @@
 
 [node name="tile_wall_error" unique_id=15731217 instance=ExtResource("1_jlyc0")]
 
-[node name="obj_tile_wall_error" parent="." index="0" unique_id=955203489]
+[node name="obj_tile_wall_error" parent="." index="0" unique_id=766592974]
 surface_material_override/0 = ExtResource("3_o4iyn")
 surface_material_override/1 = ExtResource("3_2dgdb")

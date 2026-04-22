@@ -1,7 +1,5 @@
 [gd_resource type="ArrayMesh" format=3 uid="uid://cmgwnwtncob6w"]
 
-[ext_resource type="Material" uid="uid://omxl0iw4lck3" path="res://assets/main/nurikabe/tile_island.005.tres" id="1_l7hw5"]
-
 [sub_resource type="ArrayMesh" id="ArrayMesh_ye8mj"]
 _surfaces = [{
 "aabb": AABB(-0.18856168, 0, -0.18856144, 0.3771236, 1e-05, 0.37712383),
@@ -24,7 +22,6 @@ _surfaces = [{
 "format": 34896613399,
 "index_count": 6,
 "index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
-"material": ExtResource("1_l7hw5"),
 "name": "tile_island.005",
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),

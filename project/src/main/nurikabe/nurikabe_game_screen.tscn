@@ -9,7 +9,7 @@
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="7_dsdbk"]
 [ext_resource type="PackedScene" uid="uid://clt1eubljds4g" path="res://src/main/utils/fps_label.tscn" id="7_vr7lx"]
 [ext_resource type="Script" uid="uid://48je0hlydow6" path="res://src/main/ui/version_label.gd" id="8_6gjo7"]
-[ext_resource type="Script" uid="uid://hwr3gqftgfm5" path="res://src/main/nurikabe/cursor_layer.gd" id="9_medt7"]
+[ext_resource type="Script" path="res://src/main/nurikabe/cursor_layer.gd" id="9_medt7"]
 [ext_resource type="PackedScene" uid="uid://dv3wpirlmcqmy" path="res://src/main/nurikabe/cursor_2d.tscn" id="10_w77me"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="11_bpbxa"]
 [ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe/tutorial_overlay.tscn" id="12_sb0eg"]
