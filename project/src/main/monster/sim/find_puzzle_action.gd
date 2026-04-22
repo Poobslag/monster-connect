@@ -3,6 +3,7 @@ extends GoapAction
 
 const FIND_TARGET_COOLDOWN: float = 3.0
 const PUZZLE_APPROACH: float = 1.25
+const PUZZLE_APPROACH_BOTTOM: float = 2.25
 
 const DESIRED_SIZE_MIN: float = 40.0
 const DESIRED_SIZE_MAX: float = 600.0
@@ -74,7 +75,7 @@ func perform(delta: float) -> bool:
 	if target_game_board != null:
 		var puzzle_aabb: AABB = target_game_board.get_global_aabb()
 		var puzzle_rect: Rect2 = Rect2(puzzle_aabb.position.x, puzzle_aabb.position.z,
-				puzzle_aabb.size.x, puzzle_aabb.size.z)
+				puzzle_aabb.size.x, puzzle_aabb.size.z + (PUZZLE_APPROACH_BOTTOM - PUZZLE_APPROACH))
 		var monster_pos_2d: Vector2 = Vector2(monster.global_position.x, monster.global_position.z)
 		
 		monster.input.move_to(puzzle_aabb.get_center())
