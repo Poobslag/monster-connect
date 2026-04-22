@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://clt1eubljds4g"]
 
 [ext_resource type="Theme" uid="uid://6shp5ck1tnja" path="res://assets/main/ui/kenney/kenney_ui.tres" id="1_y4boj"]
-[ext_resource type="Script" uid="uid://br2rb74td7ciy" path="res://src/main/utils/fps_label.gd" id="2_l13ps"]
+[ext_resource type="Script" path="res://src/main/utils/fps_label.gd" id="2_l13ps"]
 
 [node name="FpsLabel" type="Label" unique_id=460640064]
 anchors_preset = -1

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bvqse57y0q5mx"]
 
-[ext_resource type="Script" uid="uid://6q5illniydxg" path="res://src/demo/nurikabe/demo_log.gd" id="1_hf2j4"]
+[ext_resource type="Script" path="res://src/demo/nurikabe/demo_log.gd" id="1_hf2j4"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="1_l6nkx"]
 
 [node name="DemoLog" type="ColorRect" unique_id=10762396]

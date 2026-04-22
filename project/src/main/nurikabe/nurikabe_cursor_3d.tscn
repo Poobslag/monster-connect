@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cjec7qvd1lq82"]
 
-[ext_resource type="Script" uid="uid://dxqexrepfoq8u" path="res://src/main/nurikabe/nurikabe_cursor_3d.gd" id="1_d6h5s"]
+[ext_resource type="Script" path="res://src/main/nurikabe/nurikabe_cursor_3d.gd" id="1_d6h5s"]
 [ext_resource type="PackedScene" uid="uid://c36jipc14a606" path="res://assets/main/nurikabe/cursor_outline.glb" id="2_d6h5s"]
 [ext_resource type="PackedScene" uid="uid://dl1rlxh4ql7wq" path="res://assets/main/nurikabe/cursor_center.glb" id="3_wj1jh"]
 
