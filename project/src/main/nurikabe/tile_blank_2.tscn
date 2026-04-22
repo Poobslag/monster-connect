@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://b3tlbuj15e7a7"]
-
-[ext_resource type="PackedScene" uid="uid://dt7w1ha2ojjyn" path="res://assets/main/nurikabe/tile_blank_2.glb" id="1_mjinc"]
-[ext_resource type="Material" uid="uid://c42nocfdl8862" path="res://src/main/nurikabe/tile_blank_2_material.tres" id="2_2bqig"]
-
-[node name="tile_blank_2" unique_id=938024274 instance=ExtResource("1_mjinc")]
-
-[node name="obj_tile_blank_2" parent="." index="0" unique_id=161596901]
-surface_material_override/0 = ExtResource("2_2bqig")
