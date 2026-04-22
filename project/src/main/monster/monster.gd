@@ -48,6 +48,8 @@ const STEP_RAY_HEIGHT: float = 0.8
 const STEP_RAY_THRESHOLD: float = 0.1
 const STEP_RAY_SPREAD: float = 0.25 * PI
 
+const FADE_DURATION: float = 0.20
+
 static var _next_id: int = 0
 
 @export var skin: MonsterSkin = MonsterSkin.PURPLE:
@@ -146,10 +148,14 @@ func _refresh_skin() -> void:
 
 
 func _on_click_area_mouse_entered() -> void:
-	_fade_tween = Utils.recreate_tween(self, _fade_tween)
-	_fade_tween.tween_property(%AnimatedSprite3D, "modulate:a", 0.33, 0.25)
+	_fade_tween = Utils.recreate_tween(self, _fade_tween).set_parallel()
+	_fade_tween.tween_property(%AnimatedSprite3D, "modulate:a", 0.33, FADE_DURATION)
+	_fade_tween.tween_property(%NameLabel, "modulate:a", 0.33, FADE_DURATION)
+	_fade_tween.tween_property(%NameLabel, "outline_modulate:a", 0.33, FADE_DURATION)
 
 
 func _on_click_area_mouse_exited() -> void:
-	_fade_tween = Utils.recreate_tween(self, _fade_tween)
-	_fade_tween.tween_property(%AnimatedSprite3D, "modulate:a", 1.0, 0.25)
+	_fade_tween = Utils.recreate_tween(self, _fade_tween).set_parallel()
+	_fade_tween.tween_property(%AnimatedSprite3D, "modulate:a", 1.0, FADE_DURATION)
+	_fade_tween.tween_property(%NameLabel, "modulate:a", 1.0, FADE_DURATION)
+	_fade_tween.tween_property(%NameLabel, "outline_modulate:a", 1.0, FADE_DURATION)
