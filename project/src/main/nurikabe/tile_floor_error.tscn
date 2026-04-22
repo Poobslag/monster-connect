@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://cxu8h1y805eo7"]
+
+[ext_resource type="PackedScene" uid="uid://cdlrvptus0col" path="res://assets/main/nurikabe/tile_floor_error.glb" id="1_n5uxs"]
+[ext_resource type="Material" uid="uid://curxcfpt06b2j" path="res://src/main/nurikabe/tile_floor_error_material.tres" id="2_n5uxs"]
+
+[node name="tile_floor_error" unique_id=630554612 instance=ExtResource("1_n5uxs")]
+
+[node name="obj_tile_floor_error" parent="." index="0" unique_id=804687792]
+surface_material_override/0 = ExtResource("2_n5uxs")

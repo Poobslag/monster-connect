@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://cicxtvf82qgd6" path="res://src/main/nurikabe/nurikabe_game_board.gd" id="1_qbvnj"]
 [ext_resource type="FontFile" uid="uid://nnkrh038qmdb" path="res://assets/main/ui/kenney/kenvector_future.ttf" id="2_aqkwp"]
-[ext_resource type="MeshLibrary" uid="uid://dhgxso5vkoqta" path="res://assets/main/nurikabe/ground.meshlib" id="2_dqa1y"]
+[ext_resource type="MeshLibrary" uid="uid://dhgxso5vkoqta" path="res://assets/main/nurikabe/puzzle_floor.meshlib" id="2_dqa1y"]
 [ext_resource type="MeshLibrary" uid="uid://jowpik4p1fcv" path="res://assets/main/nurikabe/island.meshlib" id="3_d75un"]
 [ext_resource type="Script" path="res://src/main/nurikabe/clue_layer.gd" id="4_6s04n"]
-[ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe/wall.meshlib" id="5_aqkwp"]
+[ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe/puzzle_wall.meshlib" id="5_aqkwp"]
 [ext_resource type="PackedScene" uid="uid://c4geolowecsad" path="res://src/main/nurikabe/clue_label.tscn" id="6_qlxsn"]
 
 [node name="GameBoard" type="Node3D" unique_id=361717472 groups=["game_boards", "world_occupants"]]
@@ -31,7 +31,7 @@ outline_size = 0
 horizontal_alignment = 0
 vertical_alignment = 2
 
-[node name="GroundMap" type="GridMap" parent="." unique_id=264530718]
+[node name="FloorMap" type="GridMap" parent="." unique_id=264530718]
 unique_name_in_owner = true
 mesh_library = ExtResource("2_dqa1y")
 cell_size = Vector3(1, 1, 1)

@@ -74,7 +74,7 @@ var _redo_stack: Array[UndoAction] = []
 var _finished: bool = false
 
 func _ready() -> void:
-	%GroundMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
+	%FloorMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
 	%IslandMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
 	%ClueLayer.tile_size = tile_size
 	%WallMap.cell_size = Vector3(tile_size.x, 1.0, tile_size.y)
@@ -141,12 +141,12 @@ func refresh_cells() -> void:
 	%ClueLayer.error_cells = error_cells
 	%ClueLayer.lowlight_cells = lowlight_cells
 	
-	for cell: Vector3i in %GroundMap.get_used_cells():
+	for cell: Vector3i in %FloorMap.get_used_cells():
 		var cell_2: Vector2i = Vector2i(cell.x, cell.z)
 		var ground_id: int = _ground_ids_by_cell.get(cell_2)
 		if cell_2 in error_cells:
 			ground_id = 3
-		%GroundMap.set_cell_item(cell, ground_id)
+		%FloorMap.set_cell_item(cell, ground_id)
 	
 	for cell: Vector3i in %IslandMap.get_used_cells():
 		var cell_2: Vector2i = Vector2i(cell.x, cell.z)
@@ -195,7 +195,7 @@ func map_to_global(cell: Vector2i) -> Vector3:
 
 
 func import_grid() -> void:
-	%GroundMap.clear()
+	%FloorMap.clear()
 	%IslandMap.clear()
 	%ClueLayer.clear()
 	%WallMap.clear()
@@ -230,7 +230,7 @@ func refresh_ground_and_clues() -> void:
 					break
 		_ground_ids_by_cell[cell_pos] = ground_id
 		
-		%GroundMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), _ground_ids_by_cell[cell_pos])
+		%FloorMap.set_cell_item(Vector3i(cell_pos.x, 0, cell_pos.y), _ground_ids_by_cell[cell_pos])
 		
 		%ClueLayer.set_cell(cell_pos, value)
 

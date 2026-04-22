@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dw1t5yy2nrvfp"
-path="res://.godot/imported/tile_blank_1.glb-b52946d5f607c224f93f70b20a534111.scn"
+uid="uid://cdsnwco6neemm"
+path="res://.godot/imported/tile_floor_3.glb-dcb4fb4403ff44d4510384f00beea209.scn"
 
 [deps]
 
-source_file="res://assets/main/nurikabe/tile_blank_1.glb"
-dest_files=["res://.godot/imported/tile_blank_1.glb-b52946d5f607c224f93f70b20a534111.scn"]
+source_file="res://assets/main/nurikabe/tile_floor_3.glb"
+dest_files=["res://.godot/imported/tile_floor_3.glb-dcb4fb4403ff44d4510384f00beea209.scn"]
 
 [params]
 
@@ -39,18 +39,18 @@ materials/extract_format=0
 materials/extract_path=""
 _subresources={
 "materials": {
-"Material.006": {
+"Material.009": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://src/main/nurikabe/tile_blank_1_material.tres",
-"use_external/path": "uid://fb8lq7lkjc8l"
+"use_external/fallback_path": "res://src/main/nurikabe/tile_floor_3_material.tres",
+"use_external/path": "uid://bjgeug8j5xbb4"
 }
 },
 "nodes": {
-"PATH:obj_tile_blank_1": {
+"PATH:obj_tile_blank_3": {
 "generate/physics": true,
 "physics/shape_type": 3,
 "primitive/position": Vector3(0, 0.1, 0),
-"primitive/size": Vector3(0.95, 0.2, 0.95)
+"primitive/size": Vector3(1, 0.2, 1)
 }
 }
 }
