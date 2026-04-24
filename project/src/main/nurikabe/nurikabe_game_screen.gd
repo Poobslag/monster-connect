@@ -38,10 +38,10 @@ var _all_puzzles: Array[String] = Utils.find_data_files(NurikabeUtils.PUZZLE_DIR
 var _puzzle_queue: Array[String] = []
 
 func _ready() -> void:
-	clear_sims()
-	refresh_sims()
-	clear_game_boards()
-	refresh_game_boards()
+	_clear_sims()
+	_refresh_sims()
+	_clear_game_boards()
+	_refresh_game_boards()
 	
 	%TutorialOverlay.show_tutorial()
 	
@@ -68,39 +68,34 @@ func _exit_tree() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
-func clear_game_boards() -> void:
-	for game_board: NurikabeGameBoard3D in get_game_boards():
-		remove_game_board(game_board)
-
-
-func remove_game_board(game_board: NurikabeGameBoard3D) -> void:
-	game_board.queue_free()
-
-
-func get_game_boards() -> Array[NurikabeGameBoard3D]:
-	var result: Array[NurikabeGameBoard3D] = []
-	result.assign(%GameBoards.get_children().filter(
-		func(node: Node) -> bool:
-			return node is NurikabeGameBoard3D and not node.is_queued_for_deletion()))
-	return result
-
-
-func refresh_game_boards() -> void:
-	for child in %DebugPaths.get_children():
-		child.queue_free()
+func _add_debug_path(debug_path: Array[Vector3]) -> void:
+	if debug_path.size() < 2:
+		return
 	
-	# remove all empty/solved puzzles
-	for game_board: NurikabeGameBoard3D in get_game_boards():
-		if game_board.is_finished() or not game_board.is_started():
-			remove_game_board(game_board)
-	
-	# add puzzles to reach the target puzzle count
-	var new_puzzle_count: int = target_puzzle_count - get_game_boards().size()
-	for _i: int in new_puzzle_count:
-		add_random_puzzle()
+	for i in debug_path.size() - 1:
+		var from: Vector3 = debug_path[i]
+		if i != 0:
+			from.y += 1.0
+		var to: Vector3 = debug_path[i + 1]
+		if i != debug_path.size() - 2:
+			to.y += 1.0
+		var segment_length: float = from.distance_to(to)
+		if segment_length < 0.001:
+			continue
+		var mesh_instance := MeshInstance3D.new()
+		var line_material := StandardMaterial3D.new()
+		line_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		line_material.albedo_color = DEBUG_COLORS[%GameBoards.get_child_count() % DEBUG_COLORS.size()]
+		mesh_instance.material_override = line_material
+		var mesh := BoxMesh.new()
+		mesh.size = Vector3(DEBUG_PATH_WIDTH, DEBUG_PATH_WIDTH, segment_length)
+		mesh_instance.mesh = mesh
+		mesh_instance.position = (from + to) / 2.0
+		mesh_instance.basis = Basis.looking_at((to - from).normalized(), Vector3.UP)
+		%DebugPaths.add_child(mesh_instance)
 
 
-func add_random_puzzle() -> void:
+func _add_random_puzzle() -> void:
 	var puzzle_path: String = test_puzzle_path if test_puzzle_path else _next_puzzle_path()
 	var game_board: NurikabeGameBoard3D = GAME_BOARD_SCENE.instantiate()
 	
@@ -110,33 +105,7 @@ func add_random_puzzle() -> void:
 	_position_board_in_world(game_board)
 
 
-func clear_sims() -> void:
-	for sim: SimMonster in get_sims():
-		remove_sim(sim)
-
-
-func get_sims() -> Array[SimMonster]:
-	var sims: Array[SimMonster] = []
-	for monster: Monster in get_tree().get_nodes_in_group("monsters"):
-		if monster is SimMonster and not monster.is_queued_for_deletion():
-			sims.append(monster)
-	return sims
-
-
-func remove_sim(sim: SimMonster) -> void:
-	sim.queue_free()
-
-
-func refresh_sims() -> void:
-	var sims: Array[SimMonster] = get_sims()
-	var new_sim_count: int = target_sim_count - sims.size()
-	
-	for _i in new_sim_count:
-		var sim: SimMonster = add_sim(sims.size())
-		sims.append(sim)
-
-
-func add_sim(sim_index: int) -> SimMonster:
+func _add_sim(sim_index: int) -> SimMonster:
 	var sim: SimMonster = SIM_SCENE.instantiate()
 	var profile: SimProfile
 	if test_sim_path:
@@ -183,6 +152,38 @@ func _attach_puzzle_info(game_board: NurikabeGameBoard3D, puzzle_path: String) -
 				game_board.get_meta("rotation_turns", 0))
 
 
+func _clear_game_boards() -> void:
+	for game_board: NurikabeGameBoard3D in _get_game_boards():
+		_remove_game_board(game_board)
+
+
+func _clear_sims() -> void:
+	for sim: SimMonster in _get_sims():
+		_remove_sim(sim)
+
+
+func _difficulty_label(score: float) -> String:
+	var result: String = ""
+	if score < 2:
+		result = "Easy"
+	elif score < 5:
+		result = "Medium"
+	elif score < 8:
+		result = "Hard"
+	else:
+		result = "Expert"
+	return result
+
+
+func _existing_game_board_has_path(path: String) -> bool:
+	var result: bool = false
+	for existing_board: NurikabeGameBoard3D in _get_game_boards():
+		if existing_board.get_meta("puzzle_path") == path:
+			result = true
+			break
+	return result
+
+
 func _generate_board_label_text(game_board: NurikabeGameBoard3D) -> void:
 	if game_board.info == null:
 		return
@@ -215,72 +216,20 @@ func _generate_board_string_id(game_board: NurikabeGameBoard3D) -> void:
 	]
 
 
-func _position_board_in_world(game_board: NurikabeGameBoard3D) -> void:
-	var debug_path: Array[Vector3] = []
-	
-	%GameBoards.add_child(game_board)
-	
-	var angle: float = randf_range(0, 2 * PI)
-	var dist: float = randf_range(0, 0.8)
-	for _mercy in 100:
-		game_board.position = Vector3.RIGHT.rotated(Vector3.UP, angle) * dist
-		debug_path.append(game_board.position)
-		if not _overlaps_world_occupants(game_board):
-			break
-		angle = fmod(angle + 0.2, 2 * PI)
-		dist = dist * 1.10 + 1.6
-	
-	if draw_debug_paths:
-		_add_debug_path(debug_path)
-
-
-func _add_debug_path(debug_path: Array[Vector3]) -> void:
-	if debug_path.size() < 2:
-		return
-	
-	for i in debug_path.size() - 1:
-		var from: Vector3 = debug_path[i]
-		if i != 0:
-			from.y += 1.0
-		var to: Vector3 = debug_path[i + 1]
-		if i != debug_path.size() - 2:
-			to.y += 1.0
-		var segment_length: float = from.distance_to(to)
-		if segment_length < 0.001:
-			continue
-		var mesh_instance := MeshInstance3D.new()
-		var line_material := StandardMaterial3D.new()
-		line_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		line_material.albedo_color = DEBUG_COLORS[%GameBoards.get_child_count() % DEBUG_COLORS.size()]
-		mesh_instance.material_override = line_material
-		var mesh := BoxMesh.new()
-		mesh.size = Vector3(DEBUG_PATH_WIDTH, DEBUG_PATH_WIDTH, segment_length)
-		mesh_instance.mesh = mesh
-		mesh_instance.position = (from + to) / 2.0
-		mesh_instance.basis = Basis.looking_at((to - from).normalized(), Vector3.UP)
-		%DebugPaths.add_child(mesh_instance)
-
-
-func _difficulty_label(score: float) -> String:
-	var result: String = ""
-	if score < 2:
-		result = "Easy"
-	elif score < 5:
-		result = "Medium"
-	elif score < 8:
-		result = "Hard"
-	else:
-		result = "Expert"
+func _get_game_boards() -> Array[NurikabeGameBoard3D]:
+	var result: Array[NurikabeGameBoard3D] = []
+	result.assign(%GameBoards.get_children().filter(
+		func(node: Node) -> bool:
+			return node is NurikabeGameBoard3D and not node.is_queued_for_deletion()))
 	return result
 
 
-func _existing_game_board_has_path(path: String) -> bool:
-	var result: bool = false
-	for existing_board: NurikabeGameBoard3D in get_game_boards():
-		if existing_board.get_meta("puzzle_path") == path:
-			result = true
-			break
-	return result
+func _get_sims() -> Array[SimMonster]:
+	var sims: Array[SimMonster] = []
+	for monster: Monster in get_tree().get_nodes_in_group("monsters"):
+		if monster is SimMonster and not monster.is_queued_for_deletion():
+			sims.append(monster)
+	return sims
 
 
 func _next_puzzle_path() ->  String:
@@ -310,8 +259,59 @@ func _overlaps_world_occupants(new_board: NurikabeGameBoard3D) -> bool:
 	return result
 
 
+func _position_board_in_world(game_board: NurikabeGameBoard3D) -> void:
+	var debug_path: Array[Vector3] = []
+	
+	%GameBoards.add_child(game_board)
+	
+	var angle: float = randf_range(0, 2 * PI)
+	var dist: float = randf_range(0, 0.8)
+	for _mercy in 100:
+		game_board.position = Vector3.RIGHT.rotated(Vector3.UP, angle) * dist
+		debug_path.append(game_board.position)
+		if not _overlaps_world_occupants(game_board):
+			break
+		angle = fmod(angle + 0.2, 2 * PI)
+		dist = dist * 1.10 + 1.6
+	
+	if draw_debug_paths:
+		_add_debug_path(debug_path)
+
+
+func _refresh_game_boards() -> void:
+	for child in %DebugPaths.get_children():
+		child.queue_free()
+	
+	# remove all empty/solved puzzles
+	for game_board: NurikabeGameBoard3D in _get_game_boards():
+		if game_board.is_finished() or not game_board.is_started():
+			_remove_game_board(game_board)
+	
+	# add puzzles to reach the target puzzle count
+	var new_puzzle_count: int = target_puzzle_count - _get_game_boards().size()
+	for _i: int in new_puzzle_count:
+		_add_random_puzzle()
+
+
+func _refresh_sims() -> void:
+	var sims: Array[SimMonster] = _get_sims()
+	var new_sim_count: int = target_sim_count - sims.size()
+	
+	for _i in new_sim_count:
+		var sim: SimMonster = _add_sim(sims.size())
+		sims.append(sim)
+
+
+func _remove_game_board(game_board: NurikabeGameBoard3D) -> void:
+	game_board.queue_free()
+
+
+func _remove_sim(sim: SimMonster) -> void:
+	sim.queue_free()
+
+
 func _on_refresher_refresh_requested() -> void:
-	refresh_game_boards()
+	_refresh_game_boards()
 
 
 func _on_game_board_puzzle_finished(game_board: NurikabeGameBoard3D) -> void:
@@ -326,10 +326,10 @@ func _on_command_palette_command_entered(command: String) -> void:
 		"/ids":
 			SoundManager.play_sfx("cheat_enabled")
 			show_puzzle_ids = true
-			for game_board: NurikabeGameBoard3D in get_game_boards():
+			for game_board: NurikabeGameBoard3D in _get_game_boards():
 				_generate_board_label_text(game_board)
 		"/noids":
 			SoundManager.play_sfx("cheat_disabled")
 			show_puzzle_ids = false
-			for game_board: NurikabeGameBoard3D in get_game_boards():
+			for game_board: NurikabeGameBoard3D in _get_game_boards():
 				_generate_board_label_text(game_board)
