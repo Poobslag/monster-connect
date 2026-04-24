@@ -92,8 +92,14 @@ static func cells_from_grid_string(grid_string: String) -> Dictionary[Vector2i, 
 	return cells
 
 
-static func get_puzzle_info_path(path: String) -> String:
-	return path + ".info"
+## Converts "468.txt" -> "468.txt.info"
+static func get_info_path(puzzle_path: String) -> String:
+	return puzzle_path + ".info"
+
+
+## Converts "468.txt.info" -> "468.txt"
+static func get_puzzle_path(info_path: String) -> String:
+	return info_path.trim_suffix(".info")
 
 
 static func get_user_puzzle_path(puzzle_num: int) -> String:

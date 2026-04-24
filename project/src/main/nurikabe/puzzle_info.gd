@@ -1,6 +1,7 @@
 class_name PuzzleInfo
 
-var version: String = ""
+var path: String
+var version: String
 
 var author: String
 var difficulty: float = 0.0

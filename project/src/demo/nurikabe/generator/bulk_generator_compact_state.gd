@@ -22,7 +22,7 @@ func update(_delta: float) -> void:
 	if not queue_1.is_empty():
 		# Phase 1: load puzzle data and select oldest 25% for deletion
 		var puzzle_path: String = queue_1.pop_front()
-		var info_path: String = NurikabeUtils.get_puzzle_info_path(puzzle_path)
+		var info_path: String = NurikabeUtils.get_info_path(puzzle_path)
 		var puzzle_info: PuzzleInfo = PuzzleInfoSaver.new().load_puzzle_info(info_path)
 		_puzzle_data.append({
 			"path": puzzle_path,
@@ -44,7 +44,7 @@ func update(_delta: float) -> void:
 		# Phase 2: Delete selected puzzles
 		var puzzle_path: String = queue_2.pop_front()
 		DirAccess.remove_absolute(puzzle_path)
-		DirAccess.remove_absolute(NurikabeUtils.get_puzzle_info_path(puzzle_path))
+		DirAccess.remove_absolute(NurikabeUtils.get_info_path(puzzle_path))
 		_delete_count += 1
 		if queue_2.is_empty():
 			object.log_message("Deleted %s puzzles." % [_delete_count])
@@ -53,9 +53,9 @@ func update(_delta: float) -> void:
 	elif not queue_3.is_empty():
 		# Phase 3: Renumber remaining puzzles sequentially
 		var old_puzzle_path: String = queue_3.pop_front()
-		var old_info_path: String = NurikabeUtils.get_puzzle_info_path(old_puzzle_path)
+		var old_info_path: String = NurikabeUtils.get_info_path(old_puzzle_path)
 		var new_puzzle_path: String = NurikabeUtils.get_user_puzzle_path(_puzzle_num)
-		var new_info_path: String = NurikabeUtils.get_puzzle_info_path(new_puzzle_path)
+		var new_info_path: String = NurikabeUtils.get_info_path(new_puzzle_path)
 		if old_puzzle_path != new_puzzle_path:
 			var error: Error = Error.OK
 			if error == Error.OK:
