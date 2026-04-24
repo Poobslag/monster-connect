@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://d2hculk2isv03"]
+
+[ext_resource type="Script" uid="uid://bf0qo56qteitn" path="res://src/main/world/puzzle_spawn.gd" id="1_uem0m"]
+[ext_resource type="PlaneMesh" uid="uid://3m4jrt4kb687" path="res://src/main/world/puzzle_spawn_mesh.tres" id="2_uem0m"]
+
+[node name="PuzzleSpawn" type="Marker3D" unique_id=1975614172 groups=["puzzle_spawns"]]
+script = ExtResource("1_uem0m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1082494002]
+unique_name_in_owner = true
+mesh = ExtResource("2_uem0m")

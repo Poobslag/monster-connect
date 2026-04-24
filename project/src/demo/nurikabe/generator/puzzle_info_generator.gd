@@ -9,7 +9,7 @@ var _reason_by_cell: Dictionary[Vector2i, Deduction.Reason] = {}
 @onready var _generator: BulkGenerator3D = get_parent()
 
 func read_puzzle_info(path: String) -> PuzzleInfo:
-	var info_path: String = NurikabeUtils.get_puzzle_info_path(path)
+	var info_path: String = NurikabeUtils.get_info_path(path)
 	var puzzle_info: PuzzleInfo
 	if FileAccess.file_exists(info_path):
 		puzzle_info = PuzzleInfoSaver.new().load_puzzle_info(info_path)
@@ -34,7 +34,7 @@ func write_puzzle_info(puzzle_path: String) -> void:
 		print(validation_result)
 		return
 	
-	var info_path: String = NurikabeUtils.get_puzzle_info_path(puzzle_path)
+	var info_path: String = NurikabeUtils.get_info_path(puzzle_path)
 	
 	var old_info: PuzzleInfo = read_puzzle_info(puzzle_path)
 	

@@ -2,8 +2,8 @@ class_name PuzzleInfoSaver
 
 const PUZZLE_INFO_VERSION: String = "0.02"
 
-func save_puzzle_info(filename: String, info: PuzzleInfo) -> void:
-	var file: FileAccess = FileAccess.open(filename, FileAccess.WRITE)
+func save_puzzle_info(path: String, info: PuzzleInfo) -> void:
+	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(JSON.stringify({"version": PUZZLE_INFO_VERSION}) + "\n")
 	file.store_string("\n")
 	file.store_string("[metadata]\n")
@@ -22,11 +22,12 @@ func save_puzzle_info(filename: String, info: PuzzleInfo) -> void:
 	file.store_string(info.reason_string + "\n")
 
 
-func load_puzzle_info(filename: String) -> PuzzleInfo:
+func load_puzzle_info(info_path: String) -> PuzzleInfo:
 	var info: PuzzleInfo = PuzzleInfo.new()
-	var current_section: String = ""
+	info.path = NurikabeUtils.get_puzzle_path(info_path)
 	
-	var file: FileAccess = FileAccess.open(filename, FileAccess.READ)
+	var current_section: String = ""
+	var file: FileAccess = FileAccess.open(info_path, FileAccess.READ)
 	var header_line: String = file.get_line()
 	var header: Dictionary = JSON.parse_string(header_line)
 	info.version = header.get("version", PUZZLE_INFO_VERSION)

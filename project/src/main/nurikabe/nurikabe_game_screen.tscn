@@ -5,17 +5,20 @@
 [ext_resource type="PackedScene" uid="uid://bao7tfk1frjf3" path="res://src/main/monster/player/player_monster.tscn" id="3_taxvf"]
 [ext_resource type="PackedScene" uid="uid://hcbb3vxqxmjc" path="res://src/main/nurikabe/player_camera.tscn" id="4_2bf7t"]
 [ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe/nurikabe_game_board.tscn" id="5_crad4"]
+[ext_resource type="Script" uid="uid://clmi4jafvnupt" path="res://src/main/nurikabe/game_board_holder.gd" id="5_dsdbk"]
 [ext_resource type="PackedScene" uid="uid://h73338s4fipn" path="res://src/main/ui/command_palette.tscn" id="6_g14o2"]
 [ext_resource type="MeshLibrary" uid="uid://1jomxr8v13v4" path="res://assets/main/world/ground.meshlib" id="6_taxvf"]
 [ext_resource type="Script" uid="uid://dmlb7ue701tuo" path="res://src/main/world/ground_map.gd" id="7_2bf7t"]
 [ext_resource type="FontFile" uid="uid://pq4x38hcbx4h" path="res://assets/main/ui/baloo2.ttf" id="7_dsdbk"]
 [ext_resource type="PackedScene" uid="uid://clt1eubljds4g" path="res://src/main/utils/fps_label.tscn" id="7_vr7lx"]
 [ext_resource type="Script" uid="uid://48je0hlydow6" path="res://src/main/ui/version_label.gd" id="8_6gjo7"]
+[ext_resource type="PackedScene" uid="uid://d2hculk2isv03" path="res://src/main/world/puzzle_spawn.tscn" id="8_crad4"]
 [ext_resource type="Script" path="res://src/main/nurikabe/cursor_layer.gd" id="9_medt7"]
 [ext_resource type="PackedScene" uid="uid://dv3wpirlmcqmy" path="res://src/main/nurikabe/cursor_2d.tscn" id="10_w77me"]
 [ext_resource type="PackedScene" uid="uid://dqoviysu1nmyw" path="res://src/main/nurikabe/results_overlay.tscn" id="11_bpbxa"]
 [ext_resource type="PackedScene" uid="uid://cviiye0styout" path="res://src/main/nurikabe/tutorial_overlay.tscn" id="12_sb0eg"]
 [ext_resource type="PackedScene" uid="uid://dtoj0jveijtnu" path="res://src/main/monster/sim/naive_solver.tscn" id="13_m1d6t"]
+[ext_resource type="Script" uid="uid://shf4cub5svth" path="res://src/main/nurikabe/puzzle_placer.gd" id="18_g14o2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fc7sn"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -57,11 +60,6 @@ layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_w1x8j")
 target_sim_count = 3
-target_puzzle_count = 15
-draw_debug_paths = null
-show_puzzle_ids = null
-test_puzzle_path = null
-test_sim_path = null
 
 [node name="World" type="Node3D" parent="." unique_id=952090331]
 
@@ -77,13 +75,14 @@ shadow_enabled = true
 sky_mode = 1
 
 [node name="Refresher" parent="World" unique_id=696047061 instance=ExtResource("2_vr7lx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.081174, 0, -14.728591)
 
 [node name="Monsters" type="Node3D" parent="World" unique_id=2063390851]
 unique_name_in_owner = true
 
 [node name="Player" parent="World/Monsters" unique_id=1759522099 instance=ExtResource("3_taxvf")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0165415, 0, -7.4531126)
 
 [node name="Camera3D" parent="World" unique_id=814605849 node_paths=PackedStringArray("player") instance=ExtResource("4_2bf7t")]
 transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, -1.882, 46.75, 26.4)
@@ -94,6 +93,7 @@ drift_amount = 0.25
 
 [node name="GameBoards" type="Node3D" parent="World" unique_id=1439298949]
 unique_name_in_owner = true
+script = ExtResource("5_dsdbk")
 
 [node name="GameBoard" parent="World/GameBoards" unique_id=361717472 instance=ExtResource("5_crad4")]
 grid_string = "              
@@ -102,10 +102,6 @@ grid_string = "
              3
               
  2   4   2    "
-
-[node name="DebugPaths" type="Node3D" parent="World" unique_id=391076868]
-unique_name_in_owner = true
-visible = false
 
 [node name="Ground" type="StaticBody3D" parent="World" unique_id=861876476]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -123,6 +119,66 @@ data = {
 }
 script = ExtResource("7_2bf7t")
 metadata/_editor_floor_ = Vector3(0, -1, 0)
+
+[node name="PuzzleSpawn1" parent="World/Ground/GroundMap" unique_id=1428968807 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.851738, 0, 2.9777565)
+max_puzzle_size = Vector2i(20, 15)
+
+[node name="PuzzleSpawn2" parent="World/Ground/GroundMap" unique_id=1940923901 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.62573, 0, 19.361586)
+max_puzzle_size = Vector2i(20, 15)
+
+[node name="PuzzleSpawn3" parent="World/Ground/GroundMap" unique_id=1283222133 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.763914, 0, 38.868057)
+max_puzzle_size = Vector2i(20, 15)
+
+[node name="PuzzleSpawn4" parent="World/Ground/GroundMap" unique_id=1402345685 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2054081, 0, 43.38988)
+max_puzzle_size = Vector2i(15, 20)
+
+[node name="PuzzleSpawn5" parent="World/Ground/GroundMap" unique_id=992115533 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.723381, 0, 21.432396)
+max_puzzle_size = Vector2i(20, 15)
+
+[node name="PuzzleSpawn6" parent="World/Ground/GroundMap" unique_id=2062796704 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.774307, 0, 2.8354874)
+max_puzzle_size = Vector2i(30, 30)
+
+[node name="PuzzleSpawn7" parent="World/Ground/GroundMap" unique_id=1268019618 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.96214, 0, 42.347652)
+max_puzzle_size = Vector2i(30, 20)
+
+[node name="PuzzleSpawn8" parent="World/Ground/GroundMap" unique_id=226764587 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -93.70515, 0, 14.294903)
+max_puzzle_size = Vector2i(30, 25)
+
+[node name="PuzzleSpawn9" parent="World/Ground/GroundMap" unique_id=1654995778 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88.97923, 0, -32.179176)
+max_puzzle_size = Vector2i(30, 30)
+
+[node name="PuzzleSpawn10" parent="World/Ground/GroundMap" unique_id=158610368 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.643478, 0, -48.099533)
+max_puzzle_size = Vector2i(30, 30)
+
+[node name="PuzzleSpawn11" parent="World/Ground/GroundMap" unique_id=101634476 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.525429, 0, -90.08171)
+max_puzzle_size = Vector2i(30, 30)
+
+[node name="PuzzleSpawn12" parent="World/Ground/GroundMap" unique_id=1911587480 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.836464, 0, -108.51707)
+max_puzzle_size = Vector2i(30, 30)
+
+[node name="PuzzleSpawn13" parent="World/Ground/GroundMap" unique_id=330769310 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 71.60248, 0, -85.48319)
+max_puzzle_size = Vector2i(30, 30)
+
+[node name="PuzzleSpawn14" parent="World/Ground/GroundMap" unique_id=1879424599 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.12954, 0, -54.078827)
+max_puzzle_size = Vector2i(30, 30)
+
+[node name="PuzzleSpawn15" parent="World/Ground/GroundMap" unique_id=803020360 instance=ExtResource("8_crad4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.731926, 0, -37.275105)
+max_puzzle_size = Vector2i(30, 30)
 
 [node name="CommandPalette" parent="." unique_id=1368678133 instance=ExtResource("6_g14o2")]
 unique_name_in_owner = true
@@ -276,6 +332,10 @@ visible = false
 
 [node name="NaiveSolver" parent="." unique_id=1129839505 instance=ExtResource("13_m1d6t")]
 verbose = false
+
+[node name="PuzzlePlacer" type="Node" parent="." unique_id=2113674160]
+unique_name_in_owner = true
+script = ExtResource("18_g14o2")
 
 [connection signal="refresh_requested" from="World/Refresher" to="." method="_on_refresher_refresh_requested"]
 [connection signal="command_entered" from="CommandPalette" to="." method="_on_command_palette_command_entered"]
