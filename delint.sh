@@ -274,7 +274,7 @@ fi
 
 # for loops missing type hint
 RESULT=$(grep -R -n "^\\s*for [A-Za-z][A-Za-z0-9]* in [A-Za-z0-9]" --include="*.gd" project/src \
-  | grep -v "for [ixy] in " \
+  | grep -v "for [ixyz] in " \
   )
 if [ -n "$RESULT" ]; then
   echo ""
