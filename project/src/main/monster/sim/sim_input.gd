@@ -46,14 +46,6 @@ func update(delta: float) -> void:
 	_process_cursor_command(delta)
 
 
-func move_to(target: Vector3) -> void:
-	var pos_diff_2d: Vector2 = Vector2(target.x - monster.position.x, target.z - monster.position.z)
-	if pos_diff_2d.length() > MOVEMENT_POS_EPSILON:
-		dir = pos_diff_2d.normalized()
-	else:
-		dir = Vector2.ZERO
-
-
 func queue_cursor_command(action: CursorAction, pos: Vector3, delay: float = 0.0, speed: float = 1.0) -> CursorCommand:
 	var command: CursorCommand = CursorCommand.new(action, pos, delay, speed)
 	cursor_commands.append(command)
