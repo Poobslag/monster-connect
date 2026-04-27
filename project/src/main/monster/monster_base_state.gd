@@ -27,5 +27,6 @@ func move(delta: float, update_direction: bool = true, direction: Vector2 = inpu
 	accelerate(delta, direction)
 	if update_direction:
 		monster.direction = direction
+	monster.apply_step_up()
 	monster.move_and_slide()
 	position_delta = monster.position - old_position

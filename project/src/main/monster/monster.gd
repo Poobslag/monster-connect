@@ -43,10 +43,8 @@ const FALL_DURATION: float = 0.3
 const MAX_SPEED: float = 4.375
 const ACCELERATION: float = 31.25
 
-const STEP_RAY_DISTANCE: float = 0.8
-const STEP_RAY_HEIGHT: float = 0.8
-const STEP_RAY_THRESHOLD: float = 0.1
-const STEP_RAY_SPREAD: float = 0.25 * PI
+const STEP_RAY_LENGTH: float = 0.5
+const STEP_HEIGHT: float = 0.5
 
 const FADE_DURATION: float = 0.20
 
@@ -102,26 +100,35 @@ func _physics_process(delta: float) -> void:
 		# don't run physics simulation in editor
 		return
 	
-	if direction.length() > STEP_RAY_THRESHOLD:
-		var separation_ray_dir: Vector2 = direction.normalized() * STEP_RAY_DISTANCE
-		%StepRayCenter.position = Vector3(separation_ray_dir.x, STEP_RAY_HEIGHT, separation_ray_dir.y)
-		%StepRayLeft1.position = %StepRayCenter.position.rotated(Vector3.UP, STEP_RAY_SPREAD * 0.5)
-		%StepRayLeft2.position = %StepRayCenter.position.rotated(Vector3.UP, STEP_RAY_SPREAD)
-		%StepRayRight1.position = %StepRayCenter.position.rotated(Vector3.UP, -STEP_RAY_SPREAD * 0.5)
-		%StepRayRight2.position = %StepRayCenter.position.rotated(Vector3.UP, -STEP_RAY_SPREAD)
-	else:
-		%StepRayCenter.position = Vector3(0, STEP_RAY_HEIGHT, 0)
-		%StepRayRight1.position = %StepRayCenter.position
-		%StepRayRight2.position = %StepRayCenter.position
-		%StepRayLeft1.position = %StepRayCenter.position
-		%StepRayLeft2.position = %StepRayCenter.position
-	
 	refresh()
 	update_input(delta)
 	if not is_on_floor():
 		velocity += gravity * delta
 	
 	fsm.physics_update(delta)
+
+
+func apply_step_up() -> void:
+	if direction.length() < 0.1:
+		return
+	
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	for angle_offset: float in [0.0, -0.125 * PI, 0.125 * PI, -0.25 * PI, 0.25 * PI]:
+		var rotated_dir: Vector2 = direction.rotated(angle_offset).normalized()
+		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+			global_position,
+			global_position + STEP_RAY_LENGTH * Vector3(rotated_dir.x, 0.1, rotated_dir.y),
+		)
+		query.collision_mask = 0b00000000_00000000_00000000_00000100
+		var query_result: Dictionary = space.intersect_ray(query)
+		if not query_result:
+			continue
+		var step_surface_y: float = _get_step_surface_y(
+				query_result["position"] + 0.1 * Vector3(rotated_dir.x, 0.1, rotated_dir.y))
+		var step_delta: float = step_surface_y - global_position.y
+		if step_delta > 0.01 and step_delta <= STEP_HEIGHT:
+			global_position.y = step_surface_y
+			break
 
 
 ## Overridden by subclasses to apply the monster's desired input (running around, moving the cursor)
@@ -136,6 +143,17 @@ func refresh(force: bool = false) -> void:
 	
 	if direction.x != 0:
 		sprite.flip_h = direction.x < 0
+
+
+func _get_step_surface_y(step_ray_hit: Vector3) -> float:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		step_ray_hit + Vector3(0, 0.5, 0),
+		step_ray_hit + Vector3(0, -0.5, 0),
+	)
+	query.collision_mask = 0b00000000_00000000_00000000_00000100
+	var result: Dictionary = space.intersect_ray(query)
+	return result["position"].y if result else global_position.y
 
 
 func _refresh_skin() -> void:
