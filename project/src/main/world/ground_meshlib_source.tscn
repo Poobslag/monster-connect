@@ -45,6 +45,9 @@ albedo_color = Color(0.39999998, 0.7999999, 1, 1)
 material = SubResource("StandardMaterial3D_b27y8")
 size = Vector3(2, 1, 2)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_2ul73"]
+size = Vector3(2, 20, 2)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_18r2k"]
 diffuse_mode = 3
 specular_mode = 1
@@ -71,5 +74,15 @@ mesh = SubResource("BoxMesh_18r2k")
 [node name="WaterA" type="MeshInstance3D" parent="." unique_id=287234233]
 mesh = SubResource("BoxMesh_ueygx")
 
+[node name="StaticBody3D" type="StaticBody3D" parent="WaterA" unique_id=1102069484]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterA/StaticBody3D" unique_id=1314465998]
+shape = SubResource("BoxShape3D_2ul73")
+
 [node name="WaterB" type="MeshInstance3D" parent="." unique_id=1402816848]
 mesh = SubResource("BoxMesh_3o0ad")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="WaterB" unique_id=1899519637]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterB/StaticBody3D" unique_id=974275708]
+shape = SubResource("BoxShape3D_2ul73")
