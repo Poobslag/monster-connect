@@ -12,6 +12,14 @@ const DITHER_PATTERNS: Dictionary = {
 
 const DITHER_SEED: int = 0
 
+const TILE_WEIGHTS: Dictionary[int, float] = {
+	2: 1.0, # path
+	3: 1.0, # path
+	4: -1.0, # impassable
+	5: -1.0, # impassable
+}
+const DEFAULT_WEIGHT: float = 2.0
+
 @export_tool_button("Apply Dithering") var apply_dithering_action: Callable = apply_dithering
 
 @export_tool_button("Unapply Dithering") var unapply_dithering_action: Callable = unapply_dithering
@@ -19,6 +27,7 @@ const DITHER_SEED: int = 0
 var _initial_tiles: Dictionary[Vector3i, int] = {}
 var _moat_counts: Dictionary[Vector3i, int] = {}
 var _variant_to_base: Dictionary[int, int] = {}
+var _astar: AStarGrid2D = AStarGrid2D.new()
 
 func _ready() -> void:
 	for base: int in DITHER_PATTERNS.keys():
@@ -29,6 +38,33 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		for cell: Vector3i in get_used_cells():
 			_initial_tiles[cell] = get_cell_item(cell)
+	
+	var used_cells: Array[Vector3i] = get_used_cells()
+	var bounds: AABB = AABB(used_cells[0], Vector3i.ZERO)
+	for cell: Vector3i in get_used_cells():
+		bounds = bounds.expand(cell)
+	
+	@warning_ignore("narrowing_conversion")
+	_astar.region = Rect2i(bounds.position.x, bounds.position.z, bounds.size.x, bounds.size.z)
+	_astar.cell_size = Vector2(cell_size.x, cell_size.z)
+	_astar.offset = Vector2(cell_size.x, cell_size.z) * 0.5
+	_astar.update()
+	for x in range(_astar.region.position.x, _astar.region.end.x):
+		for y in range(_astar.region.position.y, _astar.region.end.y):
+			var point_2d: Vector2i = Vector2i(x, y)
+			var point_3d: Vector3i = Vector3i(x, -1, y)
+			var cell_item: int = get_cell_item(point_3d)
+			var weight: float = TILE_WEIGHTS.get(cell_item, DEFAULT_WEIGHT)
+			if weight < 0:
+				_astar.set_point_solid(point_2d)
+			else:
+				_astar.set_point_weight_scale(point_2d, weight)
+
+
+func get_point_path(from_2d: Vector2, to_2d: Vector2) -> PackedVector2Array:
+	var from_id: Vector2i = ((from_2d - _astar.offset) / _astar.cell_size) .round()
+	var to_id: Vector2i = ((to_2d - _astar.offset) / _astar.cell_size).round()
+	return _astar.get_point_path(from_id, to_id, true)
 
 
 func aabb_to_map_rect(aabb: AABB, margin: int = 0) -> Rect2i:
