@@ -92,7 +92,7 @@ func apply_barrier() -> void:
 					continue
 				var neighbor_tile: int = get_cell_item(neighbor)
 				if neighbor_tile == INVALID_CELL_ITEM:
-					set_cell_item(neighbor, BARRIER_TILE) 
+					set_cell_item(neighbor, BARRIER_TILE)
 
 
 func apply_dithering(cells: Array[Vector3i] = get_used_cells()) -> void:
