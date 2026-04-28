@@ -2,25 +2,31 @@
 class_name GroundMap
 extends GridMap
 
-const PATH_TILE: int = 2
+const BARRIER_TILE: int = 0
+const PATH_TILE: int = 3
 
 const DITHER_PATTERNS: Dictionary = {
-	0: {"variant": 1, "pattern": 0b1111_0000_1111_0000, "imprecision": 0.06}, # grass
-	2: {"variant": 3, "pattern": 0b0000_0111_0000_1101, "imprecision": 0.03}, # paths
-	4: {"variant": 5, "pattern": 0b1100_0000_0011_0000, "imprecision": 0.09}, # water
+	1: {"variant": 2, "pattern": 0b1111_0000_1111_0000, "imprecision": 0.06}, # grass
+	3: {"variant": 4, "pattern": 0b0000_0111_0000_1101, "imprecision": 0.03}, # paths
+	5: {"variant": 6, "pattern": 0b1100_0000_0011_0000, "imprecision": 0.09}, # water
 }
 
 const DITHER_SEED: int = 0
 
 const TILE_WEIGHTS: Dictionary[int, float] = {
-	2: 1.0, # path
-	3: 1.0, # path
-	4: -1.0, # impassable
-	5: -1.0, # impassable
+	0: -1.0, # barrier
+	3: 1.0, # paths
+	4: 1.0, # paths
+	5: -1.0, # water
+	6: -1.0, # water
 }
 const DEFAULT_WEIGHT: float = 2.0
 
+@export_tool_button("Apply Barrier") var apply_barrier_action: Callable = apply_barrier
+
 @export_tool_button("Apply Dithering") var apply_dithering_action: Callable = apply_dithering
+
+@export_tool_button("Unapply Barrier") var unapply_barrier_action: Callable = unapply_barrier
 
 @export_tool_button("Unapply Dithering") var unapply_dithering_action: Callable = unapply_dithering
 
@@ -73,9 +79,33 @@ func aabb_to_map_rect(aabb: AABB, margin: int = 0) -> Rect2i:
 	return Rect2i(Vector2i(moat_from.x, moat_from.z), Vector2i(moat_to.x - moat_from.x, moat_to.z - moat_from.z))
 
 
+func apply_barrier() -> void:
+	var cells: Array[Vector3i] = get_used_cells()
+	for cell: Vector3i in cells:
+		var tile: int = get_cell_item(cell)
+		if tile == BARRIER_TILE:
+			continue
+		for i: int in [-1, 0, 1]:
+			for j: int in [-1, 0, 1]:
+				var neighbor: Vector3i = Vector3i(cell.x + i, cell.y, cell.z + j)
+				if neighbor == cell:
+					continue
+				var neighbor_tile: int = get_cell_item(neighbor)
+				if neighbor_tile == INVALID_CELL_ITEM:
+					set_cell_item(neighbor, BARRIER_TILE) 
+
+
 func apply_dithering(cells: Array[Vector3i] = get_used_cells()) -> void:
 	for cell: Vector3i in cells:
 		set_cell_item(cell, _dithered_tile(cell))
+
+
+func unapply_barrier() -> void:
+	var cells: Array[Vector3i] = get_used_cells()
+	for cell: Vector3i in cells:
+		var tile: int = get_cell_item(cell)
+		if tile == BARRIER_TILE:
+			set_cell_item(cell, INVALID_CELL_ITEM)
 
 
 func unapply_dithering(cells: Array[Vector3i] = get_used_cells()) -> void:
