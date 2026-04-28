@@ -97,7 +97,7 @@ func apply_barrier() -> void:
 
 func apply_dithering(cells: Array[Vector3i] = get_used_cells()) -> void:
 	for cell: Vector3i in cells:
-		set_cell_item(cell, _dithered_tile(cell))
+		set_cell_item(cell, dithered_tile(cell))
 
 
 func unapply_barrier() -> void:
@@ -117,8 +117,7 @@ func unapply_dithering(cells: Array[Vector3i] = get_used_cells()) -> void:
 		set_cell_item(cell, _variant_to_base[cell_item])
 
 
-func _dithered_tile(cell: Vector3i) -> int:
-	var tile: int = get_cell_item(cell)
+func dithered_tile(cell: Vector3i, tile: int = get_cell_item(cell)) -> int:
 	if not _variant_to_base.has(tile):
 		return tile
 	
@@ -139,7 +138,7 @@ func moatify(rect: Rect2i) -> void:
 			_moat_counts[cell] = _moat_counts.get(cell, 0) + 1
 			if _moat_counts[cell] == 1:
 				set_cell_item(cell, PATH_TILE)
-				set_cell_item(cell, _dithered_tile(cell))
+				set_cell_item(cell, dithered_tile(cell))
 
 
 func unmoatify(rect: Rect2i) -> void:
@@ -152,4 +151,4 @@ func unmoatify(rect: Rect2i) -> void:
 				var new_item: int = _initial_tiles.get(cell, INVALID_CELL_ITEM)
 				set_cell_item(cell, new_item)
 				if new_item != INVALID_CELL_ITEM:
-					set_cell_item(cell, _dithered_tile(cell))
+					set_cell_item(cell, dithered_tile(cell))
