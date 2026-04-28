@@ -159,14 +159,14 @@ func _position_board_in_world(game_board: NurikabeGameBoard3D, placement: Puzzle
 	game_board.global_position = placement.spawn.global_position.round() \
 			- 0.5 * Vector3(game_board_aabb.size.x, 0, game_board_aabb.size.z)
 	
-	%GroundMap.moatify(%GroundMap.aabb_to_map_rect(game_board.get_global_aabb(), 1))
+	%Ground.moatify(%Ground.aabb_to_map_rect(game_board.get_global_aabb(), 1))
 
 
 func _refresh_game_boards() -> void:
 	# remove all empty/solved puzzles
 	for game_board: NurikabeGameBoard3D in %GameBoards.get_game_boards():
 		if game_board.is_finished() or not game_board.is_started():
-			%GroundMap.unmoatify(%GroundMap.aabb_to_map_rect(game_board.get_global_aabb(), 1))
+			%Ground.unmoatify(%Ground.aabb_to_map_rect(game_board.get_global_aabb(), 1))
 			%GameBoards.remove_game_board(game_board)
 	
 	var puzzle_placements: Array[PuzzlePlacement] = %PuzzlePlacer.calculate_puzzle_placements()
