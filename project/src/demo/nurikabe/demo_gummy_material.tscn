@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://gbtrokobnu0w"]
 
-[ext_resource type="Script" path="res://src/demo/demo_gummy_material.gd" id="1_h0ruf"]
+[ext_resource type="Script" uid="uid://npt4f2c7brn2" path="res://src/demo/nurikabe/demo_gummy_material.gd" id="1_h0ruf"]
 [ext_resource type="MeshLibrary" uid="uid://2pqepxxwucif" path="res://assets/main/nurikabe/puzzle_wall.meshlib" id="2_e1te6"]
-[ext_resource type="PackedScene" uid="uid://bnimlc6d65s2u" path="res://src/demo/overview_camera.tscn" id="3_vmucp"]
+[ext_resource type="PackedScene" uid="uid://bnimlc6d65s2u" path="res://src/demo/utils/overview_camera.tscn" id="3_vmucp"]
 [ext_resource type="PackedScene" uid="uid://clt1eubljds4g" path="res://src/main/utils/fps_label.tscn" id="4_s4jeg"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_taxlp"]

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cviiye0styout"]
 
-[ext_resource type="Script" uid="uid://b2b1qyr0m54wq" path="res://src/main/nurikabe/tutorial_overlay.gd" id="1_648ec"]
+[ext_resource type="Script" uid="uid://b2b1qyr0m54wq" path="res://src/main/world/tutorial_overlay.gd" id="1_648ec"]
 [ext_resource type="Theme" uid="uid://bb6vwl0h1flws" path="res://assets/main/ui/kenney/kenney_ui_blue.tres" id="2_t3183"]
 [ext_resource type="Texture2D" uid="uid://csb7xcrng1kfw" path="res://assets/main/nurikabe/tutorial_empty.png" id="3_pjt0l"]
 [ext_resource type="PackedScene" uid="uid://br86bm6bjwv24" path="res://src/main/ui/button_click_effect.tscn" id="4_6j4ps"]

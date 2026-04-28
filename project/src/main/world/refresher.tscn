@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c0ji5rkplpua5"]
 
-[ext_resource type="Script" uid="uid://cio0oy1mm6un" path="res://src/main/nurikabe/refresher.gd" id="1_5a758"]
+[ext_resource type="Script" uid="uid://cio0oy1mm6un" path="res://src/main/world/refresher.gd" id="1_5a758"]
 [ext_resource type="Texture2D" uid="uid://fu81o78wd6ts" path="res://assets/main/refresher_a.png" id="1_7vvqg"]
 [ext_resource type="Shader" path="res://src/main/nurikabe/flat_mix_3d.gdshader" id="2_8yr2e"]
 [ext_resource type="Texture2D" uid="uid://bynj171imr2st" path="res://assets/main/refresher_b.png" id="2_nlnx3"]
