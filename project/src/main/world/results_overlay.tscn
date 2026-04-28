@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dqoviysu1nmyw"]
 
-[ext_resource type="Script" uid="uid://m420oyyhrvki" path="res://src/main/nurikabe/results_overlay.gd" id="1_3w171"]
+[ext_resource type="Script" uid="uid://m420oyyhrvki" path="res://src/main/world/results_overlay.gd" id="1_3w171"]
 [ext_resource type="Theme" uid="uid://bb6vwl0h1flws" path="res://assets/main/ui/kenney/kenney_ui_blue.tres" id="2_trb17"]
 [ext_resource type="PackedScene" uid="uid://br86bm6bjwv24" path="res://src/main/ui/button_click_effect.tscn" id="3_trb17"]
 

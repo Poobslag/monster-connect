@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://b7urgtgptpfxj" path="res://src/demo/nurikabe/generator/bulk_generator.gd" id="1_yh0jg"]
 [ext_resource type="PackedScene" uid="uid://xb4lw3ia031v" path="res://src/main/nurikabe/nurikabe_game_board.tscn" id="2_0e2y2"]
 [ext_resource type="PackedScene" uid="uid://bvqse57y0q5mx" path="res://src/demo/nurikabe/demo_log.tscn" id="2_h2n1q"]
-[ext_resource type="PackedScene" uid="uid://b281ondbtbbn" path="res://src/demo/nurikabe/demo_world.tscn" id="2_vsh3u"]
+[ext_resource type="PackedScene" uid="uid://b281ondbtbbn" path="res://src/demo/world/demo_world.tscn" id="2_vsh3u"]
 [ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="4_3tgpi"]
 [ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="5_ta2l7"]
 [ext_resource type="Script" uid="uid://dm2sm0t1pw0y0" path="res://src/demo/nurikabe/generator/bulk_generator_idle_state.gd" id="7_0e2y2"]

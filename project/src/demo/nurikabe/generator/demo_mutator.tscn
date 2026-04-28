@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dvdhie7s6kaxx"]
 
 [ext_resource type="Script" uid="uid://cpuh3pfpibmgu" path="res://src/demo/nurikabe/generator/demo_mutator.gd" id="1_tv7yi"]
-[ext_resource type="PackedScene" uid="uid://b281ondbtbbn" path="res://src/demo/nurikabe/demo_world.tscn" id="2_tv7yi"]
+[ext_resource type="PackedScene" uid="uid://b281ondbtbbn" path="res://src/demo/world/demo_world.tscn" id="2_tv7yi"]
 
 [node name="Demo" type="Node" unique_id=1497646745]
 script = ExtResource("1_tv7yi")
