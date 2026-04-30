@@ -46,6 +46,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.7071067, 0.7071067, 0, -0.7071067, 0.7071067, 0, 0, 0)
 cast_shadow = 0
 offset = Vector2(0, 128)
+alpha_cut = 2
 sprite_frames = ExtResource("2_irsbp")
 animation = &"idle"
 
