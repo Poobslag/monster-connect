@@ -6,11 +6,11 @@ extends Camera3D
 ## manipulate the target and offset.
 
 const PUZZLE_PADDING: float = 1.2
-const PAN_DURATION: float = 0.6
+const PAN_DURATION: float = 0.4
 const ZOOM_DEFAULT: Vector2 = Vector2(1.2, 1.2)
 
 @export var player: PlayerMonster3D
-@export var follow_speed: float = 3.0
+@export var follow_speed: float = 8.0
 @export var player_offset: Vector3 = Vector3.ZERO
 
 @export var target_position: Vector3 = Vector3.ZERO
