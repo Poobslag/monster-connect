@@ -1,9 +1,14 @@
 [gd_scene format=3 uid="uid://44mx7ju7kbb8"]
 
 [ext_resource type="PackedScene" uid="uid://dw1t5yy2nrvfp" path="res://assets/main/nurikabe/tile_floor_1.glb" id="1_axstl"]
-[ext_resource type="Material" uid="uid://fb8lq7lkjc8l" path="res://src/main/nurikabe/tile_floor_1_material.tres" id="2_uw4hk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h261g"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.7294118, 0.38039216, 0.3372549, 1)
+roughness = 0.5
 
 [node name="tile_floor_1" unique_id=196789126 instance=ExtResource("1_axstl")]
 
-[node name="obj_tile_floor_1" parent="." index="0" unique_id=1169107330]
-surface_material_override/0 = ExtResource("2_uw4hk")
+[node name="obj_tile_blank_1" parent="." index="0" unique_id=1169107330]
+surface_material_override/0 = SubResource("StandardMaterial3D_h261g")

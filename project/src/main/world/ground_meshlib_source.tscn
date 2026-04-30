@@ -8,7 +8,7 @@ size = Vector3(2, 20, 2)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ul73"]
 diffuse_mode = 3
 specular_mode = 1
-albedo_color = Color(0.69411767, 0.84705883, 0.2784314, 1)
+albedo_color = Color(0.56078434, 0.87058824, 0.3647059, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_wohii"]
 material = SubResource("StandardMaterial3D_2ul73")
@@ -17,7 +17,7 @@ size = Vector3(2, 2, 2)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wohii"]
 diffuse_mode = 3
 specular_mode = 1
-albedo_color = Color(0.6570667, 0.8, 0.264, 1)
+albedo_color = Color(0.47843137, 0.8117647, 0.38431373, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_y235l"]
 material = SubResource("StandardMaterial3D_wohii")
@@ -26,7 +26,7 @@ size = Vector3(2, 2, 2)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y235l"]
 diffuse_mode = 3
 specular_mode = 1
-albedo_color = Color(0.91764706, 0.8745098, 0.37254903, 1)
+albedo_color = Color(1, 0.89411765, 0.47058824, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_b27y8"]
 material = SubResource("StandardMaterial3D_y235l")
@@ -35,7 +35,7 @@ size = Vector3(2, 2, 2)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ueygx"]
 diffuse_mode = 3
 specular_mode = 1
-albedo_color = Color(0.87, 0.82722497, 0.35670003, 1)
+albedo_color = Color(0.9882353, 0.8352941, 0.44705883, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_18r2k"]
 material = SubResource("StandardMaterial3D_ueygx")
@@ -44,7 +44,7 @@ size = Vector3(2, 2, 2)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b27y8"]
 diffuse_mode = 3
 specular_mode = 1
-albedo_color = Color(0.39999998, 0.7999999, 1, 1)
+albedo_color = Color(0.3019608, 0.6509804, 1, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ueygx"]
 material = SubResource("StandardMaterial3D_b27y8")
@@ -53,7 +53,7 @@ size = Vector3(2, 1, 2)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_18r2k"]
 diffuse_mode = 3
 specular_mode = 1
-albedo_color = Color(0.37999997, 0.7599999, 0.95, 1)
+albedo_color = Color(0.3019608, 0.5764706, 0.91764706, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_3o0ad"]
 material = SubResource("StandardMaterial3D_18r2k")

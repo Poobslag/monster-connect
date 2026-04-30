@@ -15,6 +15,9 @@ Sounds:
  $$ 2000 Game SFX Collection by GameBurp (Soniss license, https://sonniss.com/sound-effects-licensing/) - https://itch.io/s/123157/2000-game-sound-effects
  $$ Interface Sounds by Kenney (CC0) - https://kenney.nl/assets/interface-sounds
 
+Other:
+  $ Pear36 palette by PineappleOnPizza (https://lospec.com/palette-list/pear36)
+
 Fonts
 --------------------------------------------------------------------------------
 project/assets/main/ui/baloo2.ttf Baloo2 by Ek Type

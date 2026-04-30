@@ -29,10 +29,10 @@ const CELL_STRING_ISLAND := "."
 const CELL_STRING_WALL := "##"
 const CELL_STRING_MYSTERY_CLUE := "?"
 
-const ERROR_FG_COLOR: Color = Color.WHITE
-const ERROR_BG_COLOR: Color = Color("ff5a5a")
-const CLUE_LOWLIGHT_COLOR: Color = Color("00000080")
-const CLUE_COLOR: Color = Color("ffcfc9ff")
+const ERROR_FG_COLOR: Color = Color("ffffeb")
+const ERROR_BG_COLOR: Color = Color("b0305c")
+const CLUE_LOWLIGHT_COLOR: Color = Color("27273680")
+const CLUE_COLOR: Color = Color("ffffeb")
 
 const POS_NOT_FOUND: Vector2i = Vector2i(-1, -1)
 

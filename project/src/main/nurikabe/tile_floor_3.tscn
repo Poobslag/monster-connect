@@ -5,5 +5,5 @@
 
 [node name="tile_floor_3" unique_id=1846229128 instance=ExtResource("1_etdif")]
 
-[node name="obj_tile_floor_3" parent="." index="0" unique_id=767875618]
+[node name="obj_tile_blank_3" parent="." index="0" unique_id=767875618]
 surface_material_override/0 = ExtResource("2_dw2qj")
