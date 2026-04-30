@@ -1,0 +1,166 @@
+[gd_scene format=3 uid="uid://ulq0vutpfygc"]
+
+[ext_resource type="Texture2D" uid="uid://b7edo1bvj3xh3" path="res://assets/main/world/props/tree_1.png" id="1_utn2c"]
+[ext_resource type="Texture2D" uid="uid://y7wxoq8n6roj" path="res://assets/main/world/props/tree_2.png" id="2_8v03s"]
+[ext_resource type="Texture2D" uid="uid://cyatc5pjqqh46" path="res://assets/main/world/props/tree_3.png" id="3_ydn7d"]
+[ext_resource type="Texture2D" uid="uid://mmsxc6avepu1" path="res://assets/main/world/props/bush_1.png" id="4_ydn7d"]
+[ext_resource type="Texture2D" uid="uid://b1fwv8otgml1g" path="res://assets/main/world/props/bush_2.png" id="5_lelqi"]
+[ext_resource type="Texture2D" uid="uid://c0d42u0tsjujh" path="res://assets/main/world/props/flower_1.png" id="6_7seuy"]
+[ext_resource type="Texture2D" uid="uid://bfk6o6k4c703m" path="res://assets/main/world/props/flower_2.png" id="7_mnhux"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_sjmel"]
+size = Vector2(4, 6)
+center_offset = Vector3(0, 3, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8v03s"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("1_utn2c")
+roughness = 0.5
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_utn2c"]
+height = 4.0
+radius = 1.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_lelqi"]
+size = Vector2(6, 6)
+center_offset = Vector3(0, 3, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7seuy"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("2_8v03s")
+roughness = 0.5
+
+[sub_resource type="QuadMesh" id="QuadMesh_mnhux"]
+size = Vector2(7, 8)
+center_offset = Vector3(0, 4, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_31uvw"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("3_ydn7d")
+roughness = 0.5
+
+[sub_resource type="QuadMesh" id="QuadMesh_7seuy"]
+size = Vector2(3, 2)
+center_offset = Vector3(0, 1, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mnhux"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("4_ydn7d")
+roughness = 0.5
+
+[sub_resource type="QuadMesh" id="QuadMesh_31uvw"]
+size = Vector2(4, 2)
+center_offset = Vector3(0, 1, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4bcf2"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("5_lelqi")
+roughness = 0.5
+
+[sub_resource type="QuadMesh" id="QuadMesh_4bcf2"]
+size = Vector2(1, 2)
+center_offset = Vector3(0, 1, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h1ujn"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("6_7seuy")
+roughness = 0.5
+
+[sub_resource type="QuadMesh" id="QuadMesh_h1ujn"]
+size = Vector2(1, 2)
+center_offset = Vector3(0, 1, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sgem7"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("7_mnhux")
+roughness = 0.5
+
+[node name="Node3D" type="Node3D" unique_id=997867115]
+
+[node name="Tree1" type="MeshInstance3D" parent="." unique_id=35732117]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_sjmel")
+surface_material_override/0 = SubResource("StandardMaterial3D_8v03s")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Tree1" unique_id=1219777160]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tree1/StaticBody3D" unique_id=9844056]
+transform = Transform3D(1, 0, 0, 0, 0.7003366, -0.71381307, 0, 0.71381307, 0.7003366, 0, 1.4715145, 1.4235487)
+shape = SubResource("CylinderShape3D_utn2c")
+
+[node name="Tree2" type="MeshInstance3D" parent="." unique_id=1125753941]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_lelqi")
+surface_material_override/0 = SubResource("StandardMaterial3D_7seuy")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Tree2" unique_id=1470076658]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tree2/StaticBody3D" unique_id=51563365]
+transform = Transform3D(1, 0, 0, 0, 0.7003366, -0.71381307, 0, 0.71381307, 0.7003366, 0, 1.4715145, 1.4235487)
+shape = SubResource("CylinderShape3D_utn2c")
+
+[node name="Tree3" type="MeshInstance3D" parent="." unique_id=1201739179]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_mnhux")
+surface_material_override/0 = SubResource("StandardMaterial3D_31uvw")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Tree3" unique_id=31749214]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tree3/StaticBody3D" unique_id=1522644715]
+transform = Transform3D(1, 0, 0, 0, 0.7003366, -0.71381307, 0, 0.71381307, 0.7003366, 0, 1.4715145, 1.4235487)
+shape = SubResource("CylinderShape3D_utn2c")
+
+[node name="Bush1" type="MeshInstance3D" parent="." unique_id=2073704598]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_7seuy")
+surface_material_override/0 = SubResource("StandardMaterial3D_mnhux")
+
+[node name="Bush2" type="MeshInstance3D" parent="." unique_id=1310971872]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_31uvw")
+surface_material_override/0 = SubResource("StandardMaterial3D_4bcf2")
+
+[node name="Flower1" type="MeshInstance3D" parent="." unique_id=907120]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_4bcf2")
+surface_material_override/0 = SubResource("StandardMaterial3D_h1ujn")
+
+[node name="Flower2" type="MeshInstance3D" parent="." unique_id=671279376]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_h1ujn")
+surface_material_override/0 = SubResource("StandardMaterial3D_sgem7")
