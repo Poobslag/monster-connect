@@ -9,6 +9,10 @@ const BOREDOM_INCREASE_RATE_MAX: float = 5.0 # 300 per minute
 const BOREDOM_DECREASE_RATE_MIN: float = 1.6 # 100 per minute
 const BOREDOM_DECREASE_RATE_MAX: float = 3.2 # 200 per minute
 
+const TURN_COOLDOWN_MIN: float = 0.10
+const TURN_COOLDOWN_AVG: float = 0.25
+const TURN_COOLDOWN_MAX: float = 0.50
+
 @onready var input: SimInput3D = %Input
 
 var solving_board: NurikabeGameBoard3D
@@ -22,6 +26,9 @@ var pending_deductions: Dictionary[Vector2i, Deduction] = {}
 var boredom_increase_rate: float
 var boredom_decrease_rate: float
 
+var turn_cooldown: float
+var turn_cooldown_remaining: float
+
 func _ready() -> void:
 	super._ready()
 	
@@ -32,15 +39,26 @@ func _ready() -> void:
 		BOREDOM_INCREASE_RATE_MIN, BOREDOM_INCREASE_RATE_MAX, BOREDOM_INCREASE_RATE_AVG)
 	boredom_decrease_rate = behavior.lerp_stat(SimBehavior.MOTIVATION,
 		BOREDOM_DECREASE_RATE_MIN, BOREDOM_DECREASE_RATE_MAX)
+	turn_cooldown = behavior.lerp_stat(SimBehavior.MOTIVATION,
+		TURN_COOLDOWN_MAX, TURN_COOLDOWN_MIN, TURN_COOLDOWN_AVG)
+
+
+func _process(delta: float) -> void:
+	if solving_board == null:
+		increase_boredom(delta)
+	if turn_cooldown_remaining > 0:
+		turn_cooldown_remaining -= delta
 
 
 func update_input(delta: float) -> void:
 	input.update(delta)
 
 
-func _process(delta: float) -> void:
-	if solving_board == null:
-		increase_boredom(delta)
+func try_set_direction(new_input_dir: Vector2) -> void:
+	if not input.dir.is_equal_approx(new_input_dir):
+		if turn_cooldown_remaining <= 0:
+			input.dir = new_input_dir
+			turn_cooldown_remaining = turn_cooldown
 
 
 func increase_boredom(delta: float) -> void:

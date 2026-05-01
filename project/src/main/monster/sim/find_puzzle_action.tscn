@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bwgj2s5gyxutb"]
+
+[ext_resource type="Script" uid="uid://dawycm5wbtgn4" path="res://src/main/monster/sim/find_puzzle_action.gd" id="1_5qtc1"]
+[ext_resource type="PackedScene" uid="uid://dmehh4401wsni" path="res://src/main/utils/state_machine.tscn" id="2_wskme"]
+[ext_resource type="PackedScene" uid="uid://c8e4mcx2vb5o8" path="res://src/main/utils/state.tscn" id="3_r2xn7"]
+[ext_resource type="Script" uid="uid://dyrr5vw8w1h48" path="res://src/main/monster/sim/find_puzzle_action_seek_state.gd" id="4_dl0mg"]
+[ext_resource type="Script" uid="uid://dowm8cw4w62ai" path="res://src/main/monster/sim/find_puzzle_action_approach_state.gd" id="5_wskme"]
+[ext_resource type="Script" uid="uid://b0ir4dvi5d7sq" path="res://src/main/monster/sim/find_puzzle_action_detour_state.gd" id="6_dl0mg"]
+[ext_resource type="Script" uid="uid://gy5rpekttb6c" path="res://src/main/monster/sim/find_puzzle_action_finished_state.gd" id="6_r2xn7"]
+
+[node name="FindPuzzleAction" type="Node" unique_id=693002983]
+script = ExtResource("1_5qtc1")
+verbose = true
+
+[node name="FSM" parent="." unique_id=303428373 instance=ExtResource("2_wskme")]
+unique_name_in_owner = true
+
+[node name="Seek" parent="FSM" unique_id=1655920970 instance=ExtResource("3_r2xn7")]
+unique_name_in_owner = true
+script = ExtResource("4_dl0mg")
+
+[node name="Approach" parent="FSM" unique_id=297491256 instance=ExtResource("3_r2xn7")]
+unique_name_in_owner = true
+script = ExtResource("5_wskme")
+
+[node name="Detour" parent="FSM" unique_id=1508329204 instance=ExtResource("3_r2xn7")]
+unique_name_in_owner = true
+script = ExtResource("6_dl0mg")
+
+[node name="Finished" parent="FSM" unique_id=594961951 instance=ExtResource("3_r2xn7")]
+unique_name_in_owner = true
+script = ExtResource("6_r2xn7")
