@@ -10,7 +10,6 @@
 
 [node name="FindPuzzleAction" type="Node" unique_id=693002983]
 script = ExtResource("1_5qtc1")
-verbose = true
 
 [node name="FSM" parent="." unique_id=303428373 instance=ExtResource("2_wskme")]
 unique_name_in_owner = true
