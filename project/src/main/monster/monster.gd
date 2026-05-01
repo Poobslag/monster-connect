@@ -44,7 +44,8 @@ const MAX_SPEED: float = 4.375
 const ACCELERATION: float = 31.25
 
 const STEP_RAY_LENGTH: float = 0.6
-const STEP_HEIGHT: float = 0.5
+const STEP_HEIGHT: float = 0.5 # maximum height for step up logic
+const OBSTACLE_HEIGHT: float = 0.6 # height for obstacle detection raycasts
 
 const FADE_DURATION: float = 0.20
 

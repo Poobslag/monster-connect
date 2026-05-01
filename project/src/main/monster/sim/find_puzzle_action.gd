@@ -117,11 +117,15 @@ func find_target() -> void:
 				candidate["score"]])
 		target_game_board = candidate["board"]
 		
-		# generate point path with a-star
-		var puzzle_aabb: AABB = target_game_board.get_global_aabb()
-		var puzzle_center: Vector3 = puzzle_aabb.get_center()
-		var monster_pos_2d: Vector2 = Vector2(monster.global_position.x, monster.global_position.z)
-		target_path.assign(ground_map.get_point_path(monster_pos_2d, Vector2(puzzle_center.x, puzzle_center.z)))
+		find_path_to_target()
+
+
+func find_path_to_target() -> void:
+	# generate point path with a-star
+	var puzzle_aabb: AABB = target_game_board.get_global_aabb()
+	var puzzle_center: Vector3 = puzzle_aabb.get_center()
+	var monster_pos_2d: Vector2 = Vector2(monster.global_position.x, monster.global_position.z)
+	target_path.assign(ground_map.get_point_path(monster_pos_2d, Vector2(puzzle_center.x, puzzle_center.z)))
 
 
 static func _calculate_match_factor(distance: float, tolerance: float) -> float:
