@@ -10,5 +10,5 @@ albedo_texture = ExtResource("2_0tw5h")
 
 [node name="tile_island_half_lowlight" unique_id=903200014 instance=ExtResource("1_yr5fs")]
 
-[node name="obj_tile_island_half_lowlight" parent="." index="0" unique_id=928407462]
+[node name="obj_tile_island_half_lowlight" parent="." index="0" unique_id=1392577513]
 surface_material_override/0 = SubResource("StandardMaterial3D_rvii6")

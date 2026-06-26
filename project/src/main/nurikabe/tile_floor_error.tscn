@@ -5,5 +5,5 @@
 
 [node name="tile_floor_error" unique_id=630554612 instance=ExtResource("1_n5uxs")]
 
-[node name="obj_tile_floor_error" parent="." index="0" unique_id=804687792]
+[node name="obj_tile_blank_error" parent="." index="0" unique_id=804687792]
 surface_material_override/0 = ExtResource("2_n5uxs")
